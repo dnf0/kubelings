@@ -16,6 +16,7 @@ Define a PodDisruptionBudget manifest named 'web-pdb':
 # I AM NOT DONE
 
 import yaml
+
 from kubelings.validator import validate_manifest
 
 PDB_MANIFEST = """

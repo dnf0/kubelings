@@ -27,7 +27,9 @@ Implement the `reconcile_database` operator function according to these rules:
 # I AM NOT DONE
 
 from typing import Any, Dict, Optional
+
 import yaml
+
 from kubelings.validator import validate_manifest
 
 SAMPLE_CR_MANIFEST = """

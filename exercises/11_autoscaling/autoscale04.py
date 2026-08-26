@@ -31,6 +31,7 @@ when there are no events to process, and scale up from 0 when events arrive.
 # I AM NOT DONE
 
 import yaml
+
 from kubelings.validator import validate_manifest
 
 SCALED_OBJECT_MANIFEST = """

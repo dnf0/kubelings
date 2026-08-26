@@ -6,7 +6,9 @@ Reference Solution
 """
 
 from typing import Any, Dict
+
 import yaml
+
 from kubelings.validator import validate_manifest
 
 NAMESPACE_MANIFEST = """

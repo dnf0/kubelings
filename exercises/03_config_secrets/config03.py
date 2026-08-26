@@ -22,7 +22,9 @@ are automatically encoded by the apiserver upon creation.
 
 import base64  # noqa: F401
 from typing import Any, Dict
+
 import yaml
+
 from kubelings.validator import validate_manifest
 
 SECRET_MANIFEST = """

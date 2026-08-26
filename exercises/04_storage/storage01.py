@@ -13,6 +13,7 @@ Fix the Pod manifest below to define a Pod named 'log-collector-pod':
 # I AM NOT DONE
 
 import yaml
+
 from kubelings.validator import validate_manifest
 
 POD_MANIFEST = """

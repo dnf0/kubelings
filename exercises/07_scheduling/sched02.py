@@ -20,7 +20,9 @@ Node Affinity allows expressive pod scheduling constraints:
 # I AM NOT DONE
 
 from typing import Any, Dict, Tuple
+
 import yaml
+
 from kubelings.validator import validate_manifest
 
 POD_MANIFEST = """

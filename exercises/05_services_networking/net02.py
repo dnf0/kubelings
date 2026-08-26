@@ -22,7 +22,9 @@ When paired with a StatefulSet, each Pod receives a predictable, stable FQDN:
 # I AM NOT DONE
 
 from typing import List
+
 import yaml
+
 from kubelings.validator import validate_manifest
 
 HEADLESS_SERVICE_MANIFEST = """

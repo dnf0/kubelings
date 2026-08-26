@@ -6,6 +6,7 @@ Reference Solution
 """
 
 import yaml
+
 from kubelings.validator import validate_manifests
 
 BATCH_MANIFESTS = """

@@ -16,6 +16,7 @@ Complete the Pod manifest below to inject the following container environment va
 # I AM NOT DONE
 
 import yaml
+
 from kubelings.validator import validate_manifest
 
 POD_MANIFEST = """

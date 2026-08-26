@@ -13,6 +13,7 @@ Fix the ReplicaSet manifest below.
 # I AM NOT DONE
 
 import yaml
+
 from kubelings.validator import validate_manifest
 
 REPLICA_SET_MANIFEST = """

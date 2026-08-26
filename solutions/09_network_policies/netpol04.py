@@ -7,7 +7,9 @@ Reference Solution
 
 import ipaddress
 from typing import List
+
 import yaml
+
 from kubelings.validator import validate_manifest
 
 POLICY_MANIFEST = """

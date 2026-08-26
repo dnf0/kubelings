@@ -13,7 +13,8 @@ from rich.text import Text
 from kubelings.manifest import get_manifest
 from kubelings.models import Exercise, Manifest
 from kubelings.runner import ExerciseRunner, RunResult
-from kubelings.ui import console as default_console, render_banner, render_result
+from kubelings.ui import console as default_console
+from kubelings.ui import render_banner, render_result
 
 try:
     from watchfiles import watch

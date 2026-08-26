@@ -1,8 +1,8 @@
 """Kubernetes Cluster Detection and Ephemeral Test Environment Adapter."""
 
 import re
-from typing import Any, Dict, Optional, Set
 import uuid
+from typing import Any, Dict, Optional, Set
 
 # Ephemeral namespace prefix and regex pattern for safety
 DEFAULT_EPHEMERAL_PREFIX = "kubelings-test"

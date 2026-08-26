@@ -7,7 +7,9 @@ Reference Solution
 
 import re
 from typing import Optional
+
 import yaml
+
 from kubelings.validator import validate_manifest
 
 INGRESS_MANIFEST = """

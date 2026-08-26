@@ -6,7 +6,9 @@ Reference Solution
 """
 
 from typing import Any, Dict, Optional
+
 import yaml
+
 from kubelings.validator import validate_manifest
 
 INGRESS_MANIFEST = """

@@ -19,6 +19,7 @@ automatic token mounting.
 # I AM NOT DONE
 
 import yaml
+
 from kubelings.validator import validate_manifests
 
 MANIFESTS = """

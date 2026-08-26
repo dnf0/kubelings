@@ -16,6 +16,7 @@ Configure the Deployment manifest below:
 # I AM NOT DONE
 
 import yaml
+
 from kubelings.validator import validate_manifest
 
 DEPLOYMENT_MANIFEST = """

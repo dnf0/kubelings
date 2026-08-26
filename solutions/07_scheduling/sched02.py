@@ -6,7 +6,9 @@ Reference Solution
 """
 
 from typing import Any, Dict, Tuple
+
 import yaml
+
 from kubelings.validator import validate_manifest
 
 POD_MANIFEST = """

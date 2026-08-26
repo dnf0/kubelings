@@ -6,6 +6,7 @@ Reference Solution
 """
 
 import yaml
+
 from kubelings.validator import validate_manifest
 
 SCALED_OBJECT_MANIFEST = """

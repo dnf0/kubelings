@@ -18,7 +18,9 @@ Complete the StatefulSet manifest below:
 # I AM NOT DONE
 
 from typing import List
+
 import yaml
+
 from kubelings.validator import validate_manifest
 
 STATEFULSET_MANIFEST = """

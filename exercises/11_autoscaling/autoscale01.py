@@ -23,6 +23,7 @@ metrics such as CPU and Memory utilization.
 # I AM NOT DONE
 
 import yaml
+
 from kubelings.validator import validate_manifest
 
 HPA_MANIFEST = """

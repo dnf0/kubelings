@@ -18,7 +18,9 @@ Rules can select traffic by podSelector (within the same namespace) or namespace
 # I AM NOT DONE
 
 from typing import Any, Dict
+
 import yaml
+
 from kubelings.validator import validate_manifest
 
 POLICY_MANIFEST = """

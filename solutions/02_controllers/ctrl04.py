@@ -6,7 +6,9 @@ Reference Solution
 """
 
 from typing import List
+
 import yaml
+
 from kubelings.validator import validate_manifest
 
 STATEFULSET_MANIFEST = """

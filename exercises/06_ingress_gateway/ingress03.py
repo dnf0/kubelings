@@ -24,7 +24,9 @@ before forwarding the request to the upstream microservice).
 
 import re  # noqa: F401
 from typing import Optional
+
 import yaml
+
 from kubelings.validator import validate_manifest
 
 INGRESS_MANIFEST = """

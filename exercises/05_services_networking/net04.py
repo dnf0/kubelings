@@ -22,7 +22,9 @@ CoreDNS provides internal service discovery.
 # I AM NOT DONE
 
 from typing import Optional
+
 import yaml
+
 from kubelings.validator import validate_manifest
 
 POD_MANIFEST = """

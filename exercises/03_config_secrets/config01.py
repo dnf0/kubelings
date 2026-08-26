@@ -15,6 +15,7 @@ In the multi-document manifest below:
 # I AM NOT DONE
 
 import yaml
+
 from kubelings.validator import validate_manifests
 
 CONFIG_MANIFESTS = """

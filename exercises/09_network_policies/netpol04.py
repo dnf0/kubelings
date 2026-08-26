@@ -20,7 +20,9 @@ specific subnet exceptions.
 
 import ipaddress  # noqa: F401
 from typing import List
+
 import yaml
+
 from kubelings.validator import validate_manifest
 
 POLICY_MANIFEST = """

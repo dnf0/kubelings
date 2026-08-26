@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from kubelings.manifest import get_manifest
-from kubelings.runner import ExerciseRunner, NOT_DONE_MARKER
+from kubelings.runner import NOT_DONE_MARKER, ExerciseRunner
 
 CHAPTER_DIRS = ["01_pods", "02_controllers", "03_config_secrets"]
 EXPECTED_EXERCISES = {

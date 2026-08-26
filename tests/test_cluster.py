@@ -1,4 +1,5 @@
 from unittest.mock import MagicMock, patch
+
 from kubelings.cluster import EPHEMERAL_NAMESPACE_PATTERN, ClusterDetector
 
 

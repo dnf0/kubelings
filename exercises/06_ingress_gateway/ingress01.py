@@ -22,7 +22,9 @@ Paths can be matched using `pathType: Prefix` or `pathType: Exact`.
 # I AM NOT DONE
 
 from typing import Any, Dict, Optional
+
 import yaml
+
 from kubelings.validator import validate_manifest
 
 INGRESS_MANIFEST = """

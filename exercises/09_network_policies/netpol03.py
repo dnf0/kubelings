@@ -16,6 +16,7 @@ connections—including DNS resolution via CoreDNS—unless explicitly allowed.
 # I AM NOT DONE
 
 import yaml
+
 from kubelings.validator import validate_manifest
 
 POLICY_MANIFEST = """

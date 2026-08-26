@@ -274,5 +274,61 @@ def test_solutions() -> None:
     )
 
 
+@app.command("init")
+def init_cmd(
+    directory: Optional[str] = typer.Option(
+        None,
+        "--dir",
+        "-d",
+        help="Target directory to initialize exercises in (defaults to current directory).",
+    ),
+    force: bool = typer.Option(
+        False,
+        "--force",
+        "-f",
+        help="Overwrite existing files in target exercises directory.",
+    ),
+) -> None:
+    """Initialize curriculum exercises directory in the current workspace."""
+    from pathlib import Path
+
+    from kubelings.scaffold import init_workspace
+
+    target_path = Path(directory) if directory else Path.cwd()
+    try:
+        init_workspace(target_path, force=force)
+        console.print(
+            f"[bold green]✓ Initialized exercises in:[/bold green] [bold cyan]{target_path / 'exercises'}[/bold cyan]\n"
+            "[dim]Run 'kubelings watch' to begin learning Kubernetes![/dim]"
+        )
+    except FileExistsError as err:
+        console.print(f"[bold yellow]Warning:[/bold yellow] {err}")
+        raise typer.Exit(code=1)
+    except Exception as err:
+        console.print(f"[bold red]Error initializing workspace:[/bold red] {err}")
+        raise typer.Exit(code=1)
+
+
+@app.command("reset")
+def reset_cmd(
+    exercise_name: str = typer.Argument(..., help="Name of exercise to reset (e.g. 'pods01')"),
+) -> None:
+    """Reset a specific exercise in the current workspace to its initial starter state."""
+    from kubelings.scaffold import reset_exercise
+
+    try:
+        reset_file = reset_exercise(exercise_name)
+        console.print(
+            f"[bold green]✓ Reset exercise:[/bold green] [bold cyan]{exercise_name}[/bold cyan] "
+            f"[dim]({reset_file})[/dim]"
+        )
+    except (KeyError, FileNotFoundError) as err:
+        console.print(f"[bold red]Error:[/bold red] {err}")
+        raise typer.Exit(code=1)
+    except Exception as err:
+        console.print(f"[bold red]Error resetting exercise:[/bold red] {err}")
+        raise typer.Exit(code=1)
+
+
 if __name__ == "__main__":
     app()

@@ -19,6 +19,7 @@ until explicit allow rules are defined.
 # I AM NOT DONE
 
 import yaml
+
 from kubelings.validator import validate_manifest
 
 POLICY_MANIFEST = """

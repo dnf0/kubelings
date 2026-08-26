@@ -1,6 +1,7 @@
 """Curriculum manifest definition and lookup engine for Kubelings."""
 
 from typing import Optional
+
 from kubelings.models import Chapter, Exercise, Manifest
 
 

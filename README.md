@@ -176,7 +176,23 @@ Check whether `kubelings` is running in offline validation mode or connected to 
 kubelings cluster
 ```
 
-### 7. Version
+### 7. Initialize Exercises in Any Workspace
+
+If running `kubelings` via `pipx` or `uvx` in a new directory, scaffold the curriculum exercises:
+
+```bash
+kubelings init
+```
+
+### 8. Reset an Exercise
+
+Restore any exercise back to its clean starter template:
+
+```bash
+kubelings reset pods01
+```
+
+### 9. Version
 
 Display the installed version of Kubelings:
 

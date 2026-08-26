@@ -31,6 +31,7 @@ efficiency.
 # I AM NOT DONE
 
 import yaml
+
 from kubelings.validator import validate_manifest
 
 VPA_MANIFEST = """

@@ -1,4 +1,5 @@
 import pytest
+
 from kubelings.validator import (
     ManifestValidationError,
     validate_manifest,

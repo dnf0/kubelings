@@ -12,6 +12,7 @@ Complete the Pod manifest named 'init-service-demo'.
 # I AM NOT DONE
 
 import yaml
+
 from kubelings.validator import validate_manifest
 
 POD_MANIFEST = """

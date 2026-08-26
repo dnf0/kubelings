@@ -17,6 +17,7 @@ Complete the Pod manifest below:
 # I AM NOT DONE
 
 import yaml
+
 from kubelings.validator import validate_manifest
 
 POD_MANIFEST = """

@@ -15,9 +15,11 @@ This enables rolling back failed deployments (`kubectl rollout undo`).
 
 # I AM NOT DONE
 
-from typing import Any, Dict, List
 import copy  # noqa: F401
+from typing import Any, Dict, List
+
 import yaml
+
 from kubelings.validator import validate_manifest
 
 DEPLOYMENT_MANIFEST = """

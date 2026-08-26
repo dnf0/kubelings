@@ -53,6 +53,7 @@ Define a CustomResourceDefinition 'backups.backup.example.com':
 # I AM NOT DONE
 
 import yaml
+
 from kubelings.validator import validate_manifest
 
 CRD_MANIFEST = """

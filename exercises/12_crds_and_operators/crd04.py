@@ -38,7 +38,9 @@ the operation with custom status codes and messages.
 # I AM NOT DONE
 
 from typing import Any, Dict
+
 import yaml
+
 from kubelings.validator import validate_manifest
 
 WEBHOOK_CONFIG_MANIFEST = """

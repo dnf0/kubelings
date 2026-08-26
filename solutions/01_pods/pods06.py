@@ -6,6 +6,7 @@ Reference Solution
 """
 
 import yaml
+
 from kubelings.validator import validate_manifest
 
 PDB_MANIFEST = """

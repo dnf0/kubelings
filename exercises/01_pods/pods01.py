@@ -10,6 +10,7 @@ running nginx:alpine on container port 80 with label 'app: web'.
 # I AM NOT DONE
 
 import yaml
+
 from kubelings.validator import validate_manifest
 
 POD_MANIFEST = """

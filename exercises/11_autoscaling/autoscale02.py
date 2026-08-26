@@ -32,6 +32,7 @@ and scale-down independently.
 # I AM NOT DONE
 
 import yaml
+
 from kubelings.validator import validate_manifest
 
 HPA_MANIFEST = """

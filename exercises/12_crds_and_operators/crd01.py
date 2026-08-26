@@ -48,6 +48,7 @@ resource created complies with type and constraint specifications.
 # I AM NOT DONE
 
 import yaml
+
 from kubelings.validator import validate_manifest
 
 CRD_MANIFEST = """
