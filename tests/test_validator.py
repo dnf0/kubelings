@@ -348,6 +348,37 @@ def test_validate_manifest_workload_spec_errors():
             }
         )
 
+    # Deployment empty selector
+    with pytest.raises(ManifestValidationError, match="matchLabels"):
+        validate_manifest(
+            {
+                "apiVersion": "apps/v1",
+                "kind": "Deployment",
+                "metadata": {"name": "d"},
+                "spec": {
+                    "selector": {},
+                    "template": {"spec": {"containers": [{"name": "c", "image": "img"}]}},
+                },
+            }
+        )
+
+    # Deployment selector label mismatch with template
+    with pytest.raises(ManifestValidationError, match="labels in Deployment must match"):
+        validate_manifest(
+            {
+                "apiVersion": "apps/v1",
+                "kind": "Deployment",
+                "metadata": {"name": "d"},
+                "spec": {
+                    "selector": {"matchLabels": {"app": "web"}},
+                    "template": {
+                        "metadata": {"labels": {"app": "different"}},
+                        "spec": {"containers": [{"name": "c", "image": "img"}]},
+                    },
+                },
+            }
+        )
+
     # StatefulSet missing serviceName
     with pytest.raises(ManifestValidationError, match="serviceName"):
         validate_manifest(
@@ -357,7 +388,10 @@ def test_validate_manifest_workload_spec_errors():
                 "metadata": {"name": "sts"},
                 "spec": {
                     "selector": {"matchLabels": {"app": "a"}},
-                    "template": {"spec": {"containers": [{"name": "c", "image": "img"}]}},
+                    "template": {
+                        "metadata": {"labels": {"app": "a"}},
+                        "spec": {"containers": [{"name": "c", "image": "img"}]},
+                    },
                 },
             }
         )
@@ -451,7 +485,10 @@ def test_validate_manifests_multi_document():
         "metadata": {"name": "my-deploy"},
         "spec": {
             "selector": {"matchLabels": {"app": "app"}},
-            "template": {"spec": {"containers": [{"name": "app", "image": "app:v1"}]}},
+            "template": {
+                "metadata": {"labels": {"app": "app"}},
+                "spec": {"containers": [{"name": "app", "image": "app:v1"}]},
+            },
         },
     }
     assert validate_manifests([doc1, doc2], expected_kinds=["Service", "Deployment"]) is True

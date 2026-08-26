@@ -126,20 +126,6 @@ def validate_manifest(
         if not isinstance(spec, dict):
             raise ManifestValidationError(f"Manifest 'spec' must be a dictionary for {kind}.")
 
-        if kind in ("Deployment", "StatefulSet", "DaemonSet", "ReplicaSet"):
-            selector = spec.get("selector")
-            if not isinstance(selector, dict):
-                raise ManifestValidationError(
-                    f"Manifest 'spec.selector' must be a dictionary for {kind}."
-                )
-
-        if kind == "StatefulSet":
-            service_name = spec.get("serviceName")
-            if not service_name or not isinstance(service_name, str) or not service_name.strip():
-                raise ManifestValidationError(
-                    "StatefulSet must define a non-empty string 'spec.serviceName'."
-                )
-
         template = spec.get("template")
         if not isinstance(template, dict):
             raise ManifestValidationError(
@@ -151,6 +137,37 @@ def validate_manifest(
                 f"Manifest 'spec.template.spec' must be a dictionary for {kind}."
             )
         _validate_pod_spec(template_spec, "spec.template.spec")
+
+        if kind in ("Deployment", "StatefulSet", "DaemonSet", "ReplicaSet"):
+            selector = spec.get("selector")
+            if not isinstance(selector, dict):
+                raise ManifestValidationError(
+                    f"Manifest 'spec.selector' must be a dictionary for {kind}."
+                )
+            match_labels = selector.get("matchLabels")
+            match_expressions = selector.get("matchExpressions")
+            if not match_labels and not match_expressions:
+                raise ManifestValidationError(
+                    f"Manifest 'spec.selector' for {kind} must define 'matchLabels' or 'matchExpressions'."
+                )
+            if isinstance(match_labels, dict):
+                template_meta = template.get("metadata") or {}
+                template_labels = (
+                    template_meta.get("labels") if isinstance(template_meta, dict) else {}
+                )
+                if not isinstance(template_labels, dict) or not all(
+                    template_labels.get(k) == v for k, v in match_labels.items()
+                ):
+                    raise ManifestValidationError(
+                        f"Pod template labels in {kind} must match 'spec.selector.matchLabels'."
+                    )
+
+        if kind == "StatefulSet":
+            service_name = spec.get("serviceName")
+            if not service_name or not isinstance(service_name, str) or not service_name.strip():
+                raise ManifestValidationError(
+                    "StatefulSet must define a non-empty string 'spec.serviceName'."
+                )
 
     elif kind == "CronJob":
         spec = manifest.get("spec")
@@ -191,11 +208,7 @@ def validate_manifest(
                 if not isinstance(p, dict):
                     raise ManifestValidationError("Each service port must be a dictionary.")
                 port_val = p.get("port")
-                if (
-                    type(port_val) is not int
-                    or isinstance(port_val, bool)
-                    or not (1 <= port_val <= 65535)
-                ):
+                if type(port_val) is not int or not (1 <= port_val <= 65535):
                     raise ManifestValidationError(
                         "Each service port must define an integer 'port' between 1 and 65535."
                     )

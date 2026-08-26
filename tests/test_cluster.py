@@ -81,6 +81,32 @@ def test_cluster_detector_ephemeral_namespace_lifecycle():
         assert mock_api_instance.delete_namespace.called
 
 
+def test_cluster_detector_custom_prefix_roundtrip():
+    mock_contexts = ([{"name": "kind-test"}], {"name": "kind-test"})
+    with (
+        patch("kubernetes.config.list_kube_config_contexts", return_value=mock_contexts),
+        patch("kubernetes.config.load_kube_config"),
+        patch("kubernetes.client.CoreV1Api") as mock_core_api_class,
+    ):
+        mock_api_instance = MagicMock()
+        mock_core_api_class.return_value = mock_api_instance
+
+        detector = ClusterDetector()
+        # Custom prefix without "kubelings-" prefix should be prefixed and DNS-1123 sanitized
+        ns_name = detector.create_ephemeral_namespace(prefix="exercise-01")
+        assert ns_name is not None
+        assert ns_name.startswith("kubelings-exercise-01-")
+
+        # Complex prefix with spaces/capitals/symbols
+        ns_name_dirty = detector.create_ephemeral_namespace(prefix="My Test_NS!!")
+        assert ns_name_dirty is not None
+        assert ns_name_dirty.startswith("kubelings-my-test-ns-")
+
+        # Custom prefix should clean up properly
+        assert detector.cleanup_namespace(ns_name) is True
+        assert detector.cleanup_namespace(ns_name_dirty) is True
+
+
 def test_cluster_detector_cleanup_guard_against_non_ephemeral_namespaces():
     mock_contexts = ([{"name": "kind-test"}], {"name": "kind-test"})
     with (
@@ -94,8 +120,10 @@ def test_cluster_detector_cleanup_guard_against_non_ephemeral_namespaces():
         detector = ClusterDetector()
         # Refuse to delete system or default namespaces
         assert detector.cleanup_namespace("default") is False
+        assert "Refusing to delete" in (detector.last_error or "")
         assert detector.cleanup_namespace("kube-system") is False
         assert detector.cleanup_namespace("") is False
+        assert detector.cleanup_namespace("kubelings-test-abc\n") is False
         assert not mock_api_instance.delete_namespace.called
 
 

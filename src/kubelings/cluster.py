@@ -1,12 +1,12 @@
 """Kubernetes Cluster Detection and Ephemeral Test Environment Adapter."""
 
 import re
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Set
 import uuid
 
 # Ephemeral namespace prefix and regex pattern for safety
 DEFAULT_EPHEMERAL_PREFIX = "kubelings-test"
-EPHEMERAL_NAMESPACE_PATTERN = re.compile(r"^kubelings-(test-)?[a-z0-9-]+$")
+EPHEMERAL_NAMESPACE_PATTERN = re.compile(r"^kubelings-[a-z0-9-]+\Z")
 
 LOCAL_PROVIDER_REGEX = re.compile(
     r"(^|[-_./])(kind|minikube|k3d|k3s|docker-desktop|orbstack|microk8s|colima)([-_./]|$)",
@@ -20,6 +20,7 @@ class ClusterDetector:
     def __init__(self) -> None:
         self._cached_status: Optional[Dict[str, Any]] = None
         self.last_error: Optional[str] = None
+        self._created_namespaces: Set[str] = set()
 
     def get_cluster_status(self, refresh: bool = False) -> Dict[str, Any]:
         """Detect and return the active Kubernetes cluster status.
@@ -88,18 +89,23 @@ class ClusterDetector:
         if not self.is_cluster_available():
             return None
 
-        # Sanitize prefix to be lowercase DNS-1123 compliant
-        clean_prefix = prefix.lower().strip()
-        if not clean_prefix:
-            clean_prefix = DEFAULT_EPHEMERAL_PREFIX
-
+        self.last_error = None
         try:
+            # Sanitize prefix to be lowercase DNS-1123 compliant and kubelings-prefixed
+            raw = "" if prefix is None else str(prefix)
+            clean = re.sub(r"[^a-z0-9-]+", "-", raw.lower()).strip("-")
+            if not clean.startswith("kubelings-"):
+                clean = f"kubelings-{clean}".strip("-")
+            if clean == "kubelings" or not clean:
+                clean = DEFAULT_EPHEMERAL_PREFIX
+            clean = clean[:54]
+
             from kubernetes import client, config
 
             config.load_kube_config()
             v1 = client.CoreV1Api()
 
-            ns_name = f"{clean_prefix}-{uuid.uuid4().hex[:8]}"
+            ns_name = f"{clean}-{uuid.uuid4().hex[:8]}"
             body = client.V1Namespace(
                 metadata=client.V1ObjectMeta(
                     name=ns_name,
@@ -110,6 +116,7 @@ class ClusterDetector:
                 )
             )
             v1.create_namespace(body=body, _request_timeout=request_timeout)
+            self._created_namespaces.add(ns_name)
             return ns_name
         except Exception as exc:
             self.last_error = str(exc)
@@ -119,7 +126,7 @@ class ClusterDetector:
         """Clean up an ephemeral test namespace safely.
 
         Only namespaces matching the kubelings ephemeral naming convention
-        (e.g., starting with 'kubelings-') are permitted to prevent accidental
+        (e.g., matching 'kubelings-*') are permitted to prevent accidental
         deletion of system or user namespaces (e.g. 'default', 'kube-system').
 
         Args:
@@ -132,8 +139,9 @@ class ClusterDetector:
         if not self.is_cluster_available() or not namespace:
             return False
 
-        # Enforce safety guard on namespace name
-        if not EPHEMERAL_NAMESPACE_PATTERN.match(namespace):
+        self.last_error = None
+        # Enforce strict fullmatch safety guard on namespace name
+        if not EPHEMERAL_NAMESPACE_PATTERN.fullmatch(namespace):
             self.last_error = (
                 f"Refusing to delete non-ephemeral namespace '{namespace}'. "
                 "Only namespaces matching 'kubelings-*' can be deleted."
@@ -146,6 +154,7 @@ class ClusterDetector:
             config.load_kube_config()
             v1 = client.CoreV1Api()
             v1.delete_namespace(name=namespace, _request_timeout=request_timeout)
+            self._created_namespaces.discard(namespace)
             return True
         except Exception as exc:
             self.last_error = str(exc)
