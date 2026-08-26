@@ -31,6 +31,8 @@ dev = [
     "ruff>=0.4.0",
     "pyright>=1.1.350",
     "pre-commit>=3.7.0",
+    "commitizen>=3.20.0",
+    "python-semantic-release>=9.8.0",
     "tomli>=2.0.0; python_version < '3.11'",
 ]
 
@@ -69,4 +71,87 @@ typeCheckingMode = "basic"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
+
+[tool.semantic_release]
+assets = []
+build_command_env = []
+commit_message = "chore: v{version} [release]"
+commit_parser = "angular"
+logging_use_named_masks = false
+major_on_zero = true
+allow_zero_version = true
+no_git_verify = false
+tag_format = "v{version}"
+version_toml = ["pyproject.toml:project.version"]
+version_variables = ["src/kubelings/__init__.py:__version__"]
+
+[tool.semantic_release.branches.main]
+match = "(main)"
+prerelease_token = "rc"
+prerelease = false
+
+[tool.semantic_release.changelog]
+template_dir = "templates"
+changelog_file = "CHANGELOG.md"
+exclude_commit_patterns = []
+
+[tool.semantic_release.commit_author]
+env = "GIT_COMMIT_AUTHOR"
+default = "semantic-release <semantic-release>"
+
+[tool.semantic_release.commit_parser_options]
+allowed_tags = ["chore", "ci", "docs", "feat", "fix", "perf", "style", "refactor", "test", "revert"]
+minor_tags = ["feat"]
+patch_tags = ["chore", "fix", "perf", "style", "refactor", "revert"]
+default_bump_level = 0
+
+[tool.semantic_release.publish]
+upload_to_vcs_release = true
+
+[tool.commitizen]
+name = "cz_customize"
+version = "0.1.0"
+tag_format = "v$version"
+version_files = [
+    "pyproject.toml:project.version",
+    "src/kubelings/__init__.py:__version__",
+]
+update_changelog_on_bump = true
+allowed_types = ["chore", "ci", "docs", "feat", "fix", "perf", "style", "refactor", "test", "revert"]
+
+[tool.commitizen.customize]
+message_template = "{{type}}{% if scope %}({{scope}}){% endif %}: {{subject}}"
+example = "feat: add new feature"
+schema = "<type>(<scope>): <subject>"
+bump_pattern = "^(feat|fix|perf|refactor|test)?(BREAKING CHANGE)?"
+bump_map = {"BREAKING CHANGE" = "MAJOR", "feat" = "MINOR", "fix" = "PATCH", "perf" = "PATCH", "refactor" = "PATCH", "test" = "PATCH"}
+info = "Commitizen uses the conventional commits format."
+
+[[tool.commitizen.customize.questions]]
+type = "list"
+name = "type"
+message = "Select the type of change you are committing"
+choices = [
+    {value = "chore", name = "chore: Build process or auxiliary tool changes"},
+    {value = "ci", name = "ci: CI related changes"},
+    {value = "docs", name = "docs: Documentation only changes"},
+    {value = "feat", name = "feat: A new feature"},
+    {value = "fix", name = "fix: A bug fix"},
+    {value = "perf", name = "perf: Performance improvements"},
+    {value = "style", name = "style: Formatting, missing semi colons, etc"},
+    {value = "refactor", name = "refactor: Code change that neither fixes a bug nor adds a feature"},
+    {value = "test", name = "test: Adding missing tests"},
+    {value = "revert", name = "revert: Revert to a commit"}
+]
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "scope"
+message = "What is the scope of this change? (class or file name): (press enter to skip)"
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "subject"
+message = "Write a short description of the change:"
+
 

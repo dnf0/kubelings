@@ -1,0 +1,75 @@
+name: Kubelings Semantic Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  bump-version:
+    name: Bump Version & Changelog
+    if: ${{ ! endsWith(github.event.head_commit.message, '[release]') }}
+    runs-on: ubuntu-latest
+    concurrency: release
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.DEPLOY_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Python Semantic Release
+        uses: python-semantic-release/python-semantic-release@v9.8.6
+        with:
+          github_token: ${{ secrets.DEPLOY_TOKEN || secrets.GITHUB_TOKEN }}
+          git_committer_email: "daniel.fisher@climate-x.com"
+          git_committer_name: "Daniel Fisher"
+
+  release:
+    name: Build & Publish to PyPI
+    runs-on: ubuntu-latest
+    if: ${{ endsWith(github.event.head_commit.message, '[release]') }}
+    environment:
+      name: pypi
+      url: https://pypi.org/p/kubelings
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Build sdist and wheel
+        run: uv build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
+
+      - name: Upload Artifacts to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
