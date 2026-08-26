@@ -40,11 +40,13 @@ def triage_events(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             count = e.get("count", 1)
             reason = e.get("reason", "")
             if count >= 3 or reason in critical_reasons:
-                filtered.append({
-                    "reason": reason,
-                    "message": e.get("message", ""),
-                    "count": count,
-                })
+                filtered.append(
+                    {
+                        "reason": reason,
+                        "message": e.get("message", ""),
+                        "count": count,
+                    }
+                )
     # Sort descending by count
     filtered.sort(key=lambda x: x["count"], reverse=True)
     return filtered
@@ -73,8 +75,18 @@ def verify():
         {"type": "Normal", "reason": "Scheduled", "message": "Successfully assigned", "count": 1},
         {"type": "Warning", "reason": "Unhealthy", "message": "Liveness probe failed", "count": 2},
         {"type": "Warning", "reason": "FailedMount", "message": "Volume not ready", "count": 1},
-        {"type": "Warning", "reason": "BackOff", "message": "Back-off restarting failed container", "count": 7},
-        {"type": "Warning", "reason": "FailedScheduling", "message": "0/3 nodes available", "count": 5},
+        {
+            "type": "Warning",
+            "reason": "BackOff",
+            "message": "Back-off restarting failed container",
+            "count": 7,
+        },
+        {
+            "type": "Warning",
+            "reason": "FailedScheduling",
+            "message": "0/3 nodes available",
+            "count": 5,
+        },
     ]
     triaged = triage_events(sample_events)
     assert len(triaged) == 3, f"Expected 3 triaged events, got {len(triaged)}"

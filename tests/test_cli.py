@@ -137,7 +137,9 @@ def test_cli_verify_command(tmp_path: Path):
 
     ex1 = Exercise(name="pods01", title="First Pod", path=str(ex1_file), chapter_name="01_pods")
     ex2 = Exercise(name="pods02", title="Sidecar", path=str(ex2_file), chapter_name="01_pods")
-    ch = Chapter(number=1, name="01_pods", title="Pods", description="Core Pods", exercises=[ex1, ex2])
+    ch = Chapter(
+        number=1, name="01_pods", title="Pods", description="Core Pods", exercises=[ex1, ex2]
+    )
     test_manifest = Manifest(chapters=[ch])
 
     with patch("kubelings.cli.get_manifest", return_value=test_manifest):
@@ -158,7 +160,11 @@ def test_cli_cluster_command_offline_mode():
         result = runner.invoke(app, ["cluster"])
         assert result.exit_code == 0
         assert "Cluster Status" in result.stdout or "Cluster" in result.stdout
-        assert "offline" in result.stdout.lower() or "not detected" in result.stdout.lower() or "none" in result.stdout.lower()
+        assert (
+            "offline" in result.stdout.lower()
+            or "not detected" in result.stdout.lower()
+            or "none" in result.stdout.lower()
+        )
 
 
 def test_cli_cluster_command_online_mode():

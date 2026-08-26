@@ -120,9 +120,8 @@ class ExerciseRunner:
                 if isinstance(exc.stderr, bytes)
                 else (exc.stderr or "")
             )
-            error_details = (
-                f"Exercise timed out after {timeout_sec} seconds"
-                + (f":\n{stderr_str}" if stderr_str else "")
+            error_details = f"Exercise timed out after {timeout_sec} seconds" + (
+                f":\n{stderr_str}" if stderr_str else ""
             )
             return RunResult(
                 exercise=exercise,

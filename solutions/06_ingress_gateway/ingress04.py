@@ -58,10 +58,7 @@ def calculate_canary_traffic_split(http_route: Dict[str, Any]) -> Dict[str, floa
     if total_weight == 0:
         return {}
 
-    return {
-        b["name"]: round((b.get("weight", 1) / total_weight) * 100.0, 2)
-        for b in backends
-    }
+    return {b["name"]: round((b.get("weight", 1) / total_weight) * 100.0, 2) for b in backends}
 
 
 def verify():

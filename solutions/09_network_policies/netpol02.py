@@ -56,7 +56,8 @@ def check_ingress_allowed(
         port_matched = True
         if ports:
             port_matched = any(
-                p.get("port") == destination_port and p.get("protocol", "TCP").upper() == protocol.upper()
+                p.get("port") == destination_port
+                and p.get("protocol", "TCP").upper() == protocol.upper()
                 for p in ports
             )
 
@@ -80,7 +81,9 @@ def check_ingress_allowed(
             ns_matches = True
             if ns_sel is not None:
                 match_labels = ns_sel.get("matchLabels", {})
-                ns_matches = all(source_namespace_labels.get(k) == v for k, v in match_labels.items())
+                ns_matches = all(
+                    source_namespace_labels.get(k) == v for k, v in match_labels.items()
+                )
 
             if pod_matches and ns_matches:
                 return True
@@ -91,7 +94,9 @@ def check_ingress_allowed(
 def verify():
     manifest = yaml.safe_load(POLICY_MANIFEST)
     assert manifest is not None, "Manifest cannot be empty"
-    validate_manifest(manifest, expected_kind="NetworkPolicy", expected_api_version="networking.k8s.io/v1")
+    validate_manifest(
+        manifest, expected_kind="NetworkPolicy", expected_api_version="networking.k8s.io/v1"
+    )
 
     assert manifest["metadata"]["name"] == "allow-database-ingress"
     assert manifest["metadata"]["namespace"] == "production"
@@ -109,7 +114,10 @@ def verify():
     assert r1["ports"][0]["protocol"] == "TCP"
 
     r2 = ingress_rules[1]
-    assert r2["from"][0]["namespaceSelector"]["matchLabels"]["kubernetes.io/metadata.name"] == "monitoring"
+    assert (
+        r2["from"][0]["namespaceSelector"]["matchLabels"]["kubernetes.io/metadata.name"]
+        == "monitoring"
+    )
     assert r2["ports"][0]["port"] == 9187
     assert r2["ports"][0]["protocol"] == "TCP"
 
@@ -126,9 +134,15 @@ def verify():
 
     # Denied cases
     assert check_ingress_allowed(manifest, backend_pod, prod_ns, 8080, "TCP") is False, "Wrong port"
-    assert check_ingress_allowed(manifest, backend_pod, prod_ns, 5432, "UDP") is False, "Wrong protocol"
-    assert check_ingress_allowed(manifest, unauthorized_pod, prod_ns, 5432, "TCP") is False, "Unauthorized pod label"
-    assert check_ingress_allowed(manifest, mon_pod, prod_ns, 9187, "TCP") is False, "Wrong namespace for monitoring port"
+    assert check_ingress_allowed(manifest, backend_pod, prod_ns, 5432, "UDP") is False, (
+        "Wrong protocol"
+    )
+    assert check_ingress_allowed(manifest, unauthorized_pod, prod_ns, 5432, "TCP") is False, (
+        "Unauthorized pod label"
+    )
+    assert check_ingress_allowed(manifest, mon_pod, prod_ns, 9187, "TCP") is False, (
+        "Wrong namespace for monitoring port"
+    )
 
     print("✓ netpol02 passed!")
 

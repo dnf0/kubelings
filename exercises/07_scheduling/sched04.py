@@ -79,13 +79,17 @@ def verify():
     # Test taint checker
     h100_taints = [{"key": "gpu-type", "value": "h100", "effect": "NoSchedule"}]
     a100_taints = [{"key": "gpu-type", "value": "a100", "effect": "NoSchedule"}]
-    unreachable_taints = [{"key": "node.kubernetes.io/unreachable", "value": "true", "effect": "NoExecute"}]
+    unreachable_taints = [
+        {"key": "node.kubernetes.io/unreachable", "value": "true", "effect": "NoExecute"}
+    ]
     no_taints = []
 
     assert can_schedule_on_tainted_node(tolerations, h100_taints) is True
     assert can_schedule_on_tainted_node(tolerations, no_taints) is True
     assert can_schedule_on_tainted_node(tolerations, unreachable_taints) is True
-    assert can_schedule_on_tainted_node(tolerations, a100_taints) is False, "A100 taint not tolerated"
+    assert can_schedule_on_tainted_node(tolerations, a100_taints) is False, (
+        "A100 taint not tolerated"
+    )
 
     print("✓ sched04 passed!")
 

@@ -87,7 +87,9 @@ def verify():
         "metadata": {"name": "priv-pod"},
         "spec": {
             "hostNetwork": True,
-            "containers": [{"name": "app", "image": "busybox", "securityContext": {"privileged": True}}],
+            "containers": [
+                {"name": "app", "image": "busybox", "securityContext": {"privileged": True}}
+            ],
         },
     }
 
@@ -106,14 +108,16 @@ def verify():
         "metadata": {"name": "rest-pod"},
         "spec": {
             "securityContext": {"runAsNonRoot": True},
-            "containers": [{
-                "name": "app",
-                "image": "busybox",
-                "securityContext": {
-                    "allowPrivilegeEscalation": False,
-                    "capabilities": {"drop": ["ALL"]},
-                },
-            }],
+            "containers": [
+                {
+                    "name": "app",
+                    "image": "busybox",
+                    "securityContext": {
+                        "allowPrivilegeEscalation": False,
+                        "capabilities": {"drop": ["ALL"]},
+                    },
+                }
+            ],
         },
     }
 

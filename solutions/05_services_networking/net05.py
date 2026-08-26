@@ -49,7 +49,9 @@ def validate_endpoints_match_service(service: Dict[str, Any], endpoints: Dict[st
     if not svc_name or svc_name != ep_name:
         return False
 
-    svc_ports = {p.get("targetPort", p.get("port")) for p in service.get("spec", {}).get("ports", [])}
+    svc_ports = {
+        p.get("targetPort", p.get("port")) for p in service.get("spec", {}).get("ports", [])
+    }
     ep_ports = set()
     for subset in endpoints.get("subsets", []):
         for p in subset.get("ports", []):
@@ -60,7 +62,9 @@ def validate_endpoints_match_service(service: Dict[str, Any], endpoints: Dict[st
 
 def verify():
     manifests = list(yaml.safe_load_all(MANIFESTS))
-    assert len(manifests) == 3, "Must define 3 manifests (ExternalName Svc, Selectorless Svc, Endpoints)"
+    assert len(manifests) == 3, (
+        "Must define 3 manifests (ExternalName Svc, Selectorless Svc, Endpoints)"
+    )
     validate_manifests(manifests, expected_kinds=["Service", "Service", "Endpoints"])
 
     ext_svc, crm_svc, endpoints = manifests[0], manifests[1], manifests[2]

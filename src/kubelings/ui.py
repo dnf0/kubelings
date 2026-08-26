@@ -73,7 +73,9 @@ def render_result(result: RunResult, console: Optional[Console] = None) -> Panel
     renderables = []
 
     if result.passed:
-        title_text = f"[bold green]✓ PASSED[/bold green]: [bold white]{ex.name}[/bold white] — {ex.title}"
+        title_text = (
+            f"[bold green]✓ PASSED[/bold green]: [bold white]{ex.name}[/bold white] — {ex.title}"
+        )
         border_style = "green"
 
         summary = Text()
@@ -107,7 +109,9 @@ def render_result(result: RunResult, console: Optional[Console] = None) -> Panel
         subtitle = "[yellow]Remove '# I AM NOT DONE' when ready[/yellow]"
 
     else:
-        title_text = f"[bold red]✗ FAILED[/bold red]: [bold white]{ex.name}[/bold white] — {ex.title}"
+        title_text = (
+            f"[bold red]✗ FAILED[/bold red]: [bold white]{ex.name}[/bold white] — {ex.title}"
+        )
         border_style = "red"
 
         summary = Text()

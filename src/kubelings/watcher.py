@@ -124,9 +124,16 @@ class WatchEngine:
         """Render victory celebration when all curriculum exercises pass."""
         text = Text()
         text.append(VICTORY_BANNER.strip("\n"), style="bold green")
-        text.append("\n\nAll 13 chapters and 55 exercises have been verified successfully!\n", style="bold cyan")
-        text.append("You now have deep practical knowledge of Kubernetes core workloads,\n", style="white")
-        text.append("networking, storage, security, scheduling, CRDs, and troubleshooting.\n", style="white")
+        text.append(
+            "\n\nAll 13 chapters and 55 exercises have been verified successfully!\n",
+            style="bold cyan",
+        )
+        text.append(
+            "You now have deep practical knowledge of Kubernetes core workloads,\n", style="white"
+        )
+        text.append(
+            "networking, storage, security, scheduling, CRDs, and troubleshooting.\n", style="white"
+        )
 
         panel = Panel(
             text,
@@ -285,7 +292,9 @@ def run_watch_loop(
     # Initial evaluation of the first incomplete exercise
     engine.evaluate_current()
 
-    target_dir = watch_dir or (Path.cwd() / "exercises" if (Path.cwd() / "exercises").exists() else Path.cwd())
+    target_dir = watch_dir or (
+        Path.cwd() / "exercises" if (Path.cwd() / "exercises").exists() else Path.cwd()
+    )
 
     try:
         if watch is not None:

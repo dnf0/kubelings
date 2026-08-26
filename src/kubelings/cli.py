@@ -53,7 +53,9 @@ app = typer.Typer(
 def version_callback(value: bool) -> None:
     """Print the version string when --version is passed."""
     if value:
-        console.print(f"[bold cyan]☸ Kubelings[/bold cyan] [bold magenta]v{__version__}[/bold magenta]")
+        console.print(
+            f"[bold cyan]☸ Kubelings[/bold cyan] [bold magenta]v{__version__}[/bold magenta]"
+        )
         raise typer.Exit()
 
 
@@ -90,7 +92,9 @@ def list_exercises() -> None:
         )
         for ex in ch.exercises:
             cluster_badge = " [yellow]⎈ cluster[/yellow]" if ex.requires_cluster else ""
-            console.print(f"  • [bold cyan]{ex.name:<16}[/bold cyan] : {ex.title} [dim]({ex.path})[/dim]{cluster_badge}")
+            console.print(
+                f"  • [bold cyan]{ex.name:<16}[/bold cyan] : {ex.title} [dim]({ex.path})[/dim]{cluster_badge}"
+            )
         console.print()
 
     console.print(
@@ -112,7 +116,9 @@ def hint(
     """Display progressive hints and architectural tips for an exercise."""
     ex = get_exercise_by_name(exercise_name)
     if not ex:
-        console.print(f"[bold red]Error:[/bold red] Exercise '{exercise_name}' not found in curriculum.")
+        console.print(
+            f"[bold red]Error:[/bold red] Exercise '{exercise_name}' not found in curriculum."
+        )
         raise typer.Exit(code=1)
 
     hint_idx = (hint_num - 1) if hint_num is not None else 0
@@ -126,7 +132,9 @@ def run_exercise(
     """Execute and evaluate a single exercise."""
     ex = get_exercise_by_name(exercise_name)
     if not ex:
-        console.print(f"[bold red]Error:[/bold red] Exercise '{exercise_name}' not found in curriculum.")
+        console.print(
+            f"[bold red]Error:[/bold red] Exercise '{exercise_name}' not found in curriculum."
+        )
         raise typer.Exit(code=1)
 
     runner = ExerciseRunner()
@@ -157,7 +165,9 @@ def verify_all() -> None:
     render_progress_table(manifest, results_map, console=console)
 
     if passed_count == total_count and total_count > 0:
-        console.print("\n[bold green]🎉 All curriculum exercises completed successfully![/bold green]\n")
+        console.print(
+            "\n[bold green]🎉 All curriculum exercises completed successfully![/bold green]\n"
+        )
     else:
         console.print(
             f"\n[bold cyan]Progress: {passed_count}/{total_count} exercises completed.[/bold cyan] "
@@ -175,7 +185,9 @@ def cluster_status() -> None:
     if status.get("available"):
         text.append("✓ Connected to active Kubernetes cluster!\n\n", style="bold green")
         text.append(f"Context:  [bold white]{status.get('context')}[/bold white]\n", style="cyan")
-        text.append(f"Provider: [bold white]{status.get('provider')}[/bold white]\n\n", style="cyan")
+        text.append(
+            f"Provider: [bold white]{status.get('provider')}[/bold white]\n\n", style="cyan"
+        )
         text.append(
             "Live cluster testing and ephemeral namespace provisioning are available for exercises.",
             style="dim white",
@@ -188,7 +200,10 @@ def cluster_status() -> None:
         )
     else:
         text.append("No active Kubernetes cluster detected.\n\n", style="bold yellow")
-        text.append("Kubelings is operating in [bold white]Offline Validation Mode[/bold white].\n", style="yellow")
+        text.append(
+            "Kubelings is operating in [bold white]Offline Validation Mode[/bold white].\n",
+            style="yellow",
+        )
         text.append(
             "All core manifest, schema, and API exercises run instantly using the offline engine.\n\n",
             style="dim white",
@@ -254,7 +269,9 @@ def test_solutions() -> None:
                     results_map[ex.name] = ExerciseRunner().run_exercise(sol_ex)
 
     render_progress_table(manifest, results_map, console=console)
-    console.print(f"\n[bold cyan]Solution Verification: {passed_count}/{total_count} passing.[/bold cyan]\n")
+    console.print(
+        f"\n[bold cyan]Solution Verification: {passed_count}/{total_count} passing.[/bold cyan]\n"
+    )
 
 
 if __name__ == "__main__":

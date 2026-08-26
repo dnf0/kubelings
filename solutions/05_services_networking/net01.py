@@ -27,7 +27,9 @@ spec:
 """
 
 
-def resolve_endpoint_target(service_manifest: Dict[str, Any], pod_manifest: Dict[str, Any]) -> Optional[int]:
+def resolve_endpoint_target(
+    service_manifest: Dict[str, Any], pod_manifest: Dict[str, Any]
+) -> Optional[int]:
     """Check if a pod matches the service selector and return the targetPort."""
     selector = service_manifest.get("spec", {}).get("selector", {})
     if not selector:
@@ -61,14 +63,11 @@ def verify():
     matching_pod = {
         "metadata": {
             "name": "backend-pod-1",
-            "labels": {"app": "backend", "tier": "api", "version": "v1.2"}
+            "labels": {"app": "backend", "tier": "api", "version": "v1.2"},
         }
     }
     non_matching_pod = {
-        "metadata": {
-            "name": "frontend-pod-1",
-            "labels": {"app": "frontend", "tier": "ui"}
-        }
+        "metadata": {"name": "frontend-pod-1", "labels": {"app": "frontend", "tier": "ui"}}
     }
 
     assert resolve_endpoint_target(manifest, matching_pod) == 8080

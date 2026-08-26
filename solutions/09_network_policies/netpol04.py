@@ -49,7 +49,9 @@ def is_ip_in_ipblock(ip_str: str, cidr_str: str, except_cidrs: List[str]) -> boo
 def verify():
     manifest = yaml.safe_load(POLICY_MANIFEST)
     assert manifest is not None, "Manifest cannot be empty"
-    validate_manifest(manifest, expected_kind="NetworkPolicy", expected_api_version="networking.k8s.io/v1")
+    validate_manifest(
+        manifest, expected_kind="NetworkPolicy", expected_api_version="networking.k8s.io/v1"
+    )
 
     assert manifest["metadata"]["name"] == "external-api-egress"
     assert manifest["metadata"]["namespace"] == "default"
@@ -73,8 +75,12 @@ def verify():
     # Test IPBlock checker logic
     assert is_ip_in_ipblock("192.168.0.50", "192.168.0.0/16", ["192.168.1.0/24"]) is True
     assert is_ip_in_ipblock("192.168.2.100", "192.168.0.0/16", ["192.168.1.0/24"]) is True
-    assert is_ip_in_ipblock("192.168.1.15", "192.168.0.0/16", ["192.168.1.0/24"]) is False, "Excluded by exception subnet"
-    assert is_ip_in_ipblock("10.0.0.1", "192.168.0.0/16", ["192.168.1.0/24"]) is False, "Outside CIDR"
+    assert is_ip_in_ipblock("192.168.1.15", "192.168.0.0/16", ["192.168.1.0/24"]) is False, (
+        "Excluded by exception subnet"
+    )
+    assert is_ip_in_ipblock("10.0.0.1", "192.168.0.0/16", ["192.168.1.0/24"]) is False, (
+        "Outside CIDR"
+    )
 
     print("✓ netpol04 passed!")
 

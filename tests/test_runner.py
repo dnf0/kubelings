@@ -46,10 +46,7 @@ def test_check_marker_present_and_absent(tmp_path: Path):
 def test_run_exercise_fails_when_marker_present(tmp_path: Path):
     """Test run_exercise fails when # I AM NOT DONE is present even if code exits with 0."""
     exercise_file = tmp_path / "ex01.py"
-    exercise_file.write_text(
-        "# I AM NOT DONE\n"
-        "print('Working on exercise')\n"
-    )
+    exercise_file.write_text("# I AM NOT DONE\nprint('Working on exercise')\n")
 
     exercise = Exercise(
         name="ex01",
@@ -73,9 +70,7 @@ def test_run_exercise_fails_when_marker_present(tmp_path: Path):
 def test_run_exercise_passes_when_marker_absent(tmp_path: Path):
     """Test run_exercise passes when marker is removed and execution exits 0."""
     exercise_file = tmp_path / "ex02.py"
-    exercise_file.write_text(
-        "print('All tests passed successfully!')\n"
-    )
+    exercise_file.write_text("print('All tests passed successfully!')\n")
 
     exercise = Exercise(
         name="ex02",
@@ -125,9 +120,7 @@ def test_run_exercise_assertion_error(tmp_path: Path):
 def test_run_exercise_syntax_error(tmp_path: Path):
     """Test run_exercise captures SyntaxError details and nonzero exit code."""
     exercise_file = tmp_path / "ex04.py"
-    exercise_file.write_text(
-        "def invalid_syntax(\n"
-    )
+    exercise_file.write_text("def invalid_syntax(\n")
 
     exercise = Exercise(
         name="ex04",
@@ -148,10 +141,7 @@ def test_run_exercise_syntax_error(tmp_path: Path):
 def test_run_exercise_timeout(tmp_path: Path):
     """Test run_exercise handles script execution timeout gracefully."""
     exercise_file = tmp_path / "ex05.py"
-    exercise_file.write_text(
-        "import time\n"
-        "time.sleep(10)\n"
-    )
+    exercise_file.write_text("import time\ntime.sleep(10)\n")
 
     exercise = Exercise(
         name="ex05",
@@ -361,17 +351,41 @@ def test_render_hint_empty_and_out_of_bounds():
 
 def test_render_progress_table():
     """Test render_progress_table displays chapters, exercises, and status badges."""
-    ex1 = Exercise(name="pods01", title="First Pod", path="exercises/01_pods/pods01.py", chapter_name="01_pods")
-    ex2 = Exercise(name="pods02", title="Multi Container", path="exercises/01_pods/pods02.py", chapter_name="01_pods")
-    ex3 = Exercise(name="ctrl01", title="ReplicaSet", path="exercises/02_controllers/ctrl01.py", chapter_name="02_controllers")
+    ex1 = Exercise(
+        name="pods01", title="First Pod", path="exercises/01_pods/pods01.py", chapter_name="01_pods"
+    )
+    ex2 = Exercise(
+        name="pods02",
+        title="Multi Container",
+        path="exercises/01_pods/pods02.py",
+        chapter_name="01_pods",
+    )
+    ex3 = Exercise(
+        name="ctrl01",
+        title="ReplicaSet",
+        path="exercises/02_controllers/ctrl01.py",
+        chapter_name="02_controllers",
+    )
 
-    ch1 = Chapter(number=1, name="01_pods", title="Pods", description="Pod basics", exercises=[ex1, ex2])
-    ch2 = Chapter(number=2, name="02_controllers", title="Controllers", description="Controller basics", exercises=[ex3])
+    ch1 = Chapter(
+        number=1, name="01_pods", title="Pods", description="Pod basics", exercises=[ex1, ex2]
+    )
+    ch2 = Chapter(
+        number=2,
+        name="02_controllers",
+        title="Controllers",
+        description="Controller basics",
+        exercises=[ex3],
+    )
     manifest = Manifest(chapters=[ch1, ch2])
 
     results_map = {
-        "pods01": RunResult(exercise=ex1, passed=True, has_not_done_marker=False, output="", exit_code=0),
-        "pods02": RunResult(exercise=ex2, passed=False, has_not_done_marker=True, output="", exit_code=0),
+        "pods01": RunResult(
+            exercise=ex1, passed=True, has_not_done_marker=False, output="", exit_code=0
+        ),
+        "pods02": RunResult(
+            exercise=ex2, passed=False, has_not_done_marker=True, output="", exit_code=0
+        ),
         # ctrl01 is not run yet (not in results_map)
     }
 

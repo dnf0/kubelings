@@ -58,11 +58,13 @@ def verify():
 
     env_map = {item["name"]: item["valueFrom"]["fieldRef"]["fieldPath"] for item in env_vars}
     assert env_map.get("MY_POD_NAME") == "metadata.name", "MY_POD_NAME must reference metadata.name"
-    assert (
-        env_map.get("MY_POD_NAMESPACE") == "metadata.namespace"
-    ), "MY_POD_NAMESPACE must reference metadata.namespace"
+    assert env_map.get("MY_POD_NAMESPACE") == "metadata.namespace", (
+        "MY_POD_NAMESPACE must reference metadata.namespace"
+    )
     assert env_map.get("MY_POD_IP") == "status.podIP", "MY_POD_IP must reference status.podIP"
-    assert env_map.get("MY_NODE_NAME") == "spec.nodeName", "MY_NODE_NAME must reference spec.nodeName"
+    assert env_map.get("MY_NODE_NAME") == "spec.nodeName", (
+        "MY_NODE_NAME must reference spec.nodeName"
+    )
 
     print("✓ pods05 passed!")
 

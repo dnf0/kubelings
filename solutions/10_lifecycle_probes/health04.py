@@ -38,7 +38,9 @@ def verify():
     validate_manifest(manifest, expected_kind="Pod", expected_api_version="v1")
 
     assert manifest["metadata"]["name"] == "graceful-web-pod"
-    assert manifest["spec"].get("terminationGracePeriodSeconds") == 60, "terminationGracePeriodSeconds must be 60"
+    assert manifest["spec"].get("terminationGracePeriodSeconds") == 60, (
+        "terminationGracePeriodSeconds must be 60"
+    )
 
     container = manifest["spec"]["containers"][0]
     assert container["name"] == "web-server"
@@ -49,7 +51,11 @@ def verify():
 
     # Verify postStart
     post_start = lifecycle.get("postStart", {})
-    assert post_start.get("exec", {}).get("command") == ["/bin/sh", "-c", "echo Ready > /var/log/started.log"]
+    assert post_start.get("exec", {}).get("command") == [
+        "/bin/sh",
+        "-c",
+        "echo Ready > /var/log/started.log",
+    ]
 
     # Verify preStop
     pre_stop = lifecycle.get("preStop", {})

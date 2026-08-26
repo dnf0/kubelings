@@ -39,7 +39,9 @@ def verify():
     assert manifest is not None, "Manifest cannot be empty"
     validate_manifest(manifest, expected_kind="Pod", expected_api_version="v1")
 
-    assert manifest["metadata"]["name"] == "log-collector-pod", "Pod name must be 'log-collector-pod'"
+    assert manifest["metadata"]["name"] == "log-collector-pod", (
+        "Pod name must be 'log-collector-pod'"
+    )
     container = manifest["spec"]["containers"][0]
     assert container["name"] == "collector"
     assert container["image"] == "busybox:1.36"

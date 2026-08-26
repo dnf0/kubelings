@@ -100,7 +100,9 @@ def verify():
 
     incompatible_sc = yaml.safe_load(yaml.dump(pvc))
     incompatible_sc["spec"]["storageClassName"] = "fast-ssd"
-    assert check_pvc_matches_pv(pv, incompatible_sc) is False, "PV should not satisfy mismatched storageClass"
+    assert check_pvc_matches_pv(pv, incompatible_sc) is False, (
+        "PV should not satisfy mismatched storageClass"
+    )
 
     print("✓ storage02 passed!")
 

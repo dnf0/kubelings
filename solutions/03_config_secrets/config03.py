@@ -47,10 +47,12 @@ def verify():
 
     # Verify base64 decoding function
     decoded = decode_secret_data(manifest)
-    assert decoded.get("username") == "admin", f"Decoded username must be 'admin', got {decoded.get('username')}"
-    assert (
-        decoded.get("password") == "supersecret"
-    ), f"Decoded password must be 'supersecret', got {decoded.get('password')}"
+    assert decoded.get("username") == "admin", (
+        f"Decoded username must be 'admin', got {decoded.get('username')}"
+    )
+    assert decoded.get("password") == "supersecret", (
+        f"Decoded password must be 'supersecret', got {decoded.get('password')}"
+    )
 
     print("✓ config03 passed!")
 

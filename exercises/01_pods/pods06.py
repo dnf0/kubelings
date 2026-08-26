@@ -34,7 +34,9 @@ spec:
 def verify():
     manifest = yaml.safe_load(PDB_MANIFEST)
     assert manifest is not None, "Manifest cannot be empty"
-    validate_manifest(manifest, expected_kind="PodDisruptionBudget", expected_api_version="policy/v1")
+    validate_manifest(
+        manifest, expected_kind="PodDisruptionBudget", expected_api_version="policy/v1"
+    )
 
     assert manifest["metadata"]["name"] == "web-pdb", "PDB name must be 'web-pdb'"
     assert manifest["spec"].get("minAvailable") == 2, "spec.minAvailable must equal 2"

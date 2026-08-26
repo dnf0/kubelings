@@ -37,7 +37,9 @@ roleRef:
 
 def verify():
     manifests = list(yaml.safe_load_all(MANIFESTS))
-    assert len(manifests) == 2, "Must contain exactly 2 manifests (ClusterRole and ClusterRoleBinding)"
+    assert len(manifests) == 2, (
+        "Must contain exactly 2 manifests (ClusterRole and ClusterRoleBinding)"
+    )
     validate_manifests(manifests, expected_kinds=["ClusterRole", "ClusterRoleBinding"])
 
     cr, crb = manifests[0], manifests[1]

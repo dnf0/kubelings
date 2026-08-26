@@ -119,8 +119,14 @@ def verify():
 
     # Node tests
     node_optimal = {"topology.kubernetes.io/zone": "us-east-1a", "instance-type": "c5.2xlarge"}
-    node_valid_unpreferred = {"topology.kubernetes.io/zone": "us-east-1b", "instance-type": "t3.medium"}
-    node_ineligible = {"topology.kubernetes.io/zone": "eu-central-1a", "instance-type": "c5.2xlarge"}
+    node_valid_unpreferred = {
+        "topology.kubernetes.io/zone": "us-east-1b",
+        "instance-type": "t3.medium",
+    }
+    node_ineligible = {
+        "topology.kubernetes.io/zone": "eu-central-1a",
+        "instance-type": "c5.2xlarge",
+    }
 
     assert evaluate_node_affinity_score(node_optimal, node_aff) == (True, 80)
     assert evaluate_node_affinity_score(node_valid_unpreferred, node_aff) == (True, 0)

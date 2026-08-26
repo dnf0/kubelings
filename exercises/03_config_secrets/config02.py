@@ -66,7 +66,9 @@ def verify():
     assert len(mounts) >= 1, "Must define volumeMounts in container"
     assert mounts[0]["name"] == "config-vol"
     assert mounts[0]["mountPath"] == "/etc/nginx/conf.d/default.conf"
-    assert mounts[0].get("subPath") == "default.conf", "volumeMount must specify subPath: 'default.conf'"
+    assert mounts[0].get("subPath") == "default.conf", (
+        "volumeMount must specify subPath: 'default.conf'"
+    )
 
     print("✓ config02 passed!")
 

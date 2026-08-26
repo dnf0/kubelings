@@ -39,7 +39,9 @@ def verify():
     init_c = init_containers[0]
     assert init_c["name"] == "init-db-wait", "Init container name must be 'init-db-wait'"
     assert init_c["image"] == "busybox:1.36", "Init container image must be 'busybox:1.36'"
-    assert "waiting for db" in str(init_c.get("command", "")), "Init command must contain 'waiting for db'"
+    assert "waiting for db" in str(init_c.get("command", "")), (
+        "Init command must contain 'waiting for db'"
+    )
 
     containers = manifest["spec"]["containers"]
     assert len(containers) == 1, "Must define exactly 1 main container"

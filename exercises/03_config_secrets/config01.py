@@ -56,9 +56,9 @@ def verify():
     c = pod["spec"]["containers"][0]
     env_from = c.get("envFrom", [])
     assert len(env_from) >= 1, "Must define envFrom"
-    assert (
-        env_from[0].get("configMapRef", {}).get("name") == "app-config"
-    ), "envFrom must reference app-config"
+    assert env_from[0].get("configMapRef", {}).get("name") == "app-config", (
+        "envFrom must reference app-config"
+    )
 
     # Pod env valueFrom validation
     env_list = c.get("env", [])

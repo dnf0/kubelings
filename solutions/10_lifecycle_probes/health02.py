@@ -69,7 +69,9 @@ def verify():
         {"ip": "10.244.3.20", "is_ready": False},
     ]
     active_endpoints = simulate_service_endpoints(fleet)
-    assert active_endpoints == ["10.244.1.10", "10.244.2.15"], f"Unexpected active endpoints: {active_endpoints}"
+    assert active_endpoints == ["10.244.1.10", "10.244.2.15"], (
+        f"Unexpected active endpoints: {active_endpoints}"
+    )
 
     print("✓ health02 passed!")
 

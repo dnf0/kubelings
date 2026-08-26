@@ -58,7 +58,9 @@ def verify():
 
     # Check nodeSelector
     node_sel = spec.get("nodeSelector", {})
-    assert node_sel.get("node-type") == "gpu-compute-node", "nodeSelector must target 'gpu-compute-node'"
+    assert node_sel.get("node-type") == "gpu-compute-node", (
+        "nodeSelector must target 'gpu-compute-node'"
+    )
 
     # Check tolerations
     tolerations = spec.get("tolerations", [])

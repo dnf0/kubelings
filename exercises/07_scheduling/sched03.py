@@ -81,7 +81,9 @@ def verify():
     node_with_web = [{"app": "web-frontend", "version": "1.0"}, {"tier": "backend"}]
     node_with_cache = [{"app": "redis-cache"}, {"tier": "backend"}]
 
-    assert can_coexist_on_host(node_with_web, manifest) is False, "Cannot co-locate on same host as another web-frontend"
+    assert can_coexist_on_host(node_with_web, manifest) is False, (
+        "Cannot co-locate on same host as another web-frontend"
+    )
     assert can_coexist_on_host(node_with_cache, manifest) is True
 
     print("✓ sched03 passed!")

@@ -44,9 +44,8 @@ def can_coexist_on_host(
 ) -> bool:
     """Check if placing the candidate pod violates host-level podAntiAffinity."""
     aff = pod_manifest.get("spec", {}).get("affinity", {})
-    anti_terms = (
-        aff.get("podAntiAffinity", {})
-        .get("requiredDuringSchedulingIgnoredDuringExecution", [])
+    anti_terms = aff.get("podAntiAffinity", {}).get(
+        "requiredDuringSchedulingIgnoredDuringExecution", []
     )
 
     for term in anti_terms:
@@ -77,7 +76,9 @@ def verify():
     node_with_web = [{"app": "web-frontend", "version": "1.0"}, {"tier": "backend"}]
     node_with_cache = [{"app": "redis-cache"}, {"tier": "backend"}]
 
-    assert can_coexist_on_host(node_with_web, manifest) is False, "Cannot co-locate on same host as another web-frontend"
+    assert can_coexist_on_host(node_with_web, manifest) is False, (
+        "Cannot co-locate on same host as another web-frontend"
+    )
     assert can_coexist_on_host(node_with_cache, manifest) is True
 
     print("✓ sched03 passed!")

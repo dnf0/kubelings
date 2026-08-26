@@ -77,7 +77,9 @@ def verify():
     assert scale_target.get("kind") == "Deployment"
     assert scale_target.get("name") == "order-consumer"
 
-    assert spec.get("minReplicaCount") == 0, "minReplicaCount must be 0 for scale-to-zero capability"
+    assert spec.get("minReplicaCount") == 0, (
+        "minReplicaCount must be 0 for scale-to-zero capability"
+    )
     assert spec.get("maxReplicaCount") == 30, "maxReplicaCount must be 30"
     assert spec.get("pollingInterval") == 15, "pollingInterval must be 15 seconds"
     assert spec.get("cooldownPeriod") == 300, "cooldownPeriod must be 300 seconds"

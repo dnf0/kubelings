@@ -58,7 +58,9 @@ def route_ingress_request(ingress_manifest: Dict[str, Any], host: str, path: str
             for p in paths:
                 prefix = p.get("path", "")
                 if path.startswith(prefix):
-                    matching_services.append((len(prefix), p.get("backend", {}).get("service", {}).get("name")))
+                    matching_services.append(
+                        (len(prefix), p.get("backend", {}).get("service", {}).get("name"))
+                    )
 
     if not matching_services:
         return None
@@ -71,7 +73,9 @@ def route_ingress_request(ingress_manifest: Dict[str, Any], host: str, path: str
 def verify():
     manifest = yaml.safe_load(INGRESS_MANIFEST)
     assert manifest is not None, "Manifest cannot be empty"
-    validate_manifest(manifest, expected_kind="Ingress", expected_api_version="networking.k8s.io/v1")
+    validate_manifest(
+        manifest, expected_kind="Ingress", expected_api_version="networking.k8s.io/v1"
+    )
 
     assert manifest["metadata"]["name"] == "api-gateway-ingress"
     assert manifest["spec"]["ingressClassName"] == "nginx"
@@ -82,7 +86,9 @@ def verify():
     # Verify routing simulator
     assert route_ingress_request(manifest, "api.example.com", "/v1/users") == "api-v1-service"
     assert route_ingress_request(manifest, "api.example.com", "/v2/products") == "api-v2-service"
-    assert route_ingress_request(manifest, "admin.example.com", "/dashboard") == "admin-portal-service"
+    assert (
+        route_ingress_request(manifest, "admin.example.com", "/dashboard") == "admin-portal-service"
+    )
     assert route_ingress_request(manifest, "unknown.example.com", "/") is None
 
     print("✓ ingress01 passed!")

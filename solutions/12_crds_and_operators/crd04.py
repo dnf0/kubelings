@@ -131,7 +131,10 @@ def verify():
             "object": {
                 "spec": {
                     "containers": [
-                        {"name": "app", "securityContext": {"privileged": True, "runAsNonRoot": True}}
+                        {
+                            "name": "app",
+                            "securityContext": {"privileged": True, "runAsNonRoot": True},
+                        }
                     ]
                 }
             },
@@ -146,13 +149,7 @@ def verify():
     bad_req_root = {
         "request": {
             "uid": "req-222",
-            "object": {
-                "spec": {
-                    "containers": [
-                        {"name": "app", "image": "nginx"}
-                    ]
-                }
-            },
+            "object": {"spec": {"containers": [{"name": "app", "image": "nginx"}]}},
         }
     }
     resp2 = handle_admission_review(bad_req_root)
@@ -168,7 +165,11 @@ def verify():
                 "spec": {
                     "securityContext": {"runAsNonRoot": True, "runAsUser": 10001},
                     "containers": [
-                        {"name": "app", "image": "nginx:alpine", "securityContext": {"allowPrivilegeEscalation": False}}
+                        {
+                            "name": "app",
+                            "image": "nginx:alpine",
+                            "securityContext": {"allowPrivilegeEscalation": False},
+                        }
                     ],
                 }
             },

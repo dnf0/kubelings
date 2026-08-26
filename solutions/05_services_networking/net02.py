@@ -48,7 +48,9 @@ def verify():
 
     assert manifest["metadata"]["name"] == "cassandra-headless"
     assert manifest["metadata"]["namespace"] == "databases"
-    assert manifest["spec"]["clusterIP"] == "None", "Headless service requires spec.clusterIP: 'None'"
+    assert manifest["spec"]["clusterIP"] == "None", (
+        "Headless service requires spec.clusterIP: 'None'"
+    )
     assert manifest["spec"]["selector"] == {"app": "cassandra"}
 
     port = manifest["spec"]["ports"][0]

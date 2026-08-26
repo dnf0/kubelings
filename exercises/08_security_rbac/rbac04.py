@@ -66,7 +66,9 @@ def verify():
     assert pod_sc.get("runAsUser") == 10001, "Pod runAsUser must be 10001"
     assert pod_sc.get("runAsGroup") == 10001, "Pod runAsGroup must be 10001"
     assert pod_sc.get("fsGroup") == 20001, "Pod fsGroup must be 20001"
-    assert pod_sc.get("seccompProfile", {}).get("type") == "RuntimeDefault", "seccompProfile must be RuntimeDefault"
+    assert pod_sc.get("seccompProfile", {}).get("type") == "RuntimeDefault", (
+        "seccompProfile must be RuntimeDefault"
+    )
 
     # Verify Container-level security context
     container = manifest["spec"]["containers"][0]
@@ -76,7 +78,9 @@ def verify():
 
     caps = c_sc.get("capabilities", {})
     assert caps.get("drop") == ["ALL"], "capabilities.drop must contain 'ALL'"
-    assert caps.get("add") == ["NET_BIND_SERVICE"], "capabilities.add must contain 'NET_BIND_SERVICE'"
+    assert caps.get("add") == ["NET_BIND_SERVICE"], (
+        "capabilities.add must contain 'NET_BIND_SERVICE'"
+    )
 
     print("✓ rbac04 passed!")
 

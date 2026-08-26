@@ -60,9 +60,9 @@ def test_exercise_files_exist_and_fail_initially(exercise_path: Path):
         timeout=10,
         env=env,
     )
-    assert (
-        proc.returncode != 0
-    ), f"Exercise {exercise_path} should fail initially, but returned exit code 0.\nOutput: {proc.stdout}\nError: {proc.stderr}"
+    assert proc.returncode != 0, (
+        f"Exercise {exercise_path} should fail initially, but returned exit code 0.\nOutput: {proc.stdout}\nError: {proc.stderr}"
+    )
 
 
 @pytest.mark.parametrize("solution_path", ALL_SOLUTION_FILES, ids=lambda p: p.name)
@@ -70,9 +70,9 @@ def test_solution_files_exist_and_pass(solution_path: Path):
     """Verify every reference solution exists, has NOT_DONE removed, and passes."""
     assert solution_path.exists(), f"Solution file missing: {solution_path}"
     content = solution_path.read_text(encoding="utf-8")
-    assert (
-        NOT_DONE_MARKER not in content
-    ), f"Solution {solution_path} must not contain '{NOT_DONE_MARKER}'"
+    assert NOT_DONE_MARKER not in content, (
+        f"Solution {solution_path} must not contain '{NOT_DONE_MARKER}'"
+    )
 
     # Running the solution directly via subprocess must pass with exit code 0
     env = os.environ.copy()
@@ -84,9 +84,9 @@ def test_solution_files_exist_and_pass(solution_path: Path):
         timeout=10,
         env=env,
     )
-    assert (
-        proc.returncode == 0
-    ), f"Solution {solution_path} failed with exit code {proc.returncode}.\nOutput: {proc.stdout}\nError: {proc.stderr}"
+    assert proc.returncode == 0, (
+        f"Solution {solution_path} failed with exit code {proc.returncode}.\nOutput: {proc.stdout}\nError: {proc.stderr}"
+    )
     assert "passed!" in proc.stdout, f"Solution {solution_path} did not print pass confirmation"
 
 

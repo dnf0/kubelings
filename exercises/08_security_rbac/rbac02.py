@@ -101,7 +101,9 @@ def verify():
     assert can_perform_action(rules, "", "pods", "create") is True
     assert can_perform_action(rules, "", "pods/log", "get") is True
     assert can_perform_action(rules, "apps", "deployments", "list") is True
-    assert can_perform_action(rules, "apps", "deployments", "delete") is False, "delete deployments not granted"
+    assert can_perform_action(rules, "apps", "deployments", "delete") is False, (
+        "delete deployments not granted"
+    )
     assert can_perform_action(rules, "", "secrets", "get") is False, "secrets not granted"
 
     # Wildcard test

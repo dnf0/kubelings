@@ -53,7 +53,9 @@ spec:
 def verify():
     manifest = yaml.safe_load(POLICY_MANIFEST)
     assert manifest is not None, "Manifest cannot be empty"
-    validate_manifest(manifest, expected_kind="NetworkPolicy", expected_api_version="networking.k8s.io/v1")
+    validate_manifest(
+        manifest, expected_kind="NetworkPolicy", expected_api_version="networking.k8s.io/v1"
+    )
 
     assert manifest["metadata"]["name"] == "allow-frontend-egress"
     assert manifest["metadata"]["namespace"] == "default"
@@ -67,7 +69,10 @@ def verify():
 
     # Rule 1: DNS
     r1 = egress_rules[0]
-    assert r1["to"][0]["namespaceSelector"]["matchLabels"]["kubernetes.io/metadata.name"] == "kube-system"
+    assert (
+        r1["to"][0]["namespaceSelector"]["matchLabels"]["kubernetes.io/metadata.name"]
+        == "kube-system"
+    )
     dns_ports = {(p["protocol"], p["port"]) for p in r1["ports"]}
     assert ("UDP", 53) in dns_ports, "DNS rule must allow UDP port 53"
     assert ("TCP", 53) in dns_ports, "DNS rule must allow TCP port 53"

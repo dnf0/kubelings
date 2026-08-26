@@ -53,7 +53,9 @@ def verify():
     validate_manifest(manifest, expected_kind="StatefulSet", expected_api_version="apps/v1")
 
     assert manifest["metadata"]["name"] == "redis-cluster"
-    assert manifest["spec"]["serviceName"] == "redis-headless", "serviceName must be 'redis-headless'"
+    assert manifest["spec"]["serviceName"] == "redis-headless", (
+        "serviceName must be 'redis-headless'"
+    )
     assert manifest["spec"]["replicas"] == 3, "Replicas must equal 3"
 
     vct = manifest["spec"].get("volumeClaimTemplates", [])

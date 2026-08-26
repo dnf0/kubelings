@@ -50,9 +50,9 @@ def verify():
     assert "replicas" not in manifest["spec"], "DaemonSet spec must NOT contain 'replicas'"
 
     pod_spec = manifest["spec"]["template"]["spec"]
-    assert pod_spec.get("nodeSelector") == {
-        "logging": "enabled"
-    }, "nodeSelector must be {'logging': 'enabled'}"
+    assert pod_spec.get("nodeSelector") == {"logging": "enabled"}, (
+        "nodeSelector must be {'logging': 'enabled'}"
+    )
 
     tolerations = pod_spec.get("tolerations", [])
     assert len(tolerations) == 1, "Must define control-plane toleration"

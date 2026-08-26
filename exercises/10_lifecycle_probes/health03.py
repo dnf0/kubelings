@@ -86,7 +86,9 @@ def verify():
     assert liveness.get("failureThreshold") == 3
 
     # Test budget calculation
-    assert calculate_max_startup_budget(startup) == 310, "Startup budget should be 10 + (10 * 30) = 310 seconds"
+    assert calculate_max_startup_budget(startup) == 310, (
+        "Startup budget should be 10 + (10 * 30) = 310 seconds"
+    )
 
     custom_probe = {"initialDelaySeconds": 5, "periodSeconds": 2, "failureThreshold": 10}
     assert calculate_max_startup_budget(custom_probe) == 25

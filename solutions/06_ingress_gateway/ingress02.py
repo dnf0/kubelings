@@ -96,11 +96,23 @@ def verify():
 
     # Test uncovered host
     bad_ing = yaml.safe_load(yaml.dump(ing))
-    bad_ing["spec"]["rules"].append({
-        "host": "unprotected.example.com",
-        "http": {"paths": [{"path": "/", "pathType": "Prefix", "backend": {"service": {"name": "app", "port": {"number": 80}}}}]}
-    })
-    assert verify_ingress_tls_coverage(bad_ing, sec) is False, "Should fail when rule host not listed in tls.hosts"
+    bad_ing["spec"]["rules"].append(
+        {
+            "host": "unprotected.example.com",
+            "http": {
+                "paths": [
+                    {
+                        "path": "/",
+                        "pathType": "Prefix",
+                        "backend": {"service": {"name": "app", "port": {"number": 80}}},
+                    }
+                ]
+            },
+        }
+    )
+    assert verify_ingress_tls_coverage(bad_ing, sec) is False, (
+        "Should fail when rule host not listed in tls.hosts"
+    )
 
     print("✓ ingress02 passed!")
 

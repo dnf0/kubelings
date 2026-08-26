@@ -61,7 +61,9 @@ def apply_rewrite_rule(path_regex: str, rewrite_template: str, request_path: str
 def verify():
     manifest = yaml.safe_load(INGRESS_MANIFEST)
     assert manifest is not None, "Manifest cannot be empty"
-    validate_manifest(manifest, expected_kind="Ingress", expected_api_version="networking.k8s.io/v1")
+    validate_manifest(
+        manifest, expected_kind="Ingress", expected_api_version="networking.k8s.io/v1"
+    )
 
     ann = manifest["metadata"]["annotations"]
     assert ann.get("nginx.ingress.kubernetes.io/rewrite-target") == "/$2"

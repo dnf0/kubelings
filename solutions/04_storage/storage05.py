@@ -52,7 +52,9 @@ def _parse_storage_str(val: str) -> int:
     return int(val)
 
 
-def validate_expansion_request(initial_size_str: str, new_size_str: str, allow_expansion: bool) -> bool:
+def validate_expansion_request(
+    initial_size_str: str, new_size_str: str, allow_expansion: bool
+) -> bool:
     """Determine if a PVC resize request is permissible."""
     if not allow_expansion:
         return False
@@ -64,7 +66,9 @@ def validate_expansion_request(initial_size_str: str, new_size_str: str, allow_e
 def verify():
     manifests = list(yaml.safe_load_all(MANIFESTS))
     assert len(manifests) == 3, "Must define 3 manifests (VolumeSnapshotClass, VolumeSnapshot, PVC)"
-    validate_manifests(manifests, expected_kinds=["VolumeSnapshotClass", "VolumeSnapshot", "PersistentVolumeClaim"])
+    validate_manifests(
+        manifests, expected_kinds=["VolumeSnapshotClass", "VolumeSnapshot", "PersistentVolumeClaim"]
+    )
 
     vsc, snap, pvc = manifests[0], manifests[1], manifests[2]
 
@@ -84,8 +88,12 @@ def verify():
     # Test expansion helper
     assert validate_expansion_request("10Gi", "20Gi", allow_expansion=True) is True
     assert validate_expansion_request("10Gi", "10Gi", allow_expansion=True) is False
-    assert validate_expansion_request("20Gi", "10Gi", allow_expansion=True) is False, "Cannot shrink volumes"
-    assert validate_expansion_request("10Gi", "20Gi", allow_expansion=False) is False, "Expansion disabled on StorageClass"
+    assert validate_expansion_request("20Gi", "10Gi", allow_expansion=True) is False, (
+        "Cannot shrink volumes"
+    )
+    assert validate_expansion_request("10Gi", "20Gi", allow_expansion=False) is False, (
+        "Expansion disabled on StorageClass"
+    )
 
     print("✓ storage05 passed!")
 

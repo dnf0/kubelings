@@ -39,15 +39,25 @@ def verify():
     sa, pod = manifests[0], manifests[1]
 
     # Check ServiceAccount
-    assert sa["metadata"]["name"] == "build-robot-sa", "ServiceAccount name must be 'build-robot-sa'"
-    assert sa["metadata"]["namespace"] == "ci-runners", "ServiceAccount namespace must be 'ci-runners'"
-    assert sa.get("automountServiceAccountToken") is False, "ServiceAccount automountServiceAccountToken must be False"
+    assert sa["metadata"]["name"] == "build-robot-sa", (
+        "ServiceAccount name must be 'build-robot-sa'"
+    )
+    assert sa["metadata"]["namespace"] == "ci-runners", (
+        "ServiceAccount namespace must be 'ci-runners'"
+    )
+    assert sa.get("automountServiceAccountToken") is False, (
+        "ServiceAccount automountServiceAccountToken must be False"
+    )
 
     # Check Pod
     assert pod["metadata"]["name"] == "build-worker-pod", "Pod name must be 'build-worker-pod'"
     assert pod["metadata"]["namespace"] == "ci-runners", "Pod namespace must be 'ci-runners'"
-    assert pod["spec"].get("serviceAccountName") == "build-robot-sa", "Pod serviceAccountName must be 'build-robot-sa'"
-    assert pod["spec"].get("automountServiceAccountToken") is False, "Pod automountServiceAccountToken must be False"
+    assert pod["spec"].get("serviceAccountName") == "build-robot-sa", (
+        "Pod serviceAccountName must be 'build-robot-sa'"
+    )
+    assert pod["spec"].get("automountServiceAccountToken") is False, (
+        "Pod automountServiceAccountToken must be False"
+    )
     assert pod["spec"]["containers"][0]["name"] == "runner"
     assert pod["spec"]["containers"][0]["image"] == "alpine:3.19"
 

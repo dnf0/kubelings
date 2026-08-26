@@ -56,9 +56,9 @@ def verify():
     validate_manifest(manifest, expected_kind="Deployment", expected_api_version="apps/v1")
 
     assert manifest["metadata"]["name"] == "versioned-app"
-    assert (
-        manifest["spec"].get("revisionHistoryLimit") == 5
-    ), "spec.revisionHistoryLimit must equal 5"
+    assert manifest["spec"].get("revisionHistoryLimit") == 5, (
+        "spec.revisionHistoryLimit must equal 5"
+    )
 
     # Simulate 8 updates with a history limit of 5
     images = [f"nginx:1.{v}" for v in range(20, 28)]  # 8 versions

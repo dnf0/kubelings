@@ -69,7 +69,9 @@ def verify():
 
     spec = manifest.get("spec", {})
     scale_target = spec.get("scaleTargetRef", {})
-    assert scale_target.get("apiVersion") == "apps/v1", "scaleTargetRef apiVersion must be 'apps/v1'"
+    assert scale_target.get("apiVersion") == "apps/v1", (
+        "scaleTargetRef apiVersion must be 'apps/v1'"
+    )
     assert scale_target.get("kind") == "Deployment", "scaleTargetRef kind must be 'Deployment'"
     assert scale_target.get("name") == "api-service", "scaleTargetRef name must be 'api-service'"
 
@@ -77,7 +79,9 @@ def verify():
     assert spec.get("maxReplicas") == 10, "maxReplicas must be 10"
 
     metrics = spec.get("metrics", [])
-    assert isinstance(metrics, list) and len(metrics) == 2, "Must specify exactly 2 resource metrics"
+    assert isinstance(metrics, list) and len(metrics) == 2, (
+        "Must specify exactly 2 resource metrics"
+    )
 
     cpu_metric = next((m for m in metrics if m.get("resource", {}).get("name") == "cpu"), None)
     assert cpu_metric is not None, "Must define CPU resource metric"

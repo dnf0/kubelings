@@ -58,7 +58,9 @@ def verify():
     assert c2["image"] == "busybox:1.36"
     assert c2["volumeMounts"][0]["name"] == "shared-logs"
     assert c2["volumeMounts"][0]["mountPath"] == "/var/log/shared"
-    assert c2["volumeMounts"][0].get("readOnly") is True, "Sidecar volumeMount must be readOnly: true"
+    assert c2["volumeMounts"][0].get("readOnly") is True, (
+        "Sidecar volumeMount must be readOnly: true"
+    )
 
     print("✓ pods02 passed!")
 
