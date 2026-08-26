@@ -377,7 +377,7 @@ git commit --no-gpg-sign -m "feat: implement curriculum manifest and data models
 - Test: `tests/test_validator.py`
 - Test: `tests/test_cluster.py`
 
-- [ ] **Step 1: Write validator & cluster tests**
+- [x] **Step 1: Write validator & cluster tests**
 
 ```python
 # tests/test_validator.py
@@ -416,12 +416,12 @@ def test_cluster_detector_safe_fallback():
     assert "context" in status
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `pytest tests/test_validator.py tests/test_cluster.py -v`  
 Expected: FAIL (ModuleNotFoundError)
 
-- [ ] **Step 3: Implement validator.py and cluster.py**
+- [x] **Step 3: Implement validator.py and cluster.py**
 
 ```python
 # src/kubelings/validator.py
@@ -481,12 +481,12 @@ class ClusterDetector:
         return self._cached_status
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `pytest tests/test_validator.py tests/test_cluster.py -v`  
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/kubelings/validator.py src/kubelings/cluster.py tests/test_validator.py tests/test_cluster.py
