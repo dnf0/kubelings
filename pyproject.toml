@@ -76,7 +76,7 @@ pythonpath = ["src"]
 assets = []
 build_command_env = []
 commit_message = "chore: v{version} [release]"
-commit_parser = "angular"
+commit_parser = "conventional"
 logging_use_named_masks = false
 major_on_zero = true
 allow_zero_version = true
@@ -91,13 +91,12 @@ prerelease_token = "rc"
 prerelease = false
 
 [tool.semantic_release.changelog]
-template_dir = "templates"
 changelog_file = "CHANGELOG.md"
 exclude_commit_patterns = []
 
 [tool.semantic_release.commit_author]
 env = "GIT_COMMIT_AUTHOR"
-default = "semantic-release <semantic-release>"
+default = "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
 
 [tool.semantic_release.commit_parser_options]
 allowed_tags = ["chore", "ci", "docs", "feat", "fix", "perf", "style", "refactor", "test", "revert"]
