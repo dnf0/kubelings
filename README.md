@@ -75,7 +75,27 @@ Learning Kubernetes from static documentation or raw copy-pasted Helm charts is 
 - [`uv`](https://github.com/astral-sh/uv) (recommended) or `pip`
 - *Optional (for live cluster exercises)*: `kubectl` and a local cluster (`kind`, `minikube`, or `k3d`)
 
-### Installation
+### Running Instantly (No Clone Needed)
+
+You can run Kubelings anywhere using [`uvx`](https://github.com/astral-sh/uv) or [`pipx`](https://pypa.github.io/pipx/):
+
+```bash
+# Initialize exercises in your current folder
+uvx kubelings init
+
+# Start the interactive watch mode
+uvx kubelings watch
+```
+
+Or install globally:
+
+```bash
+pipx install kubelings
+kubelings init
+kubelings watch
+```
+
+### Local Development Installation
 
 Clone the repository and install dependencies in editable mode:
 
