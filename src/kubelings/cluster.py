@@ -1,7 +1,17 @@
 """Kubernetes Cluster Detection and Ephemeral Test Environment Adapter."""
 
+import re
 from typing import Any, Dict, Optional
 import uuid
+
+# Ephemeral namespace prefix and regex pattern for safety
+DEFAULT_EPHEMERAL_PREFIX = "kubelings-test"
+EPHEMERAL_NAMESPACE_PATTERN = re.compile(r"^kubelings-(test-)?[a-z0-9-]+$")
+
+LOCAL_PROVIDER_REGEX = re.compile(
+    r"(^|[-_./])(kind|minikube|k3d|k3s|docker-desktop|orbstack|microk8s|colima)([-_./]|$)",
+    re.IGNORECASE,
+)
 
 
 class ClusterDetector:
@@ -9,6 +19,7 @@ class ClusterDetector:
 
     def __init__(self) -> None:
         self._cached_status: Optional[Dict[str, Any]] = None
+        self.last_error: Optional[str] = None
 
     def get_cluster_status(self, refresh: bool = False) -> Dict[str, Any]:
         """Detect and return the active Kubernetes cluster status.
@@ -20,37 +31,36 @@ class ClusterDetector:
             Dictionary containing 'available' (bool), 'context' (str), and 'provider' (str).
         """
         if self._cached_status is not None and not refresh:
-            return self._cached_status
+            return dict(self._cached_status)
 
+        self.last_error = None
         try:
             from kubernetes import config
 
             contexts, active = config.list_kube_config_contexts()
             if active and active.get("name"):
-                active_name = active["name"]
-                local_indicators = [
-                    "kind",
-                    "minikube",
-                    "k3d",
-                    "k3s",
-                    "docker-desktop",
-                    "orbstack",
-                    "microk8s",
-                    "colima",
-                    "lima",
-                ]
-                is_local = any(indicator in active_name.lower() for indicator in local_indicators)
+                active_name = str(active["name"])
+                is_local = bool(LOCAL_PROVIDER_REGEX.search(active_name))
                 self._cached_status = {
                     "available": True,
                     "context": active_name,
                     "provider": "local" if is_local else "cloud",
                 }
             else:
-                self._cached_status = {"available": False, "context": "none", "provider": "none"}
-        except Exception:
-            self._cached_status = {"available": False, "context": "none", "provider": "none"}
+                self._cached_status = {
+                    "available": False,
+                    "context": "none",
+                    "provider": "none",
+                }
+        except Exception as exc:
+            self.last_error = str(exc)
+            self._cached_status = {
+                "available": False,
+                "context": "none",
+                "provider": "none",
+            }
 
-        return self._cached_status
+        return dict(self._cached_status)
 
     def is_cluster_available(self) -> bool:
         """Check if a Kubernetes cluster context is actively available."""
@@ -63,11 +73,14 @@ class ClusterDetector:
             return status["context"]
         return None
 
-    def create_ephemeral_namespace(self, prefix: str = "kubelings-test") -> Optional[str]:
+    def create_ephemeral_namespace(
+        self, prefix: str = DEFAULT_EPHEMERAL_PREFIX, request_timeout: int = 3
+    ) -> Optional[str]:
         """Create an ephemeral namespace for isolated testing.
 
         Args:
             prefix: Name prefix for the temporary namespace.
+            request_timeout: HTTP request timeout in seconds.
 
         Returns:
             The created namespace name, or None if creation failed.
@@ -75,13 +88,18 @@ class ClusterDetector:
         if not self.is_cluster_available():
             return None
 
+        # Sanitize prefix to be lowercase DNS-1123 compliant
+        clean_prefix = prefix.lower().strip()
+        if not clean_prefix:
+            clean_prefix = DEFAULT_EPHEMERAL_PREFIX
+
         try:
             from kubernetes import client, config
 
             config.load_kube_config()
             v1 = client.CoreV1Api()
 
-            ns_name = f"{prefix}-{uuid.uuid4().hex[:8]}"
+            ns_name = f"{clean_prefix}-{uuid.uuid4().hex[:8]}"
             body = client.V1Namespace(
                 metadata=client.V1ObjectMeta(
                     name=ns_name,
@@ -91,16 +109,22 @@ class ClusterDetector:
                     },
                 )
             )
-            v1.create_namespace(body=body)
+            v1.create_namespace(body=body, _request_timeout=request_timeout)
             return ns_name
-        except Exception:
+        except Exception as exc:
+            self.last_error = str(exc)
             return None
 
-    def cleanup_namespace(self, namespace: str) -> bool:
-        """Clean up an ephemeral test namespace.
+    def cleanup_namespace(self, namespace: str, request_timeout: int = 3) -> bool:
+        """Clean up an ephemeral test namespace safely.
+
+        Only namespaces matching the kubelings ephemeral naming convention
+        (e.g., starting with 'kubelings-') are permitted to prevent accidental
+        deletion of system or user namespaces (e.g. 'default', 'kube-system').
 
         Args:
             namespace: Name of the namespace to delete.
+            request_timeout: HTTP request timeout in seconds.
 
         Returns:
             True if deletion was successfully initiated, False otherwise.
@@ -108,12 +132,21 @@ class ClusterDetector:
         if not self.is_cluster_available() or not namespace:
             return False
 
+        # Enforce safety guard on namespace name
+        if not EPHEMERAL_NAMESPACE_PATTERN.match(namespace):
+            self.last_error = (
+                f"Refusing to delete non-ephemeral namespace '{namespace}'. "
+                "Only namespaces matching 'kubelings-*' can be deleted."
+            )
+            return False
+
         try:
             from kubernetes import client, config
 
             config.load_kube_config()
             v1 = client.CoreV1Api()
-            v1.delete_namespace(name=namespace)
+            v1.delete_namespace(name=namespace, _request_timeout=request_timeout)
             return True
-        except Exception:
+        except Exception as exc:
+            self.last_error = str(exc)
             return False

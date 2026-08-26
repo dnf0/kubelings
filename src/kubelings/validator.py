@@ -7,9 +7,16 @@ class ManifestValidationError(ValueError):
     """Raised when a Kubernetes manifest fails schema validation."""
 
 
-def _validate_containers(containers: Any, context_name: str = "containers") -> None:
+def _validate_containers(
+    containers: Any,
+    context_name: str = "containers",
+    allow_empty: bool = False,
+) -> None:
     """Validate a list of container definitions."""
-    if not isinstance(containers, list) or len(containers) == 0:
+    if not isinstance(containers, list):
+        raise ManifestValidationError(f"Manifest '{context_name}' must be a list.")
+
+    if not allow_empty and len(containers) == 0:
         raise ManifestValidationError(f"Manifest '{context_name}' must be a non-empty list.")
 
     for idx, c in enumerate(containers):
@@ -25,7 +32,7 @@ def _validate_containers(containers: Any, context_name: str = "containers") -> N
         image = c.get("image")
         if not image or not isinstance(image, str) or not image.strip():
             raise ManifestValidationError(
-                f"Container '{name}' in '{context_name}' missing required non-empty 'image'."
+                f"Container '{name.strip()}' in '{context_name}' missing required non-empty 'image'."
             )
 
 
@@ -34,27 +41,14 @@ def _validate_pod_spec(spec: Any, context_name: str = "spec") -> None:
     if not isinstance(spec, dict):
         raise ManifestValidationError(f"Manifest '{context_name}' must be a dictionary.")
 
-    _validate_containers(spec.get("containers"), f"{context_name}.containers")
+    _validate_containers(spec.get("containers"), f"{context_name}.containers", allow_empty=False)
 
     if "initContainers" in spec:
-        init_c = spec.get("initContainers")
-        if not isinstance(init_c, list):
-            raise ManifestValidationError(
-                f"Manifest '{context_name}.initContainers' must be a list."
-            )
-        for idx, c in enumerate(init_c):
-            if not isinstance(c, dict):
-                raise ManifestValidationError(
-                    f"Init container at index {idx} in '{context_name}.initContainers' must be a dictionary."
-                )
-            if not c.get("name") or not isinstance(c.get("name"), str):
-                raise ManifestValidationError(
-                    f"Init container at index {idx} in '{context_name}.initContainers' missing 'name'."
-                )
-            if not c.get("image") or not isinstance(c.get("image"), str):
-                raise ManifestValidationError(
-                    f"Init container at index {idx} in '{context_name}.initContainers' missing 'image'."
-                )
+        _validate_containers(
+            spec.get("initContainers"),
+            f"{context_name}.initContainers",
+            allow_empty=True,
+        )
 
 
 def validate_manifest(
@@ -106,8 +100,16 @@ def validate_manifest(
         raise ManifestValidationError("Manifest 'metadata' must be a dictionary.")
 
     name = metadata.get("name")
-    if not name or not isinstance(name, str) or not name.strip():
-        raise ManifestValidationError("Manifest metadata must define a non-empty string 'name'.")
+    generate_name = metadata.get("generateName")
+    has_valid_name = bool(name and isinstance(name, str) and name.strip())
+    has_valid_gen_name = bool(
+        generate_name and isinstance(generate_name, str) and generate_name.strip()
+    )
+
+    if not has_valid_name and not has_valid_gen_name:
+        raise ManifestValidationError(
+            "Manifest metadata must define a non-empty string 'name' or 'generateName'."
+        )
 
     if "labels" in metadata and not isinstance(metadata["labels"], dict):
         raise ManifestValidationError("Manifest metadata.labels must be a dictionary.")
@@ -119,10 +121,25 @@ def validate_manifest(
     if kind == "Pod":
         _validate_pod_spec(manifest.get("spec"), "spec")
 
-    elif kind in ("Deployment", "StatefulSet", "DaemonSet", "ReplicaSet"):
+    elif kind in ("Deployment", "StatefulSet", "DaemonSet", "ReplicaSet", "Job"):
         spec = manifest.get("spec")
         if not isinstance(spec, dict):
             raise ManifestValidationError(f"Manifest 'spec' must be a dictionary for {kind}.")
+
+        if kind in ("Deployment", "StatefulSet", "DaemonSet", "ReplicaSet"):
+            selector = spec.get("selector")
+            if not isinstance(selector, dict):
+                raise ManifestValidationError(
+                    f"Manifest 'spec.selector' must be a dictionary for {kind}."
+                )
+
+        if kind == "StatefulSet":
+            service_name = spec.get("serviceName")
+            if not service_name or not isinstance(service_name, str) or not service_name.strip():
+                raise ManifestValidationError(
+                    "StatefulSet must define a non-empty string 'spec.serviceName'."
+                )
+
         template = spec.get("template")
         if not isinstance(template, dict):
             raise ManifestValidationError(
@@ -132,22 +149,6 @@ def validate_manifest(
         if not isinstance(template_spec, dict):
             raise ManifestValidationError(
                 f"Manifest 'spec.template.spec' must be a dictionary for {kind}."
-            )
-        _validate_pod_spec(template_spec, "spec.template.spec")
-
-    elif kind == "Job":
-        spec = manifest.get("spec")
-        if not isinstance(spec, dict):
-            raise ManifestValidationError("Manifest 'spec' must be a dictionary for Job.")
-        template = spec.get("template")
-        if not isinstance(template, dict):
-            raise ManifestValidationError(
-                "Manifest 'spec.template' must be a dictionary for Job."
-            )
-        template_spec = template.get("spec")
-        if not isinstance(template_spec, dict):
-            raise ManifestValidationError(
-                "Manifest 'spec.template.spec' must be a dictionary for Job."
             )
         _validate_pod_spec(template_spec, "spec.template.spec")
 
@@ -187,9 +188,16 @@ def validate_manifest(
             if not isinstance(ports, list):
                 raise ManifestValidationError("Service 'spec.ports' must be a list.")
             for p in ports:
-                if not isinstance(p, dict) or "port" not in p or not isinstance(p["port"], int):
+                if not isinstance(p, dict):
+                    raise ManifestValidationError("Each service port must be a dictionary.")
+                port_val = p.get("port")
+                if (
+                    type(port_val) is not int
+                    or isinstance(port_val, bool)
+                    or not (1 <= port_val <= 65535)
+                ):
                     raise ManifestValidationError(
-                        "Each service port must be a dictionary defining an integer 'port'."
+                        "Each service port must define an integer 'port' between 1 and 65535."
                     )
 
     elif kind == "ConfigMap":
@@ -208,11 +216,7 @@ def validate_manifest(
 
     elif kind in ("RoleBinding", "ClusterRoleBinding"):
         role_ref = manifest.get("roleRef")
-        if (
-            not isinstance(role_ref, dict)
-            or not role_ref.get("kind")
-            or not role_ref.get("name")
-        ):
+        if not isinstance(role_ref, dict) or not role_ref.get("kind") or not role_ref.get("name"):
             raise ManifestValidationError(
                 f"{kind} must define a 'roleRef' dictionary with 'kind' and 'name'."
             )

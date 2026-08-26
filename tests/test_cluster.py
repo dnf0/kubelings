@@ -3,7 +3,10 @@ from kubelings.cluster import ClusterDetector
 
 
 def test_cluster_detector_safe_fallback_no_cluster():
-    with patch("kubernetes.config.list_kube_config_contexts", side_effect=Exception("No kubeconfig")):
+    with patch(
+        "kubernetes.config.list_kube_config_contexts",
+        side_effect=Exception("No kubeconfig"),
+    ):
         detector = ClusterDetector()
         status = detector.get_cluster_status()
         assert status["available"] is False
@@ -11,6 +14,7 @@ def test_cluster_detector_safe_fallback_no_cluster():
         assert status["provider"] == "none"
         assert detector.is_cluster_available() is False
         assert detector.get_active_context() is None
+        assert detector.last_error == "No kubeconfig"
 
 
 def test_cluster_detector_local_provider():
@@ -50,10 +54,11 @@ def test_cluster_detector_cloud_provider():
 
 def test_cluster_detector_ephemeral_namespace_lifecycle():
     mock_contexts = ([{"name": "kind-test"}], {"name": "kind-test"})
-    with patch("kubernetes.config.list_kube_config_contexts", return_value=mock_contexts), \
-         patch("kubernetes.config.load_kube_config"), \
-         patch("kubernetes.client.CoreV1Api") as mock_core_api_class:
-        
+    with (
+        patch("kubernetes.config.list_kube_config_contexts", return_value=mock_contexts),
+        patch("kubernetes.config.load_kube_config"),
+        patch("kubernetes.client.CoreV1Api") as mock_core_api_class,
+    ):
         mock_api_instance = MagicMock()
         mock_core_api_class.return_value = mock_api_instance
 
@@ -63,10 +68,35 @@ def test_cluster_detector_ephemeral_namespace_lifecycle():
         assert ns_name.startswith("kubelings-test-")
         assert mock_api_instance.create_namespace.called
 
+        # Verify created namespace labels
+        call_kwargs = mock_api_instance.create_namespace.call_args.kwargs
+        assert "_request_timeout" in call_kwargs
+        created_body = call_kwargs["body"]
+        assert created_body.metadata.labels["kubelings.dev/ephemeral"] == "true"
+        assert created_body.metadata.labels["app.kubernetes.io/managed-by"] == "kubelings"
+
         # Cleanup namespace
         cleanup_success = detector.cleanup_namespace(ns_name)
         assert cleanup_success is True
         assert mock_api_instance.delete_namespace.called
+
+
+def test_cluster_detector_cleanup_guard_against_non_ephemeral_namespaces():
+    mock_contexts = ([{"name": "kind-test"}], {"name": "kind-test"})
+    with (
+        patch("kubernetes.config.list_kube_config_contexts", return_value=mock_contexts),
+        patch("kubernetes.config.load_kube_config"),
+        patch("kubernetes.client.CoreV1Api") as mock_core_api_class,
+    ):
+        mock_api_instance = MagicMock()
+        mock_core_api_class.return_value = mock_api_instance
+
+        detector = ClusterDetector()
+        # Refuse to delete system or default namespaces
+        assert detector.cleanup_namespace("default") is False
+        assert detector.cleanup_namespace("kube-system") is False
+        assert detector.cleanup_namespace("") is False
+        assert not mock_api_instance.delete_namespace.called
 
 
 def test_cluster_detector_ephemeral_namespace_failure_when_no_cluster():
@@ -74,16 +104,17 @@ def test_cluster_detector_ephemeral_namespace_failure_when_no_cluster():
         detector = ClusterDetector()
         ns_name = detector.create_ephemeral_namespace()
         assert ns_name is None
-        cleanup_success = detector.cleanup_namespace("any-namespace")
+        cleanup_success = detector.cleanup_namespace("kubelings-test-12345678")
         assert cleanup_success is False
 
 
 def test_cluster_detector_api_exception_handling():
     mock_contexts = ([{"name": "kind-test"}], {"name": "kind-test"})
-    with patch("kubernetes.config.list_kube_config_contexts", return_value=mock_contexts), \
-         patch("kubernetes.config.load_kube_config"), \
-         patch("kubernetes.client.CoreV1Api") as mock_core_api_class:
-        
+    with (
+        patch("kubernetes.config.list_kube_config_contexts", return_value=mock_contexts),
+        patch("kubernetes.config.load_kube_config"),
+        patch("kubernetes.client.CoreV1Api") as mock_core_api_class,
+    ):
         mock_api_instance = MagicMock()
         mock_api_instance.create_namespace.side_effect = Exception("API Error")
         mock_api_instance.delete_namespace.side_effect = Exception("API Error")
@@ -92,7 +123,8 @@ def test_cluster_detector_api_exception_handling():
         detector = ClusterDetector()
         ns_name = detector.create_ephemeral_namespace()
         assert ns_name is None
-        assert detector.cleanup_namespace("kubelings-test-123") is False
+        assert detector.last_error == "API Error"
+        assert detector.cleanup_namespace("kubelings-test-12345678") is False
 
 
 def test_cluster_detector_status_caching_and_refresh():

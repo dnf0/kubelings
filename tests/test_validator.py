@@ -15,12 +15,20 @@ def test_validate_valid_pod_manifest():
             "containers": [
                 {"name": "web", "image": "nginx:alpine", "ports": [{"containerPort": 80}]}
             ],
-            "initContainers": [
-                {"name": "init-db", "image": "busybox:latest"}
-            ],
+            "initContainers": [{"name": "init-db", "image": "busybox:latest"}],
         },
     }
     assert validate_manifest(manifest, expected_kind="Pod", expected_api_version="v1") is True
+
+
+def test_validate_manifest_with_generate_name():
+    manifest = {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "metadata": {"generateName": "test-pod-"},
+        "spec": {"containers": [{"name": "web", "image": "nginx:alpine"}]},
+    }
+    assert validate_manifest(manifest) is True
 
 
 def test_validate_valid_service_manifest():
@@ -47,9 +55,7 @@ def test_validate_valid_deployment_manifest():
             "selector": {"matchLabels": {"app": "web"}},
             "template": {
                 "metadata": {"labels": {"app": "web"}},
-                "spec": {
-                    "containers": [{"name": "web", "image": "nginx:latest"}]
-                },
+                "spec": {"containers": [{"name": "web", "image": "nginx:latest"}]},
             },
         },
     }
@@ -67,9 +73,7 @@ def test_validate_valid_statefulset_daemonset_job_cronjob():
             "selector": {"matchLabels": {"app": "db"}},
             "template": {
                 "metadata": {"labels": {"app": "db"}},
-                "spec": {
-                    "containers": [{"name": "db", "image": "postgres:15"}]
-                },
+                "spec": {"containers": [{"name": "db", "image": "postgres:15"}]},
             },
         },
     }
@@ -84,9 +88,7 @@ def test_validate_valid_statefulset_daemonset_job_cronjob():
             "selector": {"matchLabels": {"name": "fluentd"}},
             "template": {
                 "metadata": {"labels": {"name": "fluentd"}},
-                "spec": {
-                    "containers": [{"name": "fluentd", "image": "fluentd:v1"}]
-                },
+                "spec": {"containers": [{"name": "fluentd", "image": "fluentd:v1"}]},
             },
         },
     }
@@ -100,7 +102,13 @@ def test_validate_valid_statefulset_daemonset_job_cronjob():
         "spec": {
             "template": {
                 "spec": {
-                    "containers": [{"name": "pi", "image": "perl:5.34", "command": ["perl", "-Mbignum=p", "-e", "print bpi(2000)"]}],
+                    "containers": [
+                        {
+                            "name": "pi",
+                            "image": "perl:5.34",
+                            "command": ["perl", "-Mbignum=p", "-e", "print bpi(2000)"],
+                        }
+                    ],
                     "restartPolicy": "Never",
                 }
             }
@@ -135,7 +143,7 @@ def test_validate_valid_config_and_security_resources():
         "apiVersion": "v1",
         "kind": "ConfigMap",
         "metadata": {"name": "app-config"},
-        "data": {"config.json": "{\"debug\": true}"},
+        "data": {"config.json": '{"debug": true}'},
     }
     assert validate_manifest(cm, expected_kind="ConfigMap") is True
 
@@ -161,7 +169,11 @@ def test_validate_valid_config_and_security_resources():
         "kind": "RoleBinding",
         "metadata": {"name": "read-pods"},
         "subjects": [{"kind": "User", "name": "alice", "apiGroup": "rbac.authorization.k8s.io"}],
-        "roleRef": {"kind": "Role", "name": "pod-reader", "apiGroup": "rbac.authorization.k8s.io"},
+        "roleRef": {
+            "kind": "Role",
+            "name": "pod-reader",
+            "apiGroup": "rbac.authorization.k8s.io",
+        },
     }
     assert validate_manifest(role_binding, expected_kind="RoleBinding") is True
 
@@ -170,7 +182,11 @@ def test_validate_valid_config_and_security_resources():
         "kind": "HorizontalPodAutoscaler",
         "metadata": {"name": "web-hpa"},
         "spec": {
-            "scaleTargetRef": {"apiVersion": "apps/v1", "kind": "Deployment", "name": "web-deploy"},
+            "scaleTargetRef": {
+                "apiVersion": "apps/v1",
+                "kind": "Deployment",
+                "name": "web-deploy",
+            },
             "minReplicas": 1,
             "maxReplicas": 10,
         },
@@ -187,6 +203,9 @@ def test_validate_manifest_non_dict():
 
     with pytest.raises(ManifestValidationError, match="dictionary"):
         validate_manifest(None)
+
+    with pytest.raises(ManifestValidationError, match="empty"):
+        validate_manifest({})
 
 
 def test_validate_manifest_missing_root_keys():
@@ -208,15 +227,27 @@ def test_validate_manifest_invalid_metadata():
         validate_manifest({"apiVersion": "v1", "kind": "Pod", "metadata": {}})
 
     with pytest.raises(ManifestValidationError, match="name"):
-        validate_manifest({"apiVersion": "v1", "kind": "Pod", "metadata": {"name": ""}})
+        validate_manifest({"apiVersion": "v1", "kind": "Pod", "metadata": {"name": "  "}})
 
     with pytest.raises(ManifestValidationError, match="labels"):
-        validate_manifest({
-            "apiVersion": "v1",
-            "kind": "Pod",
-            "metadata": {"name": "p", "labels": "invalid"},
-            "spec": {"containers": [{"name": "c", "image": "img"}]},
-        })
+        validate_manifest(
+            {
+                "apiVersion": "v1",
+                "kind": "Pod",
+                "metadata": {"name": "p", "labels": "invalid"},
+                "spec": {"containers": [{"name": "c", "image": "img"}]},
+            }
+        )
+
+    with pytest.raises(ManifestValidationError, match="annotations"):
+        validate_manifest(
+            {
+                "apiVersion": "v1",
+                "kind": "Pod",
+                "metadata": {"name": "p", "annotations": "invalid"},
+                "spec": {"containers": [{"name": "c", "image": "img"}]},
+            }
+        )
 
 
 def test_validate_manifest_expected_kind_and_version():
@@ -238,60 +269,173 @@ def test_validate_manifest_workload_spec_errors():
     with pytest.raises(ManifestValidationError, match="spec"):
         validate_manifest({"apiVersion": "v1", "kind": "Pod", "metadata": {"name": "p"}})
 
-    # Pod containers empty
+    # Pod containers not list or empty
     with pytest.raises(ManifestValidationError, match="containers"):
-        validate_manifest({
-            "apiVersion": "v1",
-            "kind": "Pod",
-            "metadata": {"name": "p"},
-            "spec": {"containers": []},
-        })
+        validate_manifest(
+            {
+                "apiVersion": "v1",
+                "kind": "Pod",
+                "metadata": {"name": "p"},
+                "spec": {"containers": []},
+            }
+        )
+
+    with pytest.raises(ManifestValidationError, match="containers"):
+        validate_manifest(
+            {
+                "apiVersion": "v1",
+                "kind": "Pod",
+                "metadata": {"name": "p"},
+                "spec": {"containers": "not-a-list"},
+            }
+        )
+
+    # Pod container not dict
+    with pytest.raises(ManifestValidationError, match="dictionary"):
+        validate_manifest(
+            {
+                "apiVersion": "v1",
+                "kind": "Pod",
+                "metadata": {"name": "p"},
+                "spec": {"containers": ["invalid-item"]},
+            }
+        )
 
     # Pod container missing image
     with pytest.raises(ManifestValidationError, match="image"):
-        validate_manifest({
-            "apiVersion": "v1",
-            "kind": "Pod",
-            "metadata": {"name": "p"},
-            "spec": {"containers": [{"name": "c"}]},
-        })
+        validate_manifest(
+            {
+                "apiVersion": "v1",
+                "kind": "Pod",
+                "metadata": {"name": "p"},
+                "spec": {"containers": [{"name": "c"}]},
+            }
+        )
 
     # Pod container missing name
     with pytest.raises(ManifestValidationError, match="name"):
-        validate_manifest({
-            "apiVersion": "v1",
-            "kind": "Pod",
-            "metadata": {"name": "p"},
-            "spec": {"containers": [{"image": "img"}]},
-        })
+        validate_manifest(
+            {
+                "apiVersion": "v1",
+                "kind": "Pod",
+                "metadata": {"name": "p"},
+                "spec": {"containers": [{"image": "img"}]},
+            }
+        )
 
-    # Deployment missing template
-    with pytest.raises(ManifestValidationError, match="template"):
-        validate_manifest({
-            "apiVersion": "apps/v1",
-            "kind": "Deployment",
-            "metadata": {"name": "d"},
-            "spec": {"selector": {"matchLabels": {"app": "a"}}},
-        })
+    # Pod initContainers invalid
+    with pytest.raises(ManifestValidationError, match="initContainers"):
+        validate_manifest(
+            {
+                "apiVersion": "v1",
+                "kind": "Pod",
+                "metadata": {"name": "p"},
+                "spec": {
+                    "containers": [{"name": "c", "image": "img"}],
+                    "initContainers": "not-a-list",
+                },
+            }
+        )
 
-    # CronJob missing schedule
-    with pytest.raises(ManifestValidationError, match="schedule"):
-        validate_manifest({
-            "apiVersion": "batch/v1",
-            "kind": "CronJob",
-            "metadata": {"name": "cj"},
-            "spec": {
-                "jobTemplate": {
-                    "spec": {
-                        "template": {
-                            "spec": {
-                                "containers": [{"name": "c", "image": "img"}]
-                            }
-                        }
-                    }
-                }
-            },
-        })
+    # Deployment missing selector
+    with pytest.raises(ManifestValidationError, match="selector"):
+        validate_manifest(
+            {
+                "apiVersion": "apps/v1",
+                "kind": "Deployment",
+                "metadata": {"name": "d"},
+                "spec": {"template": {"spec": {"containers": [{"name": "c", "image": "img"}]}}},
+            }
+        )
+
+    # StatefulSet missing serviceName
+    with pytest.raises(ManifestValidationError, match="serviceName"):
+        validate_manifest(
+            {
+                "apiVersion": "apps/v1",
+                "kind": "StatefulSet",
+                "metadata": {"name": "sts"},
+                "spec": {
+                    "selector": {"matchLabels": {"app": "a"}},
+                    "template": {"spec": {"containers": [{"name": "c", "image": "img"}]}},
+                },
+            }
+        )
+
+    # Service invalid port
+    with pytest.raises(ManifestValidationError, match="port"):
+        validate_manifest(
+            {
+                "apiVersion": "v1",
+                "kind": "Service",
+                "metadata": {"name": "svc"},
+                "spec": {"ports": [{"port": 99999}]},
+            }
+        )
+
+    with pytest.raises(ManifestValidationError, match="port"):
+        validate_manifest(
+            {
+                "apiVersion": "v1",
+                "kind": "Service",
+                "metadata": {"name": "svc"},
+                "spec": {"ports": [{"port": True}]},
+            }
+        )
+
+    # ConfigMap data not dict
+    with pytest.raises(ManifestValidationError, match="data"):
+        validate_manifest(
+            {
+                "apiVersion": "v1",
+                "kind": "ConfigMap",
+                "metadata": {"name": "cm"},
+                "data": "string-not-dict",
+            }
+        )
+
+    # Secret data not dict
+    with pytest.raises(ManifestValidationError, match="stringData"):
+        validate_manifest(
+            {
+                "apiVersion": "v1",
+                "kind": "Secret",
+                "metadata": {"name": "sec"},
+                "stringData": "string-not-dict",
+            }
+        )
+
+    # Role rules not list
+    with pytest.raises(ManifestValidationError, match="rules"):
+        validate_manifest(
+            {
+                "apiVersion": "rbac.authorization.k8s.io/v1",
+                "kind": "Role",
+                "metadata": {"name": "r"},
+                "rules": "not-a-list",
+            }
+        )
+
+    # RoleBinding missing roleRef
+    with pytest.raises(ManifestValidationError, match="roleRef"):
+        validate_manifest(
+            {
+                "apiVersion": "rbac.authorization.k8s.io/v1",
+                "kind": "RoleBinding",
+                "metadata": {"name": "rb"},
+            }
+        )
+
+    # HPA missing scaleTargetRef
+    with pytest.raises(ManifestValidationError, match="scaleTargetRef"):
+        validate_manifest(
+            {
+                "apiVersion": "autoscaling/v2",
+                "kind": "HorizontalPodAutoscaler",
+                "metadata": {"name": "hpa"},
+                "spec": {},
+            }
+        )
 
 
 def test_validate_manifests_multi_document():
@@ -307,9 +451,7 @@ def test_validate_manifests_multi_document():
         "metadata": {"name": "my-deploy"},
         "spec": {
             "selector": {"matchLabels": {"app": "app"}},
-            "template": {
-                "spec": {"containers": [{"name": "app", "image": "app:v1"}]}
-            },
+            "template": {"spec": {"containers": [{"name": "app", "image": "app:v1"}]}},
         },
     }
     assert validate_manifests([doc1, doc2], expected_kinds=["Service", "Deployment"]) is True
