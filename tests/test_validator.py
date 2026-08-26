@@ -52,9 +52,12 @@ def test_validate_valid_deployment_manifest():
         "metadata": {"name": "web-deploy"},
         "spec": {
             "replicas": 3,
-            "selector": {"matchLabels": {"app": "web"}},
+            "selector": {
+                "matchLabels": {"app": "web"},
+                "matchExpressions": [{"key": "tier", "operator": "In", "values": ["frontend"]}],
+            },
             "template": {
-                "metadata": {"labels": {"app": "web"}},
+                "metadata": {"labels": {"app": "web", "tier": "frontend"}},
                 "spec": {"containers": [{"name": "web", "image": "nginx:latest"}]},
             },
         },
@@ -399,6 +402,34 @@ def test_validate_manifest_workload_spec_errors():
                 "metadata": {"name": "d"},
                 "spec": {
                     "selector": {"matchExpressions": "invalid"},
+                    "template": {"spec": {"containers": [{"name": "c", "image": "img"}]}},
+                },
+            }
+        )
+
+    # Deployment invalid matchExpressions item (missing operator / invalid operator)
+    with pytest.raises(ManifestValidationError, match="operator"):
+        validate_manifest(
+            {
+                "apiVersion": "apps/v1",
+                "kind": "Deployment",
+                "metadata": {"name": "d"},
+                "spec": {
+                    "selector": {"matchExpressions": [{"key": "app", "operator": "InvalidOp"}]},
+                    "template": {"spec": {"containers": [{"name": "c", "image": "img"}]}},
+                },
+            }
+        )
+
+    # Deployment In operator without values
+    with pytest.raises(ManifestValidationError, match="values"):
+        validate_manifest(
+            {
+                "apiVersion": "apps/v1",
+                "kind": "Deployment",
+                "metadata": {"name": "d"},
+                "spec": {
+                    "selector": {"matchExpressions": [{"key": "app", "operator": "In"}]},
                     "template": {"spec": {"containers": [{"name": "c", "image": "img"}]}},
                 },
             }

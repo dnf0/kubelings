@@ -84,6 +84,11 @@ class ClusterDetector:
     ) -> Optional[str]:
         """Create an ephemeral namespace for isolated testing.
 
+        The prefix is sanitized to DNS-1123 format, forced to start with
+        'kubelings-', truncated to at most 54 characters, and suffixed with an
+        8-character random UUID. If prefix is None, empty, or invalid, it defaults
+        to 'kubelings-test'.
+
         Args:
             prefix: Name prefix for the temporary namespace.
             request_timeout: HTTP request timeout in seconds.
@@ -91,10 +96,11 @@ class ClusterDetector:
         Returns:
             The created namespace name, or None if creation failed.
         """
+        self.last_error = None
         if not self.is_cluster_available():
+            self.last_error = "No active Kubernetes cluster available."
             return None
 
-        self.last_error = None
         try:
             # Sanitize prefix to be lowercase DNS-1123 compliant and kubelings-prefixed
             raw = "" if prefix is None else str(prefix)
@@ -135,8 +141,9 @@ class ClusterDetector:
         """Clean up an ephemeral test namespace safely.
 
         Only namespaces matching the kubelings ephemeral naming convention
-        (e.g., matching 'kubelings-*') are permitted to prevent accidental
-        deletion of system or user namespaces (e.g. 'default', 'kube-system').
+        (e.g., matching 'kubelings-*') are permitted. For namespaces not created
+        during the current detector session, the namespace metadata is checked
+        to ensure the 'kubelings.dev/ephemeral=true' label is present before deletion.
 
         Args:
             namespace: Name of the namespace to delete.
@@ -145,10 +152,15 @@ class ClusterDetector:
         Returns:
             True if deletion was successfully initiated, False otherwise.
         """
-        if not self.is_cluster_available() or not namespace:
+        self.last_error = None
+        if not self.is_cluster_available():
+            self.last_error = "No active Kubernetes cluster available."
             return False
 
-        self.last_error = None
+        if not namespace or not isinstance(namespace, str) or not namespace.strip():
+            self.last_error = "Namespace name cannot be empty."
+            return False
+
         # Enforce strict fullmatch safety guard on namespace name
         if not EPHEMERAL_NAMESPACE_PATTERN.fullmatch(namespace):
             self.last_error = (
@@ -162,6 +174,25 @@ class ClusterDetector:
 
             config.load_kube_config()
             v1 = client.CoreV1Api()
+
+            if namespace not in self._created_namespaces:
+                try:
+                    ns_obj = v1.read_namespace(name=namespace, _request_timeout=request_timeout)
+                    ns_meta = getattr(ns_obj, "metadata", None)
+                    labels = getattr(ns_meta, "labels", None) or {}
+                    if (
+                        not isinstance(labels, dict)
+                        or labels.get("kubelings.dev/ephemeral") != "true"
+                    ):
+                        self.last_error = (
+                            f"Refusing to delete namespace '{namespace}' "
+                            "missing 'kubelings.dev/ephemeral=true' label."
+                        )
+                        return False
+                except Exception as read_exc:
+                    self.last_error = f"Failed to verify namespace '{namespace}': {read_exc}"
+                    return False
+
             v1.delete_namespace(name=namespace, _request_timeout=request_timeout)
             self._created_namespaces.discard(namespace)
             return True

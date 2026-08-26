@@ -2,6 +2,8 @@
 
 from typing import Any, List, Optional
 
+VALID_MATCH_EXPRESSION_OPERATORS = {"In", "NotIn", "Exists", "DoesNotExist"}
+
 
 class ManifestValidationError(ValueError):
     """Raised when a Kubernetes manifest fails schema validation."""
@@ -151,10 +153,36 @@ def validate_manifest(
                 raise ManifestValidationError(
                     f"Manifest 'spec.selector.matchLabels' must be a dictionary for {kind}."
                 )
-            if match_expressions is not None and not isinstance(match_expressions, list):
-                raise ManifestValidationError(
-                    f"Manifest 'spec.selector.matchExpressions' must be a list for {kind}."
-                )
+            if match_expressions is not None:
+                if not isinstance(match_expressions, list):
+                    raise ManifestValidationError(
+                        f"Manifest 'spec.selector.matchExpressions' must be a list for {kind}."
+                    )
+                for idx, expr in enumerate(match_expressions):
+                    if not isinstance(expr, dict):
+                        raise ManifestValidationError(
+                            f"Expression at index {idx} in 'spec.selector.matchExpressions' "
+                            "must be a dictionary."
+                        )
+                    key_val = expr.get("key")
+                    if not key_val or not isinstance(key_val, str) or not key_val.strip():
+                        raise ManifestValidationError(
+                            f"Expression at index {idx} in 'spec.selector.matchExpressions' "
+                            "missing non-empty 'key'."
+                        )
+                    op_val = expr.get("operator")
+                    if op_val not in VALID_MATCH_EXPRESSION_OPERATORS:
+                        raise ManifestValidationError(
+                            f"Expression at index {idx} has invalid operator '{op_val}'. "
+                            f"Must be one of {sorted(VALID_MATCH_EXPRESSION_OPERATORS)}."
+                        )
+                    if op_val in {"In", "NotIn"}:
+                        values = expr.get("values")
+                        if not isinstance(values, list) or len(values) == 0:
+                            raise ManifestValidationError(
+                                f"Expression with operator '{op_val}' must define "
+                                "a non-empty list of 'values'."
+                            )
 
             if not match_labels and not match_expressions:
                 raise ManifestValidationError(

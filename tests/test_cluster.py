@@ -1,5 +1,5 @@
 from unittest.mock import MagicMock, patch
-from kubelings.cluster import ClusterDetector
+from kubelings.cluster import EPHEMERAL_NAMESPACE_PATTERN, ClusterDetector
 
 
 def test_cluster_detector_safe_fallback_no_cluster():
@@ -110,6 +110,14 @@ def test_cluster_detector_custom_prefix_roundtrip():
         assert ns_name_base is not None
         assert ns_name_base.startswith("kubelings-test-")
 
+        ns_name_dash = detector.create_ephemeral_namespace(prefix="kubelings-")
+        assert ns_name_dash is not None
+        assert ns_name_dash.startswith("kubelings-test-")
+
+        ns_name_separators = detector.create_ephemeral_namespace(prefix="---")
+        assert ns_name_separators is not None
+        assert ns_name_separators.startswith("kubelings-test-")
+
         # prefix=None handling
         ns_name_none = detector.create_ephemeral_namespace(prefix=None)
         assert ns_name_none is not None
@@ -121,10 +129,48 @@ def test_cluster_detector_custom_prefix_roundtrip():
         )
         assert ns_name_long is not None
         assert len(ns_name_long) <= 63
+        assert EPHEMERAL_NAMESPACE_PATTERN.fullmatch(ns_name_long)
 
-        # Custom prefix should clean up properly
-        assert detector.cleanup_namespace(ns_name) is True
-        assert detector.cleanup_namespace(ns_name_dirty) is True
+        # All created namespaces should clean up properly
+        for name in [
+            ns_name,
+            ns_name_dirty,
+            ns_name_base,
+            ns_name_dash,
+            ns_name_separators,
+            ns_name_none,
+            ns_name_long,
+        ]:
+            assert detector.cleanup_namespace(name) is True
+
+
+def test_cluster_detector_cleanup_untracked_namespace_label_check():
+    mock_contexts = ([{"name": "kind-test"}], {"name": "kind-test"})
+    with (
+        patch("kubernetes.config.list_kube_config_contexts", return_value=mock_contexts),
+        patch("kubernetes.config.load_kube_config"),
+        patch("kubernetes.client.CoreV1Api") as mock_core_api_class,
+    ):
+        mock_api_instance = MagicMock()
+        mock_core_api_class.return_value = mock_api_instance
+
+        detector = ClusterDetector()
+
+        # Target namespace with valid ephemeral label
+        mock_valid_ns = MagicMock()
+        mock_valid_ns.metadata.labels = {"kubelings.dev/ephemeral": "true"}
+        mock_api_instance.read_namespace.return_value = mock_valid_ns
+
+        assert detector.cleanup_namespace("kubelings-exercise-01-abcdef12") is True
+        assert mock_api_instance.delete_namespace.called
+
+        # Target namespace missing ephemeral label
+        mock_invalid_ns = MagicMock()
+        mock_invalid_ns.metadata.labels = {"app": "custom-prod"}
+        mock_api_instance.read_namespace.return_value = mock_invalid_ns
+
+        assert detector.cleanup_namespace("kubelings-prod-data-12345678") is False
+        assert "missing 'kubelings.dev/ephemeral=true' label" in (detector.last_error or "")
 
 
 def test_cluster_detector_cleanup_guard_against_non_ephemeral_namespaces():
@@ -143,6 +189,7 @@ def test_cluster_detector_cleanup_guard_against_non_ephemeral_namespaces():
         assert "Refusing to delete" in (detector.last_error or "")
         assert detector.cleanup_namespace("kube-system") is False
         assert detector.cleanup_namespace("") is False
+        assert detector.last_error == "Namespace name cannot be empty."
         assert detector.cleanup_namespace("kubelings-test-abc\n") is False
         assert not mock_api_instance.delete_namespace.called
 
@@ -152,8 +199,10 @@ def test_cluster_detector_ephemeral_namespace_failure_when_no_cluster():
         detector = ClusterDetector()
         ns_name = detector.create_ephemeral_namespace()
         assert ns_name is None
+        assert detector.last_error == "No active Kubernetes cluster available."
         cleanup_success = detector.cleanup_namespace("kubelings-test-12345678")
         assert cleanup_success is False
+        assert detector.last_error == "No active Kubernetes cluster available."
 
 
 def test_cluster_detector_api_exception_handling_and_recovery():
