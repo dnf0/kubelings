@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "kubelings"
+version = "0.1.0"
+description = "An interactive, hands-on CLI learning environment for Kubernetes"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "Daniel Fisher" }
+]
+dependencies = [
+    "kubernetes>=29.0.0",
+    "pyyaml>=6.0.1",
+    "pydantic>=2.6.0",
+    "jsonschema>=4.20.0",
+    "rich>=13.7.0",
+    "typer>=0.12.0",
+    "watchfiles>=0.21.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.4.0",
+    "pyright>=1.1.350",
+    "pre-commit>=3.7.0",
+]
+
+[project.scripts]
+kubelings = "kubelings.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/kubelings"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.pyright]
+include = ["src", "tests"]
+pythonVersion = "3.10"
+typeCheckingMode = "basic"

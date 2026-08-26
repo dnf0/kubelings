@@ -1,0 +1,48 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# Testing & Linters
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Kubernetes / Helm temp files
+*.kubeconfig
+*.local.yaml
+
+# Agent rules, caches, & AI tooling (DO NOT COMMIT)
+.agents/
+.agent-state/
+.superpowers/
+.roborev/
+.claude/
+.gemini/
+.cursor/
+graphify-out/
+.smellcheck-cache/
