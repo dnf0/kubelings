@@ -146,10 +146,22 @@ def validate_manifest(
                 )
             match_labels = selector.get("matchLabels")
             match_expressions = selector.get("matchExpressions")
+
+            if match_labels is not None and not isinstance(match_labels, dict):
+                raise ManifestValidationError(
+                    f"Manifest 'spec.selector.matchLabels' must be a dictionary for {kind}."
+                )
+            if match_expressions is not None and not isinstance(match_expressions, list):
+                raise ManifestValidationError(
+                    f"Manifest 'spec.selector.matchExpressions' must be a list for {kind}."
+                )
+
             if not match_labels and not match_expressions:
                 raise ManifestValidationError(
-                    f"Manifest 'spec.selector' for {kind} must define 'matchLabels' or 'matchExpressions'."
+                    f"Manifest 'spec.selector' for {kind} must define "
+                    "'matchLabels' or 'matchExpressions'."
                 )
+
             if isinstance(match_labels, dict):
                 template_meta = template.get("metadata") or {}
                 template_labels = (

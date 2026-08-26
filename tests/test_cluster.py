@@ -66,6 +66,7 @@ def test_cluster_detector_ephemeral_namespace_lifecycle():
         ns_name = detector.create_ephemeral_namespace(prefix="kubelings-test")
         assert ns_name is not None
         assert ns_name.startswith("kubelings-test-")
+        assert ns_name in detector.created_namespaces
         assert mock_api_instance.create_namespace.called
 
         # Verify created namespace labels
@@ -79,6 +80,8 @@ def test_cluster_detector_ephemeral_namespace_lifecycle():
         cleanup_success = detector.cleanup_namespace(ns_name)
         assert cleanup_success is True
         assert mock_api_instance.delete_namespace.called
+        assert mock_api_instance.delete_namespace.call_args.kwargs["name"] == ns_name
+        assert ns_name not in detector.created_namespaces
 
 
 def test_cluster_detector_custom_prefix_roundtrip():
@@ -101,6 +104,23 @@ def test_cluster_detector_custom_prefix_roundtrip():
         ns_name_dirty = detector.create_ephemeral_namespace(prefix="My Test_NS!!")
         assert ns_name_dirty is not None
         assert ns_name_dirty.startswith("kubelings-my-test-ns-")
+
+        # Prefix "kubelings" or "kubelings-" should not double-prefix
+        ns_name_base = detector.create_ephemeral_namespace(prefix="kubelings")
+        assert ns_name_base is not None
+        assert ns_name_base.startswith("kubelings-test-")
+
+        # prefix=None handling
+        ns_name_none = detector.create_ephemeral_namespace(prefix=None)
+        assert ns_name_none is not None
+        assert ns_name_none.startswith("kubelings-test-")
+
+        # Long prefix truncation (under 63 chars DNS-1123 max length)
+        ns_name_long = detector.create_ephemeral_namespace(
+            prefix="a-very-long-custom-exercise-prefix-that-exceeds-normal-length-limits-easily"
+        )
+        assert ns_name_long is not None
+        assert len(ns_name_long) <= 63
 
         # Custom prefix should clean up properly
         assert detector.cleanup_namespace(ns_name) is True
@@ -136,7 +156,7 @@ def test_cluster_detector_ephemeral_namespace_failure_when_no_cluster():
         assert cleanup_success is False
 
 
-def test_cluster_detector_api_exception_handling():
+def test_cluster_detector_api_exception_handling_and_recovery():
     mock_contexts = ([{"name": "kind-test"}], {"name": "kind-test"})
     with (
         patch("kubernetes.config.list_kube_config_contexts", return_value=mock_contexts),
@@ -153,6 +173,13 @@ def test_cluster_detector_api_exception_handling():
         assert ns_name is None
         assert detector.last_error == "API Error"
         assert detector.cleanup_namespace("kubelings-test-12345678") is False
+
+        # Reset mock for successful operation and assert last_error is cleared
+        mock_api_instance.create_namespace.side_effect = None
+        mock_api_instance.delete_namespace.side_effect = None
+        created = detector.create_ephemeral_namespace()
+        assert created is not None
+        assert detector.last_error is None
 
 
 def test_cluster_detector_status_caching_and_refresh():

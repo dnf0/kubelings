@@ -348,6 +348,20 @@ def test_validate_manifest_workload_spec_errors():
             }
         )
 
+    # Deployment selector not dict
+    with pytest.raises(ManifestValidationError, match="selector"):
+        validate_manifest(
+            {
+                "apiVersion": "apps/v1",
+                "kind": "Deployment",
+                "metadata": {"name": "d"},
+                "spec": {
+                    "selector": "app=web",
+                    "template": {"spec": {"containers": [{"name": "c", "image": "img"}]}},
+                },
+            }
+        )
+
     # Deployment empty selector
     with pytest.raises(ManifestValidationError, match="matchLabels"):
         validate_manifest(
@@ -357,6 +371,34 @@ def test_validate_manifest_workload_spec_errors():
                 "metadata": {"name": "d"},
                 "spec": {
                     "selector": {},
+                    "template": {"spec": {"containers": [{"name": "c", "image": "img"}]}},
+                },
+            }
+        )
+
+    # Deployment non-dict matchLabels
+    with pytest.raises(ManifestValidationError, match="matchLabels"):
+        validate_manifest(
+            {
+                "apiVersion": "apps/v1",
+                "kind": "Deployment",
+                "metadata": {"name": "d"},
+                "spec": {
+                    "selector": {"matchLabels": "app=web"},
+                    "template": {"spec": {"containers": [{"name": "c", "image": "img"}]}},
+                },
+            }
+        )
+
+    # Deployment non-list matchExpressions
+    with pytest.raises(ManifestValidationError, match="matchExpressions"):
+        validate_manifest(
+            {
+                "apiVersion": "apps/v1",
+                "kind": "Deployment",
+                "metadata": {"name": "d"},
+                "spec": {
+                    "selector": {"matchExpressions": "invalid"},
                     "template": {"spec": {"containers": [{"name": "c", "image": "img"}]}},
                 },
             }

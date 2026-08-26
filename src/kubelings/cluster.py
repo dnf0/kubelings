@@ -22,6 +22,11 @@ class ClusterDetector:
         self.last_error: Optional[str] = None
         self._created_namespaces: Set[str] = set()
 
+    @property
+    def created_namespaces(self) -> Set[str]:
+        """Set of ephemeral namespace names created by this detector instance."""
+        return set(self._created_namespaces)
+
     def get_cluster_status(self, refresh: bool = False) -> Dict[str, Any]:
         """Detect and return the active Kubernetes cluster status.
 
@@ -75,7 +80,7 @@ class ClusterDetector:
         return None
 
     def create_ephemeral_namespace(
-        self, prefix: str = DEFAULT_EPHEMERAL_PREFIX, request_timeout: int = 3
+        self, prefix: Optional[str] = DEFAULT_EPHEMERAL_PREFIX, request_timeout: int = 3
     ) -> Optional[str]:
         """Create an ephemeral namespace for isolated testing.
 
@@ -94,11 +99,15 @@ class ClusterDetector:
             # Sanitize prefix to be lowercase DNS-1123 compliant and kubelings-prefixed
             raw = "" if prefix is None else str(prefix)
             clean = re.sub(r"[^a-z0-9-]+", "-", raw.lower()).strip("-")
-            if not clean.startswith("kubelings-"):
-                clean = f"kubelings-{clean}".strip("-")
-            if clean == "kubelings" or not clean:
+            if clean in ("", "kubelings"):
                 clean = DEFAULT_EPHEMERAL_PREFIX
-            clean = clean[:54]
+            elif not clean.startswith("kubelings-"):
+                clean = f"kubelings-{clean}".strip("-")
+
+            # Truncate clean prefix to 54 chars so clean + '-' + 8-char uuid <= 63 chars
+            clean = clean[:54].rstrip("-")
+            if not clean:
+                clean = DEFAULT_EPHEMERAL_PREFIX
 
             from kubernetes import client, config
 
