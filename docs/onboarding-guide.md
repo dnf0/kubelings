@@ -270,10 +270,10 @@ For the ultimate development experience, install the official **Kubelings Extens
    - Open it at any time via the Command Palette: `Kubelings: Open Welcome Walkthrough`.
    - Step-by-step onboarding with live action buttons to open exercises, run checks, and launch watch mode.
 2. **Curriculum Tree View**:
-   - Browse all 23 chapters and 102 exercises directly in the VS Code Activity Bar.
+   - Browse all 26 chapters and 114 exercises directly in the VS Code Activity Bar.
    - Live checkmark icons (✓ / ❌) indicate pass/fail progress.
 3. **Persistent Status Bar**:
-   - Displays completion percentage (e.g. `☸ Kubelings: 42% (43/102) | Next: sched02`).
+   - Displays completion percentage (e.g. `☸ Kubelings: 42% (48/114) | Next: sched02`).
    - Click to instantly jump to your current active exercise.
 4. **On-Save Diagnostics & Error Squiggles**:
    - Whenever you save `exercises/**/*.py`, the extension runs in-memory evaluation.
@@ -303,7 +303,7 @@ cursor --install-extension dist/kubelings-vscode.vsix
 
 ## 7. Curriculum & Progression Roadmap
 
-Kubelings covers 23 comprehensive chapters organized into 5 progressive learning tiers:
+Kubelings covers 26 comprehensive chapters organized into 6 progressive learning tiers:
 
 ```
 +-------------------------------------------------------------------------------+
@@ -334,6 +334,12 @@ Kubelings covers 23 comprehensive chapters organized into 5 progressive learning
 |  TIER 5: Advanced Infrastructure (Chapters 19–23)                             |
 |  Helm -> Kustomize -> Gateway API -> Crossplane -> eBPF Tetragon              |
 +-------------------------------------------------------------------------------+
+                                       |
+                                       v
++-------------------------------------------------------------------------------+
+|  TIER 6: AI & ML Platform Engineering (Chapters 24–26)                        |
+|  KubeRay (Distributed ML) -> Kueue & Volcano (Batch) -> Hardware Accel & DRA  |
++-------------------------------------------------------------------------------+
 ```
 
 ### Full Curriculum Syllabus
@@ -345,6 +351,7 @@ Kubelings covers 23 comprehensive chapters organized into 5 progressive learning
 | **Tier 3: Prod** | **11–13** | HPA/VPA/KEDA Autoscaling, CustomResourceDefinitions (CRDs), Python Operators, `CrashLoopBackOff`, OOMKilled, Incident Debugging. | 13 |
 | **Tier 4: Mesh** | **14–18** | ArgoCD GitOps, Cilium eBPF L7 Policies, Kyverno/OPA Gatekeeper Policies, Virtual Clusters, Mutating/Validating Webhooks. | 20 |
 | **Tier 5: Scale**| **19–23** | Helm v3 Charts & Schemas, Kustomize Overlays, Next-Gen Gateway API, Crossplane XRDs/Compositions, Tetragon Kernel Tracing. | 20 |
+| **Tier 6: AI/ML**| **24–26** | Distributed RayClusters, RayJob fine-tuning, RayService, Kueue Quotas/Borrowing, Volcano Gang Scheduling, NVIDIA MIG, Apple Silicon GPU & MPS, DRA, vLLM. | 12 |
 
 ---
 
@@ -360,7 +367,7 @@ Keep these commands handy as you work through the curriculum:
 | **Run Single Exercise** | `kubelings run pods01` | Evaluate a single exercise once. |
 | **Progressive Hints** | `kubelings hint pods01` | Show hint tier 1, 2, or 3. |
 | **Curriculum Progress** | `kubelings verify` | Run full curriculum evaluation dashboard. |
-| **Syllabus List** | `kubelings list` | List all 23 chapters and 102 exercises. |
+| **Syllabus List** | `kubelings list` | List all 26 chapters and 114 exercises. |
 | **Topology Visualizer** | `kubelings tree pods01` | Render resource relationship tree. |
 | **Manifest Linter** | `kubelings lint <path>` | Audit manifests for security and reliability. |
 | **Terminal Dashboard** | `kubelings tui` | Full-screen terminal dashboard. |

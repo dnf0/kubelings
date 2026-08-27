@@ -17,10 +17,10 @@ def test_cli_list_json():
     assert result.exit_code == 0
     data = json.loads(result.stdout)
     assert "total_chapters" in data
-    assert data["total_chapters"] == 23
+    assert data["total_chapters"] == 26
     assert "total_exercises" in data
-    assert data["total_exercises"] == 102
-    assert len(data["chapters"]) == 23
+    assert data["total_exercises"] == 114
+    assert len(data["chapters"]) == 26
     first_ch = data["chapters"][0]
     assert first_ch["name"] == "01_pods"
     assert len(first_ch["exercises"]) == 6
@@ -112,13 +112,13 @@ def test_cli_verify_json():
     result = runner.invoke(app, ["verify", "--json"])
     assert result.exit_code == 0
     data = json.loads(result.stdout)
-    assert data["total"] == 102
+    assert data["total"] == 114
     assert "completed" in data
     assert "in_progress" in data
     assert "not_started" in data
     assert "percentage" in data
     assert "results" in data
-    assert len(data["results"]) == 102
+    assert len(data["results"]) == 114
 
 
 def test_cli_cluster_json():

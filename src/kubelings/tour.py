@@ -487,6 +487,14 @@ spec:
         # Next steps call to action
         cta_text = Text()
         cta_text.append("\n🚀 You are ready to start learning!\n\n", style="bold green")
+        cta_text.append("Kubelings features ", style="white")
+        cta_text.append("26 chapters", style="bold cyan")
+        cta_text.append(" and ", style="white")
+        cta_text.append("114 hands-on exercises", style="bold cyan")
+        cta_text.append(
+            " across 6 progressive tiers (including Tier 6: AI & ML Platform Engineering).\n\n",
+            style="white",
+        )
         cta_text.append("Run ", style="white")
         cta_text.append("kubelings watch", style="bold cyan")
         cta_text.append(" to enter watch mode and begin with Chapter 1: Pods.\n", style="white")

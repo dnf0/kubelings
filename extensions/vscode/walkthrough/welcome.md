@@ -12,9 +12,9 @@
 
 ---
 
-### 📚 Comprehensive 23-Chapter Curriculum
+### 📚 Comprehensive 26-Chapter Curriculum
 
-Kubelings covers 23 comprehensive chapters comprising 100+ micro-exercises:
+Kubelings covers 26 comprehensive chapters comprising 114 micro-exercises across 6 progressive tiers:
 
 - **Core Workloads**: Pods, ReplicaSets, Deployments, StatefulSets, DaemonSets, Jobs, CronJobs
 - **Networking & Discovery**: Services (ClusterIP, NodePort, LoadBalancer), Ingress, NetworkPolicies, CoreDNS
@@ -23,6 +23,7 @@ Kubelings covers 23 comprehensive chapters comprising 100+ micro-exercises:
 - **Security & Access**: ServiceAccounts, RBAC (Roles, ClusterRoles, RoleBindings), SecurityContexts
 - **Reliability & Scaling**: Probes (liveness/readiness/startup), Resource Requests & Limits, HPA, PodDisruptionBudgets
 - **Advanced & Operators**: Custom Resource Definitions (CRDs), Custom Controllers, Helm, Kustomize, Multi-tenancy, Incident Troubleshooting
+- **AI & ML Platforms**: Distributed KubeRay, Kueue & Volcano Batch Scheduling, NVIDIA MIG, Apple Silicon GPU & MPS, DRA, vLLM
 
 ---
 

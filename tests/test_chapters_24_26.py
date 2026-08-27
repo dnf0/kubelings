@@ -685,3 +685,38 @@ def test_chapter_26_starters_fail(ex_name: str):
         env=env,
     )
     assert proc.returncode != 0, f"Starter {ex_path} should fail initially but returned 0."
+
+
+def test_chapters_24_26_manifest_registration():
+    from kubelings.manifest import get_exercise_by_name, get_manifest
+
+    manifest = get_manifest()
+    assert len(manifest.chapters) == 26
+    assert len(manifest.all_exercises) == 114
+
+    ch24 = next((c for c in manifest.chapters if c.number == 24), None)
+    assert ch24 is not None
+    assert ch24.name == "24_kuberay_ml"
+    assert len(ch24.exercises) == 4
+    for ex_name in ["ray01", "ray02", "ray03", "ray04"]:
+        ex = get_exercise_by_name(ex_name)
+        assert ex is not None
+        assert ex.chapter_name == "24_kuberay_ml"
+
+    ch25 = next((c for c in manifest.chapters if c.number == 25), None)
+    assert ch25 is not None
+    assert ch25.name == "25_batch_kueue_volcano"
+    assert len(ch25.exercises) == 4
+    for ex_name in ["kueue01", "kueue02", "volcano01", "volcano02"]:
+        ex = get_exercise_by_name(ex_name)
+        assert ex is not None
+        assert ex.chapter_name == "25_batch_kueue_volcano"
+
+    ch26 = next((c for c in manifest.chapters if c.number == 26), None)
+    assert ch26 is not None
+    assert ch26.name == "26_hardware_acceleration_dra"
+    assert len(ch26.exercises) == 4
+    for ex_name in ["accel01", "accel02", "accel03", "accel04"]:
+        ex = get_exercise_by_name(ex_name)
+        assert ex is not None
+        assert ex.chapter_name == "26_hardware_acceleration_dra"

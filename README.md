@@ -54,7 +54,7 @@ Learning Kubernetes from static documentation or raw copy-pasted Helm charts is 
                       |
                       v
           +-----------------------+
-          |  Curriculum Manifest  |  (23 Chapters / 102 Exercises)
+          |  Curriculum Manifest  |  (26 Chapters / 114 Exercises)
           +-----------+-----------+
                       |
                       v
@@ -226,7 +226,7 @@ kubelings list
 
 ### 9. Verify Curriculum Progress
 
-Display a rich summary table showing the pass/fail status of all 102 exercises:
+Display a rich summary table showing the pass/fail status of all 114 exercises:
 
 ```bash
 kubelings verify
@@ -257,7 +257,7 @@ Kubelings provides an official extension for **Visual Studio Code** and **Cursor
 ### ✨ Extension Features
 
 - 🗺️ **Interactive Welcome Walkthrough**: Built-in editor walkthrough (`Kubelings: Open Welcome Walkthrough`) guiding you through curriculum navigation, live cluster verification, and first exercise resolution.
-- 📚 **Activity Bar Curriculum Tree View**: Browse all 23 chapters and 102 exercises directly from the sidebar with real-time pass/fail status and chapter completion counters.
+- 📚 **Activity Bar Curriculum Tree View**: Browse all 26 chapters and 114 exercises directly from the sidebar with real-time pass/fail status and chapter completion counters.
 - 📊 **Status Bar Progress Indicator**: Persistent status bar item showing your total completion percentage, current progress, and next active exercise. Click to jump straight to the exercise.
 - ⚡ **On-Save Diagnostics**: Automatic in-editor validation whenever you save an exercise manifest (`exercises/**/*.py`), surfacing schema errors, missing attributes, or assertion failures.
 - 💡 **Code Actions & Quick Fixes**: Lightbulb quick fixes directly on errors to:
@@ -288,7 +288,7 @@ cursor --install-extension dist/kubelings-vscode.vsix
 
 ## Curriculum & Syllabus
 
-Kubelings covers 23 structured chapters with **102 practical exercises**:
+Kubelings covers 26 structured chapters with **114 practical exercises**:
 
 | Chapter | Title | Topic Overview | Exercises |
 | :--- | :--- | :--- | :--- |
@@ -315,6 +315,9 @@ Kubelings covers 23 structured chapters with **102 practical exercises**:
 | **21** | **Gateway API & Traffic Routing** | Next-gen Gateway API standard (`GatewayClass`, `Gateway`, `HTTPRoute`), canary traffic splitting, URL rewrite filters, and `ReferenceGrant`. | `gateway01` – `gateway04` (4) |
 | **22** | **Infrastructure as Data (Crossplane)** | CompositeResourceDefinitions (`XRD`), Compositions, Managed Resources, and application-level self-service Claims. | `crossplane01` – `crossplane04` (4) |
 | **23** | **eBPF Security & Observability (Tetragon)** | Real-time kernel `sys_execve` process tracing, sensitive file access auditing, synchronous `Sigkill` enforcement, and socket connect tracing. | `tetragon01` – `tetragon04` (4) |
+| **24** | **Distributed AI & ML (KubeRay)** | RayClusters, GCS/Dashboard config, heterogeneous CPU/GPU worker pools, RayJob batch fine-tuning, and RayService LLM serving. | `ray01` – `ray04` (4) |
+| **25** | **AI Batch Scheduling (Kueue & Volcano)** | Kueue ResourceFlavors, ClusterQueues, cohort borrowing, suspended job gating, Volcano gang scheduling (`minAvailable`), and fair-share queues. | `kueue01` – `volcano02` (4) |
+| **26** | **Hardware Acceleration & DRA** | NVIDIA MIG slicing (`mig-3g.40gb`), Apple Silicon GPU & Metal MPS acceleration, Dynamic Resource Allocation (DRA), and production vLLM inference server. | `accel01` – `accel04` (4) |
 
 ---
 

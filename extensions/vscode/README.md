@@ -11,14 +11,14 @@
 
 ### 1. 📚 Activity Bar Curriculum Tree View
 - Dedicated Kubelings view container in the Activity Bar.
-- Browse all **23 chapters and 102 exercises** with live status indicators:
+- Browse all **26 chapters and 114 exercises** with live status indicators:
   - 🟢 **Completed**: Solved exercises with a checkmark.
   - 🟡 **In Progress**: Currently active exercise under evaluation.
   - ⚪ **Not Started**: Remaining exercises in the syllabus.
 - One-click exercise opening, running, and progressive hint reveal.
 
 ### 2. 📊 Status Bar Progress Indicator
-- Compact status bar item displaying total progress (e.g., `$(check) Kubelings: 42/102 (41%) | Next: rbac01`).
+- Compact status bar item displaying total progress (e.g., `$(check) Kubelings: 48/114 (42%) | Next: rbac01`).
 - Click to jump directly to the current or next incomplete exercise.
 
 ### 3. ⚡ On-Save Diagnostics & Code Actions
