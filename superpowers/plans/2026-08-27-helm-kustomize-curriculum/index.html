@@ -12,29 +12,27 @@
         <meta name="author" content="Kubelings Contributors">
       
       
-        <link rel="canonical" href="https://dnf0.github.io/kubelings/">
+        <link rel="canonical" href="https://dnf0.github.io/kubelings/superpowers/plans/2026-08-27-helm-kustomize-curriculum/">
       
       
-      
-        <link rel="next" href="getting-started/">
       
       
         
       
       
-      <link rel="icon" href="assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Kubelings</title>
+        <title>Helm & Kustomize Curriculum Track (Chapters 19 & 20) Implementation Plan - Kubelings</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -53,7 +51,7 @@
       
     
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -78,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#kubelings" class="md-skip">
+        <a href="#helm-kustomize-curriculum-track-chapters-19-20-implementation-plan" class="md-skip">
           Skip to content
         </a>
       
@@ -94,7 +92,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="Kubelings" class="md-header__button md-logo" aria-label="Kubelings" data-md-component="logo">
+    <a href="../../.." title="Kubelings" class="md-header__button md-logo" aria-label="Kubelings" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Overview
+              Helm &amp; Kustomize Curriculum Track (Chapters 19 &amp; 20) Implementation Plan
             
           </span>
         </div>
@@ -232,7 +230,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="Kubelings" class="md-nav__button md-logo" aria-label="Kubelings" data-md-component="logo">
+    <a href="../../.." title="Kubelings" class="md-nav__button md-logo" aria-label="Kubelings" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -259,37 +257,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Overview
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -305,48 +276,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#why-kubelings" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why Kubelings?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#quick-example" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quick Example
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -358,7 +287,7 @@
   
   
     <li class="md-nav__item">
-      <a href="getting-started/" class="md-nav__link">
+      <a href="../../../getting-started/" class="md-nav__link">
         
   
   
@@ -385,7 +314,7 @@
   
   
     <li class="md-nav__item">
-      <a href="syllabus/" class="md-nav__link">
+      <a href="../../../syllabus/" class="md-nav__link">
         
   
   
@@ -412,7 +341,7 @@
   
   
     <li class="md-nav__item">
-      <a href="cli-reference/" class="md-nav__link">
+      <a href="../../../cli-reference/" class="md-nav__link">
         
   
   
@@ -439,7 +368,7 @@
   
   
     <li class="md-nav__item">
-      <a href="contributing/" class="md-nav__link">
+      <a href="../../../contributing/" class="md-nav__link">
         
   
   
@@ -486,10 +415,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#why-kubelings" class="md-nav__link">
+  <a href="#task-1-chapter-19-helm-packaging-exercises-solutions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why Kubelings?
+        Task 1: Chapter 19 (Helm Packaging) Exercises &amp; Solutions
       
     </span>
   </a>
@@ -497,10 +426,54 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quick-example" class="md-nav__link">
+  <a href="#task-2-chapter-20-kustomize-overlays-exercises-solutions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quick Example
+        Task 2: Chapter 20 (Kustomize Overlays) Exercises &amp; Solutions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-3-update-manifest-curriculum-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 3: Update Manifest &amp; Curriculum Engine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-4-unit-solution-testing-for-90-exercises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 4: Unit &amp; Solution Testing for 90 Exercises
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-5-documentation-syllabus-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 5: Documentation &amp; Syllabus Updates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-6-final-verification-knowledge-graph-rebuild-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 6: Final Verification, Knowledge Graph Rebuild &amp; Release
       
     </span>
   </a>
@@ -527,40 +500,68 @@
   
 
 
-<h1 id="kubelings">Kubelings ☸️</h1>
-<p><strong>An interactive, hands-on CLI learning environment for Kubernetes.</strong></p>
-<p>Inspired by <a href="https://github.com/rust-lang/rustlings">rustlings</a>, <a href="https://github.com/ziglings/exercises">ziglings</a>, and <a href="https://github.com/ray-project/raylings">raylings</a>, <strong>Kubelings</strong> guides engineers through self-paced micro-exercises directly in the terminal.</p>
+<h1 id="helm-kustomize-curriculum-track-chapters-19-20-implementation-plan">Helm &amp; Kustomize Curriculum Track (Chapters 19 &amp; 20) Implementation Plan</h1>
+<blockquote>
+<p><strong>For agentic workers:</strong> REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (<code>- [ ]</code>) syntax for tracking.</p>
+</blockquote>
+<p><strong>Goal:</strong> Add Chapter 19 (Helm Packaging) and Chapter 20 (Kustomize Overlays) with 8 new exercises, expanding Kubelings to 20 chapters and 90 total exercises.</p>
+<p><strong>Architecture:</strong> Implement offline exercise evaluators in Python using YAML parsing and JSON Schema validation for Helm chart manifests, Go template helpers, values validation schemas, and Kustomize overlays. Register chapters in curriculum manifest and update tests and documentation.</p>
+<p><strong>Tech Stack:</strong> Python 3.10+, PyYAML, jsonschema, pytest, rich, typer, mkdocs-material.</p>
 <hr />
-<h2 id="why-kubelings">Why Kubelings?</h2>
-<p>Learning Kubernetes from static documentation or copy-pasted manifests often leads to frustration because error feedback is slow and cryptic. Kubelings provides:</p>
+<h3 id="task-1-chapter-19-helm-packaging-exercises-solutions">Task 1: Chapter 19 (Helm Packaging) Exercises &amp; Solutions</h3>
+<p><strong>Files:</strong>
+- Create: <code>exercises/19_helm_packaging/helm01.py</code> ... <code>helm04.py</code>
+- Create: <code>solutions/19_helm_packaging/helm01.py</code> ... <code>helm04.py</code></p>
 <ul>
-<li>⚡ <strong>Sub-30ms Instant Feedback</strong>: In-memory schema and spec validation without waiting on slow API servers.</li>
-<li>🔁 <strong>Active Problem Solving</strong>: 90 real-world exercises across 20 chapters starting in a broken state that you fix and verify.</li>
-<li>☸ <strong>Dual-Mode Engine</strong>: Practice 100% offline or connect to a real cluster (<code>kind</code>, <code>minikube</code>, <code>k3d</code>, or cloud).</li>
-<li>💡 <strong>Progressive Hinting</strong>: Multi-tier clues when you get stuck without spoiling the answer.</li>
-<li>🚀 <strong>Zero-Install Run</strong>: Start practicing immediately with <code>uvx kubelings init &amp;&amp; uvx kubelings watch</code>.</li>
+<li>[ ] <strong>Step 1: Create starter exercises and reference solutions for helm01 to helm04</strong></li>
+<li>[ ] <strong>Step 2: Commit Chapter 19 exercises and solutions</strong></li>
 </ul>
 <hr />
-<h2 id="quick-example">Quick Example</h2>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># exercises/01_pods/pods01.py</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># I AM NOT DONE</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_pod_manifest</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="c1"># Fix the pod manifest specification</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="k">return</span> <span class="p">{</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>        <span class="s2">"apiVersion"</span><span class="p">:</span> <span class="s2">"v1"</span><span class="p">,</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        <span class="s2">"kind"</span><span class="p">:</span> <span class="s2">"Pod"</span><span class="p">,</span>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>        <span class="s2">"metadata"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="s2">"nginx-web"</span><span class="p">},</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>        <span class="s2">"spec"</span><span class="p">:</span> <span class="p">{</span>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>            <span class="s2">"containers"</span><span class="p">:</span> <span class="p">[</span>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>                <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="s2">"nginx"</span><span class="p">,</span> <span class="s2">"image"</span><span class="p">:</span> <span class="s2">"nginx:alpine"</span><span class="p">,</span> <span class="s2">"ports"</span><span class="p">:</span> <span class="p">[{</span><span class="s2">"containerPort"</span><span class="p">:</span> <span class="mi">80</span><span class="p">}]}</span>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>            <span class="p">]</span>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>        <span class="p">},</span>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="p">}</span>
-</span></code></pre></div>
-<p>Remove the <code># I AM NOT DONE</code> marker, save the file, and watch the terminal UI advance to the next exercise automatically!</p>
+<h3 id="task-2-chapter-20-kustomize-overlays-exercises-solutions">Task 2: Chapter 20 (Kustomize Overlays) Exercises &amp; Solutions</h3>
+<p><strong>Files:</strong>
+- Create: <code>exercises/20_kustomize_overlays/kustomize01.py</code> ... <code>kustomize04.py</code>
+- Create: <code>solutions/20_kustomize_overlays/kustomize01.py</code> ... <code>kustomize04.py</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Create starter exercises and reference solutions for kustomize01 to kustomize04</strong></li>
+<li>[ ] <strong>Step 2: Commit Chapter 20 exercises and solutions</strong></li>
+</ul>
+<hr />
+<h3 id="task-3-update-manifest-curriculum-engine">Task 3: Update Manifest &amp; Curriculum Engine</h3>
+<p><strong>Files:</strong>
+- Modify: <code>src/kubelings/manifest.py</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Add Chapters 19 and 20 with exercise definitions and hints in manifest.py</strong></li>
+<li>[ ] <strong>Step 2: Commit manifest updates</strong></li>
+</ul>
+<hr />
+<h3 id="task-4-unit-solution-testing-for-90-exercises">Task 4: Unit &amp; Solution Testing for 90 Exercises</h3>
+<p><strong>Files:</strong>
+- Create: <code>tests/test_chapters_19_20.py</code>
+- Modify: <code>tests/test_manifest.py</code>
+- Modify: <code>tests/test_solutions_and_exercises.py</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Write test_chapters_19_20.py and update assertions to 20 chapters / 90 exercises</strong></li>
+<li>[ ] <strong>Step 2: Run pytest and verify 90/90 pass</strong></li>
+<li>[ ] <strong>Step 3: Commit test suite updates</strong></li>
+</ul>
+<hr />
+<h3 id="task-5-documentation-syllabus-updates">Task 5: Documentation &amp; Syllabus Updates</h3>
+<p><strong>Files:</strong>
+- Modify: <code>README.md</code>
+- Modify: <code>docs/syllabus.md</code>
+- Modify: <code>docs/index.md</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Update README and documentation pages with 20 chapters and 90 exercises</strong></li>
+<li>[ ] <strong>Step 2: Rebuild demo SVG and test MkDocs build</strong></li>
+<li>[ ] <strong>Step 3: Commit documentation updates</strong></li>
+</ul>
+<hr />
+<h3 id="task-6-final-verification-knowledge-graph-rebuild-release">Task 6: Final Verification, Knowledge Graph Rebuild &amp; Release</h3>
+<ul>
+<li>[ ] <strong>Step 1: Run ruff check, ruff format, pyright, pytest, and kubelings test</strong></li>
+<li>[ ] <strong>Step 2: Run graphify update . to rebuild knowledge graph</strong></li>
+<li>[ ] <strong>Step 3: Push to remote main and monitor CI/CD release</strong></li>
+</ul>
 
 
 
@@ -616,10 +617,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

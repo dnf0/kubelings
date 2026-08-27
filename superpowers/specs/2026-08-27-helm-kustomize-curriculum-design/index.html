@@ -12,29 +12,27 @@
         <meta name="author" content="Kubelings Contributors">
       
       
-        <link rel="canonical" href="https://dnf0.github.io/kubelings/">
+        <link rel="canonical" href="https://dnf0.github.io/kubelings/superpowers/specs/2026-08-27-helm-kustomize-curriculum-design/">
       
       
-      
-        <link rel="next" href="getting-started/">
       
       
         
       
       
-      <link rel="icon" href="assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Kubelings</title>
+        <title>Design Specification: Helm & Kustomize Curriculum Track (Chapters 19 & 20) - Kubelings</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -53,7 +51,7 @@
       
     
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -78,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#kubelings" class="md-skip">
+        <a href="#design-specification-helm-kustomize-curriculum-track-chapters-19-20" class="md-skip">
           Skip to content
         </a>
       
@@ -94,7 +92,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="Kubelings" class="md-header__button md-logo" aria-label="Kubelings" data-md-component="logo">
+    <a href="../../.." title="Kubelings" class="md-header__button md-logo" aria-label="Kubelings" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Overview
+              Design Specification: Helm &amp; Kustomize Curriculum Track (Chapters 19 &amp; 20)
             
           </span>
         </div>
@@ -232,7 +230,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="Kubelings" class="md-nav__button md-logo" aria-label="Kubelings" data-md-component="logo">
+    <a href="../../.." title="Kubelings" class="md-nav__button md-logo" aria-label="Kubelings" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -259,37 +257,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Overview
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -305,48 +276,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#why-kubelings" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why Kubelings?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#quick-example" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quick Example
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -358,7 +287,7 @@
   
   
     <li class="md-nav__item">
-      <a href="getting-started/" class="md-nav__link">
+      <a href="../../../getting-started/" class="md-nav__link">
         
   
   
@@ -385,7 +314,7 @@
   
   
     <li class="md-nav__item">
-      <a href="syllabus/" class="md-nav__link">
+      <a href="../../../syllabus/" class="md-nav__link">
         
   
   
@@ -412,7 +341,7 @@
   
   
     <li class="md-nav__item">
-      <a href="cli-reference/" class="md-nav__link">
+      <a href="../../../cli-reference/" class="md-nav__link">
         
   
   
@@ -439,7 +368,7 @@
   
   
     <li class="md-nav__item">
-      <a href="contributing/" class="md-nav__link">
+      <a href="../../../contributing/" class="md-nav__link">
         
   
   
@@ -486,10 +415,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#why-kubelings" class="md-nav__link">
+  <a href="#1-overview-objectives" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why Kubelings?
+        1. Overview &amp; Objectives
       
     </span>
   </a>
@@ -497,10 +426,60 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quick-example" class="md-nav__link">
+  <a href="#2-curriculum-breakdown" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quick Example
+        2. Curriculum Breakdown
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Curriculum Breakdown">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chapter-19-package-management-with-helm-19_helm_packaging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 19: Package Management with Helm (19_helm_packaging)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chapter-20-declarative-customization-with-kustomize-20_kustomize_overlays" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 20: Declarative Customization with Kustomize (20_kustomize_overlays)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-evaluation-validation-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Evaluation &amp; Validation Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-verification-release-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Verification &amp; Release Gate
       
     </span>
   </a>
@@ -527,40 +506,56 @@
   
 
 
-<h1 id="kubelings">Kubelings ☸️</h1>
-<p><strong>An interactive, hands-on CLI learning environment for Kubernetes.</strong></p>
-<p>Inspired by <a href="https://github.com/rust-lang/rustlings">rustlings</a>, <a href="https://github.com/ziglings/exercises">ziglings</a>, and <a href="https://github.com/ray-project/raylings">raylings</a>, <strong>Kubelings</strong> guides engineers through self-paced micro-exercises directly in the terminal.</p>
+<h1 id="design-specification-helm-kustomize-curriculum-track-chapters-19-20">Design Specification: Helm &amp; Kustomize Curriculum Track (Chapters 19 &amp; 20)</h1>
+<h2 id="1-overview-objectives">1. Overview &amp; Objectives</h2>
+<p>Kubelings currently features 18 chapters and 82 exercises. This track expands the curriculum with <strong>8 new exercises</strong> covering production-grade declarative packaging, templating, and configuration management:
+- <strong>Chapter 19: Package Management with Helm</strong> (<code>19_helm_packaging</code> / <code>helm01</code> - <code>helm04</code>)
+- <strong>Chapter 20: Declarative Customization with Kustomize</strong> (<code>20_kustomize_overlays</code> / <code>kustomize01</code> - <code>kustomize04</code>)</p>
+<p>Total curriculum expands to <strong>20 Chapters</strong> and <strong>90 Exercises</strong>.</p>
 <hr />
-<h2 id="why-kubelings">Why Kubelings?</h2>
-<p>Learning Kubernetes from static documentation or copy-pasted manifests often leads to frustration because error feedback is slow and cryptic. Kubelings provides:</p>
+<h2 id="2-curriculum-breakdown">2. Curriculum Breakdown</h2>
+<h3 id="chapter-19-package-management-with-helm-19_helm_packaging">Chapter 19: Package Management with Helm (<code>19_helm_packaging</code>)</h3>
+<ol>
+<li><code>helm01</code>: <strong><code>Chart.yaml</code> Metadata &amp; Dependencies</strong></li>
+<li>Goal: Build valid Helm v3 chart metadata specifications (<code>apiVersion: v2</code>, semver <code>version</code>, <code>appVersion</code>, <code>description</code>, <code>dependencies</code> with condition toggles).</li>
+<li><code>helm02</code>: <strong>Go Templating &amp; <code>_helpers.tpl</code> Named Templates</strong></li>
+<li>Goal: Construct standardized Helm helper templates (<code>define "mychart.fullname"</code>, <code>include</code>, <code>quote</code>, <code>toYaml</code>, <code>nindent 4</code>) and render deployment templates with dynamic release names and labels.</li>
+<li><code>helm03</code>: <strong><code>values.schema.json</code> Validation Schema</strong></li>
+<li>Goal: Author a strict JSONSchema Draft-7 definition validating <code>values.yaml</code> inputs (e.g., <code>replicaCount</code> bounds, required <code>image.repository</code>, port constraints).</li>
+<li><code>helm04</code>: <strong>Subcharts, Global Values &amp; Library Templates</strong></li>
+<li>Goal: Configure parent chart with child subcharts, passing global variables (<code>global.environment</code>, <code>global.imageRegistry</code>) and applying subchart value overrides.</li>
+</ol>
+<hr />
+<h3 id="chapter-20-declarative-customization-with-kustomize-20_kustomize_overlays">Chapter 20: Declarative Customization with Kustomize (<code>20_kustomize_overlays</code>)</h3>
+<ol>
+<li><code>kustomize01</code>: <strong><code>kustomization.yaml</code> Base Manifests &amp; Metadata Transformations</strong></li>
+<li>Goal: Author standard <code>kustomization.yaml</code> bases applying <code>resources</code>, <code>namespace</code>, <code>namePrefix</code>, <code>commonLabels</code>, and <code>commonAnnotations</code>.</li>
+<li><code>kustomize02</code>: <strong>ConfigMap &amp; Secret Generators</strong></li>
+<li>Goal: Use <code>configMapGenerator</code> and <code>secretGenerator</code> with <code>literals</code>, <code>files</code>, and <code>options.disableNameSuffixHash</code> to enforce immutable deployment rollouts.</li>
+<li><code>kustomize03</code>: <strong>Strategic Merge Patches &amp; JSON6902 Target Patches</strong></li>
+<li>Goal: Apply granular patches to base resources using both inline strategic merge diffs and RFC 6902 JSON patch operations (<code>op: replace</code>, <code>op: add</code>).</li>
+<li><code>kustomize04</code>: <strong>Multi-Environment Overlays (<code>dev</code> / <code>staging</code> / <code>prod</code>)</strong></li>
+<li>Goal: Structure multi-environment overlays referencing shared bases with customized replica counts, resource limit adjustments, and image tag overrides.</li>
+</ol>
+<hr />
+<h2 id="3-evaluation-validation-architecture">3. Evaluation &amp; Validation Architecture</h2>
 <ul>
-<li>⚡ <strong>Sub-30ms Instant Feedback</strong>: In-memory schema and spec validation without waiting on slow API servers.</li>
-<li>🔁 <strong>Active Problem Solving</strong>: 90 real-world exercises across 20 chapters starting in a broken state that you fix and verify.</li>
-<li>☸ <strong>Dual-Mode Engine</strong>: Practice 100% offline or connect to a real cluster (<code>kind</code>, <code>minikube</code>, <code>k3d</code>, or cloud).</li>
-<li>💡 <strong>Progressive Hinting</strong>: Multi-tier clues when you get stuck without spoiling the answer.</li>
-<li>🚀 <strong>Zero-Install Run</strong>: Start practicing immediately with <code>uvx kubelings init &amp;&amp; uvx kubelings watch</code>.</li>
+<li><strong>In-Memory Offline Engine</strong>:</li>
+<li>Exercises construct valid dictionary representations or template strings that are verified for structural correctness, schema conformance, and rendering logic.</li>
+<li>Zero external CLI requirements: works 100% offline in sub-millisecond execution loops.</li>
+<li><strong>Manifest Integration</strong>:</li>
+<li>Registered in <code>src/kubelings/manifest.py</code>.</li>
+<li>Full suite testing via <code>tests/test_chapters_19_20.py</code>, <code>tests/test_manifest.py</code>, and <code>tests/test_solutions_and_exercises.py</code>.</li>
 </ul>
 <hr />
-<h2 id="quick-example">Quick Example</h2>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># exercises/01_pods/pods01.py</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># I AM NOT DONE</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_pod_manifest</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="c1"># Fix the pod manifest specification</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="k">return</span> <span class="p">{</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>        <span class="s2">"apiVersion"</span><span class="p">:</span> <span class="s2">"v1"</span><span class="p">,</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        <span class="s2">"kind"</span><span class="p">:</span> <span class="s2">"Pod"</span><span class="p">,</span>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>        <span class="s2">"metadata"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="s2">"nginx-web"</span><span class="p">},</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>        <span class="s2">"spec"</span><span class="p">:</span> <span class="p">{</span>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>            <span class="s2">"containers"</span><span class="p">:</span> <span class="p">[</span>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>                <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="s2">"nginx"</span><span class="p">,</span> <span class="s2">"image"</span><span class="p">:</span> <span class="s2">"nginx:alpine"</span><span class="p">,</span> <span class="s2">"ports"</span><span class="p">:</span> <span class="p">[{</span><span class="s2">"containerPort"</span><span class="p">:</span> <span class="mi">80</span><span class="p">}]}</span>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>            <span class="p">]</span>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>        <span class="p">},</span>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="p">}</span>
-</span></code></pre></div>
-<p>Remove the <code># I AM NOT DONE</code> marker, save the file, and watch the terminal UI advance to the next exercise automatically!</p>
+<h2 id="4-verification-release-gate">4. Verification &amp; Release Gate</h2>
+<ol>
+<li><code>pytest</code> unit &amp; integration tests covering all 90 exercises.</li>
+<li><code>kubelings test</code> confirming <code>90/90</code> solutions pass.</li>
+<li><code>ruff</code> &amp; <code>pyright</code> passing with zero warnings.</li>
+<li><code>graphify update .</code> knowledge graph rebuild.</li>
+<li>Push to GitHub, triggering CI, MkDocs doc build, and Semantic Release (<code>v0.4.0</code>).</li>
+</ol>
 
 
 
@@ -616,10 +611,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>
