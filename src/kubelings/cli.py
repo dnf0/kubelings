@@ -238,40 +238,85 @@ def watch_mode(
 
 
 @app.command("test")
-def test_solutions() -> None:
-    """Verify reference solutions for all curriculum exercises."""
+def test_solutions(
+    exercise: Optional[str] = typer.Option(
+        None, "--exercise", "-e", help="Specific exercise name or path to test."
+    ),
+    chapter: Optional[str] = typer.Option(
+        None, "--chapter", "-c", help="Specific chapter name to test (e.g. '01_pods')."
+    ),
+    max_exercises: Optional[int] = typer.Option(
+        None, "--max-exercises", "-m", help="Maximum number of exercises to evaluate."
+    ),
+) -> None:
+    """Verify reference solutions for curriculum exercises."""
     manifest = get_manifest()
     runner = ExerciseRunner()
 
-    with console.status("[bold cyan]Testing reference solutions...[/bold cyan]"):
-        results_map = {}
-        passed_count = 0
-        total_count = len(manifest.all_exercises)
+    target_exercises = manifest.all_exercises
 
-        for ex in manifest.all_exercises:
-            sol_ex = get_exercise_by_name(ex.name)
-            if sol_ex:
-                sol_path = sol_ex.solution_path
-                if sol_path.exists():
-                    sol_obj = type(sol_ex)(
-                        name=sol_ex.name,
-                        title=sol_ex.title,
-                        path=str(sol_path),
-                        chapter_name=sol_ex.chapter_name,
-                        hints=sol_ex.hints,
-                        requires_cluster=sol_ex.requires_cluster,
-                    )
-                    res = runner.run_exercise(sol_obj)
-                    results_map[ex.name] = res
-                    if res.passed:
-                        passed_count += 1
-                else:
-                    results_map[ex.name] = ExerciseRunner().run_exercise(sol_ex)
+    if exercise:
+        matched = [
+            ex for ex in target_exercises if ex.name == exercise or ex.path.endswith(exercise)
+        ]
+        if not matched:
+            console.print(f"[bold red]Exercise '{exercise}' not found in curriculum.[/bold red]")
+            raise typer.Exit(code=1)
+        target_exercises = matched
 
-    render_progress_table(manifest, results_map, console=console)
+    if chapter:
+        matched = [
+            ex for ex in target_exercises if ex.chapter_name == chapter or chapter in ex.chapter_name
+        ]
+        if not matched:
+            console.print(f"[bold red]Chapter '{chapter}' not found in curriculum.[/bold red]")
+            raise typer.Exit(code=1)
+        target_exercises = matched
+
+    if max_exercises is not None:
+        target_exercises = target_exercises[:max_exercises]
+
+    if chapter:
+        console.print(f"[bold cyan]Testing Chapter: {chapter}[/bold cyan]")
+    else:
+        console.print("[bold cyan]Testing Reference Solutions...[/bold cyan]")
+    results_map = {}
+    passed_count = 0
+    total_count = len(target_exercises)
+
+    for ex in target_exercises:
+        sol_ex = get_exercise_by_name(ex.name)
+        if sol_ex:
+            sol_path = sol_ex.solution_path
+            if sol_path.exists():
+                sol_obj = type(sol_ex)(
+                    name=sol_ex.name,
+                    title=sol_ex.title,
+                    path=str(sol_path),
+                    chapter_name=sol_ex.chapter_name,
+                    hints=sol_ex.hints,
+                    requires_cluster=sol_ex.requires_cluster,
+                )
+                res = runner.run_exercise(sol_obj)
+            else:
+                res = runner.run_exercise(sol_ex)
+        else:
+            res = runner.run_exercise(ex)
+
+        results_map[ex.name] = res
+        if res.passed:
+            passed_count += 1
+            console.print(f"  [bold green]✓[/bold green] {ex.name} ({ex.title}) - Passed ({res.duration_ms:.1f}ms)")
+        else:
+            console.print(f"  [bold red]✗[/bold red] {ex.name} ({ex.title}) - Failed")
+
     console.print(
         f"\n[bold cyan]Solution Verification: {passed_count}/{total_count} passing.[/bold cyan]\n"
     )
+
+    if passed_count < total_count:
+        raise typer.Exit(code=1)
+
 
 
 @app.command("init")
