@@ -1,0 +1,54 @@
+site_name: Kubelings
+site_description: An interactive, hands-on CLI learning environment for Kubernetes.
+site_url: https://dnf0.github.io/kubelings/
+site_author: Kubelings Contributors
+repo_name: dnf0/kubelings
+repo_url: https://github.com/dnf0/kubelings
+
+theme:
+  name: material
+  palette:
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: cyan
+      accent: deep purple
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+    # Palette toggle for light mode
+    - scheme: default
+      primary: cyan
+      accent: deep purple
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - attr_list
+
+nav:
+  - Overview: index.md
+  - Getting Started: getting-started.md
+  - Curriculum Syllabus: syllabus.md
+  - CLI Reference: cli-reference.md
+  - Contributing: contributing.md
