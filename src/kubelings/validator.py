@@ -581,6 +581,243 @@ def _validate_ray_service(
     return errors
 
 
+def _validate_kueue_resource(
+    manifest: Dict[str, Any], exercise_name: Optional[str] = None
+) -> List[str]:
+    """Validate a kueue.x-k8s.io manifest (ResourceFlavor, ClusterQueue, LocalQueue, WorkloadPriorityClass)."""
+    errors: List[str] = []
+    api_version = manifest.get("apiVersion", "")
+    if not isinstance(api_version, str) or not api_version.startswith("kueue.x-k8s.io/"):
+        errors.append(
+            f"Kueue resource 'apiVersion' must be under 'kueue.x-k8s.io/', got '{api_version}'."
+        )
+
+    kind = manifest.get("kind", "")
+    metadata = manifest.get("metadata", {})
+    name = metadata.get("name", "") if isinstance(metadata, dict) else ""
+
+    if kind == "ResourceFlavor":
+        if not name or not isinstance(name, str) or not name.strip():
+            errors.append("ResourceFlavor must have a non-empty metadata.name.")
+        spec = manifest.get("spec")
+        if spec is not None and not isinstance(spec, dict):
+            errors.append("ResourceFlavor 'spec' must be a dictionary if present.")
+
+    elif kind == "ClusterQueue":
+        spec = manifest.get("spec")
+        if not isinstance(spec, dict):
+            errors.append("ClusterQueue 'spec' must be a dictionary.")
+            return errors
+
+        resource_groups = spec.get("resourceGroups")
+        if not isinstance(resource_groups, list) or len(resource_groups) == 0:
+            errors.append("ClusterQueue 'spec.resourceGroups' must be a non-empty list.")
+        else:
+            for rg_idx, rg in enumerate(resource_groups):
+                if not isinstance(rg, dict):
+                    errors.append(f"Resource group at index {rg_idx} must be a dictionary.")
+                    continue
+                covered = rg.get("coveredResources")
+                if not isinstance(covered, list) or len(covered) == 0:
+                    errors.append(
+                        f"Resource group at index {rg_idx} must define non-empty 'coveredResources'."
+                    )
+                flavors = rg.get("flavors")
+                if not isinstance(flavors, list) or len(flavors) == 0:
+                    errors.append(
+                        f"Resource group at index {rg_idx} must define non-empty 'flavors'."
+                    )
+                else:
+                    for f_idx, flv in enumerate(flavors):
+                        if not isinstance(flv, dict):
+                            errors.append(
+                                f"Flavor at index {f_idx} in resource group {rg_idx} must be a dictionary."
+                            )
+                            continue
+                        if not flv.get("name"):
+                            errors.append(
+                                f"Flavor at index {f_idx} in resource group {rg_idx} missing 'name'."
+                            )
+                        resources = flv.get("resources")
+                        if not isinstance(resources, list) or len(resources) == 0:
+                            errors.append(
+                                f"Flavor '{flv.get('name')}' must define non-empty 'resources'."
+                            )
+                        else:
+                            for r_idx, res in enumerate(resources):
+                                if not isinstance(res, dict):
+                                    errors.append(
+                                        f"Resource at index {r_idx} in flavor '{flv.get('name')}' must be a dictionary."
+                                    )
+                                    continue
+                                r_name = res.get("name")
+                                if not r_name:
+                                    errors.append(
+                                        f"Resource at index {r_idx} in flavor '{flv.get('name')}' missing 'name'."
+                                    )
+                                if "nominalQuota" not in res:
+                                    errors.append(
+                                        f"Resource '{r_name}' in flavor '{flv.get('name')}' missing 'nominalQuota'."
+                                    )
+                                else:
+                                    nq = res["nominalQuota"]
+                                    if isinstance(nq, (int, float)) and nq < 0:
+                                        errors.append(
+                                            f"Resource '{r_name}' nominalQuota cannot be negative."
+                                        )
+                                    elif isinstance(nq, str) and nq.strip().startswith("-"):
+                                        errors.append(
+                                            f"Resource '{r_name}' nominalQuota cannot be negative."
+                                        )
+                                if "borrowingLimit" in res:
+                                    bl = res["borrowingLimit"]
+                                    if isinstance(bl, (int, float)) and bl < 0:
+                                        errors.append(
+                                            f"Resource '{r_name}' borrowingLimit cannot be negative."
+                                        )
+                                    elif isinstance(bl, str) and bl.strip().startswith("-"):
+                                        errors.append(
+                                            f"Resource '{r_name}' borrowingLimit cannot be negative."
+                                        )
+
+        if exercise_name == "kueue01":
+            cohort = spec.get("cohort")
+            if not cohort or not isinstance(cohort, str) or not cohort.strip():
+                errors.append(
+                    "Exercise kueue01 requires 'spec.cohort' to be defined for borrowing."
+                )
+
+    elif kind == "LocalQueue":
+        spec = manifest.get("spec")
+        if not isinstance(spec, dict):
+            errors.append("LocalQueue 'spec' must be a dictionary.")
+            return errors
+        cluster_queue = spec.get("clusterQueue")
+        if not cluster_queue or not isinstance(cluster_queue, str) or not cluster_queue.strip():
+            errors.append(
+                "LocalQueue 'spec.clusterQueue' must be a non-empty string referencing a ClusterQueue."
+            )
+
+    elif kind == "WorkloadPriorityClass":
+        val = manifest.get("value")
+        if val is None or type(val) is not int:
+            errors.append("WorkloadPriorityClass must define an integer 'value'.")
+
+    else:
+        errors.append(f"Unknown Kueue kind '{kind}'.")
+
+    return errors
+
+
+def _validate_volcano_job(
+    manifest: Dict[str, Any], exercise_name: Optional[str] = None
+) -> List[str]:
+    """Validate a batch.volcano.sh/v1alpha1 Volcano Job manifest."""
+    errors: List[str] = []
+    api_version = manifest.get("apiVersion", "")
+    if not isinstance(api_version, str) or not (
+        api_version.startswith("batch.volcano.sh/") or api_version.startswith("volcano.sh/")
+    ):
+        errors.append(
+            f"Volcano Job 'apiVersion' must be under 'batch.volcano.sh/', got '{api_version}'."
+        )
+
+    spec = manifest.get("spec")
+    if not isinstance(spec, dict):
+        errors.append("Volcano Job 'spec' must be a dictionary.")
+        return errors
+
+    min_available = spec.get("minAvailable")
+    if min_available is None or type(min_available) is not int or min_available < 1:
+        errors.append("Volcano Job must define a positive integer 'spec.minAvailable'.")
+
+    tasks = spec.get("tasks")
+    if not isinstance(tasks, list) or len(tasks) == 0:
+        errors.append("Volcano Job must define a non-empty 'spec.tasks' list.")
+    else:
+        total_replicas = 0
+        for idx, task in enumerate(tasks):
+            if not isinstance(task, dict):
+                errors.append(f"Task at index {idx} in Volcano Job must be a dictionary.")
+                continue
+            t_name = task.get("name")
+            if not t_name or not isinstance(t_name, str) or not t_name.strip():
+                errors.append(f"Task at index {idx} missing required string 'name'.")
+            replicas = task.get("replicas", 1)
+            if type(replicas) is not int or replicas < 1:
+                errors.append(f"Task '{t_name}' replicas must be a positive integer.")
+            else:
+                total_replicas += replicas
+
+            template = task.get("template")
+            if not isinstance(template, dict) or not isinstance(template.get("spec"), dict):
+                errors.append(f"Task '{t_name}' must define a valid 'template.spec'.")
+            else:
+                try:
+                    _validate_pod_spec(template["spec"], f"tasks[{idx}].template.spec")
+                except ManifestValidationError as e:
+                    errors.append(str(e))
+
+        if min_available is not None and isinstance(min_available, int):
+            if total_replicas < min_available:
+                errors.append(
+                    f"Volcano Job gang scheduling invariant violated: total task replicas ({total_replicas}) "
+                    f"is less than minAvailable ({min_available})."
+                )
+
+    if exercise_name == "volcano01":
+        if min_available != 4:
+            errors.append("Exercise volcano01 requires 'spec.minAvailable: 4'.")
+
+    return errors
+
+
+def _validate_volcano_queue(
+    manifest: Dict[str, Any], exercise_name: Optional[str] = None
+) -> List[str]:
+    """Validate a Volcano Queue manifest (scheduling.volcano.sh/v1beta1 or batch.volcano.sh/v1alpha1)."""
+    errors: List[str] = []
+    api_version = manifest.get("apiVersion", "")
+    if not isinstance(api_version, str) or not (
+        api_version.startswith("scheduling.volcano.sh/")
+        or api_version.startswith("batch.volcano.sh/")
+        or api_version.startswith("volcano.sh/")
+    ):
+        errors.append(
+            f"Volcano Queue 'apiVersion' must be under 'scheduling.volcano.sh/' or 'batch.volcano.sh/', got '{api_version}'."
+        )
+
+    spec = manifest.get("spec")
+    if not isinstance(spec, dict):
+        errors.append("Volcano Queue 'spec' must be a dictionary.")
+        return errors
+
+    weight = spec.get("weight")
+    if weight is None or not isinstance(weight, (int, float)) or weight <= 0:
+        errors.append("Volcano Queue must define a positive number 'spec.weight'.")
+
+    capability = spec.get("capability")
+    if capability is not None:
+        if not isinstance(capability, dict):
+            errors.append("Volcano Queue 'spec.capability' must be a dictionary.")
+        else:
+            for res_name, quota in capability.items():
+                if isinstance(quota, (int, float)) and quota < 0:
+                    errors.append(
+                        f"Volcano Queue capability '{res_name}' quota cannot be negative."
+                    )
+                elif isinstance(quota, str) and quota.strip().startswith("-"):
+                    errors.append(
+                        f"Volcano Queue capability '{res_name}' quota cannot be negative."
+                    )
+
+    if exercise_name == "volcano02":
+        if not capability or not isinstance(capability, dict):
+            errors.append("Exercise volcano02 requires 'spec.capability' resource limits.")
+
+    return errors
+
+
 def validate_manifest_dict(
     manifest: Any,
     exercise_name: Optional[str] = None,
@@ -619,6 +856,32 @@ def validate_manifest_dict(
     ):
         return False, ["Manifest metadata must define a non-empty string 'name' or 'generateName'."]
 
+    api_version = str(manifest.get("apiVersion", ""))
+
+    # Volcano Job (batch.volcano.sh/v1alpha1)
+    if kind == "Job" and ("volcano" in api_version or "batch.volcano.sh" in api_version):
+        volcano_errors = _validate_volcano_job(manifest, exercise_name)
+        if volcano_errors:
+            return False, volcano_errors
+        return True, []
+
+    # Volcano Queue (scheduling.volcano.sh/* or batch.volcano.sh/*)
+    if kind == "Queue" and ("volcano" in api_version or "scheduling.volcano.sh" in api_version):
+        volcano_errors = _validate_volcano_queue(manifest, exercise_name)
+        if volcano_errors:
+            return False, volcano_errors
+        return True, []
+
+    # Kueue validation
+    if (
+        kind in ("ResourceFlavor", "ClusterQueue", "LocalQueue", "WorkloadPriorityClass")
+        or "kueue.x-k8s.io" in api_version
+    ):
+        kueue_errors = _validate_kueue_resource(manifest, exercise_name)
+        if kueue_errors:
+            return False, kueue_errors
+        return True, []
+
     # Ray validation
     if kind == "RayCluster":
         ray_errors = _validate_ray_cluster(manifest, exercise_name)
@@ -641,6 +904,18 @@ def validate_manifest_dict(
         validate_manifest(manifest)
     except ManifestValidationError as e:
         return False, [str(e)]
+
+    if exercise_name == "kueue02" and kind == "Job":
+        labels = metadata.get("labels", {})
+        if not isinstance(labels, dict) or "kueue.x-k8s.io/queue-name" not in labels:
+            return False, [
+                "Exercise kueue02 requires Job to have label 'kueue.x-k8s.io/queue-name'."
+            ]
+        spec = manifest.get("spec", {})
+        if isinstance(spec, dict) and spec.get("suspend") is not True:
+            return False, [
+                "Exercise kueue02 requires Job 'spec.suspend' to be true for Kueue queue gating."
+            ]
 
     return True, []
 
