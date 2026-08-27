@@ -6,10 +6,12 @@ into a single JSON asset for the Pyodide WebAssembly browser playground.
 
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 from typing import Any
 
+from kubelings import __version__
 from kubelings.manifest import get_exercise_by_name
 
 SHOWCASE_EXERCISE_IDS = [
@@ -73,7 +75,7 @@ def build_bundle(repo_root: Path | None = None) -> dict[str, Any]:
         }
 
     return {
-        "version": "0.7.0",
+        "version": __version__,
         "validator_code": validator_code,
         "models_code": models_code,
         "exercises": exercises_data,
@@ -82,11 +84,25 @@ def build_bundle(repo_root: Path | None = None) -> dict[str, Any]:
 
 def main() -> None:
     """Entry point for command line invocation."""
-    repo_root = Path(__file__).resolve().parent.parent
-    out_dir = repo_root / "docs" / "assets" / "playground"
-    out_dir.mkdir(parents=True, exist_ok=True)
-    out_file = out_dir / "playground-bundle.json"
+    parser = argparse.ArgumentParser(description="Build Kubelings Pyodide WebAssembly bundle")
+    parser.add_argument(
+        "--output",
+        "-o",
+        type=Path,
+        default=None,
+        help="Destination path for playground-bundle.json",
+    )
+    args = parser.parse_args()
 
+    repo_root = Path(__file__).resolve().parent.parent
+    if args.output:
+        out_file = args.output
+    else:
+        out_dir = repo_root / "docs" / "assets" / "playground"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out_file = out_dir / "playground-bundle.json"
+
+    out_file.parent.mkdir(parents=True, exist_ok=True)
     bundle = build_bundle(repo_root)
     out_file.write_text(json.dumps(bundle, indent=2), encoding="utf-8")
     print(

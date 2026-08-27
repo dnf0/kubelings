@@ -10,24 +10,26 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from kubelings import __version__
 from scripts.build_playground_bundle import SHOWCASE_EXERCISE_IDS, build_bundle  # noqa: E402
 
 
-def test_playground_bundle_generation():
+def test_playground_bundle_generation(tmp_path: Path):
     bundle_script = REPO_ROOT / "scripts" / "build_playground_bundle.py"
-    bundle_path = REPO_ROOT / "docs" / "assets" / "playground" / "playground-bundle.json"
+    custom_output = tmp_path / "custom-bundle.json"
 
-    # Run generator script
+    # Run generator script with sys.executable and --output flag
     result = subprocess.run(
-        ["uv", "run", "python", str(bundle_script)],
+        [sys.executable, str(bundle_script), "--output", str(custom_output)],
         capture_output=True,
         text=True,
         cwd=str(REPO_ROOT),
     )
     assert result.returncode == 0, f"Script failed with: {result.stderr}"
-    assert bundle_path.exists(), "playground-bundle.json was not created"
+    assert custom_output.exists(), "custom-bundle.json was not created"
 
-    data = json.loads(bundle_path.read_text(encoding="utf-8"))
+    data = json.loads(custom_output.read_text(encoding="utf-8"))
+    assert data["version"] == __version__
     assert "validator_code" in data
     assert "models_code" in data
     assert "exercises" in data
@@ -61,7 +63,7 @@ def test_playground_bundle_generation():
 
 def test_build_bundle_direct():
     bundle = build_bundle(REPO_ROOT)
-    assert bundle["version"] == "0.7.0"
+    assert bundle["version"] == __version__
     assert len(bundle["exercises"]) == 11
     assert "class ManifestValidationError" in bundle["validator_code"]
     assert "class Exercise" in bundle["models_code"]
