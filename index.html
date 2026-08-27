@@ -343,6 +343,73 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#vs-code-cursor-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VS Code &amp; Cursor Extension 💻
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="VS Code &amp; Cursor Extension 💻">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#extension-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✨ Extension Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installation-instructions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📦 Installation Instructions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📦 Installation Instructions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-line-vsix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command Line (VSIX)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#editor-ui-vsix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Editor UI (VSIX)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -507,6 +574,73 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#vs-code-cursor-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VS Code &amp; Cursor Extension 💻
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="VS Code &amp; Cursor Extension 💻">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#extension-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✨ Extension Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installation-instructions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📦 Installation Instructions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📦 Installation Instructions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-line-vsix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command Line (VSIX)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#editor-ui-vsix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Editor UI (VSIX)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -561,6 +695,34 @@
 </span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="p">}</span>
 </span></code></pre></div>
 <p>Remove the <code># I AM NOT DONE</code> marker, save the file, and watch the terminal UI advance to the next exercise automatically!</p>
+<hr />
+<h2 id="vs-code-cursor-extension">VS Code &amp; Cursor Extension 💻</h2>
+<p>Kubelings offers an official extension for <strong>Visual Studio Code</strong> and <strong>Cursor</strong> that transforms your editor into an interactive Kubernetes learning IDE.</p>
+<h3 id="extension-features">✨ Extension Features</h3>
+<ul>
+<li>📚 <strong>Activity Bar Curriculum Tree View</strong>: Browse all 23 chapters and 102 exercises directly from the sidebar with real-time pass/fail status and chapter completion counters.</li>
+<li>📊 <strong>Status Bar Progress Indicator</strong>: Persistent status bar item showing your total completion percentage, current progress, and next active exercise. Click to jump straight to the exercise.</li>
+<li>⚡ <strong>On-Save Diagnostics</strong>: Automatic in-editor validation whenever you save an exercise manifest (<code>exercises/**/*.py</code>), surfacing schema errors, missing attributes, or remaining <code># I AM NOT DONE</code> markers.</li>
+<li>💡 <strong>Code Actions &amp; Quick Fixes</strong>: Lightbulb quick fixes directly on errors:</li>
+<li><strong>Reveal Hint</strong>: Display progressive hints in the editor without spoiling the answer.</li>
+<li><strong>Compare with Reference Solution</strong>: Instantly open a side-by-side diff comparing your exercise code against the official reference solution.</li>
+<li>🔍 <strong>Solution Diffing</strong>: Interactive diff viewer (<code>kubelings.showSolutionDiff</code>) for visual code comparison.</li>
+<li>💻 <strong>Integrated Terminal Watch Mode</strong>: Launch <code>kubelings watch</code> into a dedicated integrated terminal with a single click.</li>
+</ul>
+<h3 id="installation-instructions">📦 Installation Instructions</h3>
+<h4 id="command-line-vsix">Command Line (VSIX)</h4>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># For VS Code</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>code<span class="w"> </span>--install-extension<span class="w"> </span>dist/kubelings-vscode.vsix
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># For Cursor</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>cursor<span class="w"> </span>--install-extension<span class="w"> </span>dist/kubelings-vscode.vsix
+</span></code></pre></div>
+<h4 id="editor-ui-vsix">Editor UI (VSIX)</h4>
+<ol>
+<li>Open the Extensions view (<code>Ctrl+Shift+X</code> / <code>Cmd+Shift+X</code>).</li>
+<li>Click the <strong><code>...</code></strong> (Views and More Actions) menu in the top-right corner of the Extensions pane.</li>
+<li>Select <strong>Install from VSIX...</strong> and choose <code>dist/kubelings-vscode.vsix</code>.</li>
+</ol>
 
 
 

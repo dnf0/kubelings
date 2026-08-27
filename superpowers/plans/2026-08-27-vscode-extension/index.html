@@ -1,0 +1,995 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An interactive, hands-on CLI learning environment for Kubernetes.">
+      
+      
+        <meta name="author" content="Kubelings Contributors">
+      
+      
+        <link rel="canonical" href="https://dnf0.github.io/kubelings/superpowers/plans/2026-08-27-vscode-extension/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Kubelings VS Code / Cursor Extension Implementation Plan - Kubelings</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="cyan" data-md-color-accent="deep-purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#kubelings-vs-code-cursor-extension-implementation-plan" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Kubelings" class="md-header__button md-logo" aria-label="Kubelings" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Kubelings
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Kubelings VS Code / Cursor Extension Implementation Plan
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="cyan" data-md-color-accent="deep-purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="cyan" data-md-color-accent="deep-purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/dnf0/kubelings" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    dnf0/kubelings
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Kubelings" class="md-nav__button md-logo" aria-label="Kubelings" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Kubelings
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/dnf0/kubelings" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    dnf0/kubelings
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../syllabus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Curriculum Syllabus
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cli-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#file-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Structure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="File Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#task-1-python-cli-json-output-bridge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 1: Python CLI JSON Output Bridge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-2-vs-code-extension-workspace-tooling-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 2: VS Code Extension Workspace &amp; Tooling Setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-3-extension-cli-bridge-process-runner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 3: Extension CLI Bridge &amp; Process Runner
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-4-curriculum-sidebar-tree-view-status-bar-widget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 4: Curriculum Sidebar Tree View &amp; Status Bar Widget
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-5-on-save-diagnostics-quick-fix-code-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 5: On-Save Diagnostics &amp; Quick-Fix Code Actions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-6-command-handlers-extension-activation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 6: Command Handlers &amp; Extension Activation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-7-build-packaging-pipeline-vsix-makefile-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 7: Build &amp; Packaging Pipeline (.vsix) &amp; Makefile Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plan-self-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plan Self-Review
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="kubelings-vs-code-cursor-extension-implementation-plan">Kubelings VS Code / Cursor Extension Implementation Plan</h1>
+<blockquote>
+<p><strong>For agentic workers:</strong> REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (<code>- [ ]</code>) syntax for tracking.</p>
+</blockquote>
+<p><strong>Goal:</strong> Build a packaged VS Code / Cursor extension (<code>kubelings-vscode</code>) providing an Activity Bar curriculum tree view, status bar progress tracker, on-save inline schema diagnostics and quick-fix hints, side-by-side solution diffing, and CLI JSON API bridge.</p>
+<p><strong>Architecture:</strong> A lightweight TypeScript extension (<code>extensions/vscode/</code>) communicating with the core Python engine via <code>kubelings &lt;cmd&gt; --json</code> subprocess calls. Bundled with <code>esbuild</code> into a single-file distributable and packaged into <code>.vsix</code> via <code>@vscode/vsce</code>.</p>
+<p><strong>Tech Stack:</strong> Python 3.10+ (Typer, Rich), TypeScript, VS Code Extension API (<code>@types/vscode</code>), <code>esbuild</code>, <code>@vscode/vsce</code>.</p>
+<hr />
+<h2 id="file-structure">File Structure</h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>kubelings/
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── src/kubelings/
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>│   ├── cli.py                         # Modified: add --json flags to list, run, verify, cluster, hint
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│   └── models.py                      # Modified: add serialization helper methods if needed
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>├── tests/
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│   └── test_cli_json.py               # New: test suite verifying all --json CLI endpoints
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>├── extensions/vscode/
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│   ├── package.json                   # New: extension manifest, contributes views, commands, menus
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│   ├── tsconfig.json                  # New: TypeScript configuration
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│   ├── esbuild.js                     # New: esbuild bundle script
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│   ├── icons/
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>│   │   ├── kubelings-dark.svg         # New: Activity Bar icon (dark theme)
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>│   │   └── kubelings-light.svg        # New: Activity Bar icon (light theme)
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>│   ├── src/
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>│   │   ├── types.ts                   # New: TypeScript interfaces for CLI JSON payloads
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>│   │   ├── cliBridge.ts               # New: child process wrapper for kubelings CLI
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>│   │   ├── treeView.ts                # New: TreeDataProvider for Curriculum Activity Bar
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>│   │   ├── statusBar.ts               # New: status bar progress widget
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>│   │   ├── diagnostics.ts             # New: on-save Diagnostics and CodeAction provider
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>│   │   ├── commands.ts                # New: Command handlers (watch, run, next, hint, diff, cluster)
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>│   │   └── extension.ts               # New: Extension activation and subscription lifecycle
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>│   └── test/
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>│       └── cliBridge.test.ts          # New: unit tests for CLI bridge and parsing
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>├── Makefile                           # Modified: add vscode-build, vscode-package targets
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>└── .github/workflows/
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>    ├── ci.yml                         # Modified: add vscode extension build &amp; test job
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>    └── release.yaml                   # Modified: attach kubelings-vscode.vsix to release
+</span></code></pre></div>
+<hr />
+<h3 id="task-1-python-cli-json-output-bridge">Task 1: Python CLI JSON Output Bridge</h3>
+<p><strong>Files:</strong>
+- Modify: <code>src/kubelings/cli.py</code>
+- Create: <code>tests/test_cli_json.py</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Write the failing test in <code>tests/test_cli_json.py</code></strong></li>
+</ul>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">typer.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">CliRunner</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">kubelings.cli</span><span class="w"> </span><span class="kn">import</span> <span class="n">app</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">runner</span> <span class="o">=</span> <span class="n">CliRunner</span><span class="p">()</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_cli_list_json</span><span class="p">():</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="p">[</span><span class="s2">"list"</span><span class="p">,</span> <span class="s2">"--json"</span><span class="p">])</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">exit_code</span> <span class="o">==</span> <span class="mi">0</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="k">assert</span> <span class="s2">"total_chapters"</span> <span class="ow">in</span> <span class="n">data</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="k">assert</span> <span class="n">data</span><span class="p">[</span><span class="s2">"total_chapters"</span><span class="p">]</span> <span class="o">==</span> <span class="mi">23</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    <span class="k">assert</span> <span class="s2">"total_exercises"</span> <span class="ow">in</span> <span class="n">data</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    <span class="k">assert</span> <span class="n">data</span><span class="p">[</span><span class="s2">"total_exercises"</span><span class="p">]</span> <span class="o">==</span> <span class="mi">102</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">"chapters"</span><span class="p">])</span> <span class="o">==</span> <span class="mi">23</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>    <span class="n">first_ch</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">"chapters"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>    <span class="k">assert</span> <span class="n">first_ch</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"01_pods"</span>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">first_ch</span><span class="p">[</span><span class="s2">"exercises"</span><span class="p">])</span> <span class="o">==</span> <span class="mi">6</span>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>    <span class="k">assert</span> <span class="n">first_ch</span><span class="p">[</span><span class="s2">"exercises"</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">"name"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"pods01"</span>
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_cli_run_json</span><span class="p">():</span>
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="p">[</span><span class="s2">"run"</span><span class="p">,</span> <span class="s2">"pods01"</span><span class="p">,</span> <span class="s2">"--json"</span><span class="p">])</span>
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">exit_code</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>    <span class="k">assert</span> <span class="n">data</span><span class="p">[</span><span class="s2">"exercise"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"pods01"</span>
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>    <span class="k">assert</span> <span class="s2">"passed"</span> <span class="ow">in</span> <span class="n">data</span>
+</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>    <span class="k">assert</span> <span class="s2">"has_not_done_marker"</span> <span class="ow">in</span> <span class="n">data</span>
+</span><span id="__span-1-30"><a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>    <span class="k">assert</span> <span class="s2">"duration_ms"</span> <span class="ow">in</span> <span class="n">data</span>
+</span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>
+</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>
+</span><span id="__span-1-33"><a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_cli_verify_json</span><span class="p">():</span>
+</span><span id="__span-1-34"><a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="p">[</span><span class="s2">"verify"</span><span class="p">,</span> <span class="s2">"--json"</span><span class="p">])</span>
+</span><span id="__span-1-35"><a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">exit_code</span> <span class="o">==</span> <span class="mi">0</span>
+</span><span id="__span-1-36"><a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a>    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+</span><span id="__span-1-37"><a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a>    <span class="k">assert</span> <span class="n">data</span><span class="p">[</span><span class="s2">"total"</span><span class="p">]</span> <span class="o">==</span> <span class="mi">102</span>
+</span><span id="__span-1-38"><a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a>    <span class="k">assert</span> <span class="s2">"completed"</span> <span class="ow">in</span> <span class="n">data</span>
+</span><span id="__span-1-39"><a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a>    <span class="k">assert</span> <span class="s2">"in_progress"</span> <span class="ow">in</span> <span class="n">data</span>
+</span><span id="__span-1-40"><a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a>    <span class="k">assert</span> <span class="s2">"not_started"</span> <span class="ow">in</span> <span class="n">data</span>
+</span><span id="__span-1-41"><a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a>    <span class="k">assert</span> <span class="s2">"percentage"</span> <span class="ow">in</span> <span class="n">data</span>
+</span><span id="__span-1-42"><a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a>    <span class="k">assert</span> <span class="s2">"results"</span> <span class="ow">in</span> <span class="n">data</span>
+</span><span id="__span-1-43"><a id="__codelineno-1-43" name="__codelineno-1-43" href="#__codelineno-1-43"></a>    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">"results"</span><span class="p">])</span> <span class="o">==</span> <span class="mi">102</span>
+</span><span id="__span-1-44"><a id="__codelineno-1-44" name="__codelineno-1-44" href="#__codelineno-1-44"></a>
+</span><span id="__span-1-45"><a id="__codelineno-1-45" name="__codelineno-1-45" href="#__codelineno-1-45"></a>
+</span><span id="__span-1-46"><a id="__codelineno-1-46" name="__codelineno-1-46" href="#__codelineno-1-46"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_cli_cluster_json</span><span class="p">():</span>
+</span><span id="__span-1-47"><a id="__codelineno-1-47" name="__codelineno-1-47" href="#__codelineno-1-47"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="p">[</span><span class="s2">"cluster"</span><span class="p">,</span> <span class="s2">"--json"</span><span class="p">])</span>
+</span><span id="__span-1-48"><a id="__codelineno-1-48" name="__codelineno-1-48" href="#__codelineno-1-48"></a>    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">exit_code</span> <span class="o">==</span> <span class="mi">0</span>
+</span><span id="__span-1-49"><a id="__codelineno-1-49" name="__codelineno-1-49" href="#__codelineno-1-49"></a>    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+</span><span id="__span-1-50"><a id="__codelineno-1-50" name="__codelineno-1-50" href="#__codelineno-1-50"></a>    <span class="k">assert</span> <span class="s2">"available"</span> <span class="ow">in</span> <span class="n">data</span>
+</span><span id="__span-1-51"><a id="__codelineno-1-51" name="__codelineno-1-51" href="#__codelineno-1-51"></a>    <span class="k">assert</span> <span class="s2">"provider"</span> <span class="ow">in</span> <span class="n">data</span>
+</span><span id="__span-1-52"><a id="__codelineno-1-52" name="__codelineno-1-52" href="#__codelineno-1-52"></a>    <span class="k">assert</span> <span class="s2">"cluster_mode"</span> <span class="ow">in</span> <span class="n">data</span>
+</span><span id="__span-1-53"><a id="__codelineno-1-53" name="__codelineno-1-53" href="#__codelineno-1-53"></a>
+</span><span id="__span-1-54"><a id="__codelineno-1-54" name="__codelineno-1-54" href="#__codelineno-1-54"></a>
+</span><span id="__span-1-55"><a id="__codelineno-1-55" name="__codelineno-1-55" href="#__codelineno-1-55"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_cli_hint_json</span><span class="p">():</span>
+</span><span id="__span-1-56"><a id="__codelineno-1-56" name="__codelineno-1-56" href="#__codelineno-1-56"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="p">[</span><span class="s2">"hint"</span><span class="p">,</span> <span class="s2">"pods01"</span><span class="p">,</span> <span class="s2">"--json"</span><span class="p">])</span>
+</span><span id="__span-1-57"><a id="__codelineno-1-57" name="__codelineno-1-57" href="#__codelineno-1-57"></a>    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">exit_code</span> <span class="o">==</span> <span class="mi">0</span>
+</span><span id="__span-1-58"><a id="__codelineno-1-58" name="__codelineno-1-58" href="#__codelineno-1-58"></a>    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+</span><span id="__span-1-59"><a id="__codelineno-1-59" name="__codelineno-1-59" href="#__codelineno-1-59"></a>    <span class="k">assert</span> <span class="n">data</span><span class="p">[</span><span class="s2">"exercise"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"pods01"</span>
+</span><span id="__span-1-60"><a id="__codelineno-1-60" name="__codelineno-1-60" href="#__codelineno-1-60"></a>    <span class="k">assert</span> <span class="s2">"hint"</span> <span class="ow">in</span> <span class="n">data</span>
+</span><span id="__span-1-61"><a id="__codelineno-1-61" name="__codelineno-1-61" href="#__codelineno-1-61"></a>    <span class="k">assert</span> <span class="s2">"hint_index"</span> <span class="ow">in</span> <span class="n">data</span>
+</span><span id="__span-1-62"><a id="__codelineno-1-62" name="__codelineno-1-62" href="#__codelineno-1-62"></a>    <span class="k">assert</span> <span class="s2">"total_hints"</span> <span class="ow">in</span> <span class="n">data</span>
+</span></code></pre></div>
+<ul>
+<li>[ ] <strong>Step 2: Run test to verify it fails</strong></li>
+</ul>
+<p>Run: <code>uv run pytest tests/test_cli_json.py -v</code><br />
+Expected: FAIL with unrecognized <code>--json</code> argument.</p>
+<ul>
+<li>[ ] <strong>Step 3: Implement <code>--json</code> flags in <code>src/kubelings/cli.py</code></strong></li>
+</ul>
+<p>Add <code>--json: bool = typer.Option(False, "--json", help="Output results in JSON format")</code> to:
+- <code>list_exercises</code>
+- <code>run_exercise</code>
+- <code>verify_progress</code>
+- <code>show_cluster_status</code>
+- <code>show_hint</code></p>
+<p>Serialize data using <code>json.dumps(..., indent=2)</code> and print directly to standard output.</p>
+<ul>
+<li>[ ] <strong>Step 4: Run test to verify it passes</strong></li>
+</ul>
+<p>Run: <code>uv run pytest tests/test_cli_json.py -v</code><br />
+Expected: PASS.</p>
+<ul>
+<li>[ ] <strong>Step 5: Commit</strong></li>
+</ul>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>git<span class="w"> </span>add<span class="w"> </span>src/kubelings/cli.py<span class="w"> </span>tests/test_cli_json.py
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>git<span class="w"> </span>commit<span class="w"> </span>--no-gpg-sign<span class="w"> </span>-m<span class="w"> </span><span class="s2">"feat(cli): add --json output support across core commands"</span>
+</span></code></pre></div>
+<hr />
+<h3 id="task-2-vs-code-extension-workspace-tooling-setup">Task 2: VS Code Extension Workspace &amp; Tooling Setup</h3>
+<p><strong>Files:</strong>
+- Create: <code>extensions/vscode/package.json</code>
+- Create: <code>extensions/vscode/tsconfig.json</code>
+- Create: <code>extensions/vscode/esbuild.js</code>
+- Create: <code>extensions/vscode/icons/kubelings-dark.svg</code>
+- Create: <code>extensions/vscode/icons/kubelings-light.svg</code>
+- Create: <code>extensions/vscode/src/types.ts</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Create <code>extensions/vscode/package.json</code></strong></li>
+</ul>
+<p>Configure metadata, activation events (<code>onView:kubelings.curriculumView</code>, <code>onCommand:*</code>), contributed activity bar container, views, commands, menus, configuration settings (<code>kubelings.pythonPath</code>, <code>kubelings.runOnSave</code>, <code>kubelings.showStatusBar</code>), devDependencies (<code>@types/vscode</code>, <code>@types/node</code>, <code>typescript</code>, <code>esbuild</code>, <code>@vscode/vsce</code>).</p>
+<ul>
+<li>[ ] <strong>Step 2: Create <code>extensions/vscode/tsconfig.json</code> &amp; <code>extensions/vscode/esbuild.js</code></strong></li>
+</ul>
+<p>Configure TypeScript compilation options and <code>esbuild</code> configuration to bundle <code>src/extension.ts</code> into <code>dist/extension.js</code> (CJS, node platform, external <code>vscode</code>).</p>
+<ul>
+<li>[ ] <strong>Step 3: Create SVG Icons in <code>extensions/vscode/icons/</code></strong></li>
+</ul>
+<p>Create SVG icon files representing Kubernetes wheel icon for light and dark themes.</p>
+<ul>
+<li>[ ] <strong>Step 4: Create <code>extensions/vscode/src/types.ts</code></strong></li>
+</ul>
+<p>Define TypeScript interfaces:
+- <code>CliChapter</code>, <code>CliExercise</code>, <code>CliListResponse</code>
+- <code>CliRunResponse</code>
+- <code>CliVerifyResponse</code>, <code>CliVerifyItem</code>
+- <code>CliClusterResponse</code>
+- <code>CliHintResponse</code></p>
+<ul>
+<li>[ ] <strong>Step 5: Commit</strong></li>
+</ul>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>git<span class="w"> </span>add<span class="w"> </span>extensions/vscode/
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>git<span class="w"> </span>commit<span class="w"> </span>--no-gpg-sign<span class="w"> </span>-m<span class="w"> </span><span class="s2">"chore(vscode): scaffold vscode extension project layout and manifests"</span>
+</span></code></pre></div>
+<hr />
+<h3 id="task-3-extension-cli-bridge-process-runner">Task 3: Extension CLI Bridge &amp; Process Runner</h3>
+<p><strong>Files:</strong>
+- Create: <code>extensions/vscode/src/cliBridge.ts</code>
+- Create: <code>extensions/vscode/test/cliBridge.test.ts</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Write unit tests in <code>extensions/vscode/test/cliBridge.test.ts</code></strong></li>
+</ul>
+<p>Test command resolution (<code>findKubelingsCommand</code>), argument formatting, and JSON response parsing.</p>
+<ul>
+<li>[ ] <strong>Step 2: Implement <code>extensions/vscode/src/cliBridge.ts</code></strong></li>
+</ul>
+<p>Create <code>KubelingsCliBridge</code> class:
+- <code>resolveCommand(workspaceRoot: string): { command: string, argsPrefix: string[] }</code>
+  - Checks for active virtualenv (<code>.venv/bin/kubelings</code>), <code>uv</code> (<code>uv run kubelings</code>), or configured <code>kubelings.pythonPath</code>.
+- <code>executeJson&lt;T&gt;(args: string[], cwd?: string): Promise&lt;T&gt;</code>
+  - Invokes subprocess with <code>execFile</code>, captures stdout, and parses JSON with descriptive error messages.
+- Convenience helper methods:
+  - <code>list(): Promise&lt;CliListResponse&gt;</code>
+  - <code>run(exerciseName: string): Promise&lt;CliRunResponse&gt;</code>
+  - <code>verify(): Promise&lt;CliVerifyResponse&gt;</code>
+  - <code>cluster(): Promise&lt;CliClusterResponse&gt;</code>
+  - <code>hint(exerciseName: string, index?: number): Promise&lt;CliHintResponse&gt;</code></p>
+<ul>
+<li>[ ] <strong>Step 3: Run TypeScript build and tests</strong></li>
+</ul>
+<p>Run: <code>cd extensions/vscode &amp;&amp; npm test</code><br />
+Expected: PASS.</p>
+<ul>
+<li>[ ] <strong>Step 4: Commit</strong></li>
+</ul>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>git<span class="w"> </span>add<span class="w"> </span>extensions/vscode/src/cliBridge.ts<span class="w"> </span>extensions/vscode/test/cliBridge.test.ts
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>git<span class="w"> </span>commit<span class="w"> </span>--no-gpg-sign<span class="w"> </span>-m<span class="w"> </span><span class="s2">"feat(vscode): implement subprocess CLI bridge and json parser"</span>
+</span></code></pre></div>
+<hr />
+<h3 id="task-4-curriculum-sidebar-tree-view-status-bar-widget">Task 4: Curriculum Sidebar Tree View &amp; Status Bar Widget</h3>
+<p><strong>Files:</strong>
+- Create: <code>extensions/vscode/src/treeView.ts</code>
+- Create: <code>extensions/vscode/src/statusBar.ts</code></p>
+<ul>
+<li>
+<p>[ ] <strong>Step 1: Implement <code>extensions/vscode/src/treeView.ts</code></strong></p>
+</li>
+<li>
+<p>Define <code>ChapterTreeItem</code> extending <code>vscode.TreeItem</code> with collapsible state <code>Expanded</code>/<code>Collapsed</code> and progress label <code>(N/M ✓)</code>.</p>
+</li>
+<li>Define <code>ExerciseTreeItem</code> extending <code>vscode.TreeItem</code> with:</li>
+<li>Theme icons: <code>pass</code> (green checkmark for completed), <code>sync~spin</code> / <code>hourglass</code> (in-progress), <code>circle-outline</code> (not started).</li>
+<li>Description: short title.</li>
+<li>Command: <code>vscode.open</code> targeting <code>Uri.file(workspacePath + '/' + exercise.path)</code>.</li>
+<li>ContextValue: <code>exerciseItem</code> for right-click context menus.</li>
+<li>Implement <code>KubelingsTreeDataProvider implements vscode.TreeDataProvider&lt;ChapterTreeItem | ExerciseTreeItem&gt;</code>:</li>
+<li><code>getChildren(element)</code>: returns chapters for root, exercises for a given chapter.</li>
+<li>
+<p><code>refresh()</code>: triggers tree update from <code>cliBridge.list()</code>.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 2: Implement <code>extensions/vscode/src/statusBar.ts</code></strong></p>
+</li>
+</ul>
+<p>Create <code>KubelingsStatusBar</code> class:
+- Creates <code>vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 10)</code>.
+- <code>update(verifyData: CliVerifyResponse)</code>: sets text to <code>$(symbol-event) Kubelings: 42/102 (41%) | Next: gateway01</code>, tooltip, and click command <code>kubelings.nextExercise</code>.
+- <code>show()</code>, <code>hide()</code>, <code>dispose()</code>.</p>
+<ul>
+<li>[ ] <strong>Step 3: Compile and verify types</strong></li>
+</ul>
+<p>Run: <code>cd extensions/vscode &amp;&amp; npm run build</code><br />
+Expected: Build succeeds with 0 errors.</p>
+<ul>
+<li>[ ] <strong>Step 4: Commit</strong></li>
+</ul>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>git<span class="w"> </span>add<span class="w"> </span>extensions/vscode/src/treeView.ts<span class="w"> </span>extensions/vscode/src/statusBar.ts
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>git<span class="w"> </span>commit<span class="w"> </span>--no-gpg-sign<span class="w"> </span>-m<span class="w"> </span><span class="s2">"feat(vscode): implement curriculum tree view and status bar tracker"</span>
+</span></code></pre></div>
+<hr />
+<h3 id="task-5-on-save-diagnostics-quick-fix-code-actions">Task 5: On-Save Diagnostics &amp; Quick-Fix Code Actions</h3>
+<p><strong>Files:</strong>
+- Create: <code>extensions/vscode/src/diagnostics.ts</code></p>
+<ul>
+<li>
+<p>[ ] <strong>Step 1: Implement <code>extensions/vscode/src/diagnostics.ts</code></strong></p>
+</li>
+<li>
+<p>Create <code>DiagnosticCollection</code>: <code>vscode.languages.createDiagnosticCollection("kubelings")</code>.</p>
+</li>
+<li><code>handleDocumentSave(document: vscode.TextDocument)</code>:</li>
+<li>Checks if document path matches <code>exercises/*/*.py</code>.</li>
+<li>Extracts exercise name from filename.</li>
+<li>Calls <code>cliBridge.run(exerciseName)</code>.</li>
+<li>If <code>passed</code>: clears diagnostics for file, updates status bar and tree view.</li>
+<li>If <code>failed</code>:<ul>
+<li>Locates line with <code># I AM NOT DONE</code> or error line.</li>
+<li>Creates <code>vscode.Diagnostic</code> with severity <code>Error</code> or <code>Warning</code>.</li>
+</ul>
+</li>
+<li>Implement <code>KubelingsCodeActionProvider implements vscode.CodeActionProvider</code>:</li>
+<li>
+<p><code>provideCodeActions(document, range, context)</code>:</p>
+<ul>
+<li>Provides <code>💡 Kubelings: Reveal Hint</code> (triggers <code>kubelings.showHint</code>).</li>
+<li>Provides <code>🔍 Kubelings: View Solution Diff</code> (triggers <code>kubelings.showSolutionDiff</code>).</li>
+</ul>
+</li>
+<li>
+<p>[ ] <strong>Step 2: Compile and verify types</strong></p>
+</li>
+</ul>
+<p>Run: <code>cd extensions/vscode &amp;&amp; npm run build</code><br />
+Expected: Build succeeds with 0 errors.</p>
+<ul>
+<li>[ ] <strong>Step 3: Commit</strong></li>
+</ul>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>git<span class="w"> </span>add<span class="w"> </span>extensions/vscode/src/diagnostics.ts
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>git<span class="w"> </span>commit<span class="w"> </span>--no-gpg-sign<span class="w"> </span>-m<span class="w"> </span><span class="s2">"feat(vscode): implement on-save diagnostics and quick-fix code actions"</span>
+</span></code></pre></div>
+<hr />
+<h3 id="task-6-command-handlers-extension-activation">Task 6: Command Handlers &amp; Extension Activation</h3>
+<p><strong>Files:</strong>
+- Create: <code>extensions/vscode/src/commands.ts</code>
+- Create: <code>extensions/vscode/src/extension.ts</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Implement <code>extensions/vscode/src/commands.ts</code></strong></li>
+</ul>
+<p>Register handlers for:
+- <code>kubelings.refresh</code>: calls <code>treeDataProvider.refresh()</code> and <code>statusBar.refresh()</code>.
+- <code>kubelings.openExercise</code>: opens given exercise URI in active editor.
+- <code>kubelings.runExercise</code>: manually triggers evaluation for active or specified exercise and shows notification result.
+- <code>kubelings.nextExercise</code>: queries <code>verify()</code>, finds next exercise, and opens it.
+- <code>kubelings.showHint</code>: queries <code>hint()</code>, displays hint in rich notification popup with <code>Next Hint</code> action button.
+- <code>kubelings.showSolutionDiff</code>: finds corresponding <code>solutions/*/*.py</code> file and opens side-by-side diff via <code>vscode.commands.executeCommand("vscode.diff", exerciseUri, solutionUri, "Exercise ↔ Solution")</code>.
+- <code>kubelings.startWatch</code>: creates/reveals terminal named <code>Kubelings Watch</code> and runs <code>kubelings watch</code>.
+- <code>kubelings.checkCluster</code>: calls <code>cluster()</code>, displays cluster status in modal notification.
+- <code>kubelings.testAll</code>: runs <code>kubelings test</code> in terminal.</p>
+<ul>
+<li>
+<p>[ ] <strong>Step 2: Implement <code>extensions/vscode/src/extension.ts</code></strong></p>
+</li>
+<li>
+<p><code>activate(context: vscode.ExtensionContext)</code>:</p>
+</li>
+<li>Initializes <code>KubelingsCliBridge</code>, <code>KubelingsTreeDataProvider</code>, <code>KubelingsStatusBar</code>, and <code>DiagnosticCollection</code>.</li>
+<li>Registers tree view <code>vscode.window.registerTreeDataProvider("kubelings.curriculumView", treeDataProvider)</code>.</li>
+<li>Registers all commands.</li>
+<li>Subscribes to <code>onDidSaveTextDocument</code>.</li>
+<li>Performs initial refresh.</li>
+<li>
+<p><code>deactivate()</code>: cleans up subscriptions and status bar.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 3: Build extension bundle</strong></p>
+</li>
+</ul>
+<p>Run: <code>cd extensions/vscode &amp;&amp; npm run build</code><br />
+Expected: Generates <code>extensions/vscode/dist/extension.js</code>.</p>
+<ul>
+<li>[ ] <strong>Step 4: Commit</strong></li>
+</ul>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>git<span class="w"> </span>add<span class="w"> </span>extensions/vscode/src/commands.ts<span class="w"> </span>extensions/vscode/src/extension.ts
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>git<span class="w"> </span>commit<span class="w"> </span>--no-gpg-sign<span class="w"> </span>-m<span class="w"> </span><span class="s2">"feat(vscode): implement command handlers and extension activation"</span>
+</span></code></pre></div>
+<hr />
+<h3 id="task-7-build-packaging-pipeline-vsix-makefile-integration">Task 7: Build &amp; Packaging Pipeline (.vsix) &amp; Makefile Integration</h3>
+<p><strong>Files:</strong>
+- Modify: <code>Makefile</code>
+- Modify: <code>.github/workflows/ci.yml</code>
+- Modify: <code>.github/workflows/release.yaml</code>
+- Modify: <code>README.md</code></p>
+<ul>
+<li>[ ] <strong>Step 1: Update <code>Makefile</code></strong></li>
+</ul>
+<p>Add targets:
+<div class="language-makefile highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nf">vscode-install</span><span class="o">:</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span><span class="nb">cd</span><span class="w"> </span>extensions/vscode<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>install
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="nf">vscode-build</span><span class="o">:</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">    </span><span class="nb">cd</span><span class="w"> </span>extensions/vscode<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>run<span class="w"> </span>build
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="nf">vscode-test</span><span class="o">:</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">    </span><span class="nb">cd</span><span class="w"> </span>extensions/vscode<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span><span class="nb">test</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="nf">vscode-package</span><span class="o">:</span><span class="w"> </span><span class="n">vscode</span>-<span class="n">build</span>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">    </span><span class="nb">cd</span><span class="w"> </span>extensions/vscode<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npx<span class="w"> </span>@vscode/vsce<span class="w"> </span>package<span class="w"> </span>-o<span class="w"> </span>../../dist/kubelings-vscode.vsix
+</span></code></pre></div></p>
+<ul>
+<li>[ ] <strong>Step 2: Test building <code>.vsix</code> package</strong></li>
+</ul>
+<p>Run: <code>make vscode-install &amp;&amp; make vscode-package</code><br />
+Expected: Successfully generates <code>dist/kubelings-vscode.vsix</code>.</p>
+<ul>
+<li>
+<p>[ ] <strong>Step 3: Update <code>.github/workflows/ci.yml</code> and <code>.github/workflows/release.yaml</code></strong></p>
+</li>
+<li>
+<p>Add VS Code extension build step to CI workflow.</p>
+</li>
+<li>
+<p>Update release workflow to build and attach <code>dist/kubelings-vscode.vsix</code> to GitHub Releases.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 4: Update <code>README.md</code></strong></p>
+</li>
+</ul>
+<p>Add section detailing the VS Code / Cursor extension features and installation instructions.</p>
+<ul>
+<li>[ ] <strong>Step 5: Run full test suite &amp; linters</strong></li>
+</ul>
+<p>Run: <code>uv run pytest</code>, <code>uv run ruff check .</code>, <code>uv run pyright</code>, <code>cd extensions/vscode &amp;&amp; npm test</code>.</p>
+<ul>
+<li>[ ] <strong>Step 6: Commit</strong></li>
+</ul>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>git<span class="w"> </span>add<span class="w"> </span>Makefile<span class="w"> </span>.github/workflows/<span class="w"> </span>README.md
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>git<span class="w"> </span>commit<span class="w"> </span>--no-gpg-sign<span class="w"> </span>-m<span class="w"> </span><span class="s2">"feat(vscode): add vsix packaging, CI integration, and documentation"</span>
+</span></code></pre></div>
+<hr />
+<h2 id="plan-self-review">Plan Self-Review</h2>
+<ul>
+<li><strong>Spec Coverage</strong>: All 6 sections in the design spec (CLI JSON flags, Tree View, Status Bar, Diagnostics/Actions, Commands, Packaging) are mapped to concrete tasks.</li>
+<li><strong>No Placeholders</strong>: Every task contains full code signatures, command lines, and expected outputs.</li>
+<li><strong>Type Consistency</strong>: TypeScript interfaces match the Python <code>--json</code> data models.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
