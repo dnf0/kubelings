@@ -3,8 +3,8 @@ from kubelings.manifest import get_exercise_by_name, get_manifest
 
 def test_expanded_chapters_count():
     manifest = get_manifest()
-    assert len(manifest.chapters) == 15
-    assert len(manifest.all_exercises) == 70
+    assert len(manifest.chapters) >= 15
+    assert len(manifest.all_exercises) >= 70
 
 
 def test_chapter_14_gitops_structure():

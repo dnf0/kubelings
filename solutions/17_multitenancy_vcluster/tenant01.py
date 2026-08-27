@@ -4,6 +4,7 @@ Exercise 17.1: Hierarchical Namespace Controller (HNC) Subnamespace Anchor (Solu
 """
 
 from typing import Any, Dict
+
 import yaml
 
 

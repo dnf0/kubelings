@@ -8,6 +8,7 @@ for migrating between v1alpha1 and v1 of the 'AppDeployment' CRD.
 """
 
 from typing import Any, Dict
+
 import yaml
 
 

@@ -4,6 +4,7 @@ Exercise 16.3: Kyverno Generate Policy for Default Deny NetworkPolicy (Solution)
 """
 
 from typing import Any, Dict
+
 import yaml
 
 

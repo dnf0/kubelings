@@ -1,6 +1,6 @@
 """Tests for Universal Kubernetes Manifest Linter."""
 
-from kubelings.linter import ManifestLinter, LintSeverity
+from kubelings.linter import LintSeverity, ManifestLinter
 
 
 def test_linter_detects_missing_probes_and_security():
@@ -8,9 +8,7 @@ def test_linter_detects_missing_probes_and_security():
         "apiVersion": "v1",
         "kind": "Pod",
         "metadata": {"name": "insecure-pod"},
-        "spec": {
-            "containers": [{"name": "web", "image": "nginx"}]
-        },
+        "spec": {"containers": [{"name": "web", "image": "nginx"}]},
     }
     linter = ManifestLinter()
     diagnostics = linter.lint_manifest(bad_manifest)
@@ -35,12 +33,8 @@ def test_linter_passes_secure_well_formed_manifest():
                         "requests": {"cpu": "100m", "memory": "128Mi"},
                         "limits": {"cpu": "200m", "memory": "256Mi"},
                     },
-                    "livenessProbe": {
-                        "httpGet": {"path": "/healthz", "port": 80}
-                    },
-                    "readinessProbe": {
-                        "httpGet": {"path": "/ready", "port": 80}
-                    },
+                    "livenessProbe": {"httpGet": {"path": "/healthz", "port": 80}},
+                    "readinessProbe": {"httpGet": {"path": "/ready", "port": 80}},
                     "securityContext": {
                         "readOnlyRootFilesystem": True,
                         "allowPrivilegeEscalation": False,

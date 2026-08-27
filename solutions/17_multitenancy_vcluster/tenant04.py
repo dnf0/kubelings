@@ -4,6 +4,7 @@ Exercise 17.4: Multi-Tenant Network Isolation Policy (Solution)
 """
 
 from typing import Any, Dict
+
 import yaml
 
 

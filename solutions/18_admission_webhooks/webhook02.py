@@ -4,6 +4,7 @@ Exercise 18.2: ValidatingWebhookConfiguration Manifest (Solution)
 """
 
 from typing import Any, Dict
+
 import yaml
 
 

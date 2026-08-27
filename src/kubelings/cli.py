@@ -380,16 +380,20 @@ def reset_cmd(
 
 @app.command("tree")
 def tree_cmd(
-    target: str = typer.Argument("pods01", help="Exercise name, file path, or YAML manifest to visualize"),
+    target: str = typer.Argument(
+        "pods01", help="Exercise name, file path, or YAML manifest to visualize"
+    ),
 ) -> None:
     """Render architectural relationship topology tree for Kubernetes resources."""
     from pathlib import Path
+
     import yaml
+
     from kubelings.topology import render_topology_tree
 
     ex = get_exercise_by_name(target)
     manifests = []
-    
+
     if ex:
         # Check solution first if exists, else exercise
         target_path = ex.solution_path if ex.solution_path.exists() else ex.file_path
@@ -404,6 +408,7 @@ def tree_cmd(
             if not manifests or not any(isinstance(m, dict) for m in manifests):
                 # Look for YAML inside python multiline strings
                 import re
+
                 yaml_blocks = re.findall(r'"""(.*?)"""', content, re.DOTALL)
                 for block in yaml_blocks:
                     try:
@@ -427,7 +432,11 @@ def tree_cmd(
     if not manifests:
         # Provide sample manifest fallback
         manifests = [
-            {"apiVersion": "v1", "kind": "Pod", "metadata": {"name": target, "namespace": "default"}}
+            {
+                "apiVersion": "v1",
+                "kind": "Pod",
+                "metadata": {"name": target, "namespace": "default"},
+            }
         ]
 
     render_topology_tree(manifests, console=console)
@@ -435,11 +444,14 @@ def tree_cmd(
 
 @app.command("lint")
 def lint_cmd(
-    target: str = typer.Argument(..., help="Path to Kubernetes YAML/JSON manifest or exercise file to lint"),
+    target: str = typer.Argument(
+        ..., help="Path to Kubernetes YAML/JSON manifest or exercise file to lint"
+    ),
 ) -> None:
     """Evaluate Kubernetes manifests against security, reliability, and schema rules."""
     from pathlib import Path
-    from kubelings.linter import ManifestLinter, LintSeverity, render_lint_table
+
+    from kubelings.linter import LintSeverity, ManifestLinter, render_lint_table
 
     file_path = Path(target)
     if not file_path.exists():
@@ -451,7 +463,10 @@ def lint_cmd(
 
     # If it's a python exercise file, extract manifests from docstrings / code
     if file_path.suffix == ".py" and not diagnostics:
-        import yaml, re
+        import re
+
+        import yaml
+
         content = file_path.read_text(encoding="utf-8")
         yaml_blocks = re.findall(r'"""(.*?)"""', content, re.DOTALL)
         for block in yaml_blocks:

@@ -8,6 +8,7 @@ updates with URL endpoint targets and namespaceSelectors.
 """
 
 from typing import Any, Dict
+
 import yaml
 
 

@@ -1,9 +1,9 @@
 """Interactive Terminal TUI Dashboard for Kubelings."""
 
 from dataclasses import dataclass, field
-from pathlib import Path
 from typing import Dict, Optional
-from rich.console import Console, RenderableType
+
+from rich.console import Console
 from rich.layout import Layout
 from rich.panel import Panel
 from rich.syntax import Syntax
@@ -99,7 +99,10 @@ class TuiApp:
         text = Text()
         text.append("☸ KUBELINGS TUI DASHBOARD", style="bold cyan")
         text.append(" • Interactive Kubernetes Curriculum Explorer", style="dim")
-        text.append(f" • Exercise {self.state.selected_exercise_index + 1}/{len(self.state.all_exercises)}", style="bold yellow")
+        text.append(
+            f" • Exercise {self.state.selected_exercise_index + 1}/{len(self.state.all_exercises)}",
+            style="bold yellow",
+        )
         return Panel(text, border_style="cyan")
 
     def _render_sidebar(self) -> Panel:
@@ -111,13 +114,15 @@ class TuiApp:
             for ex in ch.exercises:
                 is_selected = ex.name == current_ex.name
                 res = self.state.results.get(ex.name)
-                
+
                 status_icon = "⭕"
                 if res:
                     status_icon = "✅" if res.passed else "❌"
 
                 if is_selected:
-                    ch_node.add(f"[bold cyan]➔ {status_icon} {ex.name}[/bold cyan] [bold white]({ex.title})[/bold white]")
+                    ch_node.add(
+                        f"[bold cyan]➔ {status_icon} {ex.name}[/bold cyan] [bold white]({ex.title})[/bold white]"
+                    )
                 else:
                     ch_node.add(f"[dim]{status_icon} {ex.name} ({ex.title})[/dim]")
 
@@ -167,11 +172,16 @@ class TuiApp:
 
         # Hints section
         if self.state.active_hint_index > 0:
-            text.append(f"\n💡 Hint Tier {self.state.active_hint_index}/{len(ex.hints)}:\n", style="bold yellow")
+            text.append(
+                f"\n💡 Hint Tier {self.state.active_hint_index}/{len(ex.hints)}:\n",
+                style="bold yellow",
+            )
             for i in range(self.state.active_hint_index):
                 text.append(f"  • {ex.hints[i]}\n", style="yellow")
         elif ex.hints:
-            text.append("\n💡 Hints available: Press 'h' to reveal progressive hints.\n", style="dim yellow")
+            text.append(
+                "\n💡 Hints available: Press 'h' to reveal progressive hints.\n", style="dim yellow"
+            )
 
         return Panel(text, title="[bold cyan]Evaluation & Hints[/bold cyan]", border_style="cyan")
 

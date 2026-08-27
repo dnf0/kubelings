@@ -1,7 +1,7 @@
 """Tests for CLI v2 features (tree, lint, tui)."""
 
-from pathlib import Path
 from typer.testing import CliRunner
+
 from kubelings.cli import app
 
 runner = CliRunner()

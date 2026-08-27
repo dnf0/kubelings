@@ -4,6 +4,7 @@ Exercise 18.1: MutatingWebhookConfiguration Manifest (Solution)
 """
 
 from typing import Any, Dict
+
 import yaml
 
 

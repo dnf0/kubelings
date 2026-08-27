@@ -4,6 +4,7 @@ Exercise 16.4: OPA Gatekeeper ConstraintTemplate & Constraint (Solution)
 """
 
 from typing import Any, Dict
+
 import yaml
 
 

@@ -4,6 +4,7 @@ Exercise 16.2: Kyverno Mutating Policy for Security Context Defaults (Solution)
 """
 
 from typing import Any, Dict
+
 import yaml
 
 

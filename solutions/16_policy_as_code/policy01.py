@@ -4,6 +4,7 @@ Exercise 16.1: Kyverno ClusterPolicy for Required Labels (Solution)
 """
 
 from typing import Any, Dict
+
 import yaml
 
 

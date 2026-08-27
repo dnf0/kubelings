@@ -8,6 +8,7 @@ logic to verify mandatory labels and the associated constraint.
 """
 
 from typing import Any, Dict
+
 import yaml
 
 

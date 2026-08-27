@@ -4,6 +4,7 @@ Exercise 17.3: Virtual Cluster (vcluster) Control Plane Manifest (Solution)
 """
 
 from typing import Any, Dict
+
 import yaml
 
 

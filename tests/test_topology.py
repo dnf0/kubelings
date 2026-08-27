@@ -1,7 +1,8 @@
 """Tests for Kubernetes Resource Topology Visualizer."""
 
 from rich.tree import Tree
-from kubelings.topology import build_resource_topology, render_topology_tree
+
+from kubelings.topology import build_resource_topology
 
 
 def test_pod_service_topology():

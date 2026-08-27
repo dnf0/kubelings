@@ -1,6 +1,7 @@
 """Kubernetes Resource Relationship Topology Visualizer."""
 
 from typing import Any, Dict, List, Optional
+
 from rich.console import Console
 from rich.panel import Panel
 from rich.tree import Tree
@@ -56,7 +57,15 @@ def build_resource_topology(manifests: List[Dict[str, Any]]) -> Tree:
         if not isinstance(m, dict):
             continue
         kind = m.get("kind", "")
-        if kind in ("Pod", "Deployment", "StatefulSet", "DaemonSet", "Job", "CronJob", "ReplicaSet"):
+        if kind in (
+            "Pod",
+            "Deployment",
+            "StatefulSet",
+            "DaemonSet",
+            "Job",
+            "CronJob",
+            "ReplicaSet",
+        ):
             workloads.append(m)
         elif kind in ("Service", "Endpoints"):
             services.append(m)
@@ -64,7 +73,13 @@ def build_resource_topology(manifests: List[Dict[str, Any]]) -> Tree:
             ingresses.append(m)
         elif kind in ("PersistentVolumeClaim", "PersistentVolume", "StorageClass"):
             storage.append(m)
-        elif kind in ("NetworkPolicy", "CiliumNetworkPolicy", "CiliumClusterwideNetworkPolicy", "ClusterPolicy", "PeerAuthentication"):
+        elif kind in (
+            "NetworkPolicy",
+            "CiliumNetworkPolicy",
+            "CiliumClusterwideNetworkPolicy",
+            "ClusterPolicy",
+            "PeerAuthentication",
+        ):
             policies.append(m)
         elif kind in ("ConfigMap", "Secret"):
             configs.append(m)
@@ -79,7 +94,7 @@ def build_resource_topology(manifests: List[Dict[str, Any]]) -> Tree:
             name = ing.get("metadata", {}).get("name", "unnamed")
             ns = ing.get("metadata", {}).get("namespace", "default")
             sub = ing_branch.add(_format_resource_label(kind, name, ns))
-            
+
             # Show rules
             rules = ing.get("spec", {}).get("rules", [])
             for r in rules:
@@ -95,7 +110,7 @@ def build_resource_topology(manifests: List[Dict[str, Any]]) -> Tree:
             name = svc.get("metadata", {}).get("name", "unnamed")
             ns = svc.get("metadata", {}).get("namespace", "default")
             sub = svc_branch.add(_format_resource_label(kind, name, ns))
-            
+
             ports = svc.get("spec", {}).get("ports", [])
             for p in ports:
                 sub.add(f"[dim]port {p.get('port')} ➔ targetPort {p.get('targetPort')}[/dim]")
@@ -115,7 +130,9 @@ def build_resource_topology(manifests: List[Dict[str, Any]]) -> Tree:
                 spec = spec.get("template", {}).get("spec", {})
             containers = spec.get("containers", [])
             for c in containers:
-                sub.add(f"[cyan]🐳 container:[/cyan] [white]{c.get('name')}[/white] [dim]({c.get('image')})[/dim]")
+                sub.add(
+                    f"[cyan]🐳 container:[/cyan] [white]{c.get('name')}[/white] [dim]({c.get('image')})[/dim]"
+                )
 
     # Storage layer
     if storage:
@@ -158,7 +175,9 @@ def build_resource_topology(manifests: List[Dict[str, Any]]) -> Tree:
     return root
 
 
-def render_topology_tree(manifests: List[Dict[str, Any]], console: Optional[Console] = None) -> None:
+def render_topology_tree(
+    manifests: List[Dict[str, Any]], console: Optional[Console] = None
+) -> None:
     """Render topology tree in a formatted panel."""
     c = console or get_console()
     tree = build_resource_topology(manifests)

@@ -4,6 +4,7 @@ Exercise 18.4: CRD Conversion Webhook Strategy (Solution)
 """
 
 from typing import Any, Dict
+
 import yaml
 
 

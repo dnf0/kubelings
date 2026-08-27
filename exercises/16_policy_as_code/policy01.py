@@ -8,6 +8,7 @@ in the cluster have the 'app.kubernetes.io/name' and 'team' labels.
 """
 
 from typing import Any, Dict
+
 import yaml
 
 

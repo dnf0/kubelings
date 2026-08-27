@@ -8,6 +8,7 @@ a default-deny NetworkPolicy in any newly created Namespace.
 """
 
 from typing import Any, Dict
+
 import yaml
 
 

@@ -8,6 +8,7 @@ Fix the HNC SubnamespaceAnchor manifest that declares a child namespace
 """
 
 from typing import Any, Dict
+
 import yaml
 
 

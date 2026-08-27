@@ -8,6 +8,7 @@ securityContext.runAsNonRoot: true into any Pod that omits it.
 """
 
 from typing import Any, Dict
+
 import yaml
 
 

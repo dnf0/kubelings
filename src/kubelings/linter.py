@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+
 import yaml
 from rich.console import Console
 from rich.table import Table
@@ -30,7 +31,9 @@ class LintDiagnostic:
 class ManifestLinter:
     """Evaluates Kubernetes manifests against security, reliability, and schema rules."""
 
-    def lint_manifest(self, manifest: Dict[str, Any], file_path: str = "inline") -> List[LintDiagnostic]:
+    def lint_manifest(
+        self, manifest: Dict[str, Any], file_path: str = "inline"
+    ) -> List[LintDiagnostic]:
         diagnostics: List[LintDiagnostic] = []
 
         if not isinstance(manifest, dict):
@@ -113,7 +116,7 @@ class ManifestLinter:
             for idx, c in enumerate(containers):
                 c_name = c.get("name", f"container[{idx}]")
                 c_sec = c.get("securityContext", {})
-                
+
                 # Privileged check
                 if c_sec.get("privileged") is True:
                     diagnostics.append(
@@ -177,11 +180,18 @@ class ManifestLinter:
 
         if file_path.suffix == ".py":
             import re
+
             yaml_blocks = re.findall(r'"""(.*?)"""', content, re.DOTALL)
             for block in yaml_blocks:
                 try:
                     loaded = list(yaml.safe_load_all(block.strip()))
-                    docs.extend([d for d in loaded if isinstance(d, dict) and ("kind" in d or "apiVersion" in d)])
+                    docs.extend(
+                        [
+                            d
+                            for d in loaded
+                            if isinstance(d, dict) and ("kind" in d or "apiVersion" in d)
+                        ]
+                    )
                 except Exception:
                     pass
             # If no embedded manifests found in docstrings, nothing to flag as syntax error
@@ -206,7 +216,9 @@ class ManifestLinter:
         return diagnostics
 
 
-def render_lint_table(diagnostics: List[LintDiagnostic], console: Optional[Console] = None) -> Table:
+def render_lint_table(
+    diagnostics: List[LintDiagnostic], console: Optional[Console] = None
+) -> Table:
     """Render a Rich table formatting lint diagnostics."""
     c = console or get_console()
     table = Table(
