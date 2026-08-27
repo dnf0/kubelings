@@ -1,6 +1,7 @@
 """Command-line interface (CLI) commands and entry points for Kubelings."""
 
-from typing import Optional
+import json
+from typing import Any, Optional
 
 import click
 import typer
@@ -22,20 +23,27 @@ from kubelings.ui import (
 _orig_make_metavar = click.core.Parameter.make_metavar
 
 
-def _compat_make_metavar(self: click.core.Parameter, ctx: Optional[click.Context] = None) -> str:
-    if ctx is None:
-        if self.metavar is not None:
-            return self.metavar
+def _compat_make_metavar(self: click.core.Parameter, *args: Any, **kwargs: Any) -> str:
+    if self.metavar is not None:
+        return self.metavar
+    try:
+        return _orig_make_metavar(self, *args, **kwargs)
+    except TypeError:
         try:
-            metavar = self.type.get_metavar(param=self, ctx=None)  # type: ignore
+            return _orig_make_metavar(self)  # type: ignore
         except Exception:
-            metavar = None
-        if metavar is None:
-            metavar = self.type.name.upper()
-        if self.nargs != 1:
-            metavar += "..."
-        return metavar
-    return _orig_make_metavar(self, ctx)
+            pass
+    except Exception:
+        pass
+    try:
+        metavar = self.type.get_metavar(param=self)  # type: ignore
+    except Exception:
+        metavar = None
+    if metavar is None:
+        metavar = getattr(self.type, "name", "TEXT").upper()
+    if getattr(self, "nargs", 1) != 1:
+        metavar += "..."
+    return metavar
 
 
 click.core.Parameter.make_metavar = _compat_make_metavar
@@ -81,10 +89,47 @@ def version_cmd() -> None:
 
 
 @app.command("list")
-def list_exercises() -> None:
+def list_exercises(
+    json_output: bool = typer.Option(
+        False,
+        "--json",
+        help="Output results in JSON format",
+    ),
+) -> None:
     """List all curriculum chapters, exercises, and descriptions."""
-    render_banner(console=console)
     manifest = get_manifest()
+
+    if json_output:
+        data = {
+            "total_chapters": len(manifest.chapters),
+            "total_exercises": len(manifest.all_exercises),
+            "chapters": [
+                {
+                    "number": ch.number,
+                    "name": ch.name,
+                    "title": ch.title,
+                    "description": ch.description,
+                    "exercises": [
+                        {
+                            "name": ex.name,
+                            "title": ex.title,
+                            "path": ex.path,
+                            "solution_path": str(ex.solution_path),
+                            "chapter_name": ex.chapter_name,
+                            "requires_cluster": ex.requires_cluster,
+                            "has_not_done": ExerciseRunner.check_marker(ex.file_path),
+                            "hints": ex.hints,
+                        }
+                        for ex in ch.exercises
+                    ],
+                }
+                for ch in manifest.chapters
+            ],
+        }
+        print(json.dumps(data, indent=2))
+        return
+
+    render_banner(console=console)
 
     for ch in manifest.chapters:
         console.print(
@@ -112,33 +157,115 @@ def hint(
         "-n",
         help="Specific 1-indexed hint number to display",
     ),
+    index: Optional[int] = typer.Option(
+        None,
+        "--index",
+        "-i",
+        help="Specific 0-indexed hint index to display",
+    ),
+    json_output: bool = typer.Option(
+        False,
+        "--json",
+        help="Output results in JSON format",
+    ),
 ) -> None:
     """Display progressive hints and architectural tips for an exercise."""
     ex = get_exercise_by_name(exercise_name)
     if not ex:
-        console.print(
-            f"[bold red]Error:[/bold red] Exercise '{exercise_name}' not found in curriculum."
-        )
+        if json_output:
+            print(
+                json.dumps(
+                    {"error": f"Exercise '{exercise_name}' not found in curriculum."},
+                    indent=2,
+                )
+            )
+        else:
+            console.print(
+                f"[bold red]Error:[/bold red] Exercise '{exercise_name}' not found in curriculum."
+            )
         raise typer.Exit(code=1)
 
-    hint_idx = (hint_num - 1) if hint_num is not None else 0
+    total_hints = len(ex.hints)
+    if index is not None:
+        hint_idx = index
+    elif hint_num is not None:
+        hint_idx = hint_num - 1
+    else:
+        hint_idx = 0
+
+    if total_hints > 0:
+        clamped_idx = min(max(0, hint_idx), total_hints - 1)
+        hint_text = ex.hints[clamped_idx]
+    else:
+        clamped_idx = 0
+        hint_text = f"No hints available for exercise '{ex.name}'."
+
+    if json_output:
+        data = {
+            "exercise": ex.name,
+            "hint_index": clamped_idx,
+            "total_hints": total_hints,
+            "hint": hint_text,
+        }
+        print(json.dumps(data, indent=2))
+        return
+
     render_hint(ex, hint_index=hint_idx, console=console)
 
 
 @app.command("run")
 def run_exercise(
     exercise_name: str = typer.Argument(..., help="Name of exercise to execute (e.g. 'pods01')"),
+    json_output: bool = typer.Option(
+        False,
+        "--json",
+        help="Output results in JSON format",
+    ),
 ) -> None:
     """Execute and evaluate a single exercise."""
     ex = get_exercise_by_name(exercise_name)
     if not ex:
-        console.print(
-            f"[bold red]Error:[/bold red] Exercise '{exercise_name}' not found in curriculum."
-        )
+        if json_output:
+            print(
+                json.dumps(
+                    {
+                        "exercise": exercise_name,
+                        "passed": False,
+                        "has_not_done_marker": False,
+                        "exit_code": 1,
+                        "output": "",
+                        "error": f"Exercise '{exercise_name}' not found in curriculum.",
+                        "duration_ms": 0.0,
+                        "hints_available": 0,
+                    },
+                    indent=2,
+                )
+            )
+        else:
+            console.print(
+                f"[bold red]Error:[/bold red] Exercise '{exercise_name}' not found in curriculum."
+            )
         raise typer.Exit(code=1)
 
     runner = ExerciseRunner()
     result = runner.run_exercise(ex)
+
+    if json_output:
+        data = {
+            "exercise": ex.name,
+            "passed": result.passed,
+            "has_not_done_marker": result.has_not_done_marker,
+            "exit_code": result.exit_code,
+            "output": result.output,
+            "error": result.error,
+            "duration_ms": result.duration_ms,
+            "hints_available": len(ex.hints),
+        }
+        print(json.dumps(data, indent=2))
+        if not result.passed:
+            raise typer.Exit(code=result.exit_code or 1)
+        return
+
     render_result(result, console=console)
 
     if not result.passed:
@@ -146,10 +273,66 @@ def run_exercise(
 
 
 @app.command("verify")
-def verify_all() -> None:
+def verify_all(
+    json_output: bool = typer.Option(
+        False,
+        "--json",
+        help="Output results in JSON format",
+    ),
+) -> None:
     """Verify progress and evaluation status across all curriculum exercises."""
     manifest = get_manifest()
     runner = ExerciseRunner()
+
+    if json_output:
+        results_list = []
+        passed_count = 0
+        in_progress_count = 0
+        not_started_count = 0
+        first_incomplete = None
+        total_count = len(manifest.all_exercises)
+
+        for ex in manifest.all_exercises:
+            res = runner.run_exercise(ex)
+            if res.passed:
+                status = "completed"
+                passed_count += 1
+            elif first_incomplete is None:
+                first_incomplete = ex.name
+                status = "in_progress"
+                in_progress_count += 1
+            elif not res.has_not_done_marker:
+                status = "in_progress"
+                in_progress_count += 1
+            else:
+                status = "not_started"
+                not_started_count += 1
+
+            results_list.append(
+                {
+                    "name": ex.name,
+                    "title": ex.title,
+                    "path": ex.path,
+                    "chapter": ex.chapter_name,
+                    "status": status,
+                    "passed": res.passed,
+                    "has_not_done_marker": res.has_not_done_marker,
+                    "duration_ms": res.duration_ms,
+                }
+            )
+
+        pct = round((passed_count / total_count * 100.0), 2) if total_count > 0 else 0.0
+        data = {
+            "total": total_count,
+            "completed": passed_count,
+            "in_progress": in_progress_count,
+            "not_started": not_started_count,
+            "percentage": pct,
+            "next_exercise": first_incomplete,
+            "results": results_list,
+        }
+        print(json.dumps(data, indent=2))
+        return
 
     with console.status("[bold cyan]Evaluating all curriculum exercises...[/bold cyan]"):
         results_map = {}
@@ -176,10 +359,27 @@ def verify_all() -> None:
 
 
 @app.command("cluster")
-def cluster_status() -> None:
+def cluster_status(
+    json_output: bool = typer.Option(
+        False,
+        "--json",
+        help="Output results in JSON format",
+    ),
+) -> None:
     """Check connectivity to local or remote Kubernetes clusters."""
     detector = ClusterDetector()
     status = detector.get_cluster_status(refresh=True)
+
+    if json_output:
+        is_available = bool(status.get("available", False))
+        data = {
+            "available": is_available,
+            "context": status.get("context", "none"),
+            "provider": status.get("provider", "none"),
+            "cluster_mode": "live" if is_available else "offline",
+        }
+        print(json.dumps(data, indent=2))
+        return
 
     text = Text()
     if status.get("available"):
