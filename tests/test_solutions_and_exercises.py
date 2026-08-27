@@ -82,9 +82,9 @@ def test_manifest_and_disk_files_consistency():
     disk_solutions = {str(p) for p in Path("solutions").glob("*/*.py")}
 
     # Check total counts
-    assert len(manifest_exercises) == 70
-    assert len(disk_exercises) == 70
-    assert len(disk_solutions) == 70
+    assert len(manifest_exercises) == 82
+    assert len(disk_exercises) == 82
+    assert len(disk_solutions) == 82
 
     # Check for missing or orphaned exercise files
     missing_exercises = manifest_exercises - disk_exercises

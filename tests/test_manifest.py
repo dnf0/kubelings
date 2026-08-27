@@ -27,8 +27,8 @@ def test_exercise_dataclass_properties():
 
 def test_manifest_loads_all_chapters():
     manifest = get_manifest()
-    assert len(manifest.chapters) == 15
-    assert len(manifest.all_exercises) == 70
+    assert len(manifest.chapters) == 18
+    assert len(manifest.all_exercises) == 82
 
     first = manifest.all_exercises[0]
     assert first.name == "pods01"
@@ -36,11 +36,11 @@ def test_manifest_loads_all_chapters():
     assert first.path == "exercises/01_pods/pods01.py"
 
     last = manifest.all_exercises[-1]
-    assert last.name == "mesh04"
-    assert last.chapter_name == "15_service_mesh_cilium"
+    assert last.name == "webhook04"
+    assert last.chapter_name == "18_admission_webhooks"
 
 
-def test_all_15_chapters_structure():
+def test_all_18_chapters_structure():
     manifest = get_manifest()
     expected_chapters = [
         (1, "01_pods", 6),
@@ -58,6 +58,9 @@ def test_all_15_chapters_structure():
         (13, "13_troubleshooting", 5),
         (14, "14_gitops_argocd", 4),
         (15, "15_service_mesh_cilium", 4),
+        (16, "16_policy_as_code", 4),
+        (17, "17_multitenancy_vcluster", 4),
+        (18, "18_admission_webhooks", 4),
     ]
 
     for number, name, count in expected_chapters:
@@ -108,7 +111,7 @@ def test_get_next_exercise():
     assert next_across.name == "ctrl01"
 
     # Test last exercise returns None
-    assert get_next_exercise("mesh04") is None
+    assert get_next_exercise("webhook04") is None
 
     # Test nonexistent exercise returns None
     assert get_next_exercise("nonexistent") is None

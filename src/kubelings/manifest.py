@@ -898,6 +898,162 @@ def build_manifest() -> Manifest:
                 ),
             ],
         ),
+        Chapter(
+            number=16,
+            name="16_policy_as_code",
+            title="Policy as Code (Kyverno & Gatekeeper)",
+            description="Kyverno ClusterPolicies, Mutating & Generate rules, and OPA Gatekeeper Constraints",
+            exercises=[
+                Exercise(
+                    name="policy01",
+                    title="Kyverno ClusterPolicy for Required Labels",
+                    path="exercises/16_policy_as_code/policy01.py",
+                    chapter_name="16_policy_as_code",
+                    hints=[
+                        "Set apiVersion to kyverno.io/v1 and kind to ClusterPolicy",
+                        "Define validationFailureAction: Enforce under spec",
+                        "Use pattern to validate metadata.labels keys and wildcards",
+                    ],
+                ),
+                Exercise(
+                    name="policy02",
+                    title="Kyverno Mutating Policy for Security Defaults",
+                    path="exercises/16_policy_as_code/policy02.py",
+                    chapter_name="16_policy_as_code",
+                    hints=[
+                        "Use mutate.patchStrategicMerge under the rule definition",
+                        "Inject securityContext.runAsNonRoot: true into pod specifications",
+                        "Leading '+' in +(securityContext) ensures key is added if missing",
+                    ],
+                ),
+                Exercise(
+                    name="policy03",
+                    title="Kyverno Generate Policy for Default Deny NetworkPolicy",
+                    path="exercises/16_policy_as_code/policy03.py",
+                    chapter_name="16_policy_as_code",
+                    hints=[
+                        "Define rule matching Namespace resource creation",
+                        "Configure generate block with kind: NetworkPolicy and synchronize: true",
+                        "Sets up automatic multi-tenant network isolation on new namespace creation",
+                    ],
+                ),
+                Exercise(
+                    name="policy04",
+                    title="OPA Gatekeeper ConstraintTemplate & Constraint",
+                    path="exercises/16_policy_as_code/policy04.py",
+                    chapter_name="16_policy_as_code",
+                    hints=[
+                        "ConstraintTemplate defines custom CRD and Rego evaluation logic",
+                        "Rego rule checks missing required labels against input.parameters",
+                        "Violations yield actionable messages in admission decisions",
+                    ],
+                ),
+            ],
+        ),
+        Chapter(
+            number=17,
+            name="17_multitenancy_vcluster",
+            title="Multi-Tenancy & Virtual Clusters",
+            description="Hierarchical Namespace Controller (HNC), Quotas, vcluster, and Tenant Isolation",
+            exercises=[
+                Exercise(
+                    name="tenant01",
+                    title="HNC Hierarchical Subnamespace Anchor",
+                    path="exercises/17_multitenancy_vcluster/tenant01.py",
+                    chapter_name="17_multitenancy_vcluster",
+                    hints=[
+                        "Set apiVersion to hnc.x-k8s.io/v1alpha2 and kind to SubnamespaceAnchor",
+                        "Declare child subnamespace name and parent namespace in metadata",
+                        "HNC automatically propagates RBAC and policies to child namespaces",
+                    ],
+                ),
+                Exercise(
+                    name="tenant02",
+                    title="Tenant ResourceQuotas and LimitRanges",
+                    path="exercises/17_multitenancy_vcluster/tenant02.py",
+                    chapter_name="17_multitenancy_vcluster",
+                    hints=[
+                        "Combine ResourceQuota and LimitRange across multi-document YAML (---)",
+                        "Quota limits total aggregate CPU/memory/pods per namespace",
+                        "LimitRange sets default min/max container resource bounds",
+                    ],
+                ),
+                Exercise(
+                    name="tenant03",
+                    title="Virtual Cluster (vcluster) Control Plane",
+                    path="exercises/17_multitenancy_vcluster/tenant03.py",
+                    chapter_name="17_multitenancy_vcluster",
+                    hints=[
+                        "Set kind to VirtualCluster and apiVersion to vcluster.loft.sh/v1alpha1",
+                        "Configures lightweight k3s control plane inside a host namespace",
+                        "Syncer syncs pods, services, and ingresses between virtual and host clusters",
+                    ],
+                ),
+                Exercise(
+                    name="tenant04",
+                    title="Multi-Tenant Network Isolation & Egress Filtering",
+                    path="exercises/17_multitenancy_vcluster/tenant04.py",
+                    chapter_name="17_multitenancy_vcluster",
+                    hints=[
+                        "Define NetworkPolicy with ingress and egress policyTypes",
+                        "Isolate pod traffic strictly within tenant namespace",
+                        "Allow UDP port 53 egress to kube-system for cluster DNS",
+                    ],
+                ),
+            ],
+        ),
+        Chapter(
+            number=18,
+            name="18_admission_webhooks",
+            title="Advanced Admission Webhooks",
+            description="Mutating & Validating Webhooks, Sidecar Injection, and CRD Conversion",
+            exercises=[
+                Exercise(
+                    name="webhook01",
+                    title="MutatingWebhookConfiguration Manifest",
+                    path="exercises/18_admission_webhooks/webhook01.py",
+                    chapter_name="18_admission_webhooks",
+                    hints=[
+                        "Set kind to MutatingWebhookConfiguration under admissionregistration.k8s.io/v1",
+                        "Configure clientConfig with service name, namespace, path and caBundle",
+                        "Define failurePolicy (Fail or Ignore) and timeoutSeconds",
+                    ],
+                ),
+                Exercise(
+                    name="webhook02",
+                    title="ValidatingWebhookConfiguration Manifest",
+                    path="exercises/18_admission_webhooks/webhook02.py",
+                    chapter_name="18_admission_webhooks",
+                    hints=[
+                        "Set kind to ValidatingWebhookConfiguration",
+                        "Filter targeted namespaces with namespaceSelector matchExpressions",
+                        "Blocks invalid workloads before persistence in etcd",
+                    ],
+                ),
+                Exercise(
+                    name="webhook03",
+                    title="Dynamic Sidecar Injection AdmissionReview Response",
+                    path="exercises/18_admission_webhooks/webhook03.py",
+                    chapter_name="18_admission_webhooks",
+                    hints=[
+                        "Return AdmissionReview payload with uid, allowed=True, patchType=JSONPatch",
+                        "JSONPatch must be base64-encoded bytes",
+                        "Injects telemetry/logging containers into targeted pods dynamically",
+                    ],
+                ),
+                Exercise(
+                    name="webhook04",
+                    title="CRD Webhook Conversion Strategy",
+                    path="exercises/18_admission_webhooks/webhook04.py",
+                    chapter_name="18_admission_webhooks",
+                    hints=[
+                        "Set spec.conversion.strategy to 'Webhook'",
+                        "Configure webhook.clientConfig and supported conversionReviewVersions",
+                        "Allows seamless schema migration across CRD API versions",
+                    ],
+                ),
+            ],
+        ),
     ]
     return Manifest(chapters=chapters)
 
