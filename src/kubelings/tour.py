@@ -185,7 +185,9 @@ class OnboardingTour:
         diag_table.add_row(
             "Workspace Integrity",
             f"{'✓ Valid structure' if workspace_ok else '✗ Incomplete structure'} (exercises/, solutions/)",
-            "[bold green]READY[/bold green]" if workspace_ok else "[bold yellow]CHECK PATH[/bold yellow]",
+            "[bold green]READY[/bold green]"
+            if workspace_ok
+            else "[bold yellow]CHECK PATH[/bold yellow]",
         )
 
         if is_cluster_avail:
@@ -285,11 +287,7 @@ class OnboardingTour:
             subtitle_align="right",
         )
 
-        details = {
-            "hotkeys": [
-                {"key": k, "action": a, "description": d} for k, a, d in hotkeys
-            ]
-        }
+        details = {"hotkeys": [{"key": k, "action": a, "description": d} for k, a, d in hotkeys]}
         return panel, details
 
     def _render_step_4(self) -> tuple[RenderableType, Dict[str, Any]]:
@@ -354,7 +352,9 @@ spec:
         )
 
         # Failure output diagnostics
-        failure_msg = run_res.error or run_res.output or "AssertionError: Pod name must be 'nginx-web'"
+        failure_msg = (
+            run_res.error or run_res.output or "AssertionError: Pod name must be 'nginx-web'"
+        )
         err_syntax = Syntax(
             failure_msg.strip(),
             "python",

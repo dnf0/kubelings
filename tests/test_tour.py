@@ -174,3 +174,37 @@ def test_tour_invalid_step_number():
 
     with pytest.raises(ValueError, match="Invalid step number"):
         tour.render_step(99)
+
+
+@pytest.mark.parametrize("step_num", [1, 2, 3, 4, 5])
+def test_tour_all_steps_rendering(step_num: int):
+    """Verify render_step produces valid Rich renderables for all 5 steps."""
+    string_io = io.StringIO()
+    test_console = Console(file=string_io, force_terminal=True, width=120)
+    tour = OnboardingTour(console=test_console)
+
+    renderable = tour.render_step(step_num)
+    assert renderable is not None
+    test_console.print(renderable)
+    output = string_io.getvalue()
+    assert len(output) > 0
+
+
+def test_tour_interactive_mode_progression(monkeypatch: pytest.MonkeyPatch):
+    """Verify interactive mode advances on input and handles interruptions gracefully."""
+    monkeypatch.setattr("builtins.input", lambda: "")
+
+    string_io = io.StringIO()
+    test_console = Console(file=string_io, force_terminal=True, width=120)
+    tour = OnboardingTour(console=test_console)
+
+    result = tour.run_step(1, interactive=True)
+    assert result.success is True
+
+    # Test interrupt handling
+    def raise_interrupt():
+        raise KeyboardInterrupt()
+
+    monkeypatch.setattr("builtins.input", raise_interrupt)
+    result_interrupted = tour.run_step(1, interactive=True)
+    assert result_interrupted.success is True
