@@ -49,6 +49,10 @@ markdown_extensions:
 nav:
   - Overview: index.md
   - Getting Started: getting-started.md
+  - Onboarding Guide: onboarding-guide.md
   - Curriculum Syllabus: syllabus.md
   - CLI Reference: cli-reference.md
   - Contributing: contributing.md
+
+not_in_nav: |
+  superpowers/**
