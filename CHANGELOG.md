@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.0] - 2026-08-26
+### Changed
+- **Pure Test-Driven Validation**: Retired the `# I AM NOT DONE` magic comment requirement across all 102 curriculum exercises. Exercise completion is now purely evaluated via test assertions and schema validation.
+- **Interactive Navigation**: Added `[n]` / `[Enter]` to advance to the next exercise and `[p]` to navigate to the previous exercise directly within the terminal watcher.
+- **VS Code Extension**: Streamlined on-save diagnostics to emit error squiggles on genuine validation/assertion failures without requiring comment removal.
 
 ### Added
 - **Full 13-Chapter Curriculum (62 Exercises)**:

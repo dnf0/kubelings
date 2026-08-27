@@ -23,14 +23,14 @@
 
 ### 3. ⚡ On-Save Diagnostics & Code Actions
 - Automatic background validation when saving any exercise file (`exercises/**/*.py`).
-- Inline error squiggles highlighting missing manifest fields, syntax errors, or remaining `# I AM NOT DONE` markers.
+- Inline error squiggles highlighting missing manifest fields, syntax errors, schema violations, or assertion failures.
 - Contextual **Quick Fix Code Actions**:
   - 💡 **Reveal Hint**: Fetch and display progressive hints in the editor without spoiling the full answer.
   - 🔍 **Compare with Reference Solution**: Instantly open a side-by-side diff view comparing your manifest against the official solution.
 
 ### 4. 💻 Integrated Terminal Watch Mode
 - Launch interactive `kubelings watch` in a dedicated integrated terminal with a single click (`kubelings.startWatch`).
-- Supports all hotkeys: `h` (hint), `r` (rerun), `l` (list), `q` (quit).
+- Supports all hotkeys: `n`/`Enter` (next), `p` (previous), `h` (hint), `r` (rerun), `l` (list), `q` (quit).
 
 ### 5. ☸ Cluster Connectivity & Solution Verifier
 - Check connection status to live Kubernetes clusters (`kind`, `minikube`, `k3d`, or remote) with `kubelings.checkCluster`.

@@ -20,8 +20,8 @@ Inspired by the pedagogical brilliance of [rustlings](https://github.com/rust-la
 
 Learning Kubernetes from static documentation or raw copy-pasted Helm charts is difficult because feedback is slow and error messages are cryptic. Kubelings solves this through **guided, test-driven micro-learning**:
 
-1. **Active Debugging & Iteration**: Every exercise starts in a broken or incomplete state containing a `# I AM NOT DONE` marker. You read the problem description, inspect the failure, and edit the code until it passes.
-2. **Instant Feedback Loop & Interactive Hotkeys**: An automated watcher observes file modifications in real time (< 30ms). Press `h` to reveal progressive hints, `r` to force a rerun, `l` to list exercises, or `q` to quit.
+1. **Active Debugging & Iteration**: Every exercise starts in a broken or incomplete state with clear `# TODO:` instructions. You read the problem description, inspect the failure, and edit the code until it passes all verification checks.
+2. **Instant Feedback Loop & Interactive Hotkeys**: An automated watcher observes file modifications in real time (< 30ms). When an exercise passes, press `n` or `Enter` to advance, `p` to revisit previous exercises, `h` to reveal progressive hints, `r` to force a rerun, `l` to list exercises, or `q` to quit.
 3. **Dual-Mode Learning (Offline & Live Cluster)**:
    - **Offline Mode**: Zero cluster setup required. Exercises validate Kubernetes object specs, API constraints, and controller behaviors in-memory.
    - **Live Cluster Mode**: Seamlessly connect to `kind`, `minikube`, `k3d`, or remote clusters. Exercises provision temporary ephemeral namespaces and verify live reconciliations.
@@ -238,7 +238,7 @@ Kubelings provides an official extension for **Visual Studio Code** and **Cursor
 
 - 📚 **Activity Bar Curriculum Tree View**: Browse all 23 chapters and 102 exercises directly from the sidebar with real-time pass/fail status and chapter completion counters.
 - 📊 **Status Bar Progress Indicator**: Persistent status bar item showing your total completion percentage, current progress, and next active exercise. Click to jump straight to the exercise.
-- ⚡ **On-Save Diagnostics**: Automatic in-editor validation whenever you save an exercise manifest (`exercises/**/*.py`), surfacing schema errors, missing attributes, or remaining `# I AM NOT DONE` markers.
+- ⚡ **On-Save Diagnostics**: Automatic in-editor validation whenever you save an exercise manifest (`exercises/**/*.py`), surfacing schema errors, missing attributes, or assertion failures.
 - 💡 **Code Actions & Quick Fixes**: Lightbulb quick fixes directly on errors to:
   - **Reveal Hint**: Display progressive hints in the editor without spoiling the answer.
   - **Compare with Reference Solution**: Instantly open a side-by-side diff comparing your exercise code against the official reference solution.

@@ -22,25 +22,35 @@ Learning Kubernetes from static documentation or copy-pasted manifests often lea
 
 ```python
 # exercises/01_pods/pods01.py
-# I AM NOT DONE
+"""
+Exercise: exercises/01_pods/pods01.py
+Topic: First Pod Manifest & Spec
 
-from typing import Any, Dict
+Instructions:
+Fix the YAML manifest below to define a valid Pod named 'nginx-web'
+running nginx:alpine on container port 80 with label 'app: web'.
+"""
 
-def get_pod_manifest() -> Dict[str, Any]:
-    # Fix the pod manifest specification
-    return {
-        "apiVersion": "v1",
-        "kind": "Pod",
-        "metadata": {"name": "nginx-web"},
-        "spec": {
-            "containers": [
-                {"name": "nginx", "image": "nginx:alpine", "ports": [{"containerPort": 80}]}
-            ]
-        },
-    }
+import yaml
+from kubelings.validator import validate_manifest
+
+POD_MANIFEST = """
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-web
+  labels:
+    app: web
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+    ports:
+    - containerPort: 80
+"""
 ```
 
-Remove the `# I AM NOT DONE` marker, save the file, and watch the terminal UI advance to the next exercise automatically!
+Save the file and watch the terminal UI immediately validate your solution. Press `n` or `Enter` to advance to the next exercise!
 
 ---
 
@@ -52,7 +62,7 @@ Kubelings offers an official extension for **Visual Studio Code** and **Cursor**
 
 - 📚 **Activity Bar Curriculum Tree View**: Browse all 23 chapters and 102 exercises directly from the sidebar with real-time pass/fail status and chapter completion counters.
 - 📊 **Status Bar Progress Indicator**: Persistent status bar item showing your total completion percentage, current progress, and next active exercise. Click to jump straight to the exercise.
-- ⚡ **On-Save Diagnostics**: Automatic in-editor validation whenever you save an exercise manifest (`exercises/**/*.py`), surfacing schema errors, missing attributes, or remaining `# I AM NOT DONE` markers.
+- ⚡ **On-Save Diagnostics**: Automatic in-editor validation whenever you save an exercise manifest (`exercises/**/*.py`), surfacing schema errors, missing attributes, or assertion failures.
 - 💡 **Code Actions & Quick Fixes**: Lightbulb quick fixes directly on errors:
   - **Reveal Hint**: Display progressive hints in the editor without spoiling the answer.
   - **Compare with Reference Solution**: Instantly open a side-by-side diff comparing your exercise code against the official reference solution.

@@ -49,11 +49,10 @@ We welcome contributions of new exercises, bug fixes, performance improvements, 
 
 ## Adding New Exercises
 
-1. Create the starter exercise file under `exercises/<chapter_name>/<exercise_name>.py`.
-2. Ensure the top line has `# I AM NOT DONE`.
-3. Create the corresponding reference solution under `solutions/<chapter_name>/<exercise_name>.py`.
-4. Register the exercise in `src/kubelings/manifest.py` with 2-3 progressive hints.
-5. Add unit tests verifying both the broken starter state and working solution pass state.
+1. Create the starter exercise file under `exercises/<chapter_name>/<exercise_name>.py` with placeholders that fail validation initially.
+2. Create the corresponding reference solution under `solutions/<chapter_name>/<exercise_name>.py`.
+3. Register the exercise in `src/kubelings/manifest.py` with 2-3 progressive hints.
+4. Add unit tests verifying both the broken starter state and working solution pass state.
 
 ---
 

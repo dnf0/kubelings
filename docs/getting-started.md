@@ -45,8 +45,8 @@ uv pip install -e ".[dev]"
 2. Open the reported file in your editor (e.g. `exercises/01_pods/pods01.py`).
 3. Read the comments, specification instructions, and error diagnostic output in the terminal.
 4. Edit the file to satisfy the Kubernetes manifest schema or validation logic.
-5. Delete the `# I AM NOT DONE` marker at the top of the file and save.
-6. The watcher will evaluate your solution in `< 30ms` and automatically transition to the next exercise.
+5. Save the file. The watcher will evaluate your solution in `< 30ms` and display the green checkmark once all tests pass.
+6. Press `n` or `Enter` in the terminal to advance to the next exercise!
 
 ### Keyboard Shortcuts in Watch Mode
 
@@ -54,6 +54,8 @@ While `kubelings watch` is running:
 
 | Key | Action | Description |
 | :--- | :--- | :--- |
+| `n` / `Enter` | **Next** | Advance to the next incomplete or subsequent exercise. |
+| `p` | **Previous** | Go back to review or modify the previous exercise. |
 | `h` | **Hint** | Reveal the next progressive hint tier for the current exercise. |
 | `r` | **Rerun** | Force re-evaluation of the current exercise. |
 | `l` | **List** | Show curriculum syllabus overview. |
