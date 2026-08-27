@@ -1,0 +1,779 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An interactive, hands-on CLI learning environment for Kubernetes.">
+      
+      
+        <meta name="author" content="Kubelings Contributors">
+      
+      
+        <link rel="canonical" href="https://dnf0.github.io/kubelings/superpowers/specs/2026-08-27-ai-ml-platform-curriculum-design/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Design Specification: AI & ML Platform Engineering Curriculum (Chapters 24–26) - Kubelings</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/playground/playground.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="cyan" data-md-color-accent="deep-purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#design-specification-ai-ml-platform-engineering-curriculum-chapters-2426" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Kubelings" class="md-header__button md-logo" aria-label="Kubelings" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Kubelings
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Design Specification: AI &amp; ML Platform Engineering Curriculum (Chapters 24–26)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="cyan" data-md-color-accent="deep-purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="cyan" data-md-color-accent="deep-purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/dnf0/kubelings" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    dnf0/kubelings
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Kubelings" class="md-nav__button md-logo" aria-label="Kubelings" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Kubelings
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/dnf0/kubelings" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    dnf0/kubelings
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../onboarding-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Onboarding Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playground/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interactive Playground
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../syllabus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Curriculum Syllabus
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cli-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-curriculum-architecture-exercises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Curriculum Architecture &amp; Exercises
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Curriculum Architecture &amp; Exercises">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chapter-24-distributed-ai-ml-with-kuberay-24_kuberay_ml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 24: Distributed AI &amp; ML with KubeRay (24_kuberay_ml)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chapter-25-ai-batch-scheduling-queueing-25_batch_kueue_volcano" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 25: AI Batch Scheduling &amp; Queueing (25_batch_kueue_volcano)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chapter-26-hardware-acceleration-nvidia-mig-apple-silicon-dra-26_hardware_acceleration_dra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 26: Hardware Acceleration: NVIDIA MIG, Apple Silicon &amp; DRA (26_hardware_acceleration_dra)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-in-memory-validation-engine-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. In-Memory Validation Engine Design
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-hardware-simulation-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Hardware Simulation Strategy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-implementation-roadmap-quality-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Implementation Roadmap &amp; Quality Gates
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="design-specification-ai-ml-platform-engineering-curriculum-chapters-2426">Design Specification: AI &amp; ML Platform Engineering Curriculum (Chapters 24–26)</h1>
+<p><strong>Date:</strong> 2026-08-27<br />
+<strong>Status:</strong> Approved<br />
+<strong>Author:</strong> AI Assistant &amp; Pair Programmer<br />
+<strong>Target Version:</strong> Kubelings v0.6.0  </p>
+<hr />
+<h2 id="1-executive-summary">1. Executive Summary</h2>
+<p>As Kubernetes cements its role as the de facto operating system for Artificial Intelligence and Machine Learning workloads, platform engineers need hands-on mastery of distributed training orchestration, batch queueing, gang scheduling, and hardware acceleration.</p>
+<p>This specification defines <strong>Tier 6: AI &amp; ML Platform Engineering</strong> for Kubelings, expanding the curriculum from 23 chapters / 102 exercises to <strong>26 chapters and 114 interactive micro-exercises</strong> (+12 exercises). </p>
+<p>The expansion covers:
+1. <strong>Chapter 24 (<code>24_kuberay_ml</code>)</strong>: Distributed ML training, heterogeneous worker pools, batch fine-tuning (<code>RayJob</code>), and production serving (<code>RayService</code>) with KubeRay.
+2. <strong>Chapter 25 (<code>25_batch_kueue_volcano</code>)</strong>: Advanced AI batch scheduling, quota management &amp; cohort borrowing (<code>Kueue</code>), and gang scheduling to prevent distributed deadlocks (<code>Volcano</code>).
+3. <strong>Chapter 26 (<code>26_hardware_acceleration_dra</code>)</strong>: Hardware acceleration architectures across NVIDIA Multi-Instance GPU (MIG) slicing, Apple Silicon GPU &amp; Metal acceleration for local workstations, next-gen Dynamic Resource Allocation (DRA), and production LLM inference serving (vLLM / Ollama).</p>
+<p>All exercises run in <code>&lt; 15ms</code> using in-memory schema evaluators without requiring physical GPUs, expensive cloud clusters, or specialized hardware.</p>
+<hr />
+<h2 id="2-curriculum-architecture-exercises">2. Curriculum Architecture &amp; Exercises</h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>+---------------------------------------------------------------------------------------------------+
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>|                                   KUBELINGS 6-TIER ROADMAP                                        |
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>+---------------------------------------------------------------------------------------------------+
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>| Tier 1: Core Essentials       | Ch 01 - 06 (Pods, Controllers, Config, Storage, Services, Ingress)|
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>| Tier 2: Operations &amp; Admin    | Ch 07 - 10 (Scheduling, RBAC, NetworkPolicies, Probes)           |
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>| Tier 3: Production &amp; Scaling  | Ch 11 - 13 (Autoscaling, Operators/CRDs, Troubleshooting)        |
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>| Tier 4: GitOps &amp; Mesh         | Ch 14 - 18 (ArgoCD, Cilium, Policy-as-Code, vcluster, Webhooks)   |
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>| Tier 5: Packaging &amp; Platform  | Ch 19 - 23 (Helm, Kustomize, Gateway API, Crossplane, Tetragon)  |
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>| Tier 6: AI &amp; ML Platforms     | Ch 24 - 26 (KubeRay, Kueue &amp; Volcano, Hardware Accel &amp; DRA)      |  &lt;-- NEW
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>+---------------------------------------------------------------------------------------------------+
+</span></code></pre></div>
+<h3 id="chapter-24-distributed-ai-ml-with-kuberay-24_kuberay_ml">Chapter 24: Distributed AI &amp; ML with KubeRay (<code>24_kuberay_ml</code>)</h3>
+<ul>
+<li><strong><code>ray01.py</code> — RayCluster Core Architecture</strong>:</li>
+<li><strong>Objective</strong>: Author a <code>RayCluster</code> (<code>ray.io/v1</code>) with Head Node (dashboard on 8265, GCS on 6379, <code>rayStartParams</code> with <code>block: "true"</code>) and worker group.</li>
+<li><strong>Verification</strong>: Evaluates <code>headGroupSpec</code> and <code>workerGroupSpecs</code> configurations.</li>
+<li><strong><code>ray02.py</code> — Heterogeneous Worker Pools &amp; Autoscaler</strong>:</li>
+<li><strong>Objective</strong>: Configure multi-worker groups separating CPU data preprocessing workers (<code>minReplicas: 2</code>, <code>maxReplicas: 10</code>) from GPU training nodes (<code>minReplicas: 0</code>, <code>maxReplicas: 4</code>).</li>
+<li><strong>Verification</strong>: Validates group names, replica bounds, and resource limit declarations.</li>
+<li><strong><code>ray03.py</code> — RayJob for Distributed Batch Training</strong>:</li>
+<li><strong>Objective</strong>: Author a <code>RayJob</code> manifest for distributed model fine-tuning with <code>entrypoint: "python train.py"</code>, <code>shutdownAfterJobFinishes: true</code>, and TTL cleanup.</li>
+<li><strong>Verification</strong>: Validates entrypoint command, embedded cluster spec, and lifecycle cleanup parameters.</li>
+<li><strong><code>ray04.py</code> — RayService for Production LLM Serving</strong>:</li>
+<li><strong>Objective</strong>: Author a <code>RayService</code> manifest managing multi-model serving deployments under <code>serveConfigV2</code> with zero-downtime rolling upgrades and route prefixes.</li>
+<li><strong>Verification</strong>: Validates service routing, deployment configuration, and health check endpoints.</li>
+</ul>
+<hr />
+<h3 id="chapter-25-ai-batch-scheduling-queueing-25_batch_kueue_volcano">Chapter 25: AI Batch Scheduling &amp; Queueing (<code>25_batch_kueue_volcano</code>)</h3>
+<ul>
+<li><strong><code>kueue01.py</code> — Kueue LocalQueue &amp; ClusterQueue Quotas</strong>:</li>
+<li><strong>Objective</strong>: Define a <code>ClusterQueue</code> (<code>kueue.x-k8s.io/v1beta1</code>) with nominal quotas and cohort sharing, bound to a developer-facing <code>LocalQueue</code>.</li>
+<li><strong>Verification</strong>: Validates <code>resourceGroups</code>, <code>flavors</code>, <code>nominalQuota</code>, and namespace queue binding.</li>
+<li><strong><code>kueue02.py</code> — Priority Classes &amp; Fair-Share Preemption</strong>:</li>
+<li><strong>Objective</strong>: Configure <code>WorkloadPriorityClass</code> and <code>ClusterQueue</code> preemption policies (<code>reclaimWithinCohort: LowerPriority</code>, <code>preemptionRule: Workload</code>) for multi-tenant fairness.</li>
+<li><strong>Verification</strong>: Validates priority values and cohort reclamation rules.</li>
+<li><strong><code>volcano01.py</code> — Volcano Gang Scheduling for Distributed Training</strong>:</li>
+<li><strong>Objective</strong>: Define a Volcano <code>Job</code> (<code>batch.volcano.sh/v1alpha1</code>) with <code>minAvailable: 4</code> gang scheduling policy, ensuring all-or-nothing allocation for distributed PyTorch DDP without deadlocks.</li>
+<li><strong>Verification</strong>: Validates <code>minAvailable</code> invariant matching total task replicas and <code>plugins.env</code> configuration.</li>
+<li><strong><code>volcano02.py</code> — Volcano Queue &amp; Elastic Resource Allocation</strong>:</li>
+<li><strong>Objective</strong>: Configure a Volcano <code>Queue</code> with weight allocation, capability limits, and elastic pod group task topology.</li>
+<li><strong>Verification</strong>: Validates queue weights, CPU/memory capacity limits, and scheduler policy plugins.</li>
+</ul>
+<hr />
+<h3 id="chapter-26-hardware-acceleration-nvidia-mig-apple-silicon-dra-26_hardware_acceleration_dra">Chapter 26: Hardware Acceleration: NVIDIA MIG, Apple Silicon &amp; DRA (<code>26_hardware_acceleration_dra</code>)</h3>
+<ul>
+<li><strong><code>accel01.py</code> — NVIDIA Multi-Instance GPU (MIG) Slicing</strong>:</li>
+<li><strong>Objective</strong>: Author a pod manifest requesting sliced GPU instances (<code>nvidia.com/mig-1g.10gb: 1</code> or <code>nvidia.com/mig-3g.40gb: 1</code>) with CUDA environment variable controls.</li>
+<li><strong>Verification</strong>: Validates MIG resource syntax, limit consistency, and container environment declarations.</li>
+<li><strong><code>accel02.py</code> — Apple Silicon GPU &amp; Metal Acceleration</strong>:</li>
+<li><strong>Objective</strong>: Author a local development pod leveraging Apple Silicon GPU (<code>apple.com/gpu: 1</code>), MPS (Metal Performance Shaders) environment flags (<code>PYTORCH_ENABLE_MPS_FALLBACK=1</code>), and MLX / PyTorch runtime mounts.</li>
+<li><strong>Verification</strong>: Validates Apple GPU resource requests, MPS fallback configuration, and architecture node selectors (<code>kubernetes.io/arch: arm64</code>).</li>
+<li><strong><code>accel03.py</code> — Dynamic Resource Allocation (DRA) Standard</strong>:</li>
+<li><strong>Objective</strong>: Define modern Kubernetes Dynamic Resource Allocation resources using <code>ResourceClaimTemplate</code> and <code>ResourceClaim</code> (<code>resource.k8s.io/v1alpha3</code> or <code>v1beta1</code>) for fine-grained device parameter binding.</li>
+<li><strong>Verification</strong>: Validates <code>spec.devices.requests</code>, driver selectors, and pod <code>resourceClaims</code> binding.</li>
+<li><strong><code>accel04.py</code> — Production High-Throughput LLM Server (vLLM / Ollama)</strong>:</li>
+<li><strong>Objective</strong>: Deploy a production-ready LLM inference server with optimized KV cache memory allocation (<code>--gpu-memory-utilization 0.90</code>), model storage PVC mount, DRA device claim, and health probes.</li>
+<li><strong>Verification</strong>: Validates container startup flags, persistent storage mounts, resource requests, and liveness endpoints.</li>
+</ul>
+<hr />
+<h2 id="3-in-memory-validation-engine-design">3. In-Memory Validation Engine Design</h2>
+<p>To maintain sub-15ms test times without external dependencies:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">validate_ray_cluster</span><span class="p">(</span><span class="n">manifest_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="c1"># Validates ray.io/v1 RayCluster structure, head node, and worker groups</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="o">...</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="k">def</span><span class="w"> </span><span class="nf">validate_ray_job</span><span class="p">(</span><span class="n">manifest_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="c1"># Validates ray.io/v1 RayJob entrypoint and cleanup rules</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="o">...</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="k">def</span><span class="w"> </span><span class="nf">validate_ray_service</span><span class="p">(</span><span class="n">manifest_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="c1"># Validates ray.io/v1 RayService serveConfigV2 and deployment routes</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    <span class="o">...</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="k">def</span><span class="w"> </span><span class="nf">validate_kueue_queue</span><span class="p">(</span><span class="n">manifest_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    <span class="c1"># Validates kueue.x-k8s.io/v1beta1 ClusterQueue and LocalQueue</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    <span class="o">...</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="k">def</span><span class="w"> </span><span class="nf">validate_volcano_job</span><span class="p">(</span><span class="n">manifest_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>    <span class="c1"># Validates batch.volcano.sh/v1alpha1 minAvailable gang scheduling invariant</span>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>    <span class="o">...</span>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="k">def</span><span class="w"> </span><span class="nf">validate_hardware_acceleration</span><span class="p">(</span><span class="n">manifest_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>    <span class="c1"># Validates MIG resources, Apple Silicon MPS environment, and DRA ResourceClaims</span>
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>    <span class="o">...</span>
+</span></code></pre></div>
+<p>The validation engine is integrated directly into <code>src/kubelings/validator.py</code> and invoked by the offline runner.</p>
+<hr />
+<h2 id="4-hardware-simulation-strategy">4. Hardware Simulation Strategy</h2>
+<ol>
+<li><strong>Offline Mode</strong>: Pure AST and semantic evaluation against exact schema specifications and environment variable contracts.</li>
+<li><strong>Cluster / Live Mode (<code>--cluster</code>)</strong>: Simulated via node status capacity patching (<code>kubectl patch node ...</code>) or KWOK synthetic nodes, enabling learners to test scheduling on local <code>kind</code>/<code>k3d</code> clusters without physical GPUs.</li>
+</ol>
+<hr />
+<h2 id="5-implementation-roadmap-quality-gates">5. Implementation Roadmap &amp; Quality Gates</h2>
+<ol>
+<li><strong>Task 1: Chapter 24 (KubeRay ML)</strong>:</li>
+<li>4 starter exercises in <code>exercises/24_kuberay_ml/</code>.</li>
+<li>4 reference solutions in <code>solutions/24_kuberay_ml/</code>.</li>
+<li>Validator schemas for <code>ray.io/v1</code>.</li>
+<li><strong>Task 2: Chapter 25 (Batch Scheduling with Kueue &amp; Volcano)</strong>:</li>
+<li>4 starter exercises in <code>exercises/25_batch_kueue_volcano/</code>.</li>
+<li>4 reference solutions in <code>solutions/25_batch_kueue_volcano/</code>.</li>
+<li>Validator schemas for <code>kueue.x-k8s.io</code> and <code>batch.volcano.sh</code>.</li>
+<li><strong>Task 3: Chapter 26 (Hardware Acceleration, Apple GPU &amp; DRA)</strong>:</li>
+<li>4 starter exercises in <code>exercises/26_hardware_acceleration_dra/</code>.</li>
+<li>4 reference solutions in <code>solutions/26_hardware_acceleration_dra/</code>.</li>
+<li>Validator schemas for MIG, Apple MPS, and DRA claims.</li>
+<li><strong>Task 4: Manifest Registration, Test Matrix &amp; Documentation</strong>:</li>
+<li>Register 26 chapters / 114 exercises in <code>src/kubelings/manifest.py</code>.</li>
+<li>Expand <code>tests/test_chapters_24_26.py</code>, <code>tests/test_manifest.py</code>, and <code>tests/test_solutions_and_exercises.py</code>.</li>
+<li>Update <code>docs/syllabus.md</code>, <code>docs/onboarding-guide.md</code>, <code>README.md</code>, <code>CHANGELOG.md</code>, <code>mkdocs.yml</code>, and <code>src/kubelings/tour.py</code>.</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../../assets/playground/playground.js"></script>
+      
+    
+  </body>
+</html>

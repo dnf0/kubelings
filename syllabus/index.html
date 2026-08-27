@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://dnf0.github.io/kubelings/syllabus/">
       
       
-        <link rel="prev" href="../getting-started/">
+        <link rel="prev" href="../playground/">
       
       
         <link rel="next" href="../cli-reference/">
@@ -54,6 +54,8 @@
         <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
     
+    
+      <link rel="stylesheet" href="../assets/playground/playground.css">
     
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -299,6 +301,60 @@
     
   
     Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../onboarding-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Onboarding Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../playground/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interactive Playground
   
 
     
@@ -624,6 +680,39 @@
     <span class="md-ellipsis">
       
         Chapter 23: Kernel-Level Security &amp; Observability with eBPF Tetragon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chapter-24-distributed-ai-ml-orchestration-with-kuberay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 24: Distributed AI &amp; ML Orchestration with KubeRay
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chapter-25-ai-batch-scheduling-queuing-with-kueue-and-volcano" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 25: AI Batch Scheduling &amp; Queuing with Kueue and Volcano
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chapter-26-hardware-acceleration-nvidia-mig-apple-silicon-gpu-dra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 26: Hardware Acceleration: NVIDIA MIG, Apple Silicon GPU &amp; DRA
       
     </span>
   </a>
@@ -971,6 +1060,39 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#chapter-24-distributed-ai-ml-orchestration-with-kuberay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 24: Distributed AI &amp; ML Orchestration with KubeRay
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chapter-25-ai-batch-scheduling-queuing-with-kueue-and-volcano" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 25: AI Batch Scheduling &amp; Queuing with Kueue and Volcano
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chapter-26-hardware-acceleration-nvidia-mig-apple-silicon-gpu-dra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 26: Hardware Acceleration: NVIDIA MIG, Apple Silicon GPU &amp; DRA
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -992,7 +1114,7 @@
 
 
 <h1 id="curriculum-syllabus">Curriculum Syllabus</h1>
-<p>Kubelings features <strong>23 chapters</strong> covering <strong>102 real-world exercises</strong>:</p>
+<p>Kubelings features <strong>26 chapters</strong> covering <strong>114 real-world exercises</strong>:</p>
 <hr />
 <h3 id="chapter-01-pods-core-workloads">Chapter 01: Pods &amp; Core Workloads</h3>
 <ul>
@@ -1165,6 +1287,27 @@
 <li><code>tetragon03</code>: Real-Time Kernel Sigkill Enforcement (synchronous <code>Sigkill</code> actions on unauthorized root binaries).</li>
 <li><code>tetragon04</code>: eBPF TCP Socket &amp; Network Egress Observability (<code>tcp_connect</code> kernel socket probes and event streaming).</li>
 </ul>
+<h3 id="chapter-24-distributed-ai-ml-orchestration-with-kuberay">Chapter 24: Distributed AI &amp; ML Orchestration with KubeRay</h3>
+<ul>
+<li><code>ray01</code>: RayCluster Core Architecture &amp; Head Node (<code>ray.io/v1</code> <code>RayCluster</code>, GCS/Dashboard ports, head/worker specifications).</li>
+<li><code>ray02</code>: Heterogeneous Worker Pools &amp; Autoscaling (Distinct CPU and GPU worker groups with min/max replica limits and <code>nvidia.com/gpu</code> constraints).</li>
+<li><code>ray03</code>: RayJob for Distributed Batch Fine-Tuning (<code>RayJob</code> entrypoints, ephemeral compute lifecycle, <code>shutdownAfterJobFinishes</code>, and TTL cleanup).</li>
+<li><code>ray04</code>: RayService for Production LLM Serving (<code>RayService</code> zero-downtime serving, <code>serveConfigV2</code> multi-application definitions, and health thresholds).</li>
+</ul>
+<h3 id="chapter-25-ai-batch-scheduling-queuing-with-kueue-and-volcano">Chapter 25: AI Batch Scheduling &amp; Queuing with Kueue and Volcano</h3>
+<ul>
+<li><code>kueue01</code>: Kueue ResourceFlavor &amp; ClusterQueue Cohort Borrowing (<code>kueue.x-k8s.io/v1beta1</code> <code>ResourceFlavor</code>, <code>ClusterQueue</code> cohort borrowing limits, and multi-resource quotas).</li>
+<li><code>kueue02</code>: Kueue LocalQueue &amp; Suspended Workload Gating (<code>LocalQueue</code> namespace bindings, <code>batch/v1</code> <code>Job</code> queue label assignment, and admission gating via <code>suspend: true</code>).</li>
+<li><code>volcano01</code>: Volcano Gang Scheduling &amp; Deadlock Prevention (<code>batch.volcano.sh/v1alpha1</code> <code>Job</code>, <code>minAvailable</code> all-or-nothing scheduling, and multi-task master/worker groups).</li>
+<li><code>volcano02</code>: Volcano Queue &amp; Fair-Share Scheduling (<code>scheduling.volcano.sh/v1beta1</code> <code>Queue</code>, proportional weight allocations, reclaimable quotas, and resource capabilities).</li>
+</ul>
+<h3 id="chapter-26-hardware-acceleration-nvidia-mig-apple-silicon-gpu-dra">Chapter 26: Hardware Acceleration: NVIDIA MIG, Apple Silicon GPU &amp; DRA</h3>
+<ul>
+<li><code>accel01</code>: NVIDIA MIG Slicing &amp; Partitioning (A100/H100 nodeSelectors, multi-instance GPU slice resources <code>nvidia.com/mig-3g.40gb</code>, and <code>NVIDIA_VISIBLE_DEVICES</code>).</li>
+<li><code>accel02</code>: Apple Silicon GPU &amp; Metal MPS Acceleration (<code>kubernetes.io/arch: arm64</code> node pinning, <code>apple.com/gpu</code> device limits, and <code>PYTORCH_ENABLE_MPS_FALLBACK</code> PyTorch MPS execution).</li>
+<li><code>accel03</code>: Dynamic Resource Allocation (DRA) Standard (<code>resource.k8s.io/v1alpha3</code> <code>ResourceClaimTemplate</code>, device class requests, and Pod claim attachments).</li>
+<li><code>accel04</code>: Production vLLM LLM Inference Server (<code>apps/v1</code> <code>Deployment</code>, OpenAI-compatible API serving, GPU memory utilization flags, health probes, and model volume mounts).</li>
+</ul>
 
 
 
@@ -1224,6 +1367,8 @@
     
     
       <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../assets/playground/playground.js"></script>
       
     
   </body>

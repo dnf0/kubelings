@@ -12,7 +12,7 @@
         <meta name="author" content="Kubelings Contributors">
       
       
-        <link rel="canonical" href="https://dnf0.github.io/kubelings/superpowers/specs/2026-08-27-kubelings-v2-features-design/">
+        <link rel="canonical" href="https://dnf0.github.io/kubelings/superpowers/specs/2026-08-27-onboarding-experience-design/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>Kubelings v2 Advanced Features & Curriculum Expansion Design - Kubelings</title>
+        <title>Kubelings Onboarding Experience & Guided Tour Specification - Kubelings</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#kubelings-v2-advanced-features-curriculum-expansion-design" class="md-skip">
+        <a href="#kubelings-onboarding-experience-guided-tour-specification" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Kubelings v2 Advanced Features &amp; Curriculum Expansion Design
+              Kubelings Onboarding Experience &amp; Guided Tour Specification
             
           </span>
         </div>
@@ -471,10 +471,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-overview-objectives" class="md-nav__link">
+  <a href="#1-executive-summary" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Overview &amp; Objectives
+        1. Executive Summary
       
     </span>
   </a>
@@ -490,14 +490,25 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. Architecture &amp; Components">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-cli-guided-tour-kubelings-tour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. CLI Guided Tour (kubelings tour)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. CLI Guided Tour (kubelings tour)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#21-interactive-tui-dashboard-srckubelingstuipy" class="md-nav__link">
+  <a href="#31-cli-interface-options" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.1 Interactive TUI Dashboard (src/kubelings/tui.py)
+        3.1 CLI Interface &amp; Options
       
     </span>
   </a>
@@ -505,44 +516,22 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#22-kubernetes-resource-topology-visualizer-srckubelingstopologypy" class="md-nav__link">
+  <a href="#32-the-5-tour-steps" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.2 Kubernetes Resource Topology Visualizer (src/kubelings/topology.py)
+        3.2 The 5 Tour Steps
       
     </span>
   </a>
   
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#23-universal-manifest-linter-srckubelingslinterpy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2.3 Universal Manifest Linter (src/kubelings/linter.py)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#24-curriculum-expansion-chapters-16-17-18" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2.4 Curriculum Expansion (Chapters 16, 17, 18)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="2.4 Curriculum Expansion (Chapters 16, 17, 18)">
+    <nav class="md-nav" aria-label="3.2 The 5 Tour Steps">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#chapter-16-policy-as-code-with-kyverno-gatekeeper-16_policy_as_code" class="md-nav__link">
+  <a href="#step-1-welcome-pedagogical-philosophy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Chapter 16: Policy as Code with Kyverno &amp; Gatekeeper (16_policy_as_code)
+        Step 1: Welcome &amp; Pedagogical Philosophy
       
     </span>
   </a>
@@ -550,10 +539,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#chapter-17-multi-tenancy-virtual-clusters-hnc-17_multitenancy_vcluster" class="md-nav__link">
+  <a href="#step-2-environment-cluster-verification" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Chapter 17: Multi-Tenancy, Virtual Clusters &amp; HNC (17_multitenancy_vcluster)
+        Step 2: Environment &amp; Cluster Verification
       
     </span>
   </a>
@@ -561,10 +550,32 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#chapter-18-advanced-admission-webhooks-dynamic-interception-18_admission_webhooks" class="md-nav__link">
+  <a href="#step-3-the-kubelings-workflow-hotkeys" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Chapter 18: Advanced Admission Webhooks &amp; Dynamic Interception (18_admission_webhooks)
+        Step 3: The Kubelings Workflow &amp; Hotkeys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-guided-first-exercise-pods01-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Guided First Exercise (pods01) Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-ide-tooling-next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: IDE Tooling &amp; Next Steps
       
     </span>
   </a>
@@ -582,24 +593,108 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-data-flow-interfaces" class="md-nav__link">
+  <a href="#4-vs-code-cursor-extension-walkthrough" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Data Flow &amp; Interfaces
+        4. VS Code &amp; Cursor Extension Walkthrough
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. VS Code &amp; Cursor Extension Walkthrough">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-walkthrough-registration-packagejson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Walkthrough Registration (package.json)
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#4-verification-testing-strategy" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#42-supporting-markdown-assets" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Verification &amp; Testing Strategy
+        4.2 Supporting Markdown &amp; Assets
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-documentation-suite-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Documentation Suite Updates
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Documentation Suite Updates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-new-document-docsonboarding-guidemd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 New Document: docs/onboarding-guide.md
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-updated-existing-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Updated Existing Documents
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-verification-quality-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Verification &amp; Quality Gates
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Verification &amp; Quality Gates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-test-coverage-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Test Coverage Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -623,124 +718,170 @@
   
 
 
-<h1 id="kubelings-v2-advanced-features-curriculum-expansion-design">Kubelings v2 Advanced Features &amp; Curriculum Expansion Design</h1>
-<h2 id="1-overview-objectives">1. Overview &amp; Objectives</h2>
-<p>This design outlines the architecture, data models, UI components, and curriculum expansion for <strong>Kubelings v2</strong>, introducing:
-1. <strong>Interactive Full-Screen TUI Dashboard (<code>kubelings tui</code> / <code>kubelings dashboard</code>)</strong>: A visual split-pane terminal interface for navigating chapters, previewing code, running exercises, and viewing live validation diagnostics.
-2. <strong>Kubernetes Resource Topology Visualizer (<code>kubelings tree</code>)</strong>: An architectural tree inspector that renders Kubernetes resource relationships (Workloads ➔ Pods ➔ PVCs ➔ Services ➔ Ingress ➔ Policies).
-3. <strong>Universal YAML Manifest Linter (<code>kubelings lint &lt;manifest.yaml&gt;</code>)</strong>: A standalone schema and best-practices linter for arbitrary Kubernetes manifests with line-accurate diagnostics.
-4. <strong>Curriculum Expansion (Chapters 16, 17, 18 — 82 Total Exercises)</strong>:
-   - <strong>Chapter 16: Policy as Code with Kyverno &amp; OPA Gatekeeper</strong> (<code>16_policy_as_code</code>)
-   - <strong>Chapter 17: Multi-Tenancy, Virtual Clusters &amp; HNC</strong> (<code>17_multitenancy_vcluster</code>)
-   - <strong>Chapter 18: Advanced Admission Webhooks &amp; Dynamic Interception</strong> (<code>18_admission_webhooks</code>)</p>
+<h1 id="kubelings-onboarding-experience-guided-tour-specification">Kubelings Onboarding Experience &amp; Guided Tour Specification</h1>
+<p><strong>Date:</strong> 2026-08-27<br />
+<strong>Status:</strong> Approved<br />
+<strong>Author:</strong> Antigravity Pairing Assistant &amp; Daniel Fisher  </p>
+<hr />
+<h2 id="1-executive-summary">1. Executive Summary</h2>
+<p>Kubelings teaches Kubernetes from the ground up through test-driven micro-exercises. To help new learners get started quickly without friction, this specification defines a <strong>Unified Onboarding Suite</strong>:
+1. <strong>Interactive CLI Tour (<code>kubelings tour</code>)</strong>: A rich 5-step terminal walkthrough with live environment checks, workflow explanation, and an interactive first exercise resolution.
+2. <strong>VS Code &amp; Cursor Walkthrough</strong>: A declarative in-editor walkthrough (<code>contributes.walkthroughs</code>) guiding users through curriculum browsing, cluster checks, and on-save diagnostics.
+3. <strong>Comprehensive Documentation Guide (<code>docs/onboarding-guide.md</code>)</strong>: A polished, visual onboarding guide and tutorial integrated into the documentation suite.</p>
 <hr />
 <h2 id="2-architecture-components">2. Architecture &amp; Components</h2>
-<h3 id="21-interactive-tui-dashboard-srckubelingstuipy">2.1 Interactive TUI Dashboard (<code>src/kubelings/tui.py</code>)</h3>
-<ul>
-<li><strong>Layout Structure</strong>:</li>
-<li><code>Header</code>: Kubelings title, version, active cluster status badge, and global keyboard hints.</li>
-<li><code>Sidebar</code> (Left): Collapsible chapter and exercise tree with status badges (✅ Passed, ⏳ In Progress, ❌ Failing, ⭕ Untouched).</li>
-<li><code>Main Pane</code> (Right Top): Exercise title, objective, problem description, and syntax-highlighted exercise code viewer with line numbers.</li>
-<li><code>Output / Diagnostics Pane</code> (Right Bottom): Schema validation results, stdout/stderr, progressive hint tiers, and execution timing.</li>
-<li><code>Footer</code>: Context-sensitive hotkeys (<code>[Enter]</code> Run, <code>[h]</code> Hint, <code>[r]</code> Reset, <code>[t]</code> Tree View, <code>[q]</code> Exit).</li>
-<li><strong>Navigation Controls</strong>:</li>
-<li><code>↑</code> / <code>k</code>: Move up exercise list</li>
-<li><code>↓</code> / <code>j</code>: Move down exercise list</li>
-<li><code>Enter</code>: Execute highlighted exercise</li>
-<li><code>h</code>: Reveal next progressive hint tier</li>
-<li><code>r</code>: Reset exercise to clean starter state</li>
-<li><code>t</code>: Switch to Topology Tree view for active exercise</li>
-<li><code>q</code> / <code>Esc</code>: Exit TUI</li>
-</ul>
-<h3 id="22-kubernetes-resource-topology-visualizer-srckubelingstopologypy">2.2 Kubernetes Resource Topology Visualizer (<code>src/kubelings/topology.py</code>)</h3>
-<ul>
-<li><strong>Core Functionality</strong>:</li>
-<li>Parses Kubernetes manifest dictionaries (or loads from file / exercise output).</li>
-<li>Identifies relationship graphs:<ul>
-<li>Ingress ➔ Service ➔ Endpoints ➔ Pods</li>
-<li>Deployment / StatefulSet / DaemonSet / Job ➔ ReplicaSet / Pods</li>
-<li>Workload Pods ➔ PVC ➔ PV ➔ StorageClass</li>
-<li>NetworkPolicy / CiliumNetworkPolicy ➔ Target Workload Pods &amp; Egress Endpoints</li>
-</ul>
-</li>
-<li>Formats relations into a Rich <code>Tree</code> object with colorized badges and resource metadata.</li>
-<li><strong>CLI Commands</strong>:</li>
-<li><code>kubelings tree [EXERCISE_NAME]</code> (renders topology for an exercise)</li>
-<li><code>kubelings tree --file &lt;manifest.yaml&gt;</code> (renders topology for external file)</li>
-</ul>
-<h3 id="23-universal-manifest-linter-srckubelingslinterpy">2.3 Universal Manifest Linter (<code>src/kubelings/linter.py</code>)</h3>
-<ul>
-<li><strong>Core Functionality</strong>:</li>
-<li>Validates YAML/JSON files against:<ul>
-<li>Root schema integrity (<code>apiVersion</code>, <code>kind</code>, <code>metadata.name</code>)</li>
-<li>Workload best practices (resource <code>limits</code>/<code>requests</code> specified, <code>readinessProbe</code>/<code>livenessProbe</code> defined)</li>
-<li>Security best practices (<code>runAsNonRoot: true</code>, <code>readOnlyRootFilesystem: true</code>, <code>allowPrivilegeEscalation: false</code>)</li>
-<li>Service selector matching valid pod label patterns</li>
-</ul>
-</li>
-<li>Emits colorized Rich table with file path, line number, severity (<code>ERROR</code>, <code>WARNING</code>, <code>INFO</code>), rule ID, and actionable fix suggestions.</li>
-<li><strong>CLI Command</strong>:</li>
-<li><code>kubelings lint &lt;path_or_glob&gt;</code> (e.g. <code>kubelings lint exercises/01_pods/*.py</code> or <code>kubelings lint deploy.yaml</code>)</li>
-</ul>
-<h3 id="24-curriculum-expansion-chapters-16-17-18">2.4 Curriculum Expansion (Chapters 16, 17, 18)</h3>
-<h4 id="chapter-16-policy-as-code-with-kyverno-gatekeeper-16_policy_as_code">Chapter 16: Policy as Code with Kyverno &amp; Gatekeeper (<code>16_policy_as_code</code>)</h4>
-<ul>
-<li><code>policy01</code>: Kyverno <code>ClusterPolicy</code> validating mandatory organizational labels (<code>app.kubernetes.io/name</code>, <code>team</code>).</li>
-<li><code>policy02</code>: Kyverno Mutating Policy injecting container <code>securityContext</code> defaults (<code>runAsNonRoot: true</code>, <code>drop: ["ALL"]</code>).</li>
-<li><code>policy03</code>: Kyverno Generate Policy creating default-deny NetworkPolicy upon Namespace provisioning.</li>
-<li><code>policy04</code>: OPA Gatekeeper <code>ConstraintTemplate</code> with Rego specification and <code>K8sRequiredLabels</code> constraint.</li>
-</ul>
-<h4 id="chapter-17-multi-tenancy-virtual-clusters-hnc-17_multitenancy_vcluster">Chapter 17: Multi-Tenancy, Virtual Clusters &amp; HNC (<code>17_multitenancy_vcluster</code>)</h4>
-<ul>
-<li><code>tenant01</code>: Hierarchical Namespace Controller (<code>HNC</code>) parent-child subnamespace hierarchy and role propagation.</li>
-<li><code>tenant02</code>: Namespace ResourceQuotas, LimitRanges, and tenant isolation policies.</li>
-<li><code>tenant03</code>: Virtual Cluster (<code>vcluster</code>) CustomResource spec with isolated control plane.</li>
-<li><code>tenant04</code>: Multi-tenant NetworkPolicy isolation &amp; egress gateway routing.</li>
-</ul>
-<h4 id="chapter-18-advanced-admission-webhooks-dynamic-interception-18_admission_webhooks">Chapter 18: Advanced Admission Webhooks &amp; Dynamic Interception (<code>18_admission_webhooks</code>)</h4>
-<ul>
-<li><code>webhook01</code>: MutatingAdmissionWebhook configuration with CABundle, rules, and failurePolicy.</li>
-<li><code>webhook02</code>: ValidatingAdmissionWebhook intercepting privileged pod creation and hostPath mounts.</li>
-<li><code>webhook03</code>: Sidecar container injection via mutating admission webhook review response.</li>
-<li><code>webhook04</code>: CRD conversion webhooks for multi-version CustomResourceDefinitions.</li>
-</ul>
-<hr />
-<h2 id="3-data-flow-interfaces">3. Data Flow &amp; Interfaces</h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>+-------------------------------------------------------------+
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>|                      Kubelings CLI                          |
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>|  +--------------+  +--------------+  +-------------------+  |
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>|  |  watch / run |  |  tui / dash  |  |  tree / lint      |  |
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>|  +-------+------+  +-------+------+  +---------+---------+  |
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>+----------|-----------------|-------------------|------------+
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>           |                 |                   |
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>           v                 v                   v
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>+--------------------+ +---------------+ +--------------------+
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>|  Curriculum Engine | |  TUI Renderer | | Topology &amp; Linter  |
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>|  (18 Chapters /    | |  (Split Pane  | | (Resource Graph &amp;  |
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>|   82 Exercises)    | |   Dashboard)  | |  Rule Evaluator)   |
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>+----------+---------+ +-------+-------+ +---------+----------+
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>           |                   |                   |
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>           +-------------------+-------------------+
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>                               |
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>                               v
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>                     +-------------------+
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>                     | Schema Validator  |
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>                     | &amp; Cluster Adapter |
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>                     +-------------------+
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>+-------------------------------------------------------------------------+
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>|                        Unified Onboarding Suite                         |
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>+------------------------------------+------------------------------------+
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>                                     |
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>         +---------------------------+---------------------------+
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>         |                                                       |
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>         v                                                       v
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>+-----------------------------+                         +-----------------------------+
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>|    CLI Tour (`tour.py`)     |                         |  VS Code Editor Walkthrough |
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>|  - 5 Interactive Steps      |                         |  - `contributes.walkthrough`|
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>|  - Rich Panels &amp; Syntax     |                         |  - Action Buttons &amp; Links   |
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>|  - Cluster Live Check       |                         |  - In-Editor Diagnostics    |
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>|  - Live pods01 Evaluation   |                         |  - Quick Fix Demonstrations |
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>+--------------+--------------+                         +--------------+--------------+
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>               |                                                       |
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>               +---------------------------+---------------------------+
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>                                           |
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>                                           v
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>                        +-------------------------------------+
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>                        |     Docs &amp; Educational Guides       |
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>                        |   - `docs/onboarding-guide.md`      |
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>                        |   - `README.md` &amp; CLI Reference     |
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>                        +-------------------------------------+
 </span></code></pre></div>
 <hr />
-<h2 id="4-verification-testing-strategy">4. Verification &amp; Testing Strategy</h2>
+<h2 id="3-cli-guided-tour-kubelings-tour">3. CLI Guided Tour (<code>kubelings tour</code>)</h2>
+<h3 id="31-cli-interface-options">3.1 CLI Interface &amp; Options</h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>kubelings<span class="w"> </span>tour<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+</span></code></pre></div>
+<p><strong>Options:</strong>
+- <code>--step</code>, <code>-s</code> <code>INTEGER</code>: Jump directly to a specific step (1 to 5).
+- <code>--non-interactive</code>: Run through all steps sequentially without waiting for keypresses (useful for automated testing and CI demos).
+- <code>--json</code>: Output step descriptions and status in structured JSON.</p>
+<h3 id="32-the-5-tour-steps">3.2 The 5 Tour Steps</h3>
+<h4 id="step-1-welcome-pedagogical-philosophy">Step 1: Welcome &amp; Pedagogical Philosophy</h4>
+<ul>
+<li>Displays ASCII Kubelings logo.</li>
+<li>Explains the core philosophy:</li>
+<li>Active debugging: Every exercise starts in an intentionally incomplete/broken state.</li>
+<li>Sub-30ms instant feedback: Schema and spec validation happens locally in memory.</li>
+<li>Test-driven mastery: Code passes only when all Kubernetes assertions succeed.</li>
+</ul>
+<h4 id="step-2-environment-cluster-verification">Step 2: Environment &amp; Cluster Verification</h4>
+<ul>
+<li>Performs live verification:</li>
+<li>Python version &amp; virtual environment health.</li>
+<li>Local exercises workspace integrity (<code>exercises/</code> directory with 23 chapters).</li>
+<li>Kubernetes cluster detection via <code>ClusterDetector</code>:<ul>
+<li>If local/remote cluster found: displays active context name and nodes.</li>
+<li>If no cluster found: confirms offline validation mode is 100% active and ready.</li>
+</ul>
+</li>
+</ul>
+<h4 id="step-3-the-kubelings-workflow-hotkeys">Step 3: The Kubelings Workflow &amp; Hotkeys</h4>
+<ul>
+<li>Explains the continuous iteration loop:</li>
+<li>
 <ol>
-<li><strong>Unit Tests</strong>:</li>
-<li><code>tests/test_tui.py</code>: Verify TUI state machine, keypress routing, and screen layout rendering.</li>
-<li><code>tests/test_topology.py</code>: Verify topology graph construction for Pods, Services, Storage, Ingress, and Policies.</li>
-<li><code>tests/test_linter.py</code>: Verify linter rule detection for security, resources, and probes.</li>
-<li><code>tests/test_chapters_16_18.py</code>: Verify all starter templates fail with NOT_DONE and all reference solutions pass.</li>
-<li><strong>Integration Tests</strong>:</li>
-<li><code>kubelings test</code>: Verify 82/82 reference solutions pass.</li>
-<li>Full test suite: <code>pytest</code> across Python 3.10, 3.11, and 3.12.</li>
-<li>Quality checks: <code>ruff check .</code>, <code>ruff format --check .</code>, <code>pyright</code>.</li>
-<li>MkDocs build &amp; validation: <code>mkdocs build --strict</code>.</li>
+<li>Open exercise file in your editor (e.g. <code>exercises/01_pods/pods01.py</code>).</li>
+</ol>
+</li>
+<li>
+<ol>
+<li>Read <code># TODO:</code> instructions and schema requirements.</li>
+</ol>
+</li>
+<li>
+<ol>
+<li>Edit and save the file.</li>
+</ol>
+</li>
+<li>
+<ol>
+<li>Automated file watcher tests your code in <code>&lt; 30ms</code>.</li>
+</ol>
+</li>
+<li>Explains interactive terminal hotkeys:</li>
+<li><code>[n]</code> / <code>[Enter]</code>: Next exercise.</li>
+<li><code>[p]</code>: Previous exercise.</li>
+<li><code>[h]</code>: Reveal progressive hint tier.</li>
+<li><code>[r]</code>: Rerun evaluation.</li>
+<li><code>[l]</code>: Show syllabus overview.</li>
+<li><code>[q]</code>: Quit watch loop.</li>
+</ul>
+<h4 id="step-4-guided-first-exercise-pods01-walkthrough">Step 4: Guided First Exercise (<code>pods01</code>) Walkthrough</h4>
+<ul>
+<li>Previews the first exercise <code>exercises/01_pods/pods01.py</code>.</li>
+<li>Evaluates <code>pods01</code> live using <code>ExerciseRunner</code> and shows the real error message.</li>
+<li>Explains what's missing: adding <code>labels: {app: web}</code> and <code>ports: [{containerPort: 80}]</code> to the Pod specification.</li>
+<li>Displays the solution diff comparing starter code to reference solution.</li>
+<li>Confirms the student is ready to edit the file.</li>
+</ul>
+<h4 id="step-5-ide-tooling-next-steps">Step 5: IDE Tooling &amp; Next Steps</h4>
+<ul>
+<li>Recommends the VS Code extension for inline error squiggles and quick fixes.</li>
+<li>Presents final action prompt:</li>
+<li>Press <code>[Enter]</code> to immediately launch <code>kubelings watch</code>.</li>
+<li>Press <code>[q]</code> to return to shell.</li>
+</ul>
+<hr />
+<h2 id="4-vs-code-cursor-extension-walkthrough">4. VS Code &amp; Cursor Extension Walkthrough</h2>
+<h3 id="41-walkthrough-registration-packagejson">4.1 Walkthrough Registration (<code>package.json</code>)</h3>
+<p>Register <code>contributes.walkthroughs</code> in <code>extensions/vscode/package.json</code>:
+- <strong>ID</strong>: <code>kubelings.walkthrough</code>
+- <strong>Title</strong>: <em>Get Started with Kubelings ☸️</em>
+- <strong>Description</strong>: <em>Master Kubernetes through hands-on, test-driven micro-exercises.</em>
+- <strong>Steps</strong>:
+  1. <code>welcome</code>: Overview &amp; Curriculum structure -&gt; Action: <code>[View Curriculum Syllabus]</code>.
+  2. <code>cluster</code>: Cluster &amp; Environment Check -&gt; Action: <code>[Check Cluster Connectivity]</code>.
+  3. <code>watch</code>: Terminal Watch Mode -&gt; Action: <code>[Start Kubelings Watch]</code>.
+  4. <code>first-exercise</code>: Solve First Exercise -&gt; Action: <code>[Open pods01.py]</code>.
+  5. <code>quickfixes</code>: Diagnostics &amp; Quick Fixes -&gt; Action: <code>[Run pods01 Verification]</code>.</p>
+<h3 id="42-supporting-markdown-assets">4.2 Supporting Markdown &amp; Assets</h3>
+<ul>
+<li>Create markdown step definitions in <code>extensions/vscode/walkthrough/*.md</code>.</li>
+<li>Register <code>kubelings.openWalkthrough</code> command in <code>src/commands.ts</code>.</li>
+<li>Expose <code>cliBridge.tour()</code> in <code>src/cliBridge.ts</code>.</li>
+</ul>
+<hr />
+<h2 id="5-documentation-suite-updates">5. Documentation Suite Updates</h2>
+<h3 id="51-new-document-docsonboarding-guidemd">5.1 New Document: <code>docs/onboarding-guide.md</code></h3>
+<ul>
+<li>Comprehensive illustrated walkthrough covering:</li>
+<li>Installation and zero-install execution (<code>uvx kubelings tour</code>).</li>
+<li>Terminal interactive tour experience.</li>
+<li>VS Code extension walkthrough.</li>
+<li>Solving the first Pod exercise step-by-step.</li>
+<li>Learning roadmap from Pods to Controllers, Storage, RBAC, Operators, and Incident Troubleshooting.</li>
+</ul>
+<h3 id="52-updated-existing-documents">5.2 Updated Existing Documents</h3>
+<ul>
+<li><code>README.md</code>: Highlight <code>kubelings tour</code> under Quickstart.</li>
+<li><code>docs/index.md</code> &amp; <code>docs/getting-started.md</code>: Add tour command and link to onboarding guide.</li>
+<li><code>docs/cli-reference.md</code>: Add full reference for <code>kubelings tour</code>.</li>
+</ul>
+<hr />
+<h2 id="6-verification-quality-gates">6. Verification &amp; Quality Gates</h2>
+<h3 id="61-test-coverage-requirements">6.1 Test Coverage Requirements</h3>
+<ol>
+<li><code>tests/test_tour.py</code>:</li>
+<li>Non-interactive execution runs through all 5 steps with exit code 0.</li>
+<li>Specific step jumping (<code>kubelings tour --step 4</code>) works.</li>
+<li>JSON output (<code>kubelings tour --json</code>) contains structured step metadata and verification status.</li>
+<li><code>extensions/vscode/test/walkthrough.test.ts</code>:</li>
+<li>Command <code>kubelings.openWalkthrough</code> is registered and executable.</li>
+<li><code>cliBridge.tour()</code> method successfully retrieves tour metadata.</li>
+<li>Full regression testing:</li>
+<li>489+ Python tests passing (<code>uv run pytest</code>).</li>
+<li>40+ TypeScript tests passing (<code>make vscode-test</code>).</li>
+<li>Ruff linting and formatting clean (<code>uv run ruff check . &amp;&amp; uv run ruff format --check .</code>).</li>
+<li>Type check clean (<code>uv run pyright</code>).</li>
+<li>VSIX extension package built (<code>make vscode-package</code>).</li>
 </ol>
 
 

@@ -1,0 +1,1699 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An interactive, hands-on CLI learning environment for Kubernetes.">
+      
+      
+        <meta name="author" content="Kubelings Contributors">
+      
+      
+        <link rel="canonical" href="https://dnf0.github.io/kubelings/onboarding-guide/">
+      
+      
+        <link rel="prev" href="../getting-started/">
+      
+      
+        <link rel="next" href="../playground/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Onboarding Guide - Kubelings</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/playground/playground.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="cyan" data-md-color-accent="deep-purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#kubelings-onboarding-learners-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Kubelings" class="md-header__button md-logo" aria-label="Kubelings" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Kubelings
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Onboarding Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="cyan" data-md-color-accent="deep-purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="cyan" data-md-color-accent="deep-purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/dnf0/kubelings" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    dnf0/kubelings
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Kubelings" class="md-nav__button md-logo" aria-label="Kubelings" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Kubelings
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/dnf0/kubelings" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    dnf0/kubelings
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Onboarding Guide
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Onboarding Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-is-kubelings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What is Kubelings?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. What is Kubelings?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-pedagogical-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🌟 Core Pedagogical Principles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-quickstart-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Quickstart &amp; Installation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Quickstart &amp; Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-a-zero-install-instant-run-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option A: Zero-Install Instant Run (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-b-global-cli-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option B: Global CLI Installation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-c-local-git-repository-clone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option C: Local Git Repository Clone
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-interactive-cli-tour-kubelings-tour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The Interactive CLI Tour (kubelings tour)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. The Interactive CLI Tour (kubelings tour)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tour-cli-flags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tour CLI Flags
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-inner-learning-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The Inner Learning Loop
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. The Inner Learning Loop">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#interactive-hotkeys-in-watch-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interactive Hotkeys in Watch Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-walkthrough-solving-your-first-exercise-pods01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Walkthrough: Solving Your First Exercise (pods01)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Walkthrough: Solving Your First Exercise (pods01)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-51-initial-state-failure-inspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5.1: Initial State &amp; Failure Inspection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-52-inspecting-the-starter-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5.2: Inspecting the Starter Code
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-53-applying-the-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5.3: Applying the Fix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-54-watching-it-turn-green" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5.4: Watching it Turn Green
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-vs-code-cursor-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. VS Code &amp; Cursor Extension 💻
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. VS Code &amp; Cursor Extension 💻">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installing-the-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installing the Extension
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installing the Extension">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#from-command-line-vsix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From Command Line (VSIX):
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-editor-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From Editor UI:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-curriculum-progression-roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Curriculum &amp; Progression Roadmap
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Curriculum &amp; Progression Roadmap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#full-curriculum-syllabus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full Curriculum Syllabus
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-essential-commands-cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Essential Commands Cheat Sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../playground/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interactive Playground
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../syllabus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Curriculum Syllabus
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-is-kubelings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What is Kubelings?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. What is Kubelings?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-pedagogical-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🌟 Core Pedagogical Principles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-quickstart-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Quickstart &amp; Installation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Quickstart &amp; Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-a-zero-install-instant-run-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option A: Zero-Install Instant Run (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-b-global-cli-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option B: Global CLI Installation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-c-local-git-repository-clone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option C: Local Git Repository Clone
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-interactive-cli-tour-kubelings-tour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The Interactive CLI Tour (kubelings tour)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. The Interactive CLI Tour (kubelings tour)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tour-cli-flags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tour CLI Flags
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-inner-learning-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The Inner Learning Loop
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. The Inner Learning Loop">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#interactive-hotkeys-in-watch-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interactive Hotkeys in Watch Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-walkthrough-solving-your-first-exercise-pods01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Walkthrough: Solving Your First Exercise (pods01)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Walkthrough: Solving Your First Exercise (pods01)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-51-initial-state-failure-inspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5.1: Initial State &amp; Failure Inspection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-52-inspecting-the-starter-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5.2: Inspecting the Starter Code
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-53-applying-the-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5.3: Applying the Fix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-54-watching-it-turn-green" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5.4: Watching it Turn Green
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-vs-code-cursor-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. VS Code &amp; Cursor Extension 💻
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. VS Code &amp; Cursor Extension 💻">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installing-the-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installing the Extension
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installing the Extension">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#from-command-line-vsix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From Command Line (VSIX):
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-editor-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From Editor UI:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-curriculum-progression-roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Curriculum &amp; Progression Roadmap
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Curriculum &amp; Progression Roadmap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#full-curriculum-syllabus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full Curriculum Syllabus
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-essential-commands-cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Essential Commands Cheat Sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="kubelings-onboarding-learners-guide">Kubelings Onboarding &amp; Learner's Guide ☸️</h1>
+<p>Welcome to <strong>Kubelings</strong>! Whether you are completely new to Kubernetes or an experienced engineer looking to sharpen your production troubleshooting and YAML authoring instincts, this guide will walk you through everything you need to get up to speed in minutes.</p>
+<hr />
+<h2 id="1-what-is-kubelings">1. What is Kubelings?</h2>
+<p>Kubelings is an interactive, test-driven learning platform inspired by <a href="https://github.com/rust-lang/rustlings">Rustlings</a> and <a href="https://codeberg.org/ziglings/exercises">Ziglings</a>. Rather than reading passive documentation or copying opaque manifests, you learn Kubernetes by actively diagnosing, editing, and verifying micro-exercises directly in your favorite code editor and terminal.</p>
+<h3 id="core-pedagogical-principles">🌟 Core Pedagogical Principles</h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>  +-----------------------+      +-----------------------+      +-----------------------+
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  |    Active Debugging   |      |  Sub-30ms Validation  |      |  Test-Driven Mastery  |
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  |  Every exercise starts| ---&gt; |  In-memory schemas    | ---&gt; |  Exercises pass only  |
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  |  intentionally broken |      |  evaluate in &lt; 30ms   |      |  when real assertions |
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>  |  with clear # TODOs   |      |  with zero API latency|      |  and schemas succeed  |
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>  +-----------------------+      +-----------------------+      +-----------------------+
+</span></code></pre></div>
+<ol>
+<li><strong>Active Debugging</strong>: Every exercise starts in an intentionally broken or incomplete state with clear <code># TODO:</code> instructions. You inspect the diagnostic error output and fix the code.</li>
+<li><strong>Sub-30ms Instant Feedback</strong>: All manifests and resource specifications are evaluated in-memory locally. You get instant validation on file save without waiting for remote API server roundtrips.</li>
+<li><strong>Test-Driven Mastery</strong>: Exercises pass strictly when genuine Kubernetes schema validations, constraints, and controller assertions succeed. No magic comments required!</li>
+<li><strong>Dual-Mode Flexibility</strong>:</li>
+<li><strong>Offline Mode</strong>: 100% of the 26 chapters work entirely offline with zero cluster installation needed.</li>
+<li><strong>Live Cluster Mode</strong>: Seamlessly connect to <code>kind</code>, <code>minikube</code>, <code>k3d</code>, or remote clusters for live reconciliation testing in isolated ephemeral namespaces.</li>
+</ol>
+<hr />
+<h2 id="2-quickstart-installation">2. Quickstart &amp; Installation</h2>
+<p>You can start learning Kubernetes in under 10 seconds without cloning the repository or configuring dependencies.</p>
+<h3 id="option-a-zero-install-instant-run-recommended">Option A: Zero-Install Instant Run (Recommended)</h3>
+<p>Using <a href="https://docs.astral.sh/uv/"><code>uvx</code></a> (part of Astral's ultra-fast <code>uv</code> Python toolchain):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Launch the interactive guided tour</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>uvx<span class="w"> </span>kubelings<span class="w"> </span>tour
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Scaffold exercises in your current workspace and start watching</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>uvx<span class="w"> </span>kubelings<span class="w"> </span>init
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>uvx<span class="w"> </span>kubelings<span class="w"> </span>watch
+</span></code></pre></div>
+<p>Or using <a href="https://pipx.pypa.io/stable/"><code>pipx</code></a>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>pipx<span class="w"> </span>run<span class="w"> </span>kubelings<span class="w"> </span>tour
+</span></code></pre></div>
+<h3 id="option-b-global-cli-installation">Option B: Global CLI Installation</h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># With uv</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>uv<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>kubelings
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># With pipx</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>pipx<span class="w"> </span>install<span class="w"> </span>kubelings
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1"># Start your journey</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>kubelings<span class="w"> </span>tour
+</span></code></pre></div>
+<h3 id="option-c-local-git-repository-clone">Option C: Local Git Repository Clone</h3>
+<p>If you are developing or contributing to Kubelings:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/dnf0/kubelings.git
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nb">cd</span><span class="w"> </span>kubelings
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>uv<span class="w"> </span>venv
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[dev]"</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c1"># Launch the guided tour</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>kubelings<span class="w"> </span>tour
+</span></code></pre></div>
+<hr />
+<h2 id="3-the-interactive-cli-tour-kubelings-tour">3. The Interactive CLI Tour (<code>kubelings tour</code>)</h2>
+<p>The fastest way to understand how Kubelings works is to run the built-in interactive tour:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>kubelings<span class="w"> </span>tour
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>   __          __           ___                 
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>  / /____  __/ /_  ___     / (_)___  ____ ______
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a> / //_/ / / / __ \/ _ \   / / / __ \/ __ `/ ___/
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>/ ,&lt; / /_/ / /_/ /  __/  / / / / / / /_/ (__  ) 
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>/_/|_|\__,_/_.___/\___/  /_/_/_/ /_/\__, /____/  
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>                                   /____/        
+</span></code></pre></div>
+<p>The tour guides you through 5 rich, color-coded steps:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Step</th>
+<th style="text-align: left;">Title</th>
+<th style="text-align: left;">What Happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>1</strong></td>
+<td style="text-align: left;"><strong>Welcome &amp; Philosophy</strong></td>
+<td style="text-align: left;">Introduces test-driven micro-learning and in-memory verification.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>2</strong></td>
+<td style="text-align: left;"><strong>Environment Verification</strong></td>
+<td style="text-align: left;">Probes your Python runtime, exercise workspace, and checks for active Kubernetes clusters (while confirming pure offline mode readiness).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>3</strong></td>
+<td style="text-align: left;"><strong>Workflow &amp; Hotkeys</strong></td>
+<td style="text-align: left;">Details the inner watch loop, file saving triggers, and terminal keybindings.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>4</strong></td>
+<td style="text-align: left;"><strong>Guided First Exercise</strong></td>
+<td style="text-align: left;">Live-evaluates <code>exercises/01_pods/pods01.py</code>, shows real failure diagnostics, explains required schema attributes, and displays the solution diff.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>5</strong></td>
+<td style="text-align: left;"><strong>IDE Tooling &amp; Next Steps</strong></td>
+<td style="text-align: left;">Introduces the VS Code / Cursor extension and gives a 1-click launch into <code>kubelings watch</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tour-cli-flags">Tour CLI Flags</h3>
+<ul>
+<li><code>kubelings tour --step 4</code>: Jump straight to a specific step (1–5).</li>
+<li><code>kubelings tour --non-interactive</code>: Run through all steps without pausing for keypresses (great for automated scripts or quick refreshers).</li>
+<li><code>kubelings tour --json</code>: Output structured JSON metadata of the tour and steps.</li>
+</ul>
+<hr />
+<h2 id="4-the-inner-learning-loop">4. The Inner Learning Loop</h2>
+<p>Mastering Kubernetes with Kubelings follows a simple, addictive 5-step rhythm:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>  1. RUN
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>  +--------------------------------------------------------+
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>  |  $ kubelings watch                                     |
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>  +--------------------------------------------------------+
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>                             |
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>                             v
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>  2. OPEN
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>  +--------------------------------------------------------+
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>  |  Open active file in editor (e.g. pods01.py)           |
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>  +--------------------------------------------------------+
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>                             |
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>                             v
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>  3. EDIT &amp; SAVE
+</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>  +--------------------------------------------------------+
+</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>  |  Read # TODO: comments, fix YAML manifest, press SAVE  |
+</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>  +--------------------------------------------------------+
+</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>                             |
+</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>                             v
+</span><span id="__span-7-19"><a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>  4. INSTANT EVALUATION (&lt; 30ms)
+</span><span id="__span-7-20"><a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>  +--------------------------------------------------------+
+</span><span id="__span-7-21"><a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>  |  FAIL ❌ -&gt; Inspect error panel, use hints ('h')        |
+</span><span id="__span-7-22"><a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a>  |  PASS ✓  -&gt; Terminal turns green, celebration banner   |
+</span><span id="__span-7-23"><a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a>  +--------------------------------------------------------+
+</span><span id="__span-7-24"><a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a>                             |
+</span><span id="__span-7-25"><a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a>                             v
+</span><span id="__span-7-26"><a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a>  5. ADVANCE
+</span><span id="__span-7-27"><a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a>  +--------------------------------------------------------+
+</span><span id="__span-7-28"><a id="__codelineno-7-28" name="__codelineno-7-28" href="#__codelineno-7-28"></a>  |  Press [n] or [Enter] to move to the next exercise!    |
+</span><span id="__span-7-29"><a id="__codelineno-7-29" name="__codelineno-7-29" href="#__codelineno-7-29"></a>  +--------------------------------------------------------+
+</span></code></pre></div>
+<h3 id="interactive-hotkeys-in-watch-mode">Interactive Hotkeys in Watch Mode</h3>
+<p>While <code>kubelings watch</code> is active in your terminal, use these keyboard shortcuts at any time:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Key</th>
+<th style="text-align: left;">Action</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><code>n</code> / <code>Enter</code></td>
+<td style="text-align: left;"><strong>Next</strong></td>
+<td style="text-align: left;">Advance to the next incomplete or subsequent exercise.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><code>p</code></td>
+<td style="text-align: left;"><strong>Previous</strong></td>
+<td style="text-align: left;">Return to the previous exercise to review or experiment.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><code>h</code></td>
+<td style="text-align: left;"><strong>Hint</strong></td>
+<td style="text-align: left;">Reveal the next progressive hint tier for the current exercise.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><code>r</code></td>
+<td style="text-align: left;"><strong>Rerun</strong></td>
+<td style="text-align: left;">Force an immediate re-evaluation of the current exercise.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><code>l</code></td>
+<td style="text-align: left;"><strong>List</strong></td>
+<td style="text-align: left;">Display the full curriculum syllabus with completion status.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><code>q</code></td>
+<td style="text-align: left;"><strong>Quit</strong></td>
+<td style="text-align: left;">Exit the file watcher cleanly.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-walkthrough-solving-your-first-exercise-pods01">5. Walkthrough: Solving Your First Exercise (<code>pods01</code>)</h2>
+<p>Let's walk through solving the very first exercise in the curriculum: <code>exercises/01_pods/pods01.py</code>.</p>
+<h3 id="step-51-initial-state-failure-inspection">Step 5.1: Initial State &amp; Failure Inspection</h3>
+<p>When you start <code>kubelings watch</code>, you will see:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>======================================================================
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>  EXERCISE: exercises/01_pods/pods01.py
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>  TOPIC:    First Pod Manifest &amp; Spec
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>======================================================================
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>[FAIL] Manifest validation failed:
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>  • Spec Error: Container 'nginx' must expose containerPort 80
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>  • Spec Error: Pod metadata missing required label 'app: web'
+</span></code></pre></div>
+<h3 id="step-52-inspecting-the-starter-code">Step 5.2: Inspecting the Starter Code</h3>
+<p>Open <code>exercises/01_pods/pods01.py</code> in your code editor:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># exercises/01_pods/pods01.py</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="sd">"""</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="sd">Exercise: exercises/01_pods/pods01.py</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="sd">Topic: First Pod Manifest &amp; Spec</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="sd">Instructions:</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="sd">Fix the YAML manifest below to define a valid Pod named 'nginx-web'</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="sd">running nginx:alpine on container port 80 with label 'app: web'.</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="sd">"""</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="kn">from</span><span class="w"> </span><span class="nn">kubelings.validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_manifest</span>
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="c1"># TODO: Fix the Pod manifest below:</span>
+</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="c1"># 1. Add label 'app: web' under metadata.labels</span>
+</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a><span class="c1"># 2. Add container port 80 under spec.containers[0].ports</span>
+</span><span id="__span-9-17"><a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a><span class="n">POD_MANIFEST</span> <span class="o">=</span> <span class="s2">"""</span>
+</span><span id="__span-9-18"><a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a><span class="s2">apiVersion: v1</span>
+</span><span id="__span-9-19"><a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a><span class="s2">kind: Pod</span>
+</span><span id="__span-9-20"><a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a><span class="s2">metadata:</span>
+</span><span id="__span-9-21"><a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a><span class="s2">  name: nginx-web</span>
+</span><span id="__span-9-22"><a id="__codelineno-9-22" name="__codelineno-9-22" href="#__codelineno-9-22"></a><span class="s2">spec:</span>
+</span><span id="__span-9-23"><a id="__codelineno-9-23" name="__codelineno-9-23" href="#__codelineno-9-23"></a><span class="s2">  containers:</span>
+</span><span id="__span-9-24"><a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a><span class="s2">  - name: nginx</span>
+</span><span id="__span-9-25"><a id="__codelineno-9-25" name="__codelineno-9-25" href="#__codelineno-9-25"></a><span class="s2">    image: nginx:alpine</span>
+</span><span id="__span-9-26"><a id="__codelineno-9-26" name="__codelineno-9-26" href="#__codelineno-9-26"></a><span class="s2">"""</span>
+</span></code></pre></div>
+<h3 id="step-53-applying-the-fix">Step 5.3: Applying the Fix</h3>
+<p>Add the missing <code>labels</code> block under <code>metadata</code> and the <code>ports</code> list under <code>containers</code>:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">POD_MANIFEST</span> <span class="o">=</span> <span class="s2">"""</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="s2">apiVersion: v1</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="s2">kind: Pod</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="s2">metadata:</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="s2">  name: nginx-web</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="s2">  labels:</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="s2">    app: web</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="s2">spec:</span>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="s2">  containers:</span>
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="s2">  - name: nginx</span>
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="s2">    image: nginx:alpine</span>
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="s2">    ports:</span>
+</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="s2">    - containerPort: 80</span>
+</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="s2">"""</span>
+</span></code></pre></div>
+<h3 id="step-54-watching-it-turn-green">Step 5.4: Watching it Turn Green</h3>
+<p>Save the file. Within 30 milliseconds, the watcher updates:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>======================================================================
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>  ✓ exercises/01_pods/pods01.py PASSED!
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>======================================================================
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>  [n/Enter] Next exercise  |  [p] Previous  |  [h] Hint  |  [q] Quit
+</span></code></pre></div>
+<p>Press <code>Enter</code> or <code>n</code> to advance directly to <code>pods02.py</code>!</p>
+<hr />
+<h2 id="6-vs-code-cursor-extension">6. VS Code &amp; Cursor Extension 💻</h2>
+<p>For the ultimate development experience, install the official <strong>Kubelings Extension</strong> for <strong>Visual Studio Code</strong> and <strong>Cursor</strong>.</p>
+<p align="center">
+  <img src="../assets/demo.svg" alt="Kubelings IDE Integration" width="700">
+</p>
+
+<h3 id="features">Features</h3>
+<ol>
+<li><strong>Interactive Guided Walkthrough</strong>:</li>
+<li>Built directly into the editor (<code>contributes.walkthroughs</code>).</li>
+<li>Open it at any time via the Command Palette: <code>Kubelings: Open Welcome Walkthrough</code>.</li>
+<li>Step-by-step onboarding with live action buttons to open exercises, run checks, and launch watch mode.</li>
+<li><strong>Curriculum Tree View</strong>:</li>
+<li>Browse all 26 chapters and 114 exercises directly in the VS Code Activity Bar.</li>
+<li>Live checkmark icons (✓ / ❌) indicate pass/fail progress.</li>
+<li><strong>Persistent Status Bar</strong>:</li>
+<li>Displays completion percentage (e.g. <code>☸ Kubelings: 42% (48/114) | Next: sched02</code>).</li>
+<li>Click to instantly jump to your current active exercise.</li>
+<li><strong>On-Save Diagnostics &amp; Error Squiggles</strong>:</li>
+<li>Whenever you save <code>exercises/**/*.py</code>, the extension runs in-memory evaluation.</li>
+<li>Missing fields, invalid types, or broken schema constraints are highlighted with inline red squiggles.</li>
+<li><strong>Quick Fixes &amp; Solution Diffing</strong>:</li>
+<li>Hover over any error to trigger Code Actions.</li>
+<li><strong>Reveal Progressive Hint</strong>: View hint tiers inside the editor.</li>
+<li><strong>Compare with Reference Solution</strong>: Opens a side-by-side diff comparing your exercise against the official solution.</li>
+</ol>
+<h3 id="installing-the-extension">Installing the Extension</h3>
+<h4 id="from-command-line-vsix">From Command Line (VSIX):</h4>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># VS Code</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>code<span class="w"> </span>--install-extension<span class="w"> </span>dist/kubelings-vscode.vsix
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="c1"># Cursor</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>cursor<span class="w"> </span>--install-extension<span class="w"> </span>dist/kubelings-vscode.vsix
+</span></code></pre></div>
+<h4 id="from-editor-ui">From Editor UI:</h4>
+<ol>
+<li>Press <code>Ctrl+Shift+X</code> (or <code>Cmd+Shift+X</code> on macOS).</li>
+<li>Click the <code>...</code> menu in the top right corner of the Extensions view.</li>
+<li>Select <strong>Install from VSIX...</strong> and select <code>dist/kubelings-vscode.vsix</code>.</li>
+</ol>
+<hr />
+<h2 id="7-curriculum-progression-roadmap">7. Curriculum &amp; Progression Roadmap</h2>
+<p>Kubelings covers 26 comprehensive chapters organized into 6 progressive learning tiers:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>+-------------------------------------------------------------------------------+
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>|  TIER 1: Fundamentals (Chapters 1–5)                                          |
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>|  Pods -&gt; Controllers &amp; Deployments -&gt; Config &amp; Secrets -&gt; Storage -&gt; Services |
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>+-------------------------------------------------------------------------------+
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>                                       |
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>                                       v
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>+-------------------------------------------------------------------------------+
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>|  TIER 2: Operations &amp; Traffic (Chapters 6–10)                                 |
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>|  Ingress -&gt; Scheduling &amp; Affinity -&gt; RBAC -&gt; Network Policies -&gt; Health Probes|
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>+-------------------------------------------------------------------------------+
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>                                       |
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>                                       v
+</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>+-------------------------------------------------------------------------------+
+</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a>|  TIER 3: Production Mastery (Chapters 11–13)                                  |
+</span><span id="__span-13-15"><a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a>|  Autoscaling (HPA/VPA/KEDA) -&gt; Custom CRDs &amp; Operators -&gt; Troubleshooting     |
+</span><span id="__span-13-16"><a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a>+-------------------------------------------------------------------------------+
+</span><span id="__span-13-17"><a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a>                                       |
+</span><span id="__span-13-18"><a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a>                                       v
+</span><span id="__span-13-19"><a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a>+-------------------------------------------------------------------------------+
+</span><span id="__span-13-20"><a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a>|  TIER 4: Cloud-Native Ecosystem (Chapters 14–18)                              |
+</span><span id="__span-13-21"><a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a>|  GitOps (ArgoCD) -&gt; Service Mesh (Cilium) -&gt; Policy as Code -&gt; Webhooks       |
+</span><span id="__span-13-22"><a id="__codelineno-13-22" name="__codelineno-13-22" href="#__codelineno-13-22"></a>+-------------------------------------------------------------------------------+
+</span><span id="__span-13-23"><a id="__codelineno-13-23" name="__codelineno-13-23" href="#__codelineno-13-23"></a>                                       |
+</span><span id="__span-13-24"><a id="__codelineno-13-24" name="__codelineno-13-24" href="#__codelineno-13-24"></a>                                       v
+</span><span id="__span-13-25"><a id="__codelineno-13-25" name="__codelineno-13-25" href="#__codelineno-13-25"></a>+-------------------------------------------------------------------------------+
+</span><span id="__span-13-26"><a id="__codelineno-13-26" name="__codelineno-13-26" href="#__codelineno-13-26"></a>|  TIER 5: Advanced Infrastructure (Chapters 19–23)                             |
+</span><span id="__span-13-27"><a id="__codelineno-13-27" name="__codelineno-13-27" href="#__codelineno-13-27"></a>|  Helm -&gt; Kustomize -&gt; Gateway API -&gt; Crossplane -&gt; eBPF Tetragon              |
+</span><span id="__span-13-28"><a id="__codelineno-13-28" name="__codelineno-13-28" href="#__codelineno-13-28"></a>+-------------------------------------------------------------------------------+
+</span><span id="__span-13-29"><a id="__codelineno-13-29" name="__codelineno-13-29" href="#__codelineno-13-29"></a>                                       |
+</span><span id="__span-13-30"><a id="__codelineno-13-30" name="__codelineno-13-30" href="#__codelineno-13-30"></a>                                       v
+</span><span id="__span-13-31"><a id="__codelineno-13-31" name="__codelineno-13-31" href="#__codelineno-13-31"></a>+-------------------------------------------------------------------------------+
+</span><span id="__span-13-32"><a id="__codelineno-13-32" name="__codelineno-13-32" href="#__codelineno-13-32"></a>|  TIER 6: AI &amp; ML Platform Engineering (Chapters 24–26)                        |
+</span><span id="__span-13-33"><a id="__codelineno-13-33" name="__codelineno-13-33" href="#__codelineno-13-33"></a>|  KubeRay (Distributed ML) -&gt; Kueue &amp; Volcano (Batch) -&gt; Hardware Accel &amp; DRA  |
+</span><span id="__span-13-34"><a id="__codelineno-13-34" name="__codelineno-13-34" href="#__codelineno-13-34"></a>+-------------------------------------------------------------------------------+
+</span></code></pre></div>
+<h3 id="full-curriculum-syllabus">Full Curriculum Syllabus</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Tier</th>
+<th style="text-align: left;">Chapters</th>
+<th style="text-align: left;">Topics Covered</th>
+<th style="text-align: center;">Exercises</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Tier 1: Core</strong></td>
+<td style="text-align: left;"><strong>01–05</strong></td>
+<td style="text-align: left;">Pods, Multi-container Sidecars, Deployments, StatefulSets, ConfigMaps, Secrets, PV/PVCs, ClusterIP/NodePort/LoadBalancer Services.</td>
+<td style="text-align: center;">27</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Tier 2: Ops</strong></td>
+<td style="text-align: left;"><strong>06–10</strong></td>
+<td style="text-align: left;">Ingress TLS, Affinity/Anti-Affinity, Taints/Tolerations, RBAC Roles/Bindings, NetworkPolicies, Liveness/Readiness/Startup Probes.</td>
+<td style="text-align: center;">22</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Tier 3: Prod</strong></td>
+<td style="text-align: left;"><strong>11–13</strong></td>
+<td style="text-align: left;">HPA/VPA/KEDA Autoscaling, CustomResourceDefinitions (CRDs), Python Operators, <code>CrashLoopBackOff</code>, OOMKilled, Incident Debugging.</td>
+<td style="text-align: center;">13</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Tier 4: Mesh</strong></td>
+<td style="text-align: left;"><strong>14–18</strong></td>
+<td style="text-align: left;">ArgoCD GitOps, Cilium eBPF L7 Policies, Kyverno/OPA Gatekeeper Policies, Virtual Clusters, Mutating/Validating Webhooks.</td>
+<td style="text-align: center;">20</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Tier 5: Scale</strong></td>
+<td style="text-align: left;"><strong>19–23</strong></td>
+<td style="text-align: left;">Helm v3 Charts &amp; Schemas, Kustomize Overlays, Next-Gen Gateway API, Crossplane XRDs/Compositions, Tetragon Kernel Tracing.</td>
+<td style="text-align: center;">20</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Tier 6: AI/ML</strong></td>
+<td style="text-align: left;"><strong>24–26</strong></td>
+<td style="text-align: left;">Distributed RayClusters, RayJob fine-tuning, RayService, Kueue Quotas/Borrowing, Volcano Gang Scheduling, NVIDIA MIG, Apple Silicon GPU &amp; MPS, DRA, vLLM.</td>
+<td style="text-align: center;">12</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8-essential-commands-cheat-sheet">8. Essential Commands Cheat Sheet</h2>
+<p>Keep these commands handy as you work through the curriculum:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Task</th>
+<th style="text-align: left;">Command</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Interactive Tour</strong></td>
+<td style="text-align: left;"><code>kubelings tour</code></td>
+<td style="text-align: left;">5-step guided walkthrough with live checks.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Watch Mode</strong></td>
+<td style="text-align: left;"><code>kubelings watch</code></td>
+<td style="text-align: left;">Continuous learning loop with hotkey navigation.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Watch from Specific Exercise</strong></td>
+<td style="text-align: left;"><code>kubelings watch --start sched01</code></td>
+<td style="text-align: left;">Start watching from a specific exercise.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Run Single Exercise</strong></td>
+<td style="text-align: left;"><code>kubelings run pods01</code></td>
+<td style="text-align: left;">Evaluate a single exercise once.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Progressive Hints</strong></td>
+<td style="text-align: left;"><code>kubelings hint pods01</code></td>
+<td style="text-align: left;">Show hint tier 1, 2, or 3.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Curriculum Progress</strong></td>
+<td style="text-align: left;"><code>kubelings verify</code></td>
+<td style="text-align: left;">Run full curriculum evaluation dashboard.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Syllabus List</strong></td>
+<td style="text-align: left;"><code>kubelings list</code></td>
+<td style="text-align: left;">List all 26 chapters and 114 exercises.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Topology Visualizer</strong></td>
+<td style="text-align: left;"><code>kubelings tree pods01</code></td>
+<td style="text-align: left;">Render resource relationship tree.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Manifest Linter</strong></td>
+<td style="text-align: left;"><code>kubelings lint &lt;path&gt;</code></td>
+<td style="text-align: left;">Audit manifests for security and reliability.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Terminal Dashboard</strong></td>
+<td style="text-align: left;"><code>kubelings tui</code></td>
+<td style="text-align: left;">Full-screen terminal dashboard.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Reset Exercise</strong></td>
+<td style="text-align: left;"><code>kubelings reset pods01</code></td>
+<td style="text-align: left;">Restore exercise back to clean starter code.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Cluster Status</strong></td>
+<td style="text-align: left;"><code>kubelings cluster</code></td>
+<td style="text-align: left;">Check offline mode vs live cluster context.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="9-next-steps">9. Next Steps</h2>
+<p>Ready to start your Kubernetes mastery journey?</p>
+<ol>
+<li>Run <strong><code>kubelings tour</code></strong> in your terminal.</li>
+<li>Launch <strong><code>kubelings watch</code></strong>.</li>
+<li>Open <strong><code>exercises/01_pods/pods01.py</code></strong> and write your first Pod!</li>
+</ol>
+<p>Have fun and happy Kubeling! ☸️</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../assets/playground/playground.js"></script>
+      
+    
+  </body>
+</html>

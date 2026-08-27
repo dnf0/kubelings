@@ -53,6 +53,8 @@
       
     
     
+      <link rel="stylesheet" href="../assets/playground/playground.css">
+    
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -297,6 +299,60 @@
     
   
     Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../onboarding-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Onboarding Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../playground/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interactive Playground
   
 
     
@@ -619,8 +675,7 @@
 <hr />
 <h2 id="adding-new-exercises">Adding New Exercises</h2>
 <ol>
-<li>Create the starter exercise file under <code>exercises/&lt;chapter_name&gt;/&lt;exercise_name&gt;.py</code>.</li>
-<li>Ensure the top line has <code># I AM NOT DONE</code>.</li>
+<li>Create the starter exercise file under <code>exercises/&lt;chapter_name&gt;/&lt;exercise_name&gt;.py</code> with placeholders that fail validation initially.</li>
 <li>Create the corresponding reference solution under <code>solutions/&lt;chapter_name&gt;/&lt;exercise_name&gt;.py</code>.</li>
 <li>Register the exercise in <code>src/kubelings/manifest.py</code> with 2-3 progressive hints.</li>
 <li>Add unit tests verifying both the broken starter state and working solution pass state.</li>
@@ -692,6 +747,8 @@
     
     
       <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../assets/playground/playground.js"></script>
       
     
   </body>
