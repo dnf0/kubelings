@@ -30,11 +30,7 @@ def get_clusterwide_egress_policy() -> Dict[str, Any]:
                                     "protocol": "TCP",
                                 }
                             ],
-                            "rules": {
-                                "dns": [
-                                    {"matchPattern": "*"}
-                                ]
-                            },
+                            "rules": {"dns": [{"matchPattern": "*"}]},
                         }
                     ],
                 }

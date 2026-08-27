@@ -1,5 +1,4 @@
-import pytest
-from kubelings.manifest import get_manifest, get_exercise_by_name
+from kubelings.manifest import get_exercise_by_name, get_manifest
 
 
 def test_expanded_chapters_count():

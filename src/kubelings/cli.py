@@ -266,7 +266,9 @@ def test_solutions(
 
     if chapter:
         matched = [
-            ex for ex in target_exercises if ex.chapter_name == chapter or chapter in ex.chapter_name
+            ex
+            for ex in target_exercises
+            if ex.chapter_name == chapter or chapter in ex.chapter_name
         ]
         if not matched:
             console.print(f"[bold red]Chapter '{chapter}' not found in curriculum.[/bold red]")
@@ -306,7 +308,9 @@ def test_solutions(
         results_map[ex.name] = res
         if res.passed:
             passed_count += 1
-            console.print(f"  [bold green]✓[/bold green] {ex.name} ({ex.title}) - Passed ({res.duration_ms:.1f}ms)")
+            console.print(
+                f"  [bold green]✓[/bold green] {ex.name} ({ex.title}) - Passed ({res.duration_ms:.1f}ms)"
+            )
         else:
             console.print(f"  [bold red]✗[/bold red] {ex.name} ({ex.title}) - Failed")
 
@@ -316,7 +320,6 @@ def test_solutions(
 
     if passed_count < total_count:
         raise typer.Exit(code=1)
-
 
 
 @app.command("init")

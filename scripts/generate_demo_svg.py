@@ -1,9 +1,8 @@
 """Generate rich terminal demo SVG asset for README."""
 
 from pathlib import Path
+
 from rich.console import Console
-from rich.panel import Panel
-from rich.text import Text
 
 from kubelings.manifest import get_exercise_by_name
 from kubelings.runner import RunResult

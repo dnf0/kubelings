@@ -3,6 +3,7 @@ Solution: GitOps with ArgoCD Application CRD (gitops01)
 """
 
 from typing import Any, Dict
+
 import yaml
 
 
@@ -38,7 +39,9 @@ def get_argocd_application_manifest() -> Dict[str, Any]:
 def verify() -> None:
     manifest = get_argocd_application_manifest()
     assert manifest, "Manifest cannot be empty"
-    assert manifest.get("apiVersion") == "argoproj.io/v1alpha1", "Expected apiVersion argoproj.io/v1alpha1"
+    assert manifest.get("apiVersion") == "argoproj.io/v1alpha1", (
+        "Expected apiVersion argoproj.io/v1alpha1"
+    )
     assert manifest.get("kind") == "Application", "Expected kind Application"
 
     meta = manifest.get("metadata", {})

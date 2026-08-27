@@ -1,5 +1,5 @@
-import pytest
 from typer.testing import CliRunner
+
 from kubelings.cli import app
 
 runner = CliRunner()

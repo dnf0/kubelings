@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import MagicMock
+
 from kubelings.manifest import get_manifest
 from kubelings.watcher import WatcherState, handle_keypress
 

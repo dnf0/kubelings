@@ -3,6 +3,7 @@ Solution: ArgoCD ApplicationSet Matrix Generator (gitops02)
 """
 
 from typing import Any, Dict
+
 import yaml
 
 
