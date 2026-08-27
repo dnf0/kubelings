@@ -8,6 +8,10 @@
 
 > **Master Kubernetes from scratch through small, interactive, hands-on terminal exercises.**
 
+<p align="center">
+  <img src="assets/demo.svg" alt="Kubelings Terminal Demo" width="800">
+</p>
+
 Inspired by the pedagogical brilliance of [rustlings](https://github.com/rust-lang/rustlings), [ziglings](https://github.com/ziglings/exercises), and [raylings](https://github.com/ray-project/raylings), **Kubelings** guides engineers through self-paced, iterative exercises. You will fix broken YAML manifests, construct multi-container sidecars, mount storage volumes, write RBAC authorization rules, solve scheduling constraints, build custom Python Kubernetes operators, and troubleshoot production cluster incidents.
 
 ---
@@ -17,7 +21,7 @@ Inspired by the pedagogical brilliance of [rustlings](https://github.com/rust-la
 Learning Kubernetes from static documentation or raw copy-pasted Helm charts is difficult because feedback is slow and error messages are cryptic. Kubelings solves this through **guided, test-driven micro-learning**:
 
 1. **Active Debugging & Iteration**: Every exercise starts in a broken or incomplete state containing a `# I AM NOT DONE` marker. You read the problem description, inspect the failure, and edit the code until it passes.
-2. **Instant Feedback Loop**: An automated watcher observes file modifications in real time, executing in-memory schema validation and spec checks in **< 30ms**.
+2. **Instant Feedback Loop & Interactive Hotkeys**: An automated watcher observes file modifications in real time (< 30ms). Press `h` to reveal progressive hints, `r` to force a rerun, `l` to list exercises, or `q` to quit.
 3. **Dual-Mode Learning (Offline & Live Cluster)**:
    - **Offline Mode**: Zero cluster setup required. Exercises validate Kubernetes object specs, API constraints, and controller behaviors in-memory.
    - **Live Cluster Mode**: Seamlessly connect to `kind`, `minikube`, `k3d`, or remote clusters. Exercises provision temporary ephemeral namespaces and verify live reconciliations.
@@ -42,12 +46,12 @@ Learning Kubernetes from static documentation or raw copy-pasted Helm charts is 
                      v                                                 v
          +-----------------------+                         +-----------------------+
          |  File Watcher Engine  |                         | Rich UI & Diagnostics |
-         |      (watchdog)       |                         |    (syntax / tables)  |
+         |      (watchfiles)     |                         |    (syntax / tables)  |
          +-----------+-----------+                         +-----------------------+
                      |
                      v
          +-----------------------+
-         |  Curriculum Manifest  |  (13 Chapters / 62 Exercises)
+         |  Curriculum Manifest  |  (15 Chapters / 70 Exercises)
          +-----------+-----------+
                      |
                      v
@@ -182,13 +186,28 @@ kubelings list
 
 ### 5. Verify Curriculum Progress
 
-Display a rich summary table showing the pass/fail status of all 62 exercises:
+Display a rich summary table showing the pass/fail status of all 70 exercises:
 
 ```bash
 kubelings verify
 ```
 
-### 6. Cluster Connectivity Status
+### 6. Test Reference Solutions
+
+Run built-in self-testing across reference solutions or target specific chapters/exercises:
+
+```bash
+# Test all reference solutions
+kubelings test
+
+# Test a specific chapter
+kubelings test --chapter 01_pods
+
+# Test a single exercise
+kubelings test --exercise pods01
+```
+
+### 7. Cluster Connectivity Status
 
 Check whether `kubelings` is running in offline validation mode or connected to a live Kubernetes cluster:
 
@@ -196,7 +215,7 @@ Check whether `kubelings` is running in offline validation mode or connected to 
 kubelings cluster
 ```
 
-### 7. Initialize Exercises in Any Workspace
+### 8. Initialize Exercises in Any Workspace
 
 If running `kubelings` via `pipx` or `uvx` in a new directory, scaffold the curriculum exercises:
 
@@ -204,7 +223,7 @@ If running `kubelings` via `pipx` or `uvx` in a new directory, scaffold the curr
 kubelings init
 ```
 
-### 8. Reset an Exercise
+### 9. Reset an Exercise
 
 Restore any exercise back to its clean starter template:
 
@@ -212,7 +231,7 @@ Restore any exercise back to its clean starter template:
 kubelings reset pods01
 ```
 
-### 9. Version
+### 10. Version
 
 Display the installed version of Kubelings:
 
@@ -224,7 +243,7 @@ kubelings version
 
 ## Curriculum & Syllabus
 
-Kubelings covers 13 structured chapters with **62 practical exercises**:
+Kubelings covers 15 structured chapters with **70 practical exercises**:
 
 | Chapter | Title | Topic Overview | Exercises |
 | :--- | :--- | :--- | :--- |
@@ -241,6 +260,8 @@ Kubelings covers 13 structured chapters with **62 practical exercises**:
 | **11** | **Workload Autoscaling** | Horizontal Pod Autoscaler (`HPA` v2), custom scale-up/scale-down behaviors, Vertical Pod Autoscaler (`VPA`), and KEDA event autoscaling. | `autoscale01` – `autoscale04` (4) |
 | **12** | **CRDs & Custom Operators** | CustomResourceDefinitions (`apiextensions.k8s.io/v1`), status subresources, printer columns, Python operator loops, and admission webhooks. | `crd01` – `crd04` (4) |
 | **13** | **Troubleshooting & Incidents** | Diagnosing `CrashLoopBackOff`, OOMKilled, `ImagePullBackOff`, unschedulable pending pods, ResourceQuotas, and ephemeral debug containers. | `troubleshoot01` – `troubleshoot05` (5) |
+| **14** | **GitOps & ArgoCD** | ArgoCD Application CRDs, automated sync policies, self-heal drift correction, ApplicationSets, and progressive delivery with Argo Rollouts. | `gitops01` – `gitops04` (4) |
+| **15** | **Service Mesh & Cilium** | eBPF Layer 7 HTTP NetworkPolicies, strict mutual TLS (mTLS), clusterwide egress FQDN rules, and Hubble/OpenTelemetry mesh observability. | `mesh01` – `mesh04` (4) |
 
 ---
 
