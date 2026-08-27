@@ -49,6 +49,18 @@ jobs:
         run: |
           uv build
 
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: "extensions/vscode/package-lock.json"
+
+      - name: Build and Package VS Code Extension (.vsix)
+        run: |
+          mkdir -p dist
+          cd extensions/vscode && npm ci && npm run build && npx @vscode/vsce package --no-dependencies -o ../../dist/kubelings-vscode.vsix
+
       - name: Upload Artifacts to GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN || secrets.GITHUB_TOKEN }}

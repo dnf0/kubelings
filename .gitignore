@@ -17,10 +17,12 @@ parts/
 sdist/
 wheels/
 *.egg-info/
-.installed.cfg
-*.egg
+# Node & Extension artifacts
+node_modules/
+*.vsix
 
 .env
+
 
 # Virtual environments
 .venv/
