@@ -504,6 +504,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#kubelings-tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        kubelings tree
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubelings-lint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        kubelings lint
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubelings-tui-kubelings-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        kubelings tui / kubelings dashboard
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#kubelings-version" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -675,6 +708,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#kubelings-tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        kubelings tree
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubelings-lint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        kubelings lint
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubelings-tui-kubelings-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        kubelings tui / kubelings dashboard
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#kubelings-version" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -768,9 +834,34 @@
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>kubelings<span class="w"> </span>reset<span class="w"> </span>&lt;EXERCISE_NAME_OR_PATH&gt;
 </span></code></pre></div>
 <hr />
+<h2 id="kubelings-tree"><code>kubelings tree</code></h2>
+<p>Render an architectural relationship topology tree for Kubernetes resources.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>kubelings<span class="w"> </span>tree<span class="w"> </span><span class="o">[</span>TARGET<span class="o">]</span>
+</span></code></pre></div>
+<p><strong>Examples:</strong>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>kubelings<span class="w"> </span>tree<span class="w"> </span>pods01
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>kubelings<span class="w"> </span>tree<span class="w"> </span>deployment.yaml
+</span></code></pre></div></p>
+<hr />
+<h2 id="kubelings-lint"><code>kubelings lint</code></h2>
+<p>Evaluate Kubernetes YAML/JSON manifests against security, reliability, and schema best-practices.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>kubelings<span class="w"> </span>lint<span class="w"> </span>&lt;PATH&gt;
+</span></code></pre></div>
+<p><strong>Examples:</strong>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>kubelings<span class="w"> </span>lint<span class="w"> </span>exercises/01_pods/pods01.py
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>kubelings<span class="w"> </span>lint<span class="w"> </span>manifests/production/
+</span></code></pre></div></p>
+<hr />
+<h2 id="kubelings-tui-kubelings-dashboard"><code>kubelings tui</code> / <code>kubelings dashboard</code></h2>
+<p>Launch the full-screen interactive terminal dashboard to explore curriculum chapters, inspect code, and run evaluations.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>kubelings<span class="w"> </span>tui
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="c1"># or</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>kubelings<span class="w"> </span>dashboard
+</span></code></pre></div>
+<hr />
 <h2 id="kubelings-version"><code>kubelings version</code></h2>
 <p>Print the currently installed Kubelings package version.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>kubelings<span class="w"> </span>version
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>kubelings<span class="w"> </span>version
 </span></code></pre></div>
 
 
