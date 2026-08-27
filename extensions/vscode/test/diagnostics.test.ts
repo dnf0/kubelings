@@ -90,14 +90,13 @@ describe('Kubelings Diagnostics - KubelingsDiagnosticsProvider', () => {
     );
   });
 
-  it('generates diagnostic at # I AM NOT DONE line with Warning severity', async () => {
+  it('generates Error diagnostic on exercise validation failure', async () => {
     const bridge = new MockBridgeFailureMarker();
     const provider = new KubelingsDiagnosticsProvider(bridge);
 
     const uri = vscode.Uri.file('/workspace/exercises/01_pods/pods01.py');
     const docContent = [
       '# Exercise 1',
-      '# I AM NOT DONE',
       'manifest = {"kind": "Pod"}',
     ].join('\n');
 
@@ -113,17 +112,17 @@ describe('Kubelings Diagnostics - KubelingsDiagnosticsProvider', () => {
     const diagnostics = provider.getDiagnosticCollection().get(uri);
     assert.ok(diagnostics && diagnostics.length === 1);
     const diag = diagnostics[0];
-    assert.strictEqual(diag.range.start.line, 1);
+    assert.strictEqual(diag.range.start.line, 0);
     assert.strictEqual(
       diag.severity,
-      vscode.DiagnosticSeverity.Warning
+      vscode.DiagnosticSeverity.Error
     );
     assert.strictEqual(diag.source, 'kubelings');
     assert.strictEqual(diag.code, 'pods01');
     assert.ok(diag.message.includes('AssertionError'));
   });
 
-  it('generates diagnostic at specific error line when no marker present', async () => {
+  it('generates Error diagnostic at specific error line when error_line is present', async () => {
     const bridge = new MockBridgeFailureErrorLine();
     const provider = new KubelingsDiagnosticsProvider(bridge);
 
