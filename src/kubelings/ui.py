@@ -285,3 +285,17 @@ def render_progress_table(
     if console is not None:
         console.print(table)
     return table
+
+
+def render_watcher_prompt(console: Optional[Console] = None) -> None:
+    """Render interactive watcher keyboard commands footer."""
+    c = console or default_console
+    c.print(
+        "\n[dim]⚡ Keyboard shortcuts: "
+        "[bold cyan]h[/bold cyan] hint | "
+        "[bold cyan]r[/bold cyan] rerun | "
+        "[bold cyan]l[/bold cyan] list | "
+        "[bold cyan]q[/bold cyan] quit | "
+        "[bold cyan]Ctrl+C[/bold cyan] exit[/dim]\n"
+    )
+

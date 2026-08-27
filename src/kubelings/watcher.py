@@ -3,6 +3,7 @@
 import os
 import threading
 import time
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Optional, Union
 
@@ -47,6 +48,39 @@ IGNORED_DIRECTORIES = {
 }
 
 VALID_EXTENSIONS = {".py", ".yaml", ".yml"}
+
+
+@dataclass
+class WatcherState:
+    """State tracking for interactive watcher loop."""
+
+    exercise: Exercise
+    current_hint_index: int = 0
+    force_rerun: bool = False
+
+
+def handle_keypress(key: str, state: WatcherState) -> int:
+    """Handle interactive keyboard shortcut inside watch loop.
+
+    Args:
+        key: Single key character pressed by the user.
+        state: WatcherState instance.
+
+    Returns:
+        Updated hint index.
+    """
+    cleaned = key.lower().strip()
+    if cleaned == "q":
+        raise KeyboardInterrupt
+    elif cleaned == "h":
+        max_hints = len(state.exercise.hints)
+        if max_hints > 0:
+            state.current_hint_index = min(state.current_hint_index + 1, max_hints)
+        return state.current_hint_index
+    elif cleaned == "r":
+        state.force_rerun = True
+        return state.current_hint_index
+    return state.current_hint_index
 
 
 def find_next_incomplete_exercise(
