@@ -115,6 +115,50 @@ kubelings reset <EXERCISE_NAME_OR_PATH>
 
 ---
 
+## `kubelings tree`
+
+Render an architectural relationship topology tree for Kubernetes resources.
+
+```bash
+kubelings tree [TARGET]
+```
+
+**Examples:**
+```bash
+kubelings tree pods01
+kubelings tree deployment.yaml
+```
+
+---
+
+## `kubelings lint`
+
+Evaluate Kubernetes YAML/JSON manifests against security, reliability, and schema best-practices.
+
+```bash
+kubelings lint <PATH>
+```
+
+**Examples:**
+```bash
+kubelings lint exercises/01_pods/pods01.py
+kubelings lint manifests/production/
+```
+
+---
+
+## `kubelings tui` / `kubelings dashboard`
+
+Launch the full-screen interactive terminal dashboard to explore curriculum chapters, inspect code, and run evaluations.
+
+```bash
+kubelings tui
+# or
+kubelings dashboard
+```
+
+---
+
 ## `kubelings version`
 
 Print the currently installed Kubelings package version.
@@ -122,3 +166,4 @@ Print the currently installed Kubelings package version.
 ```bash
 kubelings version
 ```
+

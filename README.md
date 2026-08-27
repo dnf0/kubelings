@@ -51,22 +51,25 @@ Learning Kubernetes from static documentation or raw copy-pasted Helm charts is 
                      |
                      v
          +-----------------------+
-         |  Curriculum Manifest  |  (15 Chapters / 70 Exercises)
-         +-----------+-----------+
-                     |
-                     v
-         +-----------------------+
-         |   Exercise Runner     |
-         +-----------+-----------+
-                     |
-        +------------+------------+
-        |                         |
-        v                         v
-+----------------+       +-------------------+
-| Offline Schema |       | Live Cluster      |
-| Validator &    |  OR   | Adapter & Ephem.  |
-| Spec Evaluator |       | Namespaces (kind) |
-+----------------+       +-------------------+
+                      |
+                      v
+          +-----------------------+
+          |  Curriculum Manifest  |  (18 Chapters / 82 Exercises)
+          +-----------+-----------+
+                      |
+                      v
+          +-----------------------+
+          |   Exercise Runner     |
+          +-----------+-----------+
+                      |
+         +------------+------------+
+         |                         |
+         v                         v
+ +----------------+       +-------------------+
+ | Offline Schema |       | Live Cluster      |
+ | Validator &    |  OR   | Adapter & Ephem.  |
+ | Spec Evaluator |       | Namespaces (kind) |
+ +----------------+       +-------------------+
 ```
 
 ---
@@ -76,7 +79,7 @@ Learning Kubernetes from static documentation or raw copy-pasted Helm charts is 
 ### Prerequisites
 
 - Python `>= 3.10`
-- [`uv`](https://github.com/astral-sh/uv) (recommended) or `pip`
+- [`uv`](https://github.com/dnf0/kubelings/actions) (recommended) or `pip`
 - *Optional (for live cluster exercises)*: `kubectl` and a local cluster (`kind`, `minikube`, or `k3d`)
 
 ### Running Instantly (No Clone Needed)
@@ -131,30 +134,53 @@ kubelings --help
 
 ---
 
-## CLI Commands & Usage Guide
+## Interactive Learning Commands
 
-### 1. Watch Mode (Recommended)
+### 1. Watch Mode (`kubelings watch`)
 
-Launch the interactive watch loop to monitor your exercise solutions in real time:
+Start the interactive development loop. Whenever you save a file in `exercises/`, Kubelings immediately evaluates your changes.
 
 ```bash
 kubelings watch
 ```
 
-Optionally, resume from a specific exercise:
+> **Interactive Hotkeys**:
+> - `h` : Reveal progressive hint tier
+> - `r` : Force rerun current exercise
+> - `l` : List curriculum exercises
+> - `q` : Exit watcher
+
+### 2. Interactive Terminal TUI Dashboard (`kubelings tui` / `kubelings dashboard`)
+
+Explore the curriculum, browse code, and trigger evaluations inside a split-pane full-screen terminal interface:
 
 ```bash
-kubelings watch --start sched01
+kubelings tui
+# or
+kubelings dashboard
 ```
 
-> **Workflow**:
-> 1. Open the indicated file in `exercises/<chapter>/<exercise>.py`.
-> 2. Read the instructions, comments, and task requirements.
-> 3. Fix the YAML manifest or Python logic.
-> 4. Delete the `# I AM NOT DONE` comment at the top of the file and save.
-> 5. `kubelings` validates your solution and automatically advances!
+### 3. Resource Relationship Topology Visualizer (`kubelings tree`)
 
-### 2. Run a Single Exercise
+Render an architectural relationship topology tree of Kubernetes workloads, services, endpoints, volumes, and network policies:
+
+```bash
+kubelings tree pods01
+# or inspect an external manifest
+kubelings tree deployment.yaml
+```
+
+### 4. Universal Manifest Linter (`kubelings lint`)
+
+Audit any Kubernetes manifest against security standards, reliability probes, and schema best practices:
+
+```bash
+kubelings lint exercises/01_pods/pods01.py
+# or lint production manifests
+kubelings lint manifests/production/
+```
+
+### 5. Run a Single Exercise
 
 Execute and evaluate a single exercise directly:
 
@@ -162,7 +188,7 @@ Execute and evaluate a single exercise directly:
 kubelings run pods01
 ```
 
-### 3. Progressive Hints
+### 6. Progressive Hints
 
 Get step-by-step tips for any exercise:
 
@@ -170,13 +196,7 @@ Get step-by-step tips for any exercise:
 kubelings hint pods01
 ```
 
-To display a specific hint tier:
-
-```bash
-kubelings hint pods01 --hint-num 2
-```
-
-### 4. List All Chapters & Exercises
+### 7. List All Chapters & Exercises
 
 Browse the entire curriculum syllabus, descriptions, and exercise paths:
 
@@ -184,30 +204,23 @@ Browse the entire curriculum syllabus, descriptions, and exercise paths:
 kubelings list
 ```
 
-### 5. Verify Curriculum Progress
+### 8. Verify Curriculum Progress
 
-Display a rich summary table showing the pass/fail status of all 70 exercises:
+Display a rich summary table showing the pass/fail status of all 82 exercises:
 
 ```bash
 kubelings verify
 ```
 
-### 6. Test Reference Solutions
+### 9. Test Reference Solutions
 
-Run built-in self-testing across reference solutions or target specific chapters/exercises:
+Run built-in self-testing across reference solutions:
 
 ```bash
-# Test all reference solutions
 kubelings test
-
-# Test a specific chapter
-kubelings test --chapter 01_pods
-
-# Test a single exercise
-kubelings test --exercise pods01
 ```
 
-### 7. Cluster Connectivity Status
+### 10. Cluster Connectivity Status
 
 Check whether `kubelings` is running in offline validation mode or connected to a live Kubernetes cluster:
 
@@ -215,35 +228,11 @@ Check whether `kubelings` is running in offline validation mode or connected to 
 kubelings cluster
 ```
 
-### 8. Initialize Exercises in Any Workspace
-
-If running `kubelings` via `pipx` or `uvx` in a new directory, scaffold the curriculum exercises:
-
-```bash
-kubelings init
-```
-
-### 9. Reset an Exercise
-
-Restore any exercise back to its clean starter template:
-
-```bash
-kubelings reset pods01
-```
-
-### 10. Version
-
-Display the installed version of Kubelings:
-
-```bash
-kubelings version
-```
-
 ---
 
 ## Curriculum & Syllabus
 
-Kubelings covers 15 structured chapters with **70 practical exercises**:
+Kubelings covers 18 structured chapters with **82 practical exercises**:
 
 | Chapter | Title | Topic Overview | Exercises |
 | :--- | :--- | :--- | :--- |
@@ -262,6 +251,9 @@ Kubelings covers 15 structured chapters with **70 practical exercises**:
 | **13** | **Troubleshooting & Incidents** | Diagnosing `CrashLoopBackOff`, OOMKilled, `ImagePullBackOff`, unschedulable pending pods, ResourceQuotas, and ephemeral debug containers. | `troubleshoot01` – `troubleshoot05` (5) |
 | **14** | **GitOps & ArgoCD** | ArgoCD Application CRDs, automated sync policies, self-heal drift correction, ApplicationSets, and progressive delivery with Argo Rollouts. | `gitops01` – `gitops04` (4) |
 | **15** | **Service Mesh & Cilium** | eBPF Layer 7 HTTP NetworkPolicies, strict mutual TLS (mTLS), clusterwide egress FQDN rules, and Hubble/OpenTelemetry mesh observability. | `mesh01` – `mesh04` (4) |
+| **16** | **Policy as Code (Kyverno & Gatekeeper)** | Kyverno ClusterPolicies, mutate & generate rules, OPA Gatekeeper ConstraintTemplates and Rego admission policies. | `policy01` – `policy04` (4) |
+| **17** | **Multi-Tenancy & Virtual Clusters** | Hierarchical Namespace Controller (HNC) subnamespaces, ResourceQuota limits, vcluster control planes, and isolation. | `tenant01` – `tenant04` (4) |
+| **18** | **Advanced Admission Webhooks** | Dynamic MutatingWebhookConfigurations, ValidatingWebhookConfigurations, sidecar injection, and CRD conversion webhooks. | `webhook01` – `webhook04` (4) |
 
 ---
 

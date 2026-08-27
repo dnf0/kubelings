@@ -1,6 +1,6 @@
 # Curriculum Syllabus
 
-Kubelings features **15 chapters** covering **70 real-world exercises**:
+Kubelings features **18 chapters** covering **82 real-world exercises**:
 
 ---
 
@@ -103,3 +103,21 @@ Kubelings features **15 chapters** covering **70 real-world exercises**:
 - `mesh02`: Strict Mutual TLS (mTLS) with PeerAuthentication.
 - `mesh03`: CiliumClusterwideNetworkPolicy with DNS FQDN Egress Rules.
 - `mesh04`: Hubble Observability & OpenTelemetry Tracing Instrumentation.
+
+### Chapter 16: Policy as Code (Kyverno & Gatekeeper)
+- `policy01`: Kyverno ClusterPolicy for Required Labels.
+- `policy02`: Kyverno Mutating Policy for Security Defaults.
+- `policy03`: Kyverno Generate Policy for Default Deny NetworkPolicy.
+- `policy04`: OPA Gatekeeper ConstraintTemplate & Constraint with Rego logic.
+
+### Chapter 17: Multi-Tenancy & Virtual Clusters
+- `tenant01`: Hierarchical Namespace Controller (HNC) Subnamespace Anchors.
+- `tenant02`: Multi-Document Tenant ResourceQuotas and LimitRanges.
+- `tenant03`: Virtual Cluster (`vcluster`) Control Plane Specification.
+- `tenant04`: Multi-Tenant Network Isolation & Egress Filtering.
+
+### Chapter 18: Advanced Admission Webhooks
+- `webhook01`: MutatingWebhookConfiguration Manifest & CABundle Routing.
+- `webhook02`: ValidatingWebhookConfiguration Manifest & Scope Filters.
+- `webhook03`: Dynamic Sidecar Injection AdmissionReview JSON Patch.
+- `webhook04`: CRD Webhook Conversion Strategy for Multi-Version APIs.
