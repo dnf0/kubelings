@@ -1,6 +1,8 @@
 """Kubernetes Manifest & Schema Validator for Kubelings."""
 
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
+
+import yaml
 
 VALID_MATCH_EXPRESSION_OPERATORS = {"In", "NotIn", "Exists", "DoesNotExist"}
 
@@ -290,6 +292,21 @@ def validate_manifest(
                 "HorizontalPodAutoscaler must define 'spec.scaleTargetRef' with 'kind' and 'name'."
             )
 
+    elif kind == "RayCluster":
+        ray_errs = _validate_ray_cluster(manifest)
+        if ray_errs:
+            raise ManifestValidationError("; ".join(ray_errs))
+
+    elif kind == "RayJob":
+        ray_errs = _validate_ray_job(manifest)
+        if ray_errs:
+            raise ManifestValidationError("; ".join(ray_errs))
+
+    elif kind == "RayService":
+        ray_errs = _validate_ray_service(manifest)
+        if ray_errs:
+            raise ManifestValidationError("; ".join(ray_errs))
+
     return True
 
 
@@ -327,3 +344,338 @@ def validate_manifests(
             validate_manifest(m)
 
     return True
+
+
+def _validate_ray_cluster(
+    manifest: Dict[str, Any], exercise_name: Optional[str] = None
+) -> List[str]:
+    """Validate a ray.io/v1 RayCluster manifest."""
+    errors: List[str] = []
+    api_version = manifest.get("apiVersion", "")
+    if not isinstance(api_version, str) or not api_version.startswith("ray.io/"):
+        errors.append(f"RayCluster 'apiVersion' must be under 'ray.io/', got '{api_version}'.")
+
+    spec = manifest.get("spec")
+    if not isinstance(spec, dict):
+        errors.append("RayCluster 'spec' must be a dictionary.")
+        return errors
+
+    head_group = spec.get("headGroupSpec")
+    if not isinstance(head_group, dict):
+        errors.append("RayCluster 'spec.headGroupSpec' must be a dictionary.")
+    else:
+        template = head_group.get("template")
+        if not isinstance(template, dict) or not isinstance(template.get("spec"), dict):
+            errors.append("RayCluster 'spec.headGroupSpec.template.spec' must be a dictionary.")
+        else:
+            try:
+                _validate_pod_spec(template["spec"], "spec.headGroupSpec.template.spec")
+            except ManifestValidationError as e:
+                errors.append(str(e))
+
+    worker_groups = spec.get("workerGroupSpecs")
+    if not isinstance(worker_groups, list) or len(worker_groups) == 0:
+        errors.append("RayCluster 'spec.workerGroupSpecs' must be a non-empty list.")
+    else:
+        group_names: set[str] = set()
+        has_gpu_worker = False
+
+        for idx, wg in enumerate(worker_groups):
+            if not isinstance(wg, dict):
+                errors.append(f"Worker group at index {idx} must be a dictionary.")
+                continue
+            name = wg.get("groupName")
+            if not name or not isinstance(name, str) or not name.strip():
+                errors.append(f"Worker group at index {idx} missing required string 'groupName'.")
+            else:
+                group_names.add(name)
+
+            replicas = wg.get("replicas")
+            if replicas is not None and (type(replicas) is not int or replicas < 0):
+                errors.append(f"Worker group '{name}' replicas must be a non-negative integer.")
+
+            min_rep = wg.get("minReplicas")
+            max_rep = wg.get("maxReplicas")
+            if min_rep is not None and (type(min_rep) is not int or min_rep < 0):
+                errors.append(f"Worker group '{name}' minReplicas must be a non-negative integer.")
+            if max_rep is not None and (type(max_rep) is not int or max_rep < 0):
+                errors.append(f"Worker group '{name}' maxReplicas must be a non-negative integer.")
+            if min_rep is not None and max_rep is not None and min_rep > max_rep:
+                errors.append(
+                    f"Worker group '{name}' minReplicas ({min_rep}) cannot exceed maxReplicas ({max_rep})."
+                )
+
+            template = wg.get("template")
+            if not isinstance(template, dict) or not isinstance(template.get("spec"), dict):
+                errors.append(f"Worker group '{name}' template.spec must be a dictionary.")
+            else:
+                try:
+                    _validate_pod_spec(template["spec"], f"workerGroupSpecs[{idx}].template.spec")
+                except ManifestValidationError as e:
+                    errors.append(str(e))
+
+                containers = template["spec"].get("containers", [])
+                if isinstance(containers, list):
+                    for c in containers:
+                        if isinstance(c, dict):
+                            resources = c.get("resources", {})
+                            if isinstance(resources, dict):
+                                limits = resources.get("limits", {})
+                                requests = resources.get("requests", {})
+                                if (
+                                    isinstance(limits, dict)
+                                    and any("gpu" in str(k).lower() for k in limits)
+                                ) or (
+                                    isinstance(requests, dict)
+                                    and any("gpu" in str(k).lower() for k in requests)
+                                ):
+                                    has_gpu_worker = True
+
+        if exercise_name == "ray02":
+            if len(worker_groups) < 2:
+                errors.append(
+                    "Exercise ray02 requires heterogeneous worker pools (at least 2 worker groups)."
+                )
+            if len(group_names) < len(worker_groups):
+                errors.append("Worker groups must have distinct group names.")
+            if not has_gpu_worker:
+                errors.append(
+                    "Heterogeneous RayCluster in ray02 must include a GPU worker group with nvidia.com/gpu."
+                )
+
+    return errors
+
+
+def _validate_ray_job(manifest: Dict[str, Any], exercise_name: Optional[str] = None) -> List[str]:
+    """Validate a ray.io/v1 RayJob manifest."""
+    errors: List[str] = []
+    api_version = manifest.get("apiVersion", "")
+    if not isinstance(api_version, str) or not api_version.startswith("ray.io/"):
+        errors.append(f"RayJob 'apiVersion' must be under 'ray.io/', got '{api_version}'.")
+
+    spec = manifest.get("spec")
+    if not isinstance(spec, dict):
+        errors.append("RayJob 'spec' must be a dictionary.")
+        return errors
+
+    entrypoint = spec.get("entrypoint")
+    if not entrypoint or not isinstance(entrypoint, str) or not entrypoint.strip():
+        errors.append("RayJob 'spec.entrypoint' must be a non-empty command string.")
+
+    cluster_spec = spec.get("rayClusterSpec")
+    cluster_selector = spec.get("clusterSelector")
+    if not cluster_spec and not cluster_selector:
+        errors.append("RayJob must define either 'spec.rayClusterSpec' or 'spec.clusterSelector'.")
+
+    if cluster_spec is not None:
+        if not isinstance(cluster_spec, dict):
+            errors.append("RayJob 'spec.rayClusterSpec' must be a dictionary.")
+        else:
+            head_group = cluster_spec.get("headGroupSpec")
+            if not isinstance(head_group, dict):
+                errors.append("RayJob 'spec.rayClusterSpec.headGroupSpec' must be a dictionary.")
+            else:
+                template = head_group.get("template")
+                if not isinstance(template, dict) or not isinstance(template.get("spec"), dict):
+                    errors.append(
+                        "RayJob 'spec.rayClusterSpec.headGroupSpec.template.spec' must be a dictionary."
+                    )
+                else:
+                    try:
+                        _validate_pod_spec(
+                            template["spec"],
+                            "spec.rayClusterSpec.headGroupSpec.template.spec",
+                        )
+                    except ManifestValidationError as e:
+                        errors.append(str(e))
+
+    if exercise_name == "ray03":
+        if spec.get("shutdownAfterJobFinishes") is not True:
+            errors.append("Exercise ray03 requires 'spec.shutdownAfterJobFinishes' set to true.")
+        ttl = spec.get("ttlSecondsAfterFinished")
+        if ttl is None or type(ttl) is not int or ttl < 0:
+            errors.append(
+                "Exercise ray03 requires 'spec.ttlSecondsAfterFinished' set to a positive integer."
+            )
+
+    return errors
+
+
+def _validate_ray_service(
+    manifest: Dict[str, Any], exercise_name: Optional[str] = None
+) -> List[str]:
+    """Validate a ray.io/v1 RayService manifest."""
+    errors: List[str] = []
+    api_version = manifest.get("apiVersion", "")
+    if not isinstance(api_version, str) or not api_version.startswith("ray.io/"):
+        errors.append(f"RayService 'apiVersion' must be under 'ray.io/', got '{api_version}'.")
+
+    spec = manifest.get("spec")
+    if not isinstance(spec, dict):
+        errors.append("RayService 'spec' must be a dictionary.")
+        return errors
+
+    cluster_spec = spec.get("rayClusterSpec")
+    if not isinstance(cluster_spec, dict):
+        errors.append("RayService 'spec.rayClusterSpec' must be a dictionary.")
+    else:
+        head_group = cluster_spec.get("headGroupSpec")
+        if not isinstance(head_group, dict):
+            errors.append("RayService 'spec.rayClusterSpec.headGroupSpec' must be a dictionary.")
+        else:
+            template = head_group.get("template")
+            if not isinstance(template, dict) or not isinstance(template.get("spec"), dict):
+                errors.append(
+                    "RayService 'spec.rayClusterSpec.headGroupSpec.template.spec' must be a dictionary."
+                )
+            else:
+                try:
+                    _validate_pod_spec(
+                        template["spec"],
+                        "spec.rayClusterSpec.headGroupSpec.template.spec",
+                    )
+                except ManifestValidationError as e:
+                    errors.append(str(e))
+
+    serve_config = spec.get("serveConfigV2")
+    if not serve_config:
+        errors.append("RayService must define 'spec.serveConfigV2'.")
+    else:
+        parsed_config = None
+        if isinstance(serve_config, str):
+            try:
+                parsed_config = yaml.safe_load(serve_config)
+            except Exception as e:
+                errors.append(f"RayService 'spec.serveConfigV2' YAML string parsing error: {e}")
+        elif isinstance(serve_config, dict):
+            parsed_config = serve_config
+        else:
+            errors.append("RayService 'spec.serveConfigV2' must be a YAML string or dictionary.")
+
+        if isinstance(parsed_config, dict):
+            apps = parsed_config.get("applications")
+            if not isinstance(apps, list) or len(apps) == 0:
+                errors.append(
+                    "RayService serveConfigV2 must define a non-empty 'applications' list."
+                )
+            else:
+                for idx, app in enumerate(apps):
+                    if not isinstance(app, dict):
+                        errors.append(
+                            f"Application at index {idx} in serveConfigV2 must be a dictionary."
+                        )
+                        continue
+                    if not app.get("name"):
+                        errors.append(
+                            f"Application at index {idx} in serveConfigV2 missing 'name'."
+                        )
+                    if "route_prefix" not in app and "routePrefix" not in app:
+                        errors.append(
+                            f"Application at index {idx} in serveConfigV2 missing 'route_prefix'."
+                        )
+                    if "import_path" not in app and "importPath" not in app:
+                        errors.append(
+                            f"Application at index {idx} in serveConfigV2 missing 'import_path'."
+                        )
+
+    return errors
+
+
+def validate_manifest_dict(
+    manifest: Any,
+    exercise_name: Optional[str] = None,
+) -> Tuple[bool, List[str]]:
+    """Validate a parsed manifest dictionary against schema rules and exercise criteria.
+
+    Returns:
+        (True, []) if valid, or (False, [error_messages]) if invalid.
+    """
+    if not isinstance(manifest, dict):
+        return False, ["Manifest must be a dictionary."]
+
+    if not manifest:
+        return False, ["Manifest dictionary cannot be empty."]
+
+    errors: List[str] = []
+    for key in ("apiVersion", "kind", "metadata"):
+        if key not in manifest:
+            errors.append(f"Manifest missing required root key '{key}'.")
+
+    if errors:
+        return False, errors
+
+    kind = manifest.get("kind")
+    if not isinstance(kind, str) or not kind.strip():
+        return False, ["Manifest 'kind' must be a non-empty string."]
+
+    metadata = manifest.get("metadata")
+    if not isinstance(metadata, dict):
+        return False, ["Manifest 'metadata' must be a dictionary."]
+
+    name = metadata.get("name")
+    generate_name = metadata.get("generateName")
+    if not (name and isinstance(name, str) and name.strip()) and not (
+        generate_name and isinstance(generate_name, str) and generate_name.strip()
+    ):
+        return False, ["Manifest metadata must define a non-empty string 'name' or 'generateName'."]
+
+    # Ray validation
+    if kind == "RayCluster":
+        ray_errors = _validate_ray_cluster(manifest, exercise_name)
+        if ray_errors:
+            return False, ray_errors
+        return True, []
+    elif kind == "RayJob":
+        ray_errors = _validate_ray_job(manifest, exercise_name)
+        if ray_errors:
+            return False, ray_errors
+        return True, []
+    elif kind == "RayService":
+        ray_errors = _validate_ray_service(manifest, exercise_name)
+        if ray_errors:
+            return False, ray_errors
+        return True, []
+
+    # Standard Kubernetes validation
+    try:
+        validate_manifest(manifest)
+    except ManifestValidationError as e:
+        return False, [str(e)]
+
+    return True, []
+
+
+def validate_manifest_text(
+    yaml_text: str,
+    exercise_name: Optional[str] = None,
+) -> Tuple[bool, List[str]]:
+    """Validate YAML text containing one or more Kubernetes/CRD manifests.
+
+    Args:
+        yaml_text: The YAML string to validate.
+        exercise_name: Optional exercise identifier for specific rule enforcement.
+
+    Returns:
+        (True, []) if all manifests pass, or (False, [error_messages]) on failure.
+    """
+    if not yaml_text or not yaml_text.strip():
+        return False, ["Manifest text cannot be empty."]
+
+    try:
+        parsed_docs = list(yaml.safe_load_all(yaml_text))
+    except Exception as e:
+        return False, [f"YAML parsing error: {e}"]
+
+    docs = [d for d in parsed_docs if d is not None]
+    if not docs:
+        return False, ["No valid YAML documents found in manifest text."]
+
+    all_errors: List[str] = []
+    for doc in docs:
+        passed, doc_errors = validate_manifest_dict(doc, exercise_name)
+        if not passed:
+            all_errors.extend(doc_errors)
+
+    if all_errors:
+        return False, all_errors
+    return True, []
