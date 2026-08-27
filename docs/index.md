@@ -11,7 +11,7 @@ Inspired by [rustlings](https://github.com/rust-lang/rustlings), [ziglings](http
 Learning Kubernetes from static documentation or copy-pasted manifests often leads to frustration because error feedback is slow and cryptic. Kubelings provides:
 
 - ⚡ **Sub-30ms Instant Feedback**: In-memory schema and spec validation without waiting on slow API servers.
-- 🔁 **Active Problem Solving**: 90 real-world exercises across 20 chapters starting in a broken state that you fix and verify.
+- 🔁 **Active Problem Solving**: 102 real-world exercises across 23 chapters starting in a broken state that you fix and verify.
 - ☸ **Dual-Mode Engine**: Practice 100% offline or connect to a real cluster (`kind`, `minikube`, `k3d`, or cloud).
 - 💡 **Progressive Hinting**: Multi-tier clues when you get stuck without spoiling the answer.
 - 🚀 **Zero-Install Run**: Start practicing immediately with `uvx kubelings init && uvx kubelings watch`.
