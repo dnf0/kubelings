@@ -6,6 +6,7 @@ import {
   CliHintResponse,
   CliListResponse,
   CliRunResponse,
+  CliTourResponse,
   CliVerifyResponse,
   ResolvedCommand,
 } from './types';
@@ -222,5 +223,16 @@ export class KubelingsCliBridge {
       args.push('--index', String(index));
     }
     return this.executeJson<CliHintResponse>(args, cwd);
+  }
+
+  /**
+   * Retrieves the 5-step onboarding tour curriculum and metadata.
+   */
+  public async tour(step?: number, cwd?: string): Promise<CliTourResponse> {
+    const args = ['tour'];
+    if (step !== undefined) {
+      args.push('--step', String(step));
+    }
+    return this.executeJson<CliTourResponse>(args, cwd);
   }
 }

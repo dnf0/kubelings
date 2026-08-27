@@ -124,7 +124,7 @@ describe('Kubelings Commands - Command Registration and Execution', () => {
     }
   }
 
-  it('registers all 8 expected extension commands', () => {
+  it('registers all 9 expected extension commands', () => {
     const bridge = new MockFullBridge({ workspaceRoot: '/workspace' });
     const treeDataProvider = new KubelingsTreeDataProvider(bridge);
     const statusBar = new KubelingsStatusBar(bridge);
@@ -151,6 +151,7 @@ describe('Kubelings Commands - Command Registration and Execution', () => {
       'kubelings.startWatch',
       'kubelings.checkCluster',
       'kubelings.testAll',
+      'kubelings.openWalkthrough',
     ];
 
     for (const cmd of expectedCommands) {

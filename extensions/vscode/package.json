@@ -88,6 +88,45 @@
         "command": "kubelings.testAll",
         "title": "Kubelings: Test All Reference Solutions",
         "icon": "$(check-all)"
+      },
+      {
+        "command": "kubelings.openWalkthrough",
+        "title": "Kubelings: Open Interactive Walkthrough",
+        "icon": "$(mortar-board)"
+      }
+    ],
+    "walkthroughs": [
+      {
+        "id": "kubelings.walkthrough",
+        "title": "Get Started with Kubelings ☸️",
+        "description": "Master Kubernetes through hands-on, test-driven micro-exercises.",
+        "steps": [
+          {
+            "id": "welcome",
+            "title": "Welcome & Curriculum Overview",
+            "description": "walkthrough/welcome.md"
+          },
+          {
+            "id": "cluster",
+            "title": "Check Your Environment",
+            "description": "walkthrough/cluster.md"
+          },
+          {
+            "id": "watch",
+            "title": "Interactive Watch Mode",
+            "description": "walkthrough/watch.md"
+          },
+          {
+            "id": "exercise",
+            "title": "Solve First Exercise (pods01)",
+            "description": "walkthrough/exercise.md"
+          },
+          {
+            "id": "quickfixes",
+            "title": "Diagnostics & Quick Fixes",
+            "description": "walkthrough/quickfixes.md"
+          }
+        ]
       }
     ],
     "menus": {
