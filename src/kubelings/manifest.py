@@ -1054,6 +1054,110 @@ def build_manifest() -> Manifest:
                 ),
             ],
         ),
+        Chapter(
+            number=19,
+            name="19_helm_packaging",
+            title="Package Management with Helm",
+            description="Chart Specifications, Go Templating, Values Schemas, and Subcharts",
+            exercises=[
+                Exercise(
+                    name="helm01",
+                    title="Helm Chart.yaml Metadata & Dependencies",
+                    path="exercises/19_helm_packaging/helm01.py",
+                    chapter_name="19_helm_packaging",
+                    hints=[
+                        "Set apiVersion to 'v2' for Helm v3 chart standard",
+                        "Define version (chart version) and appVersion (application version)",
+                        "Configure dependencies array with subchart name, version, and repository",
+                    ],
+                ),
+                Exercise(
+                    name="helm02",
+                    title="Helm Go Templating & Named Helpers (_helpers.tpl)",
+                    path="exercises/19_helm_packaging/helm02.py",
+                    chapter_name="19_helm_packaging",
+                    hints=[
+                        "Implement fullname helper formatting release-chart naming",
+                        "Truncate rendered resource names to 63 characters max",
+                        "Render deployment manifest with dynamic release labels and image tags",
+                    ],
+                ),
+                Exercise(
+                    name="helm03",
+                    title="Helm values.schema.json Validation Schema",
+                    path="exercises/19_helm_packaging/helm03.py",
+                    chapter_name="19_helm_packaging",
+                    hints=[
+                        "Use JSONSchema Draft-7 with $schema declaration",
+                        "Define required array for replicaCount, image, and service",
+                        "Set integer bounds for replicaCount and ports, and enum types for service.type",
+                    ],
+                ),
+                Exercise(
+                    name="helm04",
+                    title="Helm Subcharts & Global Values",
+                    path="exercises/19_helm_packaging/helm04.py",
+                    chapter_name="19_helm_packaging",
+                    hints=[
+                        "Define global dictionary for cross-chart shared configuration",
+                        "Override subchart parameters under top-level subchart keys (e.g. redis)",
+                        "Pass configuration like architecture, auth, and persistence to dependencies",
+                    ],
+                ),
+            ],
+        ),
+        Chapter(
+            number=20,
+            name="20_kustomize_overlays",
+            title="Declarative Customization with Kustomize",
+            description="Base Manifests, ConfigMap/Secret Generators, Patches, and Multi-Environment Overlays",
+            exercises=[
+                Exercise(
+                    name="kustomize01",
+                    title="Kustomize Base Manifests & Metadata Transformations",
+                    path="exercises/20_kustomize_overlays/kustomize01.py",
+                    chapter_name="20_kustomize_overlays",
+                    hints=[
+                        "Set apiVersion to kustomize.config.k8s.io/v1beta1 and kind to Kustomization",
+                        "Specify base resources list and namespace",
+                        "Apply namePrefix, commonLabels, and commonAnnotations across resources",
+                    ],
+                ),
+                Exercise(
+                    name="kustomize02",
+                    title="Kustomize ConfigMap & Secret Generators",
+                    path="exercises/20_kustomize_overlays/kustomize02.py",
+                    chapter_name="20_kustomize_overlays",
+                    hints=[
+                        "Define configMapGenerator and secretGenerator lists with literals",
+                        "generatorOptions controls name suffix hashing and default labels",
+                        "Generators create immutable content hashes triggering seamless rollouts",
+                    ],
+                ),
+                Exercise(
+                    name="kustomize03",
+                    title="Kustomize Strategic Merge & JSON6902 Target Patches",
+                    path="exercises/20_kustomize_overlays/kustomize03.py",
+                    chapter_name="20_kustomize_overlays",
+                    hints=[
+                        "Target specific resources by group, version, kind, and name",
+                        "Apply JSON 6902 operations (replace, add, remove)",
+                        "Modify replicas and container resource limits without altering bases",
+                    ],
+                ),
+                Exercise(
+                    name="kustomize04",
+                    title="Kustomize Multi-Environment Overlays & Image Transforms",
+                    path="exercises/20_kustomize_overlays/kustomize04.py",
+                    chapter_name="20_kustomize_overlays",
+                    hints=[
+                        "Reference base manifests via resources path",
+                        "Apply environment-specific namespaces and name prefixes",
+                        "Use images and replicas lists to override image registries, tags, and scaling",
+                    ],
+                ),
+            ],
+        ),
     ]
     return Manifest(chapters=chapters)
 
