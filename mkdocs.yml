@@ -46,10 +46,17 @@ markdown_extensions:
   - tables
   - attr_list
 
+extra_css:
+  - assets/playground/playground.css
+
+extra_javascript:
+  - assets/playground/playground.js
+
 nav:
   - Overview: index.md
   - Getting Started: getting-started.md
   - Onboarding Guide: onboarding-guide.md
+  - Interactive Playground: playground.md
   - Curriculum Syllabus: syllabus.md
   - CLI Reference: cli-reference.md
   - Contributing: contributing.md

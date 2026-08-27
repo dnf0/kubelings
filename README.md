@@ -5,6 +5,7 @@
 [![Python: 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Type checker: pyright](https://img.shields.io/badge/types-pyright-green.svg)](https://github.com/microsoft/pyright)
+[![Playground](https://img.shields.io/badge/Playground-⚡%20Try%20in%20Browser-blueviolet)](https://dnf0.github.io/kubelings/playground/)
 
 > **Master Kubernetes from scratch through small, interactive, hands-on terminal exercises.**
 
@@ -75,6 +76,12 @@ Learning Kubernetes from static documentation or raw copy-pasted Helm charts is 
 ---
 
 ## Quickstart & Installation
+
+### Try in Browser (Zero Installation)
+
+Test Kubelings directly inside your web browser without installing any tools:
+
+👉 **[⚡ Try in Browser](https://dnf0.github.io/kubelings/playground/)** — Run Python 3.12, Monaco Editor, and in-memory schema validation 100% client-side via Pyodide WebAssembly.
 
 ### Prerequisites
 

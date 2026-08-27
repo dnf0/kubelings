@@ -2,7 +2,11 @@
 
 **An interactive, hands-on CLI learning environment for Kubernetes.**
 
+[![Playground](https://img.shields.io/badge/Playground-⚡%20Try%20in%20Browser-blueviolet)](https://dnf0.github.io/kubelings/playground/)
+
 Inspired by [rustlings](https://github.com/rust-lang/rustlings) and [ziglings](https://codeberg.org/ziglings/exercises), **Kubelings** guides engineers through self-paced micro-exercises directly in the terminal.
+
+> ⚡ **Try it now in your browser!** No installation required: [**Interactive WebAssembly Playground**](playground.md) ([⚡ Try in Browser](https://dnf0.github.io/kubelings/playground/)).
 
 ---
 
@@ -14,6 +18,7 @@ Learning Kubernetes from static documentation or copy-pasted manifests often lea
 - 🔁 **Active Problem Solving**: 114 real-world exercises across 26 chapters starting in a broken state that you fix and verify.
 - ☸ **Dual-Mode Engine**: Practice 100% offline or connect to a real cluster (`kind`, `minikube`, `k3d`, or cloud).
 - 💡 **Progressive Hinting**: Multi-tier clues when you get stuck without spoiling the answer.
+- 🌐 **Interactive WebAssembly Playground**: [⚡ Try in Browser](https://dnf0.github.io/kubelings/playground/) with zero installation via client-side Pyodide & Monaco Editor.
 - 🚀 **Zero-Install Run**: Start practicing immediately with `uvx kubelings tour`, `uvx kubelings init`, and `uvx kubelings watch`.
 - 📖 **Complete Onboarding Guide**: Visual step-by-step tutorial available in the [**Learner's Onboarding Guide**](onboarding-guide.md).
 
