@@ -1,0 +1,1063 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An interactive, hands-on CLI learning environment for Kubernetes.">
+      
+      
+        <meta name="author" content="Kubelings Contributors">
+      
+      
+        <link rel="canonical" href="https://dnf0.github.io/kubelings/superpowers/specs/2026-08-26-kubelings-design/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Kubelings: An Interactive Hands-On Kubernetes Learning Environment - Kubelings</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="cyan" data-md-color-accent="deep-purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#kubelings-an-interactive-hands-on-kubernetes-learning-environment" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Kubelings" class="md-header__button md-logo" aria-label="Kubelings" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Kubelings
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Kubelings: An Interactive Hands-On Kubernetes Learning Environment
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="cyan" data-md-color-accent="deep-purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="cyan" data-md-color-accent="deep-purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/dnf0/kubelings" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    dnf0/kubelings
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Kubelings" class="md-nav__button md-logo" aria-label="Kubelings" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Kubelings
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/dnf0/kubelings" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    dnf0/kubelings
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../syllabus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Curriculum Syllabus
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cli-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-executive-summary-vision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Executive Summary &amp; Vision
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-system-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. System Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. System Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-core-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Core Components
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-curriculum-syllabus-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Curriculum &amp; Syllabus Specification
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Curriculum &amp; Syllabus Specification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chapter-1-kubernetes-core-workloads-pods-01_pods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 1: Kubernetes Core Workloads &amp; Pods (01_pods)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chapter-2-controllers-replication-02_controllers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 2: Controllers &amp; Replication (02_controllers)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chapter-3-configuration-secret-management-03_config_secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 3: Configuration &amp; Secret Management (03_config_secrets)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chapter-4-storage-persistent-volumes-04_storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 4: Storage &amp; Persistent Volumes (04_storage)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chapter-5-services-networking-05_services_networking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 5: Services &amp; Networking (05_services_networking)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chapter-6-ingress-gateway-api-06_ingress_gateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 6: Ingress &amp; Gateway API (06_ingress_gateway)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chapter-7-scheduling-affinity-advanced-placement-07_scheduling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 7: Scheduling, Affinity &amp; Advanced Placement (07_scheduling)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chapter-8-security-rbac-service-accounts-08_security_rbac" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 8: Security, RBAC &amp; Service Accounts (08_security_rbac)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chapter-9-network-policies-traffic-segmentation-09_network_policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 9: Network Policies &amp; Traffic Segmentation (09_network_policies)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chapter-10-health-checking-probes-lifecycle-10_lifecycle_probes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 10: Health Checking, Probes &amp; Lifecycle (10_lifecycle_probes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chapter-11-autoscaling-hpa-vpa-keda-11_autoscaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 11: Autoscaling (HPA, VPA, KEDA) (11_autoscaling)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chapter-12-custom-resources-crds-operators-12_crds_and_operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 12: Custom Resources, CRDs &amp; Operators (12_crds_and_operators)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chapter-13-observability-debugging-production-troubleshooting-13_troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 13: Observability, Debugging &amp; Production Troubleshooting (13_troubleshooting)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-exercise-solution-file-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Exercise &amp; Solution File Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-repository-infrastructure-ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Repository Infrastructure &amp; CI
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Repository Infrastructure &amp; CI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-packaging-environment-pyprojecttoml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Packaging &amp; Environment (pyproject.toml)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-agent-rules-git-isolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Agent Rules &amp; Git Isolation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-automated-ci-workflow-githubworkflowsciyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Automated CI Workflow (.github/workflows/ci.yml)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-verification-and-acceptance-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Verification and Acceptance Criteria
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="kubelings-an-interactive-hands-on-kubernetes-learning-environment">Kubelings: An Interactive Hands-On Kubernetes Learning Environment</h1>
+<p><strong>Date:</strong> 2026-08-26<br />
+<strong>Status:</strong> Approved<br />
+<strong>Target Repository:</strong> <code>dnf0/kubelings</code>  </p>
+<hr />
+<h2 id="1-executive-summary-vision">1. Executive Summary &amp; Vision</h2>
+<p><code>kubelings</code> is an interactive, terminal-driven educational tool and comprehensive curriculum designed to teach Kubernetes from foundational building blocks to production cloud-native engineering—inspired by the pedagogy and developer experience of <code>rustlings</code>, <code>ziglings</code>, and <code>raylings</code>.</p>
+<p>Learners progress through hands-on, self-guided exercises where they fix broken YAML manifests, construct multi-container sidecars, configure persistent storage, write RBAC security policies, solve scheduling constraints, build custom Python Kubernetes operators, and troubleshoot production cluster incidents (such as <code>CrashLoopBackOff</code>, OOMKilled containers, and scheduling deadlocks).</p>
+<hr />
+<h2 id="2-system-architecture">2. System Architecture</h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>                                +-----------------------------+
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                                |      Learner Terminal       |
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>                                |       kubelings watch       |
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>                                +--------------+--------------+
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>                                               |
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>                                               v
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>+------------------------------------------------------------------------------------------+
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>|                                  Kubelings CLI Engine                                    |
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>|                                                                                          |
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>|  +--------------------+   +-----------------------+   +-------------------------------+  |
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>|  | File Watcher       |   | Progress / State Mgr  |   | Exercise Runner &amp; Validator   |  |
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>|  | (watchfiles)       |--&gt;| (exercise index &amp;     |--&gt;| (syntax check, test eval,     |  |
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>|  |                    |   |  marker parser)       |   |  manifest schema &amp; assertion) |  |
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>|  +--------------------+   +-----------------------+   +---------------+---------------+  |
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>|                                                                       |                  |
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>+-----------------------------------------------------------------------|------------------+
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>                                                                        |
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>                                       +--------------------------------+
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>                                       |
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>                                       v
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>+------------------------------------------------------------------------------------------+
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>|                               Kubernetes Validation Layer                                |
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>|                                                                                          |
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>|  +---------------------------------------------+  +-----------------------------------+  |
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>|  | Fast In-Memory Schema &amp; Mock API Engine     |  | Live Cluster Adapter (Optional)   |  |
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>|  | - Sub-30ms offline schema validation        |  | - Direct kind/minikube/k3s check  |  |
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>|  | - OpenAPI models &amp; YAML structure parser    |  | - Namespace isolation &amp; cleanup   |  |
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>|  | - Pure Python Kubernetes client testing     |  | - Live resource lifecycle check   |  |
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>|  +---------------------------------------------+  +-----------------------------------+  |
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>|                                                                                          |
+</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>+------------------------------------------------------------------------------------------+
+</span></code></pre></div>
+<h3 id="21-core-components">2.1 Core Components</h3>
+<ol>
+<li><strong>CLI Engine (<code>kubelings/cli.py</code>, <code>kubelings/runner.py</code>, <code>kubelings/watcher.py</code>, <code>kubelings/ui.py</code>)</strong>:</li>
+<li>Built on <code>typer</code> and <code>rich</code>.</li>
+<li>Manages interactive command modes (<code>watch</code>, <code>run</code>, <code>test</code>, <code>hint</code>, <code>list</code>, <code>verify</code>).</li>
+<li>
+<p>Renders clean, color-coded terminal diagnostics, stack traces, progress bars, and victory ASCII banners.</p>
+</li>
+<li>
+<p><strong>Schema &amp; Manifest Validator (<code>kubelings/validator.py</code>)</strong>:</p>
+</li>
+<li>Validates Kubernetes YAML manifests and Python Kubernetes client data objects against standard Kubernetes OpenAPI v3 schemas.</li>
+<li>
+<p>Provides sub-30ms instant feedback without requiring a live cluster for schema and configuration exercises.</p>
+</li>
+<li>
+<p><strong>Cluster Adapter &amp; Runtime (<code>kubelings/cluster.py</code>)</strong>:</p>
+</li>
+<li>Detects active kubeconfig contexts (<code>kind</code>, <code>minikube</code>, <code>k3d</code>, or cloud clusters).</li>
+<li>Provides optional live reconciliation checking for exercises involving real cluster resource deployment and verification.</li>
+<li>
+<p>Automatically provisions and cleans up ephemeral test namespaces (<code>kubelings-test-*</code>) to prevent cluster pollution.</p>
+</li>
+<li>
+<p><strong>Exercise Manifest &amp; Registry (<code>kubelings/manifest.py</code>, <code>kubelings/models.py</code>)</strong>:</p>
+</li>
+<li>Declarative catalogue of all 13 chapters and 55 exercises with titles, paths, prerequisites, and progressive hints.</li>
+<li>
+<p>Parses <code># I AM NOT DONE</code> marker at the top of exercise files.</p>
+</li>
+<li>
+<p><strong>Canonical Solutions &amp; Testing Harness (<code>solutions/</code>, <code>tests/</code>)</strong>:</p>
+</li>
+<li><code>solutions/</code> mirrors every exercise file in <code>exercises/</code> with verified reference implementations.</li>
+<li>Pytest test suite validates that:<ul>
+<li>All solutions pass verification.</li>
+<li>All starter exercises in <code>exercises/</code> fail before the user fixes them (preventing accidental no-op exercises).</li>
+<li>CLI commands, runner, and watcher logic execute properly.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="3-curriculum-syllabus-specification">3. Curriculum &amp; Syllabus Specification</h2>
+<p>The curriculum consists of 13 chapters spanning 55 focused exercises:</p>
+<h3 id="chapter-1-kubernetes-core-workloads-pods-01_pods">Chapter 1: Kubernetes Core Workloads &amp; Pods (<code>01_pods</code>)</h3>
+<ul>
+<li><code>exercises/01_pods/pods01.py</code>: First Pod manifest &amp; API structure (metadata, spec, containers, ports).</li>
+<li><code>exercises/01_pods/pods02.py</code>: Multi-container Pods &amp; Sidecar pattern (shared volumes, IPC communication).</li>
+<li><code>exercises/01_pods/pods03.py</code>: Init Containers for dependency ordering and initialization scripts.</li>
+<li><code>exercises/01_pods/pods04.py</code>: Pod resource requests, limits, and QoS classes (Guaranteed, Burstable, BestEffort).</li>
+<li><code>exercises/01_pods/pods05.py</code>: Environment variables &amp; Downward API (<code>fieldRef</code>, <code>resourceFieldRef</code>).</li>
+<li><code>exercises/01_pods/pods06.py</code>: Static Pods vs API-managed Pods &amp; Pod Disruption Budgets (PDB).</li>
+</ul>
+<h3 id="chapter-2-controllers-replication-02_controllers">Chapter 2: Controllers &amp; Replication (<code>02_controllers</code>)</h3>
+<ul>
+<li><code>exercises/02_controllers/ctrl01.py</code>: ReplicaSets and label selector matching (<code>matchLabels</code>, <code>matchExpressions</code>).</li>
+<li><code>exercises/02_controllers/ctrl02.py</code>: Deployments: RollingUpdate vs Recreate strategies and <code>maxSurge</code>/<code>maxUnavailable</code>.</li>
+<li><code>exercises/02_controllers/ctrl03.py</code>: Deployment rollbacks, revision history, and undoing broken releases.</li>
+<li><code>exercises/02_controllers/ctrl04.py</code>: StatefulSets: Stable network IDs, headless services, and ordinal indexing.</li>
+<li><code>exercises/02_controllers/ctrl05.py</code>: DaemonSets: Running node-level daemons and nodeSelector/tolerations.</li>
+<li><code>exercises/02_controllers/ctrl06.py</code>: Jobs and CronJobs: Backoff limits, completions, parallelism, and schedule syntax.</li>
+</ul>
+<h3 id="chapter-3-configuration-secret-management-03_config_secrets">Chapter 3: Configuration &amp; Secret Management (<code>03_config_secrets</code>)</h3>
+<ul>
+<li><code>exercises/03_config_secrets/config01.py</code>: ConfigMaps from literals and files; mounting as env vars (<code>envFrom</code>, <code>valueFrom</code>).</li>
+<li><code>exercises/03_config_secrets/config02.py</code>: ConfigMaps mounted as volume files; live reload semantics and subPaths.</li>
+<li><code>exercises/03_config_secrets/config03.py</code>: Secrets: Base64 encoding, opaque secrets, and TLS certificates.</li>
+<li><code>exercises/03_config_secrets/config04.py</code>: Secret volume mounts, memory-backed tmpfs storage, and read-only permissions.</li>
+<li><code>exercises/03_config_secrets/config05.py</code>: Immutable ConfigMaps and Secrets for performance and drift prevention.</li>
+</ul>
+<h3 id="chapter-4-storage-persistent-volumes-04_storage">Chapter 4: Storage &amp; Persistent Volumes (<code>04_storage</code>)</h3>
+<ul>
+<li><code>exercises/04_storage/storage01.py</code>: <code>emptyDir</code> and <code>hostPath</code> volume types.</li>
+<li><code>exercises/04_storage/storage02.py</code>: PersistentVolumes (PV) &amp; PersistentVolumeClaims (PVC) binding mechanics.</li>
+<li><code>exercises/04_storage/storage03.py</code>: AccessModes (<code>ReadWriteOnce</code>, <code>ReadOnlyMany</code>, <code>ReadWriteMany</code>) and reclaim policies (<code>Retain</code>, <code>Delete</code>).</li>
+<li><code>exercises/04_storage/storage04.py</code>: StorageClasses &amp; dynamic volume provisioning (<code>volumeBindingMode: WaitForFirstConsumer</code>).</li>
+<li><code>exercises/04_storage/storage05.py</code>: Volume snapshots and volume expansion (<code>allowVolumeExpansion</code>).</li>
+</ul>
+<h3 id="chapter-5-services-networking-05_services_networking">Chapter 5: Services &amp; Networking (<code>05_services_networking</code>)</h3>
+<ul>
+<li><code>exercises/05_services_networking/net01.py</code>: ClusterIP Services: Port mapping (<code>port</code>, <code>targetPort</code>), endpoints, and selector matching.</li>
+<li><code>exercises/05_services_networking/net02.py</code>: Headless Services (<code>clusterIP: None</code>) for StatefulSet direct addressing &amp; SRV records.</li>
+<li><code>exercises/05_services_networking/net03.py</code>: NodePort and LoadBalancer service types.</li>
+<li><code>exercises/05_services_networking/net04.py</code>: CoreDNS internal resolution (<code>&lt;service&gt;.&lt;namespace&gt;.svc.cluster.local</code>) and search paths.</li>
+<li><code>exercises/05_services_networking/net05.py</code>: ExternalName services and manual Endpoints / EndpointSlices.</li>
+</ul>
+<h3 id="chapter-6-ingress-gateway-api-06_ingress_gateway">Chapter 6: Ingress &amp; Gateway API (<code>06_ingress_gateway</code>)</h3>
+<ul>
+<li><code>exercises/06_ingress_gateway/ingress01.py</code>: Ingress resource definitions: host-based and path-based routing rules.</li>
+<li><code>exercises/06_ingress_gateway/ingress02.py</code>: Ingress TLS termination with Secret certificates.</li>
+<li><code>exercises/06_ingress_gateway/ingress03.py</code>: Ingress rewrite-target annotations and custom headers.</li>
+<li><code>exercises/06_ingress_gateway/ingress04.py</code>: Gateway API fundamentals: <code>GatewayClass</code>, <code>Gateway</code>, and <code>HTTPRoute</code>.</li>
+</ul>
+<h3 id="chapter-7-scheduling-affinity-advanced-placement-07_scheduling">Chapter 7: Scheduling, Affinity &amp; Advanced Placement (<code>07_scheduling</code>)</h3>
+<ul>
+<li><code>exercises/07_scheduling/sched01.py</code>: Manual node assignment (<code>nodeName</code>) and simple <code>nodeSelector</code>.</li>
+<li><code>exercises/07_scheduling/sched02.py</code>: Node Affinity: <code>requiredDuringSchedulingIgnoredDuringExecution</code> vs <code>preferred...</code>.</li>
+<li><code>exercises/07_scheduling/sched03.py</code>: Pod Affinity &amp; Pod Anti-Affinity: Spreading pods across topology keys.</li>
+<li><code>exercises/07_scheduling/sched04.py</code>: Taints and Tolerations: Dedicated nodes, <code>NoSchedule</code>, <code>NoExecute</code>, and eviction delays.</li>
+<li><code>exercises/07_scheduling/sched05.py</code>: Topology Spread Constraints: <code>maxSkew</code> and <code>whenUnsatisfiable</code>.</li>
+</ul>
+<h3 id="chapter-8-security-rbac-service-accounts-08_security_rbac">Chapter 8: Security, RBAC &amp; Service Accounts (<code>08_security_rbac</code>)</h3>
+<ul>
+<li><code>exercises/08_security_rbac/rbac01.py</code>: ServiceAccounts and automounting service account tokens.</li>
+<li><code>exercises/08_security_rbac/rbac02.py</code>: Roles &amp; RoleBindings (namespace-scoped permissions: verbs, apiGroups, resources).</li>
+<li><code>exercises/08_security_rbac/rbac03.py</code>: ClusterRoles &amp; ClusterRoleBindings (cluster-wide access and non-resource URLs).</li>
+<li><code>exercises/08_security_rbac/rbac04.py</code>: SecurityContext: <code>runAsUser</code>, <code>runAsNonRoot</code>, <code>readOnlyRootFilesystem</code>, <code>capabilities</code>.</li>
+<li><code>exercises/08_security_rbac/rbac05.py</code>: Pod Security Standards (Privileged, Baseline, Restricted) via namespace labels.</li>
+</ul>
+<h3 id="chapter-9-network-policies-traffic-segmentation-09_network_policies">Chapter 9: Network Policies &amp; Traffic Segmentation (<code>09_network_policies</code>)</h3>
+<ul>
+<li><code>exercises/09_network_policies/netpol01.py</code>: Default Deny all ingress &amp; egress network policy.</li>
+<li><code>exercises/09_network_policies/netpol02.py</code>: Ingress traffic filtering by podSelector and namespaceSelector.</li>
+<li><code>exercises/09_network_policies/netpol03.py</code>: Egress traffic filtering (allowing DNS port 53 while blocking external CIDRs).</li>
+<li><code>exercises/09_network_policies/netpol04.py</code>: Named ports and IPBlock CIDR exception rules in NetworkPolicies.</li>
+</ul>
+<h3 id="chapter-10-health-checking-probes-lifecycle-10_lifecycle_probes">Chapter 10: Health Checking, Probes &amp; Lifecycle (<code>10_lifecycle_probes</code>)</h3>
+<ul>
+<li><code>exercises/10_lifecycle_probes/health01.py</code>: Liveness probes (HTTP, TCP socket, Exec command) &amp; restart triggers.</li>
+<li><code>exercises/10_lifecycle_probes/health02.py</code>: Readiness probes and automatic traffic gating in Service endpoints.</li>
+<li><code>exercises/10_lifecycle_probes/health03.py</code>: Startup probes for slow-starting applications.</li>
+<li><code>exercises/10_lifecycle_probes/health04.py</code>: Container lifecycle hooks (<code>postStart</code>, <code>preStop</code>) and graceful termination (<code>terminationGracePeriodSeconds</code>).</li>
+</ul>
+<h3 id="chapter-11-autoscaling-hpa-vpa-keda-11_autoscaling">Chapter 11: Autoscaling (HPA, VPA, KEDA) (<code>11_autoscaling</code>)</h3>
+<ul>
+<li><code>exercises/11_autoscaling/autoscale01.py</code>: HorizontalPodAutoscaler (HPA v2) based on target CPU/Memory utilization.</li>
+<li><code>exercises/11_autoscaling/autoscale02.py</code>: HPA custom behavior policies: scale-up and scale-down stabilization windows.</li>
+<li><code>exercises/11_autoscaling/autoscale03.py</code>: VerticalPodAutoscaler (VPA): <code>recommendationMode</code>, auto-resizing pods.</li>
+<li><code>exercises/11_autoscaling/autoscale04.py</code>: Event-driven autoscaling concepts (KEDA ScaledObjects / external metrics).</li>
+</ul>
+<h3 id="chapter-12-custom-resources-crds-operators-12_crds_and_operators">Chapter 12: Custom Resources, CRDs &amp; Operators (<code>12_crds_and_operators</code>)</h3>
+<ul>
+<li><code>exercises/12_crds_and_operators/crd01.py</code>: CustomResourceDefinition (CRD) schema specification with OpenAPI v3 validation.</li>
+<li><code>exercises/12_crds_and_operators/crd02.py</code>: Subresources (<code>/status</code> and <code>/scale</code>) and printer columns in CRDs.</li>
+<li><code>exercises/12_crds_and_operators/crd03.py</code>: Building a Python Kubernetes Operator reconciliation loop.</li>
+<li><code>exercises/12_crds_and_operators/crd04.py</code>: Dynamic admission webhooks (Mutating &amp; Validating webhooks).</li>
+</ul>
+<h3 id="chapter-13-observability-debugging-production-troubleshooting-13_troubleshooting">Chapter 13: Observability, Debugging &amp; Production Troubleshooting (<code>13_troubleshooting</code>)</h3>
+<ul>
+<li><code>exercises/13_troubleshooting/troubleshoot01.py</code>: Debugging <code>CrashLoopBackOff</code>, exit codes (137 OOMKilled, 1, 143), and container logs.</li>
+<li><code>exercises/13_troubleshooting/troubleshoot02.py</code>: Debugging <code>ImagePullBackOff</code> and <code>ErrImagePull</code> (registry auth, tags).</li>
+<li><code>exercises/13_troubleshooting/troubleshoot03.py</code>: Debugging <code>Pending</code> pods (insufficient resources, affinity mismatch, unattached PVCs).</li>
+<li><code>exercises/13_troubleshooting/troubleshoot04.py</code>: ResourceQuotas and LimitRanges: resolving quota exceeded rejections.</li>
+<li><code>exercises/13_troubleshooting/troubleshoot05.py</code>: Ephemeral debug containers (<code>kubectl debug</code>) and cluster event triage.</li>
+</ul>
+<hr />
+<h2 id="4-exercise-solution-file-structure">4. Exercise &amp; Solution File Structure</h2>
+<p>Every exercise file follows a clean, consistent convention:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="sd">"""</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="sd">Exercise: exercises/01_pods/pods01.py</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="sd">Topic: First Pod Manifest &amp; Container Specification</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="sd">Instructions:</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="sd">Fix the YAML manifest below to define a valid Pod named 'nginx-web'</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="sd">running nginx:alpine on container port 80 with label 'app: web'.</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="sd">"""</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="c1"># I AM NOT DONE</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="kn">from</span><span class="w"> </span><span class="nn">kubelings.validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_manifest</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="n">POD_MANIFEST</span> <span class="o">=</span> <span class="s2">"""</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="s2">apiVersion: v1</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="s2">kind: Pod</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="s2">metadata:</span>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="s2">  name: ???</span>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="s2">  labels:</span>
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="s2">    app: ???</span>
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="s2">spec:</span>
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="s2">  containers:</span>
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="s2">  - name: nginx</span>
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="s2">    image: ???</span>
+</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="s2">    ports:</span>
+</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="s2">    - containerPort: 80</span>
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="s2">"""</span>
+</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>
+</span><span id="__span-1-30"><a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a><span class="k">def</span><span class="w"> </span><span class="nf">verify</span><span class="p">():</span>
+</span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>    <span class="n">manifest</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">POD_MANIFEST</span><span class="p">)</span>
+</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>    <span class="k">assert</span> <span class="n">manifest</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"Manifest cannot be empty"</span>
+</span><span id="__span-1-33"><a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>    <span class="n">validate_manifest</span><span class="p">(</span><span class="n">manifest</span><span class="p">,</span> <span class="n">expected_kind</span><span class="o">=</span><span class="s2">"Pod"</span><span class="p">)</span>
+</span><span id="__span-1-34"><a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>
+</span><span id="__span-1-35"><a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>    <span class="k">assert</span> <span class="n">manifest</span><span class="p">[</span><span class="s2">"metadata"</span><span class="p">][</span><span class="s2">"name"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"nginx-web"</span><span class="p">,</span> <span class="s2">"Pod name must be 'nginx-web'"</span>
+</span><span id="__span-1-36"><a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a>    <span class="k">assert</span> <span class="n">manifest</span><span class="p">[</span><span class="s2">"metadata"</span><span class="p">][</span><span class="s2">"labels"</span><span class="p">][</span><span class="s2">"app"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"web"</span><span class="p">,</span> <span class="s2">"Label 'app' must equal 'web'"</span>
+</span><span id="__span-1-37"><a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a>    <span class="n">container</span> <span class="o">=</span> <span class="n">manifest</span><span class="p">[</span><span class="s2">"spec"</span><span class="p">][</span><span class="s2">"containers"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+</span><span id="__span-1-38"><a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a>    <span class="k">assert</span> <span class="n">container</span><span class="p">[</span><span class="s2">"image"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"nginx:alpine"</span><span class="p">,</span> <span class="s2">"Container image must be 'nginx:alpine'"</span>
+</span><span id="__span-1-39"><a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a>    <span class="k">assert</span> <span class="n">container</span><span class="p">[</span><span class="s2">"ports"</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">"containerPort"</span><span class="p">]</span> <span class="o">==</span> <span class="mi">80</span><span class="p">,</span> <span class="s2">"Port must be 80"</span>
+</span><span id="__span-1-40"><a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">"✓ pods01 passed!"</span><span class="p">)</span>
+</span><span id="__span-1-41"><a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a>
+</span><span id="__span-1-42"><a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+</span><span id="__span-1-43"><a id="__codelineno-1-43" name="__codelineno-1-43" href="#__codelineno-1-43"></a>    <span class="n">verify</span><span class="p">()</span>
+</span></code></pre></div>
+<hr />
+<h2 id="5-repository-infrastructure-ci">5. Repository Infrastructure &amp; CI</h2>
+<h3 id="51-packaging-environment-pyprojecttoml">5.1 Packaging &amp; Environment (<code>pyproject.toml</code>)</h3>
+<ul>
+<li>Build Backend: <code>hatchling</code></li>
+<li>Entry Point: <code>[project.scripts] kubelings = "kubelings.cli:app"</code></li>
+<li>Package Manager: <code>uv</code></li>
+<li>Python Version: <code>&gt;=3.10</code></li>
+<li>Core Dependencies:</li>
+<li><code>kubernetes&gt;=29.0.0</code></li>
+<li><code>pyyaml&gt;=6.0.1</code></li>
+<li><code>pydantic&gt;=2.6.0</code></li>
+<li><code>jsonschema&gt;=4.20.0</code></li>
+<li><code>rich&gt;=13.7.0</code></li>
+<li><code>typer&gt;=0.12.0</code></li>
+<li><code>watchfiles&gt;=0.21.0</code></li>
+<li>Dev Dependencies:</li>
+<li><code>pytest&gt;=8.0.0</code></li>
+<li><code>pytest-cov&gt;=4.1.0</code></li>
+<li><code>ruff&gt;=0.4.0</code></li>
+<li><code>pyright&gt;=1.1.350</code></li>
+<li><code>pre-commit&gt;=3.7.0</code></li>
+</ul>
+<h3 id="52-agent-rules-git-isolation">5.2 Agent Rules &amp; Git Isolation</h3>
+<ul>
+<li>Standard <code>.gitignore</code> excluding all agent-internal paths (<code>.agents/</code>, <code>.agent-state/</code>, <code>.superpowers/</code>, <code>graphify-out/</code>, <code>.roborev/</code>, <code>.claude/</code>, <code>.gemini/</code>) from commits, keeping <code>dnf0/kubelings</code> ready for public open-source publication.</li>
+</ul>
+<h3 id="53-automated-ci-workflow-githubworkflowsciyml">5.3 Automated CI Workflow (<code>.github/workflows/ci.yml</code>)</h3>
+<ul>
+<li>Triggers on push to <code>main</code> and pull requests.</li>
+<li>Matrix runs on Python <code>3.10</code>, <code>3.11</code>, <code>3.12</code>.</li>
+<li>Execution Steps:</li>
+<li><code>uv sync</code> dependencies.</li>
+<li><code>ruff check</code> and <code>ruff format --check</code>.</li>
+<li><code>pyright</code> type checks on <code>src/kubelings/</code> and <code>solutions/</code>.</li>
+<li><code>pytest tests/</code> verifying that:<ul>
+<li>All solutions in <code>solutions/</code> pass verification.</li>
+<li>All starter exercises in <code>exercises/</code> fail as expected.</li>
+<li>CLI commands and watcher logic pass unit tests.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="6-verification-and-acceptance-criteria">6. Verification and Acceptance Criteria</h2>
+<ol>
+<li><strong>CLI Commands</strong>:</li>
+<li><code>kubelings watch</code> automatically discovers incomplete exercises, monitors edits, re-evaluates in &lt;50ms, and updates live status.</li>
+<li><code>kubelings run &lt;path&gt;</code> runs any exercise or solution.</li>
+<li><code>kubelings hint</code> reveals progressive hints per exercise.</li>
+<li><code>kubelings test</code> verifies all reference solutions.</li>
+<li><code>kubelings list</code> outputs the complete curriculum table with statuses.</li>
+<li><strong>Curriculum Completeness</strong>:</li>
+<li>13 chapters, 55 deep-dive exercises with verified matching solutions.</li>
+<li><strong>CI &amp; Code Quality</strong>:</li>
+<li>100% passing test suite on Python 3.10+.</li>
+<li>Clean linting (<code>ruff</code>) and static typing (<code>pyright</code>).</li>
+<li><strong>GitHub Deployment Ready</strong>:</li>
+<li>Remote target: <code>git@github.com:dnf0/kubelings.git</code>.</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
