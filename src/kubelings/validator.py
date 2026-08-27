@@ -307,6 +307,11 @@ def validate_manifest(
         if ray_errs:
             raise ManifestValidationError("; ".join(ray_errs))
 
+    elif kind in ("ResourceClaimTemplate", "ResourceClaim", "DeviceClass"):
+        dra_errs = _validate_dra_resource(manifest)
+        if dra_errs:
+            raise ManifestValidationError("; ".join(dra_errs))
+
     return True
 
 
@@ -818,6 +823,352 @@ def _validate_volcano_queue(
     return errors
 
 
+def _validate_dra_resource(
+    manifest: Dict[str, Any], exercise_name: Optional[str] = None
+) -> List[str]:
+    """Validate Dynamic Resource Allocation (DRA) manifests (resource.k8s.io/*)."""
+    errors: List[str] = []
+    api_version = manifest.get("apiVersion", "")
+    if not isinstance(api_version, str) or not (
+        api_version.startswith("resource.k8s.io/") or "resource.k8s.io" in api_version
+    ):
+        errors.append(
+            f"DRA resource 'apiVersion' must be under 'resource.k8s.io/', got '{api_version}'."
+        )
+
+    kind = manifest.get("kind", "")
+    spec = manifest.get("spec")
+    if spec is None or not isinstance(spec, dict):
+        errors.append(f"{kind} 'spec' must be a dictionary.")
+        return errors
+
+    if kind == "ResourceClaimTemplate":
+        claim_spec = spec.get("spec")
+        if not isinstance(claim_spec, dict):
+            errors.append("ResourceClaimTemplate 'spec.spec' must be a dictionary.")
+            return errors
+        devices = claim_spec.get("devices")
+        if not isinstance(devices, dict):
+            errors.append("ResourceClaimTemplate 'spec.spec.devices' must be a dictionary.")
+            return errors
+        requests = devices.get("requests")
+        if not isinstance(requests, list) or len(requests) == 0:
+            errors.append(
+                "ResourceClaimTemplate 'spec.spec.devices.requests' must be a non-empty list."
+            )
+        else:
+            for idx, req in enumerate(requests):
+                if not isinstance(req, dict):
+                    errors.append(
+                        f"Request at index {idx} in devices.requests must be a dictionary."
+                    )
+                    continue
+                req_name = req.get("name")
+                if not req_name or not isinstance(req_name, str) or not req_name.strip():
+                    errors.append(f"Request at index {idx} missing required string 'name'.")
+                device_class = req.get("deviceClassName")
+                selectors = req.get("selectors")
+                if not device_class and not selectors:
+                    errors.append(
+                        f"Request '{req_name or idx}' in devices.requests must define 'deviceClassName' or 'selectors'."
+                    )
+
+    elif kind == "ResourceClaim":
+        devices = spec.get("devices")
+        if not isinstance(devices, dict):
+            errors.append("ResourceClaim 'spec.devices' must be a dictionary.")
+            return errors
+        requests = devices.get("requests")
+        if not isinstance(requests, list) or len(requests) == 0:
+            errors.append("ResourceClaim 'spec.devices.requests' must be a non-empty list.")
+        else:
+            for idx, req in enumerate(requests):
+                if not isinstance(req, dict):
+                    errors.append(f"Request at index {idx} must be a dictionary.")
+                    continue
+                req_name = req.get("name")
+                if not req_name or not isinstance(req_name, str) or not req_name.strip():
+                    errors.append(f"Request at index {idx} missing required string 'name'.")
+                if "deviceClassName" not in req and "selectors" not in req:
+                    errors.append(
+                        f"Request '{req_name or idx}' must define 'deviceClassName' or 'selectors'."
+                    )
+
+    elif kind == "DeviceClass":
+        if not isinstance(spec, dict):
+            errors.append("DeviceClass 'spec' must be a dictionary.")
+
+    else:
+        errors.append(f"Unknown DRA kind '{kind}'.")
+
+    return errors
+
+
+def _validate_hardware_acceleration(
+    manifest: Dict[str, Any], exercise_name: Optional[str] = None
+) -> List[str]:
+    """Validate hardware acceleration configurations (MIG, Apple Silicon MPS, DRA, vLLM)."""
+    errors: List[str] = []
+    kind = manifest.get("kind", "")
+
+    # Extract pod spec based on kind
+    pod_spec: Optional[Dict[str, Any]] = None
+    if kind == "Pod":
+        pod_spec = manifest.get("spec") if isinstance(manifest.get("spec"), dict) else None
+    elif kind in ("Deployment", "StatefulSet", "DaemonSet", "Job"):
+        spec = manifest.get("spec")
+        if isinstance(spec, dict):
+            template = spec.get("template")
+            if isinstance(template, dict):
+                template_spec = template.get("spec")
+                if isinstance(template_spec, dict):
+                    pod_spec = template_spec
+
+    if pod_spec is None:
+        if exercise_name in ("accel01", "accel02", "accel03", "accel04"):
+            errors.append(f"Exercise {exercise_name} requires a valid Pod or workload manifest.")
+        return errors
+
+    containers = pod_spec.get("containers", [])
+    node_selector = pod_spec.get("nodeSelector", {})
+    if node_selector is None or not isinstance(node_selector, dict):
+        node_selector = {}
+
+    # General check: GPU / MIG resource limits vs requests consistency across all containers
+    if isinstance(containers, list):
+        for idx, c in enumerate(containers):
+            if not isinstance(c, dict):
+                continue
+            c_name = c.get("name", f"container[{idx}]")
+            resources = c.get("resources", {})
+            if isinstance(resources, dict):
+                limits = resources.get("limits", {})
+                requests = resources.get("requests", {})
+                if isinstance(limits, dict) and isinstance(requests, dict):
+                    all_keys = set(limits.keys()) | set(requests.keys())
+                    for k in all_keys:
+                        if (
+                            "nvidia.com/mig-" in str(k)
+                            or str(k) == "nvidia.com/gpu"
+                            or str(k) == "apple.com/gpu"
+                        ):
+                            if k in limits and k in requests:
+                                if str(limits[k]) != str(requests[k]):
+                                    errors.append(
+                                        f"Container '{c_name}' resource '{k}' limit ({limits[k]}) "
+                                        f"and request ({requests[k]}) must match."
+                                    )
+                            elif any("nvidia.com/mig-" in str(lk) for lk in limits) and any(
+                                "nvidia.com/mig-" in str(rk) for rk in requests
+                            ):
+                                errors.append(
+                                    f"Container '{c_name}' NVIDIA MIG resource mismatch between limits and requests."
+                                )
+
+    # Exercise-specific checks
+    if exercise_name == "accel01":
+        if not any("nvidia.com/gpu.product" in str(k) for k in node_selector.keys()):
+            errors.append(
+                "Exercise accel01 requires 'spec.nodeSelector' with 'nvidia.com/gpu.product'."
+            )
+
+        has_mig_resource = False
+        has_visible_devices_env = False
+
+        if isinstance(containers, list):
+            for c in containers:
+                if not isinstance(c, dict):
+                    continue
+                resources = c.get("resources", {})
+                if isinstance(resources, dict):
+                    limits = resources.get("limits", {})
+                    requests = resources.get("requests", {})
+                    if isinstance(limits, dict) and any(
+                        "nvidia.com/mig-" in str(k) for k in limits
+                    ):
+                        has_mig_resource = True
+                    if isinstance(requests, dict) and any(
+                        "nvidia.com/mig-" in str(k) for k in requests
+                    ):
+                        has_mig_resource = True
+
+                env = c.get("env", [])
+                if isinstance(env, list):
+                    for env_var in env:
+                        if (
+                            isinstance(env_var, dict)
+                            and env_var.get("name") == "NVIDIA_VISIBLE_DEVICES"
+                        ):
+                            has_visible_devices_env = True
+
+        if not has_mig_resource:
+            errors.append(
+                "Exercise accel01 requires container requesting NVIDIA MIG slice (e.g. nvidia.com/mig-3g.40gb)."
+            )
+        if not has_visible_devices_env:
+            errors.append(
+                "Exercise accel01 requires container env variable 'NVIDIA_VISIBLE_DEVICES'."
+            )
+
+    elif exercise_name == "accel02":
+        if node_selector.get("kubernetes.io/arch") != "arm64":
+            errors.append(
+                "Exercise accel02 requires 'spec.nodeSelector' with 'kubernetes.io/arch: arm64'."
+            )
+
+        has_apple_gpu = False
+        has_mps_fallback = False
+
+        if isinstance(containers, list):
+            for c in containers:
+                if not isinstance(c, dict):
+                    continue
+                resources = c.get("resources", {})
+                if isinstance(resources, dict):
+                    limits = resources.get("limits", {})
+                    requests = resources.get("requests", {})
+                    if isinstance(limits, dict) and "apple.com/gpu" in limits:
+                        has_apple_gpu = True
+                    if isinstance(requests, dict) and "apple.com/gpu" in requests:
+                        has_apple_gpu = True
+
+                env = c.get("env", [])
+                if isinstance(env, list):
+                    for env_var in env:
+                        if isinstance(env_var, dict):
+                            if (
+                                env_var.get("name") == "PYTORCH_ENABLE_MPS_FALLBACK"
+                                and str(env_var.get("value")) == "1"
+                            ):
+                                has_mps_fallback = True
+
+        if not has_apple_gpu:
+            errors.append(
+                "Exercise accel02 requires container requesting resource 'apple.com/gpu'."
+            )
+        if not has_mps_fallback:
+            errors.append(
+                "Exercise accel02 requires container env variable 'PYTORCH_ENABLE_MPS_FALLBACK: \"1\"'."
+            )
+
+    elif exercise_name == "accel03":
+        resource_claims = pod_spec.get("resourceClaims")
+        if not isinstance(resource_claims, list) or len(resource_claims) == 0:
+            errors.append("Exercise accel03 Pod requires non-empty 'spec.resourceClaims'.")
+        else:
+            claim_names = set()
+            for idx, rc in enumerate(resource_claims):
+                if not isinstance(rc, dict):
+                    errors.append(
+                        f"Resource claim at index {idx} in spec.resourceClaims must be a dictionary."
+                    )
+                    continue
+                rc_name = rc.get("name")
+                if not rc_name or not isinstance(rc_name, str) or not rc_name.strip():
+                    errors.append(f"Resource claim at index {idx} missing required string 'name'.")
+                else:
+                    claim_names.add(rc_name)
+                if not rc.get("resourceClaimTemplateName") and not rc.get("resourceClaimName"):
+                    errors.append(
+                        f"Resource claim '{rc_name or idx}' must define 'resourceClaimTemplateName' or 'resourceClaimName'."
+                    )
+
+            has_claimed_container = False
+            if isinstance(containers, list):
+                for c in containers:
+                    if not isinstance(c, dict):
+                        continue
+                    c_resources = c.get("resources", {})
+                    if isinstance(c_resources, dict):
+                        c_claims = c_resources.get("claims")
+                        if isinstance(c_claims, list) and len(c_claims) > 0:
+                            for cc in c_claims:
+                                if isinstance(cc, dict) and cc.get("name") in claim_names:
+                                    has_claimed_container = True
+
+            if not has_claimed_container:
+                errors.append(
+                    "Exercise accel03 requires at least one container referencing a defined claim in 'resources.claims'."
+                )
+
+    elif exercise_name == "accel04":
+        has_vllm_image = False
+        has_gpu_mem_util = False
+        has_readiness_probe = False
+        has_gpu_resource = False
+        has_pvc_volume = False
+
+        volumes = pod_spec.get("volumes", [])
+        pvc_volume_names = set()
+        if isinstance(volumes, list):
+            for v in volumes:
+                if isinstance(v, dict) and "persistentVolumeClaim" in v:
+                    pvc_info = v.get("persistentVolumeClaim")
+                    if isinstance(pvc_info, dict) and pvc_info.get("claimName"):
+                        pvc_volume_names.add(v.get("name"))
+
+        if isinstance(containers, list):
+            for c in containers:
+                if not isinstance(c, dict):
+                    continue
+                image = str(c.get("image", ""))
+                if "vllm" in image or "ollama" in image:
+                    has_vllm_image = True
+
+                args = c.get("args", [])
+                if isinstance(args, list):
+                    args_str = " ".join(str(a) for a in args)
+                    if "--gpu-memory-utilization" in args_str:
+                        has_gpu_mem_util = True
+
+                resources = c.get("resources", {})
+                if isinstance(resources, dict):
+                    limits = resources.get("limits", {})
+                    requests = resources.get("requests", {})
+                    if (isinstance(limits, dict) and any("gpu" in str(k) for k in limits)) or (
+                        isinstance(requests, dict) and any("gpu" in str(k) for k in requests)
+                    ):
+                        has_gpu_resource = True
+
+                readiness_probe = c.get("readinessProbe")
+                if isinstance(readiness_probe, dict):
+                    if (
+                        "httpGet" in readiness_probe
+                        or "tcpSocket" in readiness_probe
+                        or "exec" in readiness_probe
+                    ):
+                        has_readiness_probe = True
+
+                volume_mounts = c.get("volumeMounts", [])
+                if isinstance(volume_mounts, list):
+                    for vm in volume_mounts:
+                        if isinstance(vm, dict) and vm.get("name") in pvc_volume_names:
+                            has_pvc_volume = True
+
+        if not has_vllm_image:
+            errors.append(
+                "Exercise accel04 requires a container with a vLLM image (e.g. vllm/vllm-openai)."
+            )
+        if not has_gpu_mem_util:
+            errors.append(
+                "Exercise accel04 requires container arg '--gpu-memory-utilization 0.90'."
+            )
+        if not has_gpu_resource:
+            errors.append(
+                "Exercise accel04 requires container GPU resource allocation (e.g. nvidia.com/gpu: 1)."
+            )
+        if not has_readiness_probe:
+            errors.append(
+                "Exercise accel04 requires container 'readinessProbe' configured (e.g. httpGet /health on port 8000)."
+            )
+        if not has_pvc_volume:
+            errors.append(
+                "Exercise accel04 requires a persistentVolumeClaim volume mounted for model cache."
+            )
+
+    return errors
+
+
 def validate_manifest_dict(
     manifest: Any,
     exercise_name: Optional[str] = None,
@@ -899,6 +1250,16 @@ def validate_manifest_dict(
             return False, ray_errors
         return True, []
 
+    # DRA validation (resource.k8s.io/*)
+    if (
+        kind in ("ResourceClaimTemplate", "ResourceClaim", "DeviceClass")
+        or "resource.k8s.io" in api_version
+    ):
+        dra_errors = _validate_dra_resource(manifest, exercise_name)
+        if dra_errors:
+            return False, dra_errors
+        return True, []
+
     # Standard Kubernetes validation
     try:
         validate_manifest(manifest)
@@ -916,6 +1277,11 @@ def validate_manifest_dict(
             return False, [
                 "Exercise kueue02 requires Job 'spec.suspend' to be true for Kueue queue gating."
             ]
+
+    # Hardware acceleration validation
+    accel_errors = _validate_hardware_acceleration(manifest, exercise_name)
+    if accel_errors:
+        return False, accel_errors
 
     return True, []
 

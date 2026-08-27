@@ -430,3 +430,258 @@ def test_chapter_25_starters_fail(ex_name: str):
         env=env,
     )
     assert proc.returncode != 0, f"Starter {ex_path} should fail initially but returned 0."
+
+
+def test_accel01_nvidia_mig_partitioning():
+    valid_yaml = """
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mig-inference-pod
+spec:
+  nodeSelector:
+    nvidia.com/gpu.product: NVIDIA-A100-SXM4-80GB
+  containers:
+    - name: inference-worker
+      image: nvcr.io/nvidia/tritonserver:24.01-py3
+      resources:
+        limits:
+          nvidia.com/mig-3g.40gb: 1
+        requests:
+          nvidia.com/mig-3g.40gb: 1
+      env:
+        - name: NVIDIA_VISIBLE_DEVICES
+          value: "all"
+"""
+    passed, errors = validate_manifest_text(valid_yaml, "accel01")
+    assert passed, f"Expected valid MIG pod to pass, got: {errors}"
+
+
+def test_accel02_apple_silicon_gpu():
+    valid_yaml = """
+apiVersion: v1
+kind: Pod
+metadata:
+  name: apple-silicon-mlx-pod
+spec:
+  nodeSelector:
+    kubernetes.io/arch: arm64
+  containers:
+    - name: local-llm
+      image: python:3.11-slim
+      resources:
+        limits:
+          apple.com/gpu: 1
+      env:
+        - name: PYTORCH_ENABLE_MPS_FALLBACK
+          value: "1"
+        - name: DEVICE
+          value: "mps"
+"""
+    passed, errors = validate_manifest_text(valid_yaml, "accel02")
+    assert passed, f"Expected valid Apple Silicon GPU pod to pass, got: {errors}"
+
+
+def test_accel03_dynamic_resource_allocation():
+    valid_yaml = """
+apiVersion: resource.k8s.io/v1alpha3
+kind: ResourceClaimTemplate
+metadata:
+  name: gpu-dra-claim-template
+spec:
+  spec:
+    devices:
+      requests:
+        - name: dedicated-gpu
+          deviceClassName: gpu.example.com
+          count: 1
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dra-workload-pod
+spec:
+  resourceClaims:
+    - name: gpu-claim
+      resourceClaimTemplateName: gpu-dra-claim-template
+  containers:
+    - name: workload
+      image: ubuntu:22.04
+      resources:
+        claims:
+          - name: gpu-claim
+"""
+    passed, errors = validate_manifest_text(valid_yaml, "accel03")
+    assert passed, f"Expected valid DRA claim and pod to pass, got: {errors}"
+
+
+def test_accel04_vllm_llm_inference():
+    valid_yaml = """
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm-openai-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm-server
+  template:
+    metadata:
+      labels:
+        app: vllm-server
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:latest
+          args:
+            - "--model"
+            - "meta-llama/Llama-3-8B-Instruct"
+            - "--gpu-memory-utilization"
+            - "0.90"
+            - "--port"
+            - "8000"
+          ports:
+            - containerPort: 8000
+              name: http
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+          volumeMounts:
+            - name: model-cache
+              mountPath: /root/.cache/huggingface
+      volumes:
+        - name: model-cache
+          persistentVolumeClaim:
+            claimName: model-weights-pvc
+"""
+    passed, errors = validate_manifest_text(valid_yaml, "accel04")
+    assert passed, f"Expected valid vLLM deployment to pass, got: {errors}"
+
+
+def test_accel_invalid_manifests():
+    # Empty manifest
+    passed, errors = validate_manifest_text("", "accel01")
+    assert not passed
+    assert len(errors) > 0
+
+    # MIG mismatched requests and limits
+    mismatched_mig = """
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bad-mig-pod
+spec:
+  nodeSelector:
+    nvidia.com/gpu.product: NVIDIA-A100-SXM4-80GB
+  containers:
+    - name: worker
+      image: nvcr.io/nvidia/tritonserver:24.01-py3
+      resources:
+        limits:
+          nvidia.com/mig-3g.40gb: 1
+        requests:
+          nvidia.com/mig-1g.10gb: 1
+"""
+    passed, errors = validate_manifest_text(mismatched_mig, "accel01")
+    assert not passed
+    assert any(
+        "match" in err.lower() or "mismatch" in err.lower() or "mig" in err.lower()
+        for err in errors
+    )
+
+    # Apple GPU missing arch arm64 or MPS env
+    missing_mps = """
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bad-apple-pod
+spec:
+  nodeSelector:
+    kubernetes.io/arch: amd64
+  containers:
+    - name: worker
+      image: python:3.11-slim
+      resources:
+        limits:
+          apple.com/gpu: 1
+"""
+    passed, errors = validate_manifest_text(missing_mps, "accel02")
+    assert not passed
+    assert any("arm64" in err.lower() or "mps" in err.lower() for err in errors)
+
+    # DRA missing deviceClassName
+    invalid_dra = """
+apiVersion: resource.k8s.io/v1alpha3
+kind: ResourceClaimTemplate
+metadata:
+  name: bad-dra-template
+spec:
+  spec:
+    devices:
+      requests:
+        - name: gpu-req
+"""
+    passed, errors = validate_manifest_text(invalid_dra, "accel03")
+    assert not passed
+    assert any("deviceClassName" in err or "requests" in err for err in errors)
+
+    # vLLM missing readiness probe
+    invalid_vllm = """
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bad-vllm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:latest
+          args:
+            - "--gpu-memory-utilization"
+            - "0.90"
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+"""
+    passed, errors = validate_manifest_text(invalid_vllm, "accel04")
+    assert not passed
+    assert any("probe" in err.lower() or "volume" in err.lower() for err in errors)
+
+
+@pytest.mark.parametrize("ex_name", ["accel01", "accel02", "accel03", "accel04"])
+def test_chapter_26_solutions_pass(ex_name: str):
+    sol_path = Path(f"solutions/26_hardware_acceleration_dra/{ex_name}.py")
+    assert sol_path.exists(), f"Solution file missing: {sol_path}"
+    mod = _load_module_from_path(sol_path)
+    mod.verify()
+
+
+@pytest.mark.parametrize("ex_name", ["accel01", "accel02", "accel03", "accel04"])
+def test_chapter_26_starters_fail(ex_name: str):
+    ex_path = Path(f"exercises/26_hardware_acceleration_dra/{ex_name}.py")
+    assert ex_path.exists(), f"Exercise file missing: {ex_path}"
+
+    env = os.environ.copy()
+    env["PYTHONPATH"] = f"{Path.cwd() / 'src'}:{env.get('PYTHONPATH', '')}".strip(":")
+    proc = subprocess.run(
+        [sys.executable, str(ex_path)],
+        capture_output=True,
+        text=True,
+        timeout=10,
+        env=env,
+    )
+    assert proc.returncode != 0, f"Starter {ex_path} should fail initially but returned 0."
