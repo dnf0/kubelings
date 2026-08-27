@@ -47,7 +47,9 @@ jobs:
 
       - name: Build sdist and wheel
         run: |
-          uv build
+          mkdir -p dist dist-python
+          uv build --out-dir dist-python
+          cp dist-python/* dist/
 
       - name: Set up Node.js 20
         uses: actions/setup-node@v4
@@ -78,5 +80,6 @@ jobs:
           PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
+          packages-dir: dist-python/
           password: ${{ secrets.PYPI_API_TOKEN }}
           skip-existing: true
