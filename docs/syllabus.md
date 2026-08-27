@@ -1,6 +1,6 @@
 # Curriculum Syllabus
 
-Kubelings features **18 chapters** covering **82 real-world exercises**:
+Kubelings features **20 chapters** covering **90 real-world exercises**:
 
 ---
 
@@ -121,3 +121,16 @@ Kubelings features **18 chapters** covering **82 real-world exercises**:
 - `webhook02`: ValidatingWebhookConfiguration Manifest & Scope Filters.
 - `webhook03`: Dynamic Sidecar Injection AdmissionReview JSON Patch.
 - `webhook04`: CRD Webhook Conversion Strategy for Multi-Version APIs.
+
+### Chapter 19: Package Management with Helm
+- `helm01`: Helm `Chart.yaml` Metadata & Dependencies (Helm v3, SemVer, Subcharts).
+- `helm02`: Helm Go Templating & Named Helpers (`_helpers.tpl`, `chart_fullname`, Template Injection).
+- `helm03`: Helm `values.schema.json` Validation Schema (JSONSchema Draft-7 structure).
+- `helm04`: Helm Subcharts & Global Values Propagation (`global`, dependency overrides).
+
+### Chapter 20: Declarative Customization with Kustomize
+- `kustomize01`: Kustomize Base Manifests & Metadata Transformations (`resources`, `namespace`, `namePrefix`, `commonLabels`, `commonAnnotations`).
+- `kustomize02`: Kustomize ConfigMap & Secret Generators (`configMapGenerator`, `secretGenerator`, `generatorOptions`).
+- `kustomize03`: Kustomize Strategic Merge & JSON6902 Target Patches (`patches` with JSON6902 replace/add operations).
+- `kustomize04`: Kustomize Multi-Environment Overlays & Image Transforms (`overlays/prod`, `images`, `replicas`).
+

@@ -206,7 +206,7 @@ kubelings list
 
 ### 8. Verify Curriculum Progress
 
-Display a rich summary table showing the pass/fail status of all 82 exercises:
+Display a rich summary table showing the pass/fail status of all 90 exercises:
 
 ```bash
 kubelings verify
@@ -232,7 +232,7 @@ kubelings cluster
 
 ## Curriculum & Syllabus
 
-Kubelings covers 18 structured chapters with **82 practical exercises**:
+Kubelings covers 20 structured chapters with **90 practical exercises**:
 
 | Chapter | Title | Topic Overview | Exercises |
 | :--- | :--- | :--- | :--- |
@@ -254,6 +254,8 @@ Kubelings covers 18 structured chapters with **82 practical exercises**:
 | **16** | **Policy as Code (Kyverno & Gatekeeper)** | Kyverno ClusterPolicies, mutate & generate rules, OPA Gatekeeper ConstraintTemplates and Rego admission policies. | `policy01` – `policy04` (4) |
 | **17** | **Multi-Tenancy & Virtual Clusters** | Hierarchical Namespace Controller (HNC) subnamespaces, ResourceQuota limits, vcluster control planes, and isolation. | `tenant01` – `tenant04` (4) |
 | **18** | **Advanced Admission Webhooks** | Dynamic MutatingWebhookConfigurations, ValidatingWebhookConfigurations, sidecar injection, and CRD conversion webhooks. | `webhook01` – `webhook04` (4) |
+| **19** | **Package Management with Helm** | Helm `Chart.yaml` v3 metadata, Go templating, `_helpers.tpl`, `values.schema.json` validation, and subchart overrides. | `helm01` – `helm04` (4) |
+| **20** | **Declarative Customization with Kustomize** | `kustomization.yaml` bases, `configMapGenerator`, `secretGenerator`, strategic merge patches, and multi-environment overlays. | `kustomize01` – `kustomize04` (4) |
 
 ---
 
