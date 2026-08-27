@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Exercise: ArgoCD ApplicationSet Matrix Generator (gitops02)
 

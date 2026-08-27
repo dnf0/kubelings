@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Exercise: Sync Windows & Retry Strategies in ArgoCD (gitops03)
 

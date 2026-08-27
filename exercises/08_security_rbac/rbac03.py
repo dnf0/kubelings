@@ -16,8 +16,6 @@ non-resource URL endpoints (such as /healthz and /metrics).
    - roleRef: ClusterRole 'cluster-node-viewer' (apiGroup: 'rbac.authorization.k8s.io')
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifests

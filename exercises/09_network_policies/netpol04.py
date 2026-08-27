@@ -16,8 +16,6 @@ specific subnet exceptions.
      and is NOT in any of the subnets listed in `except_cidrs`.
 """
 
-# I AM NOT DONE
-
 import ipaddress  # noqa: F401
 from typing import List
 

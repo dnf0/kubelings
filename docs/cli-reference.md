@@ -4,6 +4,29 @@ Kubelings is powered by a high-performance CLI built on [Typer](https://typer.ti
 
 ---
 
+## `kubelings tour`
+
+Launch the rich, 5-step interactive onboarding tour for new learners with live environment probes and guided exercise walkthrough.
+
+```bash
+kubelings tour [OPTIONS]
+```
+
+**Options:**
+- `--step`, `-s` `INTEGER`: Jump directly to a specific tour step (1–5).
+- `--non-interactive`: Run through all steps sequentially without waiting for interactive keypresses.
+- `--json`: Output tour step metadata and structure in JSON format.
+
+**Examples:**
+```bash
+kubelings tour
+kubelings tour --step 4
+kubelings tour --non-interactive
+kubelings tour --json
+```
+
+---
+
 ## `kubelings watch`
 
 Launch the continuous file-watching learning loop.

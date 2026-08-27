@@ -15,8 +15,6 @@ Complete the StatefulSet manifest below:
    and requests storage '1Gi'.
 """
 
-# I AM NOT DONE
-
 from typing import List
 
 import yaml

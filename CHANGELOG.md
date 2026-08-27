@@ -7,9 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.0] - 2026-08-26
+### Changed
+- **Pure Test-Driven Validation**: Retired the `# I AM NOT DONE` magic comment requirement across all 102 curriculum exercises. Exercise completion is now purely evaluated via test assertions and schema validation.
+- **Interactive Navigation**: Added `[n]` / `[Enter]` to advance to the next exercise and `[p]` to navigate to the previous exercise directly within the terminal watcher.
+- **VS Code Extension**: Streamlined on-save diagnostics to emit error squiggles on genuine validation/assertion failures without requiring comment removal.
 
 ### Added
+- **Interactive WebAssembly Browser Playground (`docs/playground.md`)**: Zero-install client-side learning environment powered by Pyodide (Python 3.12 WebAssembly), Monaco Editor, PyYAML, and the in-memory Kubelings schema validator. Features split-pane layout, progressive hints (`💡 Reveal Hint`), side-by-side Monaco diff inspection (`🔍 Compare Solution`), dark/light theme synchronization with MkDocs Material, and 11 flagship showcase exercises across all 6 learning tiers (Pods, Controllers, ConfigMaps, Storage, Scheduling, Network Policies, Autoscaling, GitOps, Gateway API, KubeRay, and Apple Silicon GPU acceleration).
+- **Playground Bundle Pipeline & Pytest Suite**: Automated bundle generator (`scripts/build_playground_bundle.py`) compiling validator logic, Pydantic/dataclass models, and 11 flagship exercise specs into `docs/assets/playground/playground-bundle.json`, covered by automated `pytest` tests (`tests/test_playground_bundle.py`).
+- **Pyodide Web Worker Background Engine (`docs/assets/playground/playground-worker.js`)**: Dedicated Web Worker offloading Python WebAssembly runtime initialization, virtual `/lib/kubelings` filesystem mounting, and AST code execution off the main UI thread.
+- **Tier 6: AI & ML Platform Engineering Track (Chapters 24–26, 12 Exercises)**:
+  - **Chapter 24 (Distributed AI & ML with KubeRay)**: RayCluster core architectures, heterogeneous CPU/GPU worker pools, RayJob batch fine-tuning, and RayService LLM serving (`ray01`–`ray04`).
+  - **Chapter 25 (AI Batch Scheduling with Kueue & Volcano)**: Kueue ResourceFlavors/ClusterQueues cohort borrowing, LocalQueue suspended job gating, Volcano gang scheduling (`minAvailable`), and fair-share queueing (`kueue01`–`volcano02`).
+  - **Chapter 26 (Hardware Acceleration, Apple Silicon & DRA)**: NVIDIA MIG slicing (`mig-3g.40gb`), Apple Silicon GPU & Metal MPS acceleration (`apple.com/gpu`, `PYTORCH_ENABLE_MPS_FALLBACK`), Dynamic Resource Allocation (DRA) ResourceClaimTemplates, and production vLLM inference server (`accel01`–`accel04`).
+- **Curriculum Expansion**: Expanded full curriculum to **26 chapters** and **114 exercises** across 6 progressive learning tiers with complete reference solutions, validator test coverage, and IDE integration.
+- **Interactive Onboarding Tour (`kubelings tour`)**: Rich 5-step terminal onboarding tour with live runtime/cluster probes, pedagogical philosophy, inner learning loop and hotkeys explanation, guided first exercise (`pods01`) resolution with error inspection and solution diffing, and VS Code extension tooling setup. Supports `--step`, `--non-interactive`, and `--json` flags.
+- **VS Code Extension Native Walkthrough**: Declarative welcome walkthrough (`contributes.walkthroughs` in `package.json` with `kubelings.walkthrough`) featuring 5 markdown stages (`welcome.md`, `cluster.md`, `watch.md`, `exercise.md`, `quickfixes.md`), `Kubelings: Open Welcome Walkthrough` command, and `KubelingsCliBridge.tour()` method.
+- **Comprehensive Learner's Onboarding Guide (`docs/onboarding-guide.md`)**: In-depth illustrated tutorial covering quickstart zero-install runs (`uvx kubelings tour`), the inner loop workflow, step-by-step resolution of `pods01.py`, VS Code integration, 6-tier curriculum progression roadmap (114 exercises across 26 chapters), and an essential commands cheat sheet.
+- **CLI JSON Serialization**: Added `--json` flag support across `kubelings tour`, `kubelings list`, and `kubelings verify` commands for seamless IDE integration.
 - **Full 13-Chapter Curriculum (62 Exercises)**:
   - **Chapter 01 (Pods & Core Workloads)**: Pod manifests, multi-container sidecars, init containers, resource requests/limits, Downward API, and Pod Disruption Budgets (`pods01`–`pods06`).
   - **Chapter 02 (Controllers & Replication)**: ReplicaSets, Deployments, rolling updates, rollbacks, StatefulSets, DaemonSets, and Jobs/CronJobs (`ctrl01`–`ctrl06`).

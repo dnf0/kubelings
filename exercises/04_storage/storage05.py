@@ -24,8 +24,6 @@ online/offline PVC Volume Expansion.
    - If new size > initial size and allow_expansion is True, return True; otherwise False.
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifests

@@ -20,8 +20,6 @@ removes the Pod IP from all Services matching the pod's selectors until the prob
    - Returns a list of IP strings for pods that are currently ready to receive traffic.
 """
 
-# I AM NOT DONE
-
 from typing import Any, Dict, List
 
 import yaml

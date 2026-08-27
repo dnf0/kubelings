@@ -36,6 +36,30 @@ def test_cli_help():
     assert "cluster" in result.stdout
     assert "watch" in result.stdout
     assert "version" in result.stdout
+    assert "tour" in result.stdout
+
+
+def test_cli_tour_command():
+    """Verify kubelings tour --non-interactive executes all 5 steps with exit code 0."""
+    result = runner.invoke(app, ["tour", "--non-interactive"])
+    assert result.exit_code == 0
+    assert "Kubelings" in result.stdout or "Welcome" in result.stdout or "Step 1" in result.stdout
+
+
+def test_cli_tour_specific_step():
+    """Verify kubelings tour with --step 3 jumps directly to step 3."""
+    result = runner.invoke(app, ["tour", "--step", "3", "--non-interactive"])
+    assert result.exit_code == 0
+    assert "Workflow" in result.stdout or "Step 3" in result.stdout or "Hotkeys" in result.stdout
+
+
+def test_cli_tour_invalid_step():
+    """Verify kubelings tour with an invalid step number handles errors cleanly."""
+    result = runner.invoke(app, ["tour", "--step", "99", "--non-interactive"])
+    assert result.exit_code == 1
+    assert (
+        "Error" in result.stdout or "Invalid" in result.stdout or "invalid" in result.stdout.lower()
+    )
 
 
 def test_cli_version_command_and_flag():
@@ -114,7 +138,7 @@ def test_cli_run_command_passing_exercise(tmp_path: Path):
 def test_cli_run_command_failing_exercise(tmp_path: Path):
     """Verify kubelings run executes failing exercise and exits with 1."""
     ex_file = tmp_path / "pods01.py"
-    ex_file.write_text("# I AM NOT DONE\nprint('In progress')\n")
+    ex_file.write_text("assert False, 'Pod spec validation failed'\n")
 
     fake_ex = Exercise(
         name="pods01",
@@ -126,7 +150,11 @@ def test_cli_run_command_failing_exercise(tmp_path: Path):
     with patch("kubelings.cli.get_exercise_by_name", return_value=fake_ex):
         result = runner.invoke(app, ["run", "pods01"])
         assert result.exit_code == 1
-        assert "IN PROGRESS" in result.stdout or "I AM NOT DONE" in result.stdout
+        assert (
+            "FAILED" in result.stdout
+            or "✗" in result.stdout
+            or "Pod spec validation failed" in result.stdout
+        )
 
 
 def test_cli_verify_command(tmp_path: Path):
@@ -200,7 +228,7 @@ def test_find_next_incomplete_exercise_returns_first_failing(tmp_path: Path):
     f1 = tmp_path / "ex1.py"
     f1.write_text("print('pass')\n")
     f2 = tmp_path / "ex2.py"
-    f2.write_text("# I AM NOT DONE\n")
+    f2.write_text("assert False, 'failing'\n")
     f3 = tmp_path / "ex3.py"
     f3.write_text("print('pass')\n")
 
@@ -236,9 +264,9 @@ def test_find_next_incomplete_exercise_returns_none_when_all_pass(tmp_path: Path
 def test_find_next_incomplete_exercise_with_start_from(tmp_path: Path):
     """Verify find_next_incomplete_exercise respects start_from parameter."""
     f1 = tmp_path / "ex1.py"
-    f1.write_text("# I AM NOT DONE\n")
+    f1.write_text("assert False, 'ex1 failing'\n")
     f2 = tmp_path / "ex2.py"
-    f2.write_text("# I AM NOT DONE\n")
+    f2.write_text("assert False, 'ex2 failing'\n")
 
     ex1 = Exercise("ex1", "Ex 1", str(f1), "ch1")
     ex2 = Exercise("ex2", "Ex 2", str(f2), "ch1")
@@ -254,9 +282,9 @@ def test_find_next_incomplete_exercise_with_start_from(tmp_path: Path):
 def test_watch_engine_step_advances_on_pass(tmp_path: Path):
     """Verify WatchEngine advances to next exercise when current exercise passes."""
     f1 = tmp_path / "ex1.py"
-    f1.write_text("# I AM NOT DONE\n")
+    f1.write_text("assert False, 'ex1 failing'\n")
     f2 = tmp_path / "ex2.py"
-    f2.write_text("# I AM NOT DONE\n")
+    f2.write_text("assert False, 'ex2 failing'\n")
 
     ex1 = Exercise("ex1", "Ex 1", str(f1), "ch1")
     ex2 = Exercise("ex2", "Ex 2", str(f2), "ch1")
@@ -278,7 +306,7 @@ def test_watch_engine_step_advances_on_pass(tmp_path: Path):
 def test_watch_engine_all_completed_celebration(tmp_path: Path):
     """Verify WatchEngine sets all_completed when final exercise passes."""
     f1 = tmp_path / "ex1.py"
-    f1.write_text("# I AM NOT DONE\n")
+    f1.write_text("assert False, 'ex1 failing'\n")
 
     ex1 = Exercise("ex1", "Ex 1", str(f1), "ch1")
     manifest = Manifest(chapters=[Chapter(1, "ch1", "Ch 1", "Desc", [ex1])])
@@ -310,7 +338,7 @@ def test_watch_engine_file_filter(tmp_path: Path):
 def test_run_watch_loop_graceful_stop_event(tmp_path: Path):
     """Verify run_watch_loop terminates gracefully when stop_event is set."""
     f1 = tmp_path / "ex1.py"
-    f1.write_text("# I AM NOT DONE\n")
+    f1.write_text("assert False, 'ex1 failing'\n")
     ex1 = Exercise("ex1", "Ex 1", str(f1), "ch1")
     manifest = Manifest(chapters=[Chapter(1, "ch1", "Ch 1", "Desc", [ex1])])
 
@@ -324,7 +352,7 @@ def test_run_watch_loop_graceful_stop_event(tmp_path: Path):
 def test_run_watch_loop_handles_keyboard_interrupt(tmp_path: Path):
     """Verify run_watch_loop catches KeyboardInterrupt and exits cleanly."""
     f1 = tmp_path / "ex1.py"
-    f1.write_text("# I AM NOT DONE\n")
+    f1.write_text("assert False, 'ex1 failing'\n")
     ex1 = Exercise("ex1", "Ex 1", str(f1), "ch1")
     manifest = Manifest(chapters=[Chapter(1, "ch1", "Ch 1", "Desc", [ex1])])
 

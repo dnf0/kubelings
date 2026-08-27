@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Chapter 19: Package Management with Helm
 Exercise 19.2: Helm Go Templating & Named Helpers (_helpers.tpl)

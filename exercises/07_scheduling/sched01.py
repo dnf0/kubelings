@@ -16,8 +16,6 @@ Kubernetes provides basic node assignment mechanisms:
    - If `nodeSelector` is defined: returns True only if every key-value pair in `nodeSelector` exists in `node_labels`.
 """
 
-# I AM NOT DONE
-
 from typing import Any, Dict
 
 import yaml

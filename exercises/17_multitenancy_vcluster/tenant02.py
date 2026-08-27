@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Chapter 17: Multi-Tenancy, Virtual Clusters & HNC
 Exercise 17.2: Tenant ResourceQuota and LimitRange Multi-Document Manifest

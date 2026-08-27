@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Exercise: crossplane03.py
 Topic: Crossplane - ProviderConfig and Resource Deletion Policies

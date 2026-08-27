@@ -16,8 +16,6 @@ automatic token mounting.
    - container 'runner': image 'alpine:3.19', command ["sh", "-c", "echo Ready && sleep 3600"]
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifests

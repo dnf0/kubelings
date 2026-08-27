@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Chapter 17: Multi-Tenancy, Virtual Clusters & HNC
 Exercise 17.1: Hierarchical Namespace Controller (HNC) Subnamespace Anchor

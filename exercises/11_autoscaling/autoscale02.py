@@ -29,8 +29,6 @@ and scale-down independently.
          - type: Pods, value: 4, periodSeconds: 15
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifest

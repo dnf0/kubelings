@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Chapter 17: Multi-Tenancy, Virtual Clusters & HNC
 Exercise 17.4: Multi-Tenant Network Isolation Policy

@@ -21,8 +21,6 @@ a Pod using the PVC is created, allowing the scheduler to choose an appropriate 
    - requests storage: '20Gi'
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifests

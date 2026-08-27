@@ -5,6 +5,7 @@
 [![Python: 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Type checker: pyright](https://img.shields.io/badge/types-pyright-green.svg)](https://github.com/microsoft/pyright)
+[![Playground](https://img.shields.io/badge/Playground-⚡%20Try%20in%20Browser-blueviolet)](https://dnf0.github.io/kubelings/playground/)
 
 > **Master Kubernetes from scratch through small, interactive, hands-on terminal exercises.**
 
@@ -20,8 +21,8 @@ Inspired by the pedagogical brilliance of [rustlings](https://github.com/rust-la
 
 Learning Kubernetes from static documentation or raw copy-pasted Helm charts is difficult because feedback is slow and error messages are cryptic. Kubelings solves this through **guided, test-driven micro-learning**:
 
-1. **Active Debugging & Iteration**: Every exercise starts in a broken or incomplete state containing a `# I AM NOT DONE` marker. You read the problem description, inspect the failure, and edit the code until it passes.
-2. **Instant Feedback Loop & Interactive Hotkeys**: An automated watcher observes file modifications in real time (< 30ms). Press `h` to reveal progressive hints, `r` to force a rerun, `l` to list exercises, or `q` to quit.
+1. **Active Debugging & Iteration**: Every exercise starts in a broken or incomplete state with clear `# TODO:` instructions. You read the problem description, inspect the failure, and edit the code until it passes all verification checks.
+2. **Instant Feedback Loop & Interactive Hotkeys**: An automated watcher observes file modifications in real time (< 30ms). When an exercise passes, press `n` or `Enter` to advance, `p` to revisit previous exercises, `h` to reveal progressive hints, `r` to force a rerun, `l` to list exercises, or `q` to quit.
 3. **Dual-Mode Learning (Offline & Live Cluster)**:
    - **Offline Mode**: Zero cluster setup required. Exercises validate Kubernetes object specs, API constraints, and controller behaviors in-memory.
    - **Live Cluster Mode**: Seamlessly connect to `kind`, `minikube`, `k3d`, or remote clusters. Exercises provision temporary ephemeral namespaces and verify live reconciliations.
@@ -54,7 +55,7 @@ Learning Kubernetes from static documentation or raw copy-pasted Helm charts is 
                       |
                       v
           +-----------------------+
-          |  Curriculum Manifest  |  (23 Chapters / 102 Exercises)
+          |  Curriculum Manifest  |  (26 Chapters / 114 Exercises)
           +-----------+-----------+
                       |
                       v
@@ -76,6 +77,12 @@ Learning Kubernetes from static documentation or raw copy-pasted Helm charts is 
 
 ## Quickstart & Installation
 
+### Try in Browser (Zero Installation)
+
+Test Kubelings directly inside your web browser without installing any tools:
+
+👉 **[⚡ Try in Browser](https://dnf0.github.io/kubelings/playground/)** — Run Python 3.12, Monaco Editor, and in-memory schema validation 100% client-side via Pyodide WebAssembly.
+
 ### Prerequisites
 
 - Python `>= 3.10`
@@ -87,6 +94,9 @@ Learning Kubernetes from static documentation or raw copy-pasted Helm charts is 
 You can run Kubelings anywhere using [`uvx`](https://docs.astral.sh/uv/) or [`pipx`](https://pipx.pypa.io/stable/):
 
 ```bash
+# Launch the interactive guided onboarding tour
+uvx kubelings tour
+
 # Initialize exercises in your current folder
 uvx kubelings init
 
@@ -98,9 +108,12 @@ Or install globally:
 
 ```bash
 pipx install kubelings
+kubelings tour
 kubelings init
 kubelings watch
 ```
+
+> 📖 **New to Kubelings?** Check out the [**Complete Onboarding & Learner's Guide**](docs/onboarding-guide.md) for a visual step-by-step tutorial!
 
 ### Local Development Installation
 
@@ -136,7 +149,19 @@ kubelings --help
 
 ## Interactive Learning Commands
 
-### 1. Watch Mode (`kubelings watch`)
+### 1. Interactive Onboarding Tour (`kubelings tour`)
+
+Launch the rich, 5-step terminal walkthrough with live environment probes, workflow introduction, and guided `pods01` resolution:
+
+```bash
+kubelings tour
+# or run non-interactively / output json
+kubelings tour --non-interactive
+kubelings tour --step 4
+kubelings tour --json
+```
+
+### 2. Watch Mode (`kubelings watch`)
 
 Start the interactive development loop. Whenever you save a file in `exercises/`, Kubelings immediately evaluates your changes.
 
@@ -145,12 +170,14 @@ kubelings watch
 ```
 
 > **Interactive Hotkeys**:
+> - `n` / `Enter` : Advance to next exercise
+> - `p` : Navigate to previous exercise
 > - `h` : Reveal progressive hint tier
 > - `r` : Force rerun current exercise
 > - `l` : List curriculum exercises
 > - `q` : Exit watcher
 
-### 2. Interactive Terminal TUI Dashboard (`kubelings tui` / `kubelings dashboard`)
+### 3. Interactive Terminal TUI Dashboard (`kubelings tui` / `kubelings dashboard`)
 
 Explore the curriculum, browse code, and trigger evaluations inside a split-pane full-screen terminal interface:
 
@@ -160,7 +187,7 @@ kubelings tui
 kubelings dashboard
 ```
 
-### 3. Resource Relationship Topology Visualizer (`kubelings tree`)
+### 4. Resource Relationship Topology Visualizer (`kubelings tree`)
 
 Render an architectural relationship topology tree of Kubernetes workloads, services, endpoints, volumes, and network policies:
 
@@ -170,7 +197,7 @@ kubelings tree pods01
 kubelings tree deployment.yaml
 ```
 
-### 4. Universal Manifest Linter (`kubelings lint`)
+### 5. Universal Manifest Linter (`kubelings lint`)
 
 Audit any Kubernetes manifest against security standards, reliability probes, and schema best practices:
 
@@ -180,7 +207,7 @@ kubelings lint exercises/01_pods/pods01.py
 kubelings lint manifests/production/
 ```
 
-### 5. Run a Single Exercise
+### 6. Run a Single Exercise
 
 Execute and evaluate a single exercise directly:
 
@@ -188,7 +215,7 @@ Execute and evaluate a single exercise directly:
 kubelings run pods01
 ```
 
-### 6. Progressive Hints
+### 7. Progressive Hints
 
 Get step-by-step tips for any exercise:
 
@@ -196,7 +223,7 @@ Get step-by-step tips for any exercise:
 kubelings hint pods01
 ```
 
-### 7. List All Chapters & Exercises
+### 8. List All Chapters & Exercises
 
 Browse the entire curriculum syllabus, descriptions, and exercise paths:
 
@@ -204,15 +231,15 @@ Browse the entire curriculum syllabus, descriptions, and exercise paths:
 kubelings list
 ```
 
-### 8. Verify Curriculum Progress
+### 9. Verify Curriculum Progress
 
-Display a rich summary table showing the pass/fail status of all 102 exercises:
+Display a rich summary table showing the pass/fail status of all 114 exercises:
 
 ```bash
 kubelings verify
 ```
 
-### 9. Test Reference Solutions
+### 10. Test Reference Solutions
 
 Run built-in self-testing across reference solutions:
 
@@ -220,7 +247,7 @@ Run built-in self-testing across reference solutions:
 kubelings test
 ```
 
-### 10. Cluster Connectivity Status
+### 11. Cluster Connectivity Status
 
 Check whether `kubelings` is running in offline validation mode or connected to a live Kubernetes cluster:
 
@@ -236,9 +263,10 @@ Kubelings provides an official extension for **Visual Studio Code** and **Cursor
 
 ### ✨ Extension Features
 
-- 📚 **Activity Bar Curriculum Tree View**: Browse all 23 chapters and 102 exercises directly from the sidebar with real-time pass/fail status and chapter completion counters.
+- 🗺️ **Interactive Welcome Walkthrough**: Built-in editor walkthrough (`Kubelings: Open Welcome Walkthrough`) guiding you through curriculum navigation, live cluster verification, and first exercise resolution.
+- 📚 **Activity Bar Curriculum Tree View**: Browse all 26 chapters and 114 exercises directly from the sidebar with real-time pass/fail status and chapter completion counters.
 - 📊 **Status Bar Progress Indicator**: Persistent status bar item showing your total completion percentage, current progress, and next active exercise. Click to jump straight to the exercise.
-- ⚡ **On-Save Diagnostics**: Automatic in-editor validation whenever you save an exercise manifest (`exercises/**/*.py`), surfacing schema errors, missing attributes, or remaining `# I AM NOT DONE` markers.
+- ⚡ **On-Save Diagnostics**: Automatic in-editor validation whenever you save an exercise manifest (`exercises/**/*.py`), surfacing schema errors, missing attributes, or assertion failures.
 - 💡 **Code Actions & Quick Fixes**: Lightbulb quick fixes directly on errors to:
   - **Reveal Hint**: Display progressive hints in the editor without spoiling the answer.
   - **Compare with Reference Solution**: Instantly open a side-by-side diff comparing your exercise code against the official reference solution.
@@ -267,7 +295,7 @@ cursor --install-extension dist/kubelings-vscode.vsix
 
 ## Curriculum & Syllabus
 
-Kubelings covers 23 structured chapters with **102 practical exercises**:
+Kubelings covers 26 structured chapters with **114 practical exercises**:
 
 | Chapter | Title | Topic Overview | Exercises |
 | :--- | :--- | :--- | :--- |
@@ -294,6 +322,9 @@ Kubelings covers 23 structured chapters with **102 practical exercises**:
 | **21** | **Gateway API & Traffic Routing** | Next-gen Gateway API standard (`GatewayClass`, `Gateway`, `HTTPRoute`), canary traffic splitting, URL rewrite filters, and `ReferenceGrant`. | `gateway01` – `gateway04` (4) |
 | **22** | **Infrastructure as Data (Crossplane)** | CompositeResourceDefinitions (`XRD`), Compositions, Managed Resources, and application-level self-service Claims. | `crossplane01` – `crossplane04` (4) |
 | **23** | **eBPF Security & Observability (Tetragon)** | Real-time kernel `sys_execve` process tracing, sensitive file access auditing, synchronous `Sigkill` enforcement, and socket connect tracing. | `tetragon01` – `tetragon04` (4) |
+| **24** | **Distributed AI & ML (KubeRay)** | RayClusters, GCS/Dashboard config, heterogeneous CPU/GPU worker pools, RayJob batch fine-tuning, and RayService LLM serving. | `ray01` – `ray04` (4) |
+| **25** | **AI Batch Scheduling (Kueue & Volcano)** | Kueue ResourceFlavors, ClusterQueues, cohort borrowing, suspended job gating, Volcano gang scheduling (`minAvailable`), and fair-share queues. | `kueue01` – `volcano02` (4) |
+| **26** | **Hardware Acceleration & DRA** | NVIDIA MIG slicing (`mig-3g.40gb`), Apple Silicon GPU & Metal MPS acceleration, Dynamic Resource Allocation (DRA), and production vLLM inference server. | `accel01` – `accel04` (4) |
 
 ---
 

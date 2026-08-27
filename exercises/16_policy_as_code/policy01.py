@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Chapter 16: Policy as Code with Kyverno & Gatekeeper
 Exercise 16.1: Kyverno ClusterPolicy for Required Labels

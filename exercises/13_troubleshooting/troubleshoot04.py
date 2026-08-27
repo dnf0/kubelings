@@ -24,8 +24,6 @@ Define a ResourceQuota and LimitRange for namespace 'team-billing':
    - min: cpu "100m", memory "128Mi"
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifests

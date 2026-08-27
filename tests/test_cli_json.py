@@ -17,10 +17,10 @@ def test_cli_list_json():
     assert result.exit_code == 0
     data = json.loads(result.stdout)
     assert "total_chapters" in data
-    assert data["total_chapters"] == 23
+    assert data["total_chapters"] == 26
     assert "total_exercises" in data
-    assert data["total_exercises"] == 102
-    assert len(data["chapters"]) == 23
+    assert data["total_exercises"] == 114
+    assert len(data["chapters"]) == 26
     first_ch = data["chapters"][0]
     assert first_ch["name"] == "01_pods"
     assert len(first_ch["exercises"]) == 6
@@ -59,6 +59,48 @@ def test_cli_run_json_passing(tmp_path: Path):
         assert data["exit_code"] == 0
 
 
+def test_cli_run_json_with_marker_passes_if_exit_code_zero(tmp_path: Path):
+    ex_file = tmp_path / "pods01.py"
+    ex_file.write_text("# I AM NOT DONE\nprint('Execution succeeded!')\n")
+
+    fake_ex = Exercise(
+        name="pods01",
+        title="First Pod",
+        path=str(ex_file),
+        chapter_name="01_pods",
+    )
+
+    with patch("kubelings.cli.get_exercise_by_name", return_value=fake_ex):
+        result = runner.invoke(app, ["run", "pods01", "--json"])
+        assert result.exit_code == 0
+        data = json.loads(result.stdout)
+        assert data["exercise"] == "pods01"
+        assert data["passed"] is True
+        assert data["has_not_done_marker"] is True
+        assert data["exit_code"] == 0
+
+
+def test_cli_run_json_failing_assertion(tmp_path: Path):
+    ex_file = tmp_path / "pods01.py"
+    ex_file.write_text("assert False, 'Validation failed: container image missing'\n")
+
+    fake_ex = Exercise(
+        name="pods01",
+        title="First Pod",
+        path=str(ex_file),
+        chapter_name="01_pods",
+    )
+
+    with patch("kubelings.cli.get_exercise_by_name", return_value=fake_ex):
+        result = runner.invoke(app, ["run", "pods01", "--json"])
+        assert result.exit_code == 1
+        data = json.loads(result.stdout)
+        assert data["exercise"] == "pods01"
+        assert data["passed"] is False
+        assert data["exit_code"] != 0
+        assert "Validation failed" in data["error"]
+
+
 def test_cli_run_json_invalid_exercise():
     result = runner.invoke(app, ["run", "nonexistent_ex", "--json"])
     assert result.exit_code == 1
@@ -70,13 +112,13 @@ def test_cli_verify_json():
     result = runner.invoke(app, ["verify", "--json"])
     assert result.exit_code == 0
     data = json.loads(result.stdout)
-    assert data["total"] == 102
+    assert data["total"] == 114
     assert "completed" in data
     assert "in_progress" in data
     assert "not_started" in data
     assert "percentage" in data
     assert "results" in data
-    assert len(data["results"]) == 102
+    assert len(data["results"]) == 114
 
 
 def test_cli_cluster_json():
@@ -127,3 +169,14 @@ def test_cli_hint_json_invalid_exercise():
     assert result.exit_code == 1
     data = json.loads(result.stdout)
     assert "error" in data
+
+
+def test_cli_tour_json():
+    """Verify kubelings tour --json outputs structured tour metadata."""
+    result = runner.invoke(app, ["tour", "--json"])
+    assert result.exit_code == 0
+    data = json.loads(result.stdout)
+    assert "total_steps" in data
+    assert data["total_steps"] == 5
+    assert "steps" in data
+    assert len(data["steps"]) == 5

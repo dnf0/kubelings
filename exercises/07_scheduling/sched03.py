@@ -18,8 +18,6 @@ Use cases:
    - Returns False if placing the pod on this host violates its hard podAntiAffinity rule. Otherwise True.
 """
 
-# I AM NOT DONE
-
 from typing import Any, Dict, List
 
 import yaml

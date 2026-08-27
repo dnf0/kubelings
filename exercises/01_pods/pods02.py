@@ -9,8 +9,6 @@ Construct a multi-container pod manifest named 'web-logger'.
 3. The 'sidecar-logger' container (image: 'busybox:1.36') must mount 'shared-logs' at '/var/log/shared' in readOnly mode.
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifest

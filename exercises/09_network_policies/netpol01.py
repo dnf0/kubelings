@@ -16,8 +16,6 @@ until explicit allow rules are defined.
    - Do not specify any ingress or egress rules (empty/omitted).
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifest

@@ -11,26 +11,26 @@
 
 ### 1. 📚 Activity Bar Curriculum Tree View
 - Dedicated Kubelings view container in the Activity Bar.
-- Browse all **23 chapters and 102 exercises** with live status indicators:
+- Browse all **26 chapters and 114 exercises** with live status indicators:
   - 🟢 **Completed**: Solved exercises with a checkmark.
   - 🟡 **In Progress**: Currently active exercise under evaluation.
   - ⚪ **Not Started**: Remaining exercises in the syllabus.
 - One-click exercise opening, running, and progressive hint reveal.
 
 ### 2. 📊 Status Bar Progress Indicator
-- Compact status bar item displaying total progress (e.g., `$(check) Kubelings: 42/102 (41%) | Next: rbac01`).
+- Compact status bar item displaying total progress (e.g., `$(check) Kubelings: 48/114 (42%) | Next: rbac01`).
 - Click to jump directly to the current or next incomplete exercise.
 
 ### 3. ⚡ On-Save Diagnostics & Code Actions
 - Automatic background validation when saving any exercise file (`exercises/**/*.py`).
-- Inline error squiggles highlighting missing manifest fields, syntax errors, or remaining `# I AM NOT DONE` markers.
+- Inline error squiggles highlighting missing manifest fields, syntax errors, schema violations, or assertion failures.
 - Contextual **Quick Fix Code Actions**:
   - 💡 **Reveal Hint**: Fetch and display progressive hints in the editor without spoiling the full answer.
   - 🔍 **Compare with Reference Solution**: Instantly open a side-by-side diff view comparing your manifest against the official solution.
 
 ### 4. 💻 Integrated Terminal Watch Mode
 - Launch interactive `kubelings watch` in a dedicated integrated terminal with a single click (`kubelings.startWatch`).
-- Supports all hotkeys: `h` (hint), `r` (rerun), `l` (list), `q` (quit).
+- Supports all hotkeys: `n`/`Enter` (next), `p` (previous), `h` (hint), `r` (rerun), `l` (list), `q` (quit).
 
 ### 5. ☸ Cluster Connectivity & Solution Verifier
 - Check connection status to live Kubernetes clusters (`kind`, `minikube`, `k3d`, or remote) with `kubelings.checkCluster`.
@@ -82,7 +82,7 @@ The extension automatically discovers Python virtual environments (`.venv`) and 
 | `kubelings.showSolutionDiff` | **Kubelings: Compare with Reference Solution** | Open a side-by-side diff comparing current exercise with solution. |
 | `kubelings.startWatch` | **Kubelings: Start Watch Mode in Terminal** | Launch interactive `kubelings watch` loop in terminal. |
 | `kubelings.checkCluster` | **Kubelings: Check Cluster Connection** | Check offline vs live Kubernetes cluster connectivity. |
-| `kubelings.testAll` | **Kubelings: Test All Reference Solutions** | Run test suite against all 102 curriculum solutions. |
+| `kubelings.testAll` | **Kubelings: Test All Reference Solutions** | Run test suite against all 114 curriculum solutions. |
 
 ---
 

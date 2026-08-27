@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Exercise: Progressive Delivery with Argo Rollouts (gitops04)
 

@@ -1314,6 +1314,164 @@ def build_manifest() -> Manifest:
                 ),
             ],
         ),
+        Chapter(
+            number=24,
+            name="24_kuberay_ml",
+            title="Distributed AI & ML Orchestration with KubeRay",
+            description="RayCluster Architectures, Heterogeneous Worker Pools, RayJob Batch Fine-Tuning, and RayService Serving",
+            exercises=[
+                Exercise(
+                    name="ray01",
+                    title="RayCluster Core Architecture & Head Node",
+                    path="exercises/24_kuberay_ml/ray01.py",
+                    chapter_name="24_kuberay_ml",
+                    hints=[
+                        "Set apiVersion to ray.io/v1 and kind to RayCluster with metadata.name ray-cluster-ml",
+                        "In spec.headGroupSpec.rayStartParams, configure dashboard-host: '0.0.0.0' and block: 'true'",
+                        "Expose container ports for GCS (6379) and Dashboard (8265) on the ray-head container",
+                        "In spec.workerGroupSpecs, define worker-group with replicas: 2, minReplicas: 1, maxReplicas: 5, and 2 CPU / 4Gi memory limits",
+                    ],
+                ),
+                Exercise(
+                    name="ray02",
+                    title="Heterogeneous Worker Pools & Autoscaling",
+                    path="exercises/24_kuberay_ml/ray02.py",
+                    chapter_name="24_kuberay_ml",
+                    hints=[
+                        "In spec.workerGroupSpecs, create two separate worker groups: cpu-workers and gpu-workers",
+                        "Configure cpu-workers with 2 replicas, minReplicas: 2, maxReplicas: 10, and image rayproject/ray:2.35.0",
+                        "Configure gpu-workers with 1 replica, minReplicas: 0, maxReplicas: 4, and resource limit nvidia.com/gpu: 1",
+                    ],
+                ),
+                Exercise(
+                    name="ray03",
+                    title="RayJob for Distributed Batch Fine-Tuning",
+                    path="exercises/24_kuberay_ml/ray03.py",
+                    chapter_name="24_kuberay_ml",
+                    hints=[
+                        "Set apiVersion to ray.io/v1 and kind to RayJob with metadata.name ray-finetune-job",
+                        "Set spec.entrypoint to 'python fine_tune.py --epochs 3'",
+                        "Set spec.shutdownAfterJobFinishes to True and spec.ttlSecondsAfterFinished to 300",
+                        "Define spec.rayClusterSpec with rayVersion '2.35.0' and ray-head container",
+                    ],
+                ),
+                Exercise(
+                    name="ray04",
+                    title="RayService for Production LLM Serving",
+                    path="exercises/24_kuberay_ml/ray04.py",
+                    chapter_name="24_kuberay_ml",
+                    hints=[
+                        "Set apiVersion to ray.io/v1 and kind to RayService with metadata.name ray-llm-service",
+                        "Set spec.serviceUnhealthyThreshold to 300",
+                        "Configure spec.serveConfigV2 with application 'llm_app', route_prefix '/v1', and import_path 'llm_serve:model'",
+                    ],
+                ),
+            ],
+        ),
+        Chapter(
+            number=25,
+            name="25_batch_kueue_volcano",
+            title="AI Batch Scheduling & Queuing with Kueue and Volcano",
+            description="Kueue Cohort Borrowing, Suspended Workloads, Volcano Gang Scheduling, and Fair-Share Queues",
+            exercises=[
+                Exercise(
+                    name="kueue01",
+                    title="Kueue ResourceFlavor & ClusterQueue Cohort Borrowing",
+                    path="exercises/25_batch_kueue_volcano/kueue01.py",
+                    chapter_name="25_batch_kueue_volcano",
+                    hints=[
+                        "Define ResourceFlavor 'default-flavor' and ClusterQueue 'cluster-queue-ai' with apiVersion kueue.x-k8s.io/v1beta1",
+                        "Assign ClusterQueue to cohort 'ai-research-cohort'",
+                        "Cover cpu (64 nominal, 32 borrowing), memory (256Gi), and nvidia.com/gpu (8 nominal, 4 borrowing) under default-flavor",
+                    ],
+                ),
+                Exercise(
+                    name="kueue02",
+                    title="Kueue LocalQueue & Suspended Workload Gating",
+                    path="exercises/25_batch_kueue_volcano/kueue02.py",
+                    chapter_name="25_batch_kueue_volcano",
+                    hints=[
+                        "Define LocalQueue 'team-a-queue' in namespace team-a pointing to clusterQueue 'cluster-queue-ai'",
+                        "Define batch/v1 Job 'train-job' in namespace team-a with label 'kueue.x-k8s.io/queue-name: team-a-queue'",
+                        "Set Job spec.suspend to true so Kueue can gate admission until capacity is available",
+                    ],
+                ),
+                Exercise(
+                    name="volcano01",
+                    title="Volcano Gang Scheduling & Deadlock Prevention",
+                    path="exercises/25_batch_kueue_volcano/volcano01.py",
+                    chapter_name="25_batch_kueue_volcano",
+                    hints=[
+                        "Set apiVersion to batch.volcano.sh/v1alpha1 and kind to Job with metadata.name distributed-training-gang",
+                        "Set spec.minAvailable to 4 and spec.schedulerName to volcano for all-or-nothing gang scheduling",
+                        "Define master task (1 replica, train-master) and worker task (3 replicas, train-worker) summing to minAvailable",
+                    ],
+                ),
+                Exercise(
+                    name="volcano02",
+                    title="Volcano Queue & Fair-Share Scheduling",
+                    path="exercises/25_batch_kueue_volcano/volcano02.py",
+                    chapter_name="25_batch_kueue_volcano",
+                    hints=[
+                        "Set apiVersion to scheduling.volcano.sh/v1beta1 and kind to Queue with metadata.name ai-research-queue",
+                        "Set spec.weight to 1 and spec.reclaimable to true",
+                        "Define capability limits for cpu (64), memory (256Gi), and nvidia.com/gpu (8)",
+                    ],
+                ),
+            ],
+        ),
+        Chapter(
+            number=26,
+            name="26_hardware_acceleration_dra",
+            title="Hardware Acceleration: NVIDIA MIG, Apple Silicon GPU & DRA",
+            description="NVIDIA MIG Slicing, Apple Silicon GPU / MPS Acceleration, Dynamic Resource Allocation (DRA), and Production vLLM LLM Serving",
+            exercises=[
+                Exercise(
+                    name="accel01",
+                    title="NVIDIA MIG Slicing & Partitioning",
+                    path="exercises/26_hardware_acceleration_dra/accel01.py",
+                    chapter_name="26_hardware_acceleration_dra",
+                    hints=[
+                        "Set spec.nodeSelector to 'nvidia.com/gpu.product: NVIDIA-A100-SXM4-80GB'",
+                        "Set container resources limits and requests to 'nvidia.com/mig-3g.40gb: 1'",
+                        "Configure environment variable NVIDIA_VISIBLE_DEVICES with value 'all'",
+                    ],
+                ),
+                Exercise(
+                    name="accel02",
+                    title="Apple Silicon GPU & Metal MPS Acceleration",
+                    path="exercises/26_hardware_acceleration_dra/accel02.py",
+                    chapter_name="26_hardware_acceleration_dra",
+                    hints=[
+                        "Set spec.nodeSelector to 'kubernetes.io/arch: arm64'",
+                        "Allocate Apple Silicon GPU with resource limit 'apple.com/gpu: 1'",
+                        "Set env variables PYTORCH_ENABLE_MPS_FALLBACK to '1' and DEVICE to 'mps'",
+                    ],
+                ),
+                Exercise(
+                    name="accel03",
+                    title="Dynamic Resource Allocation (DRA) Standard",
+                    path="exercises/26_hardware_acceleration_dra/accel03.py",
+                    chapter_name="26_hardware_acceleration_dra",
+                    hints=[
+                        "Define ResourceClaimTemplate gpu-dra-claim-template with apiVersion resource.k8s.io/v1alpha3",
+                        "Specify device request dedicated-gpu with deviceClassName gpu.example.com and count 1",
+                        "In Pod dra-workload-pod, define resourceClaim referencing the template and bind it under container resources.claims",
+                    ],
+                ),
+                Exercise(
+                    name="accel04",
+                    title="Production vLLM LLM Inference Server",
+                    path="exercises/26_hardware_acceleration_dra/accel04.py",
+                    chapter_name="26_hardware_acceleration_dra",
+                    hints=[
+                        "Define Deployment vllm-openai-server with image vllm/vllm-openai:latest and matchLabels app: vllm-server",
+                        "Configure args with --model meta-llama/Llama-3-8B-Instruct, --gpu-memory-utilization 0.90, and --port 8000",
+                        "Allocate 1 GPU with nvidia.com/gpu: 1, configure readiness probe on /health:8000, and mount model-weights-pvc",
+                    ],
+                ),
+            ],
+        ),
     ]
     return Manifest(chapters=chapters)
 

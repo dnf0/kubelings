@@ -85,7 +85,9 @@ def render_result(result: RunResult, console: Optional[Console] = None) -> Panel
             summary.append("\nOutput:\n", style="bold")
             summary.append(result.output.strip(), style="dim white")
         renderables.append(summary)
-        subtitle = "[bold green]Ready for next exercise[/bold green]"
+        subtitle = (
+            "[bold green]Press [n]/[Enter] next | [p] previous | [h] hint | [q] quit[/bold green]"
+        )
 
     elif result.has_not_done_marker:
         title_text = f"[bold yellow]⏳ IN PROGRESS[/bold yellow]: [bold white]{ex.name}[/bold white] — {ex.title}"

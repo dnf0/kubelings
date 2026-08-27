@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Chapter 20: Declarative Customization with Kustomize
 Exercise 20.2: Kustomize ConfigMap & Secret Generators

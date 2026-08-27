@@ -13,8 +13,6 @@ This enables rolling back failed deployments (`kubectl rollout undo`).
    - Ensure the returned history list only keeps the latest `revisionHistoryLimit` revisions.
 """
 
-# I AM NOT DONE
-
 import copy  # noqa: F401
 from typing import Any, Dict, List
 

@@ -10,8 +10,6 @@ Fix the Pod manifest below to define a Pod named 'log-collector-pod':
    mounted at `/var/log/host-app` (readOnly: true) in container 'collector'.
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifest

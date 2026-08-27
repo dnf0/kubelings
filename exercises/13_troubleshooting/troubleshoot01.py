@@ -20,8 +20,6 @@ clue to the root cause:
    - Supply the missing environment variable 'DATABASE_URL' = 'postgres://db.internal:5432/app'.
 """
 
-# I AM NOT DONE
-
 from typing import Any, Dict
 
 import yaml

@@ -19,8 +19,6 @@ To terminate TLS/HTTPS at the Ingress controller:
    - Verifies all rule hosts in Ingress are listed in `spec.tls[].hosts` and secretName matches.
 """
 
-# I AM NOT DONE
-
 from typing import Any, Dict
 
 import yaml

@@ -9,8 +9,6 @@ Complete the Pod manifest named 'init-service-demo'.
 3. The main container should be named 'main-app' with image 'nginx:alpine'.
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifest

@@ -22,7 +22,7 @@ def test_not_done_marker_constant():
 
 
 def test_check_marker_present_and_absent(tmp_path: Path):
-    """Test ExerciseRunner.check_marker() identifies the not done marker correctly."""
+    """Test ExerciseRunner.check_marker() identifies the not done marker correctly as informational."""
     exercise_file = tmp_path / "test_exercise.py"
 
     # 1. With marker
@@ -32,6 +32,18 @@ def test_check_marker_present_and_absent(tmp_path: Path):
     # Also test on instance
     runner = ExerciseRunner()
     assert runner.check_marker(exercise_file) is True
+
+    # Exercise runs successfully and marker is informational (does not prevent passed=True)
+    ex = Exercise(
+        name="test_ex",
+        title="Test Ex",
+        path=str(exercise_file),
+        chapter_name="01_pods",
+    )
+    res = runner.run_exercise(ex)
+    assert res.has_not_done_marker is True
+    assert res.passed is True
+    assert res.exit_code == 0
 
     # 2. Without marker
     exercise_file.write_text("print('hello')\n")
@@ -43,8 +55,20 @@ def test_check_marker_present_and_absent(tmp_path: Path):
     assert ExerciseRunner.check_marker(nonexistent) is False
 
 
-def test_run_exercise_fails_when_marker_present(tmp_path: Path):
-    """Test run_exercise fails when # I AM NOT DONE is present even if code exits with 0."""
+def test_runner_passes_purely_on_exit_code_zero(tmp_path: Path):
+    """Verify an exercise passes strictly when exit code is 0 and assertions pass."""
+    script = tmp_path / "valid_ex.py"
+    script.write_text("print('All checks pass')\n")
+    ex = Exercise(name="valid01", title="Valid", path=str(script), chapter_name="01_pods")
+    runner_obj = ExerciseRunner()
+    result = runner_obj.run_exercise(ex)
+    assert result.passed is True
+    assert result.has_not_done_marker is False
+    assert result.exit_code == 0
+
+
+def test_run_exercise_passes_even_when_marker_present(tmp_path: Path):
+    """Test run_exercise passes when exit code is 0 even if # I AM NOT DONE is present."""
     exercise_file = tmp_path / "ex01.py"
     exercise_file.write_text("# I AM NOT DONE\nprint('Working on exercise')\n")
 
@@ -60,7 +84,7 @@ def test_run_exercise_fails_when_marker_present(tmp_path: Path):
 
     assert isinstance(result, RunResult)
     assert result.exercise == exercise
-    assert result.passed is False
+    assert result.passed is True
     assert result.has_not_done_marker is True
     assert result.exit_code == 0
     assert "Working on exercise" in result.output

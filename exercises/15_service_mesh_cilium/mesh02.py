@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Exercise: Strict Mutual TLS & PeerAuthentication (mesh02)
 

@@ -80,14 +80,12 @@ kubelings/
 When adding a new exercise to the curriculum:
 
 1. **Create the starter exercise in `exercises/<chapter_dir>/<exercise_name>.py`**:
-   - The file must start with `# I AM NOT DONE` on line 1.
    - Include clear docstrings explaining the objective, Kubernetes concepts, and instructions.
-   - Provide a template manifest or function with placeholder values (e.g. `None`, empty dicts, or intentionally invalid fields).
+   - Provide a template manifest or code with placeholder values (e.g. `???`, empty dicts, or intentionally invalid fields).
    - Implement a `verify()` function that executes validation checks and asserts correctness.
-   - Ensure the starter exercise fails when run directly.
+   - Ensure the starter exercise fails when run directly (pure test-driven failure without requiring special comment markers).
 
 2. **Create the matching reference solution in `solutions/<chapter_dir>/<exercise_name>.py`**:
-   - The solution must **NOT** contain `# I AM NOT DONE`.
    - The solution must pass 100% when run directly with `sys.executable`.
    - Output confirmation should include `"passed!"` or `"passed"`.
 

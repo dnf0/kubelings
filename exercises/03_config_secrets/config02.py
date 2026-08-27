@@ -15,8 +15,6 @@ In the multi-document manifest below:
      with subPath 'default.conf'.
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifests

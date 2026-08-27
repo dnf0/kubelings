@@ -2,7 +2,11 @@
 
 **An interactive, hands-on CLI learning environment for Kubernetes.**
 
+[![Playground](https://img.shields.io/badge/Playground-⚡%20Try%20in%20Browser-blueviolet)](https://dnf0.github.io/kubelings/playground/)
+
 Inspired by [rustlings](https://github.com/rust-lang/rustlings) and [ziglings](https://codeberg.org/ziglings/exercises), **Kubelings** guides engineers through self-paced micro-exercises directly in the terminal.
+
+> ⚡ **Try it now in your browser!** No installation required: [**Interactive WebAssembly Playground**](playground.md) ([⚡ Try in Browser](https://dnf0.github.io/kubelings/playground/)).
 
 ---
 
@@ -11,10 +15,12 @@ Inspired by [rustlings](https://github.com/rust-lang/rustlings) and [ziglings](h
 Learning Kubernetes from static documentation or copy-pasted manifests often leads to frustration because error feedback is slow and cryptic. Kubelings provides:
 
 - ⚡ **Sub-30ms Instant Feedback**: In-memory schema and spec validation without waiting on slow API servers.
-- 🔁 **Active Problem Solving**: 102 real-world exercises across 23 chapters starting in a broken state that you fix and verify.
+- 🔁 **Active Problem Solving**: 114 real-world exercises across 26 chapters starting in a broken state that you fix and verify.
 - ☸ **Dual-Mode Engine**: Practice 100% offline or connect to a real cluster (`kind`, `minikube`, `k3d`, or cloud).
 - 💡 **Progressive Hinting**: Multi-tier clues when you get stuck without spoiling the answer.
-- 🚀 **Zero-Install Run**: Start practicing immediately with `uvx kubelings init && uvx kubelings watch`.
+- 🌐 **Interactive WebAssembly Playground**: [⚡ Try in Browser](https://dnf0.github.io/kubelings/playground/) with zero installation via client-side Pyodide & Monaco Editor.
+- 🚀 **Zero-Install Run**: Start practicing immediately with `uvx kubelings tour`, `uvx kubelings init`, and `uvx kubelings watch`.
+- 📖 **Complete Onboarding Guide**: Visual step-by-step tutorial available in the [**Learner's Onboarding Guide**](onboarding-guide.md).
 
 ---
 
@@ -22,25 +28,35 @@ Learning Kubernetes from static documentation or copy-pasted manifests often lea
 
 ```python
 # exercises/01_pods/pods01.py
-# I AM NOT DONE
+"""
+Exercise: exercises/01_pods/pods01.py
+Topic: First Pod Manifest & Spec
 
-from typing import Any, Dict
+Instructions:
+Fix the YAML manifest below to define a valid Pod named 'nginx-web'
+running nginx:alpine on container port 80 with label 'app: web'.
+"""
 
-def get_pod_manifest() -> Dict[str, Any]:
-    # Fix the pod manifest specification
-    return {
-        "apiVersion": "v1",
-        "kind": "Pod",
-        "metadata": {"name": "nginx-web"},
-        "spec": {
-            "containers": [
-                {"name": "nginx", "image": "nginx:alpine", "ports": [{"containerPort": 80}]}
-            ]
-        },
-    }
+import yaml
+from kubelings.validator import validate_manifest
+
+POD_MANIFEST = """
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-web
+  labels:
+    app: web
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+    ports:
+    - containerPort: 80
+"""
 ```
 
-Remove the `# I AM NOT DONE` marker, save the file, and watch the terminal UI advance to the next exercise automatically!
+Save the file and watch the terminal UI immediately validate your solution. Press `n` or `Enter` to advance to the next exercise!
 
 ---
 
@@ -50,9 +66,10 @@ Kubelings offers an official extension for **Visual Studio Code** and **Cursor**
 
 ### ✨ Extension Features
 
-- 📚 **Activity Bar Curriculum Tree View**: Browse all 23 chapters and 102 exercises directly from the sidebar with real-time pass/fail status and chapter completion counters.
+- 🗺️ **Interactive Welcome Walkthrough**: Built-in editor walkthrough (`Kubelings: Open Welcome Walkthrough`) guiding you through curriculum navigation, live cluster verification, and first exercise resolution.
+- 📚 **Activity Bar Curriculum Tree View**: Browse all 26 chapters and 114 exercises directly from the sidebar with real-time pass/fail status and chapter completion counters.
 - 📊 **Status Bar Progress Indicator**: Persistent status bar item showing your total completion percentage, current progress, and next active exercise. Click to jump straight to the exercise.
-- ⚡ **On-Save Diagnostics**: Automatic in-editor validation whenever you save an exercise manifest (`exercises/**/*.py`), surfacing schema errors, missing attributes, or remaining `# I AM NOT DONE` markers.
+- ⚡ **On-Save Diagnostics**: Automatic in-editor validation whenever you save an exercise manifest (`exercises/**/*.py`), surfacing schema errors, missing attributes, or assertion failures.
 - 💡 **Code Actions & Quick Fixes**: Lightbulb quick fixes directly on errors:
   - **Reveal Hint**: Display progressive hints in the editor without spoiling the answer.
   - **Compare with Reference Solution**: Instantly open a side-by-side diff comparing your exercise code against the official reference solution.

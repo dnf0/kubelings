@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Exercise: tetragon04.py
 Topic: eBPF Network Observability - Tetragon Socket Connect Probes

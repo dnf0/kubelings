@@ -27,8 +27,8 @@ def test_exercise_dataclass_properties():
 
 def test_manifest_loads_all_chapters():
     manifest = get_manifest()
-    assert len(manifest.chapters) == 23
-    assert len(manifest.all_exercises) == 102
+    assert len(manifest.chapters) == 26
+    assert len(manifest.all_exercises) == 114
 
     first = manifest.all_exercises[0]
     assert first.name == "pods01"
@@ -36,11 +36,11 @@ def test_manifest_loads_all_chapters():
     assert first.path == "exercises/01_pods/pods01.py"
 
     last = manifest.all_exercises[-1]
-    assert last.name == "tetragon04"
-    assert last.chapter_name == "23_ebpf_tetragon"
+    assert last.name == "accel04"
+    assert last.chapter_name == "26_hardware_acceleration_dra"
 
 
-def test_all_23_chapters_structure():
+def test_all_26_chapters_structure():
     manifest = get_manifest()
     expected_chapters = [
         (1, "01_pods", 6),
@@ -66,6 +66,9 @@ def test_all_23_chapters_structure():
         (21, "21_gateway_api", 4),
         (22, "22_crossplane_iac", 4),
         (23, "23_ebpf_tetragon", 4),
+        (24, "24_kuberay_ml", 4),
+        (25, "25_batch_kueue_volcano", 4),
+        (26, "26_hardware_acceleration_dra", 4),
     ]
 
     for number, name, count in expected_chapters:
@@ -124,8 +127,20 @@ def test_get_next_exercise():
     assert next_across_v3 is not None
     assert next_across_v3.name == "gateway01"
 
+    next_across_v4 = get_next_exercise("tetragon04")
+    assert next_across_v4 is not None
+    assert next_across_v4.name == "ray01"
+
+    next_across_v5 = get_next_exercise("ray04")
+    assert next_across_v5 is not None
+    assert next_across_v5.name == "kueue01"
+
+    next_across_v6 = get_next_exercise("volcano02")
+    assert next_across_v6 is not None
+    assert next_across_v6.name == "accel01"
+
     # Test last exercise returns None
-    assert get_next_exercise("tetragon04") is None
+    assert get_next_exercise("accel04") is None
 
     # Test nonexistent exercise returns None
     assert get_next_exercise("nonexistent") is None

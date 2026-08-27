@@ -1,6 +1,6 @@
 # Curriculum Syllabus
 
-Kubelings features **23 chapters** covering **102 real-world exercises**:
+Kubelings features **26 chapters** covering **114 real-world exercises**:
 
 ---
 
@@ -151,3 +151,21 @@ Kubelings features **23 chapters** covering **102 real-world exercises**:
 - `tetragon02`: Sensitive File & Credential Access Auditing (`sys_openat` monitoring on `/etc/shadow` and service account tokens).
 - `tetragon03`: Real-Time Kernel Sigkill Enforcement (synchronous `Sigkill` actions on unauthorized root binaries).
 - `tetragon04`: eBPF TCP Socket & Network Egress Observability (`tcp_connect` kernel socket probes and event streaming).
+
+### Chapter 24: Distributed AI & ML Orchestration with KubeRay
+- `ray01`: RayCluster Core Architecture & Head Node (`ray.io/v1` `RayCluster`, GCS/Dashboard ports, head/worker specifications).
+- `ray02`: Heterogeneous Worker Pools & Autoscaling (Distinct CPU and GPU worker groups with min/max replica limits and `nvidia.com/gpu` constraints).
+- `ray03`: RayJob for Distributed Batch Fine-Tuning (`RayJob` entrypoints, ephemeral compute lifecycle, `shutdownAfterJobFinishes`, and TTL cleanup).
+- `ray04`: RayService for Production LLM Serving (`RayService` zero-downtime serving, `serveConfigV2` multi-application definitions, and health thresholds).
+
+### Chapter 25: AI Batch Scheduling & Queuing with Kueue and Volcano
+- `kueue01`: Kueue ResourceFlavor & ClusterQueue Cohort Borrowing (`kueue.x-k8s.io/v1beta1` `ResourceFlavor`, `ClusterQueue` cohort borrowing limits, and multi-resource quotas).
+- `kueue02`: Kueue LocalQueue & Suspended Workload Gating (`LocalQueue` namespace bindings, `batch/v1` `Job` queue label assignment, and admission gating via `suspend: true`).
+- `volcano01`: Volcano Gang Scheduling & Deadlock Prevention (`batch.volcano.sh/v1alpha1` `Job`, `minAvailable` all-or-nothing scheduling, and multi-task master/worker groups).
+- `volcano02`: Volcano Queue & Fair-Share Scheduling (`scheduling.volcano.sh/v1beta1` `Queue`, proportional weight allocations, reclaimable quotas, and resource capabilities).
+
+### Chapter 26: Hardware Acceleration: NVIDIA MIG, Apple Silicon GPU & DRA
+- `accel01`: NVIDIA MIG Slicing & Partitioning (A100/H100 nodeSelectors, multi-instance GPU slice resources `nvidia.com/mig-3g.40gb`, and `NVIDIA_VISIBLE_DEVICES`).
+- `accel02`: Apple Silicon GPU & Metal MPS Acceleration (`kubernetes.io/arch: arm64` node pinning, `apple.com/gpu` device limits, and `PYTORCH_ENABLE_MPS_FALLBACK` PyTorch MPS execution).
+- `accel03`: Dynamic Resource Allocation (DRA) Standard (`resource.k8s.io/v1alpha3` `ResourceClaimTemplate`, device class requests, and Pod claim attachments).
+- `accel04`: Production vLLM LLM Inference Server (`apps/v1` `Deployment`, OpenAI-compatible API serving, GPU memory utilization flags, health probes, and model volume mounts).

@@ -17,8 +17,6 @@ that load balances traffic across all Pods whose labels match `spec.selector`.
    - If the labels do not match or selector is missing, return None.
 """
 
-# I AM NOT DONE
-
 from typing import Any, Dict, Optional
 
 import yaml

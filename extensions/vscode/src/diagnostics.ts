@@ -60,25 +60,12 @@ export class KubelingsDiagnosticsProvider implements vscode.Disposable {
         return runResult;
       }
 
-      // Exercise failed or still marked with I AM NOT DONE
+      // Exercise failed validation checks
       const text = document.getText();
       const lines = text.split(/\r?\n/);
 
       let targetLine = 0;
-      let hasMarker = false;
-
-      // Check for '# I AM NOT DONE'
-      for (let i = 0; i < lines.length; i++) {
-        if (lines[i].includes('I AM NOT DONE')) {
-          targetLine = i;
-          hasMarker = true;
-          break;
-        }
-      }
-
-      // If marker is not found or run response specifies an error line
       if (
-        !hasMarker &&
         runResult.error_line !== undefined &&
         runResult.error_line !== null &&
         runResult.error_line > 0
@@ -95,25 +82,17 @@ export class KubelingsDiagnosticsProvider implements vscode.Disposable {
         new vscode.Position(targetLine, Math.max(lineText.length, 1))
       );
 
-      const severity = hasMarker
-        ? vscode.DiagnosticSeverity.Warning
-        : vscode.DiagnosticSeverity.Error;
-
-      let message = `[Kubelings] ${
-        runResult.error
+      const message = `[Kubelings] ${
+        runResult.error && runResult.error.trim().length > 0
           ? runResult.error.trim()
-          : "Exercise not completed. Remove '# I AM NOT DONE' once ready."
+          : 'Exercise validation failed.'
       }`;
 
-      if (hasMarker && (!runResult.error || runResult.has_not_done_marker)) {
-        if (runResult.error && runResult.error.trim().length > 0) {
-          message = `[Kubelings] ${runResult.error.trim()}`;
-        } else {
-          message = `[Kubelings] Exercise not completed. Remove '# I AM NOT DONE' once ready.`;
-        }
-      }
-
-      const diagnostic = new vscode.Diagnostic(range, message, severity);
+      const diagnostic = new vscode.Diagnostic(
+        range,
+        message,
+        vscode.DiagnosticSeverity.Error
+      );
       diagnostic.source = 'kubelings';
       diagnostic.code = exerciseName;
 

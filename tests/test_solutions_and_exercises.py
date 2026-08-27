@@ -47,14 +47,9 @@ def test_all_reference_solutions_pass(exercise: Exercise):
 
 @pytest.mark.parametrize("exercise", manifest.all_exercises, ids=lambda ex: ex.name)
 def test_starter_exercises_fail(exercise: Exercise):
-    """Verify that every starter exercise exists, contains NOT_DONE, and fails when run."""
+    """Verify that every starter exercise exists and fails when run initially."""
     ex_path = exercise.file_path
     assert ex_path.exists(), f"Missing exercise file for {exercise.name} at {ex_path}"
-
-    content = ex_path.read_text(encoding="utf-8")
-    assert NOT_DONE_MARKER in content, (
-        f"Starter exercise {ex_path} must contain '{NOT_DONE_MARKER}'"
-    )
 
     env = os.environ.copy()
     env["PYTHONPATH"] = f"{Path.cwd() / 'src'}:{env.get('PYTHONPATH', '')}".strip(":")
@@ -82,9 +77,9 @@ def test_manifest_and_disk_files_consistency():
     disk_solutions = {str(p) for p in Path("solutions").glob("*/*.py")}
 
     # Check total counts
-    assert len(manifest_exercises) == 102
-    assert len(disk_exercises) == 102
-    assert len(disk_solutions) == 102
+    assert len(manifest_exercises) == 114
+    assert len(disk_exercises) == 114
+    assert len(disk_solutions) == 114
 
     # Check for missing or orphaned exercise files
     missing_exercises = manifest_exercises - disk_exercises

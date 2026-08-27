@@ -17,8 +17,6 @@ Node Affinity allows expressive pod scheduling constraints:
    - If hard requirement passes, return `(True, matching_weight_score)`.
 """
 
-# I AM NOT DONE
-
 from typing import Any, Dict, Tuple
 
 import yaml

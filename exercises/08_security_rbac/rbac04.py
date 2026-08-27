@@ -20,8 +20,6 @@ unnecessary Linux capabilities.
    - capabilities: drop ['ALL'], add ['NET_BIND_SERVICE']
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifest

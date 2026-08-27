@@ -20,8 +20,6 @@ Kubernetes provides external connectivity using:
    - Returns True if port is between 30000 and 32767 (inclusive), otherwise False.
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifests

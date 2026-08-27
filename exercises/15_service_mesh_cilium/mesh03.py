@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Exercise: CiliumClusterwideNetworkPolicy with DNS Inspection (mesh03)
 

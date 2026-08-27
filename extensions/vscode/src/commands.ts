@@ -96,8 +96,6 @@ export function registerCommands(
         } else {
           const errMsg = runResult.error
             ? runResult.error.trim()
-            : runResult.has_not_done_marker
-            ? "Exercise incomplete. Remove '# I AM NOT DONE' once ready."
             : 'Evaluation checks failed.';
           vscode.window.showErrorMessage(
             `❌ Exercise '${exerciseName}' failed:\n${errMsg}`
@@ -384,4 +382,20 @@ export function registerCommands(
     }
   );
   context.subscriptions.push(testAllCmd);
+
+  // 9. kubelings.openWalkthrough
+  const openWalkthroughCmd = vscode.commands.registerCommand(
+    'kubelings.openWalkthrough',
+    async (stepId?: string) => {
+      const target = stepId
+        ? `dnf0.kubelings-vscode#kubelings.walkthrough#${stepId}`
+        : 'dnf0.kubelings-vscode#kubelings.walkthrough';
+      await vscode.commands.executeCommand(
+        'workbench.action.openWalkthrough',
+        target,
+        false
+      );
+    }
+  );
+  context.subscriptions.push(openWalkthroughCmd);
 }

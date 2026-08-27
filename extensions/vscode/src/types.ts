@@ -77,6 +77,19 @@ export interface CliHintResponse {
   error?: string;
 }
 
+export interface CliTourStep {
+  step: number;
+  step_num: number;
+  name: string;
+  title: string;
+  description: string;
+}
+
+export interface CliTourResponse {
+  total_steps: number;
+  steps: CliTourStep[];
+}
+
 export interface ResolvedCommand {
   command: string;
   argsPrefix: string[];

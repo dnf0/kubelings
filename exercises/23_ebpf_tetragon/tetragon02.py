@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Exercise: tetragon02.py
 Topic: eBPF Observability - Tetragon File and Token Access Monitoring

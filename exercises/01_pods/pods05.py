@@ -13,8 +13,6 @@ Complete the Pod manifest below to inject the following container environment va
 4. MY_NODE_NAME: from fieldPath 'spec.nodeName'
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifest

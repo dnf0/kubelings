@@ -9,8 +9,8 @@ from kubelings.scaffold import get_starter_content, init_workspace, reset_exerci
 
 def test_get_starter_content_valid():
     content = get_starter_content("pods01")
-    assert "I AM NOT DONE" in content
     assert "POD_MANIFEST" in content
+    assert "nginx-web" in content
 
 
 def test_get_starter_content_invalid():
@@ -42,11 +42,11 @@ def test_init_workspace_force(tmp_path: Path):
 def test_reset_exercise(tmp_path: Path):
     init_workspace(tmp_path)
     ex_file = tmp_path / "exercises" / "01_pods" / "pods01.py"
-    ex_file.write_text("# Modified by student without marker")
-    assert "I AM NOT DONE" not in ex_file.read_text()
+    ex_file.write_text("# Modified by student")
+    assert "POD_MANIFEST" not in ex_file.read_text()
 
     reset_exercise("pods01", workspace_root=tmp_path)
-    assert "I AM NOT DONE" in ex_file.read_text()
+    assert "POD_MANIFEST" in ex_file.read_text()
 
 
 def test_cli_init_command(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
@@ -69,7 +69,7 @@ def test_cli_reset_command(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     result = runner.invoke(app, ["reset", "pods01"])
     assert result.exit_code == 0
     assert "Reset" in result.stdout or "reset" in result.stdout.lower()
-    assert "I AM NOT DONE" in ex_file.read_text()
+    assert "POD_MANIFEST" in ex_file.read_text()
 
 
 def test_cli_reset_invalid_exercise():

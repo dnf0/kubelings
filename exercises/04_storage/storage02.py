@@ -20,8 +20,6 @@ from application storage requests (PersistentVolumeClaim).
      and all pvc accessModes are supported by pv accessModes. Otherwise, returns False.
 """
 
-# I AM NOT DONE
-
 from typing import Any, Dict
 
 import yaml

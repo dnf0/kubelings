@@ -96,14 +96,14 @@ describe('KubelingsCliBridge - JSON Parsing and Error Handling', () => {
     const bridge = new KubelingsCliBridge();
     // Test executeJson on valid JSON via simulated / mocked response or helper
     const samplePayload = {
-      total_chapters: 23,
-      total_exercises: 102,
+      total_chapters: 26,
+      total_exercises: 114,
       chapters: [],
     };
     const jsonString = JSON.stringify(samplePayload);
     const parsed = JSON.parse(jsonString);
-    assert.strictEqual(parsed.total_chapters, 23);
-    assert.strictEqual(parsed.total_exercises, 102);
+    assert.strictEqual(parsed.total_chapters, 26);
+    assert.strictEqual(parsed.total_exercises, 114);
   });
 });
 

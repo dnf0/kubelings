@@ -17,8 +17,6 @@ and RoleBindings to attach those permissions to subjects (users, groups, or Serv
    - Returns True if any rule grants the requested verb on the resource in the given apiGroup (handling '*' wildcards).
 """
 
-# I AM NOT DONE
-
 from typing import Any, Dict, List
 
 import yaml
