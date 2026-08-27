@@ -703,11 +703,18 @@
     setupThemeObserver();
   }
 
+  let activeThemeObserver = null;
+
   /**
    * Observe MkDocs Material theme changes to dynamically sync Monaco editor theme.
    */
   function setupThemeObserver() {
-    const observer = new MutationObserver((mutations) => {
+    if (activeThemeObserver) {
+      activeThemeObserver.disconnect();
+      activeThemeObserver = null;
+    }
+
+    activeThemeObserver = new MutationObserver((mutations) => {
       for (const m of mutations) {
         if (m.type === "attributes" && m.attributeName === "data-md-color-scheme") {
           const theme = getMonacoTheme();
@@ -718,7 +725,7 @@
       }
     });
 
-    observer.observe(document.body, {
+    activeThemeObserver.observe(document.body, {
       attributes: true,
       attributeFilter: ["data-md-color-scheme"],
     });
@@ -761,6 +768,27 @@
     if (container.dataset.playgroundInitialized === "true") {
       return; // Prevent duplicate initialization
     }
+
+    // Clean up any stale instances before re-initializing
+    if (state.editor) {
+      try {
+        state.editor.dispose();
+      } catch (_) {}
+      state.editor = null;
+    }
+    if (state.diffEditor) {
+      try {
+        state.diffEditor.dispose();
+      } catch (_) {}
+      state.diffEditor = null;
+    }
+    if (state.worker) {
+      try {
+        state.worker.terminate();
+      } catch (_) {}
+      state.worker = null;
+    }
+
     container.dataset.playgroundInitialized = "true";
     state.container = container;
 
