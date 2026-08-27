@@ -8,6 +8,10 @@ Inspired by [rustlings](https://github.com/rust-lang/rustlings) and [ziglings](h
 
 > ⚡ **Try it now in your browser!** No installation required: [**Interactive WebAssembly Playground**](playground.md) ([⚡ Try in Browser](https://dnf0.github.io/kubelings/playground/)).
 
+<p align="center">
+  <img src="assets/demo.svg" alt="Kubelings Terminal Tour & Watch TUI" width="840">
+</p>
+
 ---
 
 ## Why Kubelings?

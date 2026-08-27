@@ -1,191 +1,185 @@
-<svg class="rich-terminal" viewBox="0 0 1141 806.4" xmlns="http://www.w3.org/2000/svg">
-    <!-- Generated with Rich https://www.textualize.io -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 500" width="100%" height="100%">
+  <defs>
     <style>
+      @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&amp;display=swap');
+      
+      .terminal-window {
+        fill: #0d1117;
+        stroke: #30363d;
+        stroke-width: 1.5;
+        rx: 10;
+        ry: 10;
+      }
+      .terminal-header {
+        fill: #161b22;
+        rx: 10;
+        ry: 10;
+      }
+      .header-title {
+        fill: #8b949e;
+        font-family: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 13px;
+        font-weight: 500;
+        text-anchor: middle;
+      }
+      .circle-red { fill: #ff5f56; }
+      .circle-yellow { fill: #ffbd2e; }
+      .circle-green { fill: #27c93f; }
+      
+      .term-text {
+        font-family: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 13px;
+        line-height: 20px;
+      }
+      
+      .c-dim { fill: #8b949e; }
+      .c-white { fill: #f0f6fc; }
+      .c-cyan { fill: #58a6ff; font-weight: 600; }
+      .c-blue { fill: #79c0ff; }
+      .c-green { fill: #3fb950; font-weight: 600; }
+      .c-red { fill: #f85149; font-weight: 600; }
+      .c-yellow { fill: #d29922; font-weight: 600; }
+      .c-purple { fill: #bc8cff; font-weight: 600; }
+      
+      .frame {
+        opacity: 0;
+        animation: cycle 14s infinite ease-in-out;
+      }
+      
+      /* Frame 1: kubelings tour (0s -> 3.5s) */
+      .frame-1 {
+        animation-name: anim-frame-1;
+      }
+      /* Frame 2: kubelings watch fail (3.5s -> 7s) */
+      .frame-2 {
+        animation-name: anim-frame-2;
+      }
+      /* Frame 3: watch hint reveal (7s -> 10s) */
+      .frame-3 {
+        animation-name: anim-frame-3;
+      }
+      /* Frame 4: watch pass on-save (10s -> 14s) */
+      .frame-4 {
+        animation-name: anim-frame-4;
+      }
 
-    @font-face {
-        font-family: "Fira Code";
-        src: local("FiraCode-Regular"),
-                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Regular.woff2") format("woff2"),
-                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff/FiraCode-Regular.woff") format("woff");
-        font-style: normal;
-        font-weight: 400;
-    }
-    @font-face {
-        font-family: "Fira Code";
-        src: local("FiraCode-Bold"),
-                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Bold.woff2") format("woff2"),
-                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff/FiraCode-Bold.woff") format("woff");
-        font-style: bold;
-        font-weight: 700;
-    }
+      @keyframes anim-frame-1 {
+        0%, 2% { opacity: 0; }
+        4%, 23% { opacity: 1; }
+        25%, 100% { opacity: 0; }
+      }
+      @keyframes anim-frame-2 {
+        0%, 25% { opacity: 0; }
+        27%, 48% { opacity: 1; }
+        50%, 100% { opacity: 0; }
+      }
+      @keyframes anim-frame-3 {
+        0%, 50% { opacity: 0; }
+        52%, 73% { opacity: 1; }
+        75%, 100% { opacity: 0; }
+      }
+      @keyframes anim-frame-4 {
+        0%, 75% { opacity: 0; }
+        77%, 97% { opacity: 1; }
+        99%, 100% { opacity: 0; }
+      }
 
-    .terminal-3453663294-matrix {
-        font-family: Fira Code, monospace;
-        font-size: 20px;
-        line-height: 24.4px;
-        font-variant-east-asian: full-width;
-    }
-
-    .terminal-3453663294-title {
-        font-size: 18px;
-        font-weight: bold;
-        font-family: arial;
-    }
-
-    .terminal-3453663294-r1 { fill: #68a0b3 }
-.terminal-3453663294-r2 { fill: #c5c8c6 }
-.terminal-3453663294-r3 { fill: #68a0b3;font-weight: bold }
-.terminal-3453663294-r4 { fill: #00d4fe;font-weight: bold }
-.terminal-3453663294-r5 { fill: #c5c8c6;font-weight: bold }
-.terminal-3453663294-r6 { fill: #98729f;font-weight: bold }
-.terminal-3453663294-r7 { fill: #868887;font-style: italic; }
-.terminal-3453663294-r8 { fill: #e040fb;font-weight: bold }
-.terminal-3453663294-r9 { fill: #4e707b }
-.terminal-3453663294-r10 { fill: #868887 }
-.terminal-3453663294-r11 { fill: #98a84b }
-.terminal-3453663294-r12 { fill: #98a84b;font-weight: bold }
-.terminal-3453663294-r13 { fill: #6b753d }
-.terminal-3453663294-r14 { fill: #4e707b;font-weight: bold }
+      .cursor {
+        animation: blink 0.8s infinite;
+      }
+      @keyframes blink {
+        0%, 49% { opacity: 1; }
+        50%, 100% { opacity: 0; }
+      }
     </style>
+  </defs>
 
-    <defs>
-    <clipPath id="terminal-3453663294-clip-terminal">
-      <rect x="0" y="0" width="1121.3999999999999" height="755.4" />
-    </clipPath>
-    <clipPath id="terminal-3453663294-line-0">
-    <rect x="0" y="1.5" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-1">
-    <rect x="0" y="25.9" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-2">
-    <rect x="0" y="50.3" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-3">
-    <rect x="0" y="74.7" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-4">
-    <rect x="0" y="99.1" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-5">
-    <rect x="0" y="123.5" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-6">
-    <rect x="0" y="147.9" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-7">
-    <rect x="0" y="172.3" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-8">
-    <rect x="0" y="196.7" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-9">
-    <rect x="0" y="221.1" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-10">
-    <rect x="0" y="245.5" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-11">
-    <rect x="0" y="269.9" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-12">
-    <rect x="0" y="294.3" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-13">
-    <rect x="0" y="318.7" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-14">
-    <rect x="0" y="343.1" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-15">
-    <rect x="0" y="367.5" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-16">
-    <rect x="0" y="391.9" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-17">
-    <rect x="0" y="416.3" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-18">
-    <rect x="0" y="440.7" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-19">
-    <rect x="0" y="465.1" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-20">
-    <rect x="0" y="489.5" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-21">
-    <rect x="0" y="513.9" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-22">
-    <rect x="0" y="538.3" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-23">
-    <rect x="0" y="562.7" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-24">
-    <rect x="0" y="587.1" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-25">
-    <rect x="0" y="611.5" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-26">
-    <rect x="0" y="635.9" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-27">
-    <rect x="0" y="660.3" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-28">
-    <rect x="0" y="684.7" width="1122.4" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3453663294-line-29">
-    <rect x="0" y="709.1" width="1122.4" height="24.65"/>
-            </clipPath>
-    </defs>
+  <!-- Terminal Window Background -->
+  <rect x="10" y="10" width="860" height="480" class="terminal-window" />
+  
+  <!-- Terminal Header Bar -->
+  <path d="M 10 20 Q 10 10 20 10 L 860 10 Q 870 10 870 20 L 870 45 L 10 45 Z" class="terminal-header" />
+  <line x1="10" y1="45" x2="870" y2="45" stroke="#30363d" stroke-width="1" />
+  
+  <!-- Traffic Light Window Buttons -->
+  <circle cx="32" cy="28" r="6" class="circle-red" />
+  <circle cx="52" cy="28" r="6" class="circle-yellow" />
+  <circle cx="72" cy="28" r="6" class="circle-green" />
+  
+  <!-- Header Title -->
+  <text x="440" y="32" class="header-title">zsh — kubelings — 80×24</text>
 
-    <rect fill="#292929" stroke="rgba(255,255,255,0.35)" stroke-width="1" x="1" y="1" width="1139" height="804.4" rx="8"/><text class="terminal-3453663294-title" fill="#c5c8c6" text-anchor="middle" x="569" y="27">Kubelings&#160;Terminal&#160;Session</text>
-            <g transform="translate(26,22)">
-            <circle cx="0" cy="0" r="7" fill="#ff5f57"/>
-            <circle cx="22" cy="0" r="7" fill="#febc2e"/>
-            <circle cx="44" cy="0" r="7" fill="#28c840"/>
-            </g>
-        
-    <g transform="translate(9, 41)" clip-path="url(#terminal-3453663294-clip-terminal)">
+  <!-- ================= FRAME 1: KUBELINGS TOUR ================= -->
+  <g class="frame frame-1">
+    <text x="35" y="80" class="term-text c-dim">$ <tspan class="c-white">uvx kubelings tour</tspan></text>
     
-    <g class="terminal-3453663294-matrix">
-    <text class="terminal-3453663294-r1" x="0" y="20" textLength="1122.4" clip-path="url(#terminal-3453663294-line-0)">╭──────────────────────────────────────────────────────────────────────────────────────────╮</text><text class="terminal-3453663294-r2" x="1122.4" y="20" textLength="12.2" clip-path="url(#terminal-3453663294-line-0)">
-</text><text class="terminal-3453663294-r1" x="0" y="44.4" textLength="12.2" clip-path="url(#terminal-3453663294-line-1)">│</text><text class="terminal-3453663294-r1" x="1110.2" y="44.4" textLength="12.2" clip-path="url(#terminal-3453663294-line-1)">│</text><text class="terminal-3453663294-r2" x="1122.4" y="44.4" textLength="12.2" clip-path="url(#terminal-3453663294-line-1)">
-</text><text class="terminal-3453663294-r1" x="0" y="68.8" textLength="12.2" clip-path="url(#terminal-3453663294-line-2)">│</text><text class="terminal-3453663294-r3" x="36.6" y="68.8" textLength="353.8" clip-path="url(#terminal-3453663294-line-2)">&#160;&#160;&#160;&#160;&#160;_&#160;&#160;__&#160;&#160;&#160;&#160;&#160;_&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;_&#160;_</text><text class="terminal-3453663294-r1" x="1110.2" y="68.8" textLength="12.2" clip-path="url(#terminal-3453663294-line-2)">│</text><text class="terminal-3453663294-r2" x="1122.4" y="68.8" textLength="12.2" clip-path="url(#terminal-3453663294-line-2)">
-</text><text class="terminal-3453663294-r1" x="0" y="93.2" textLength="12.2" clip-path="url(#terminal-3453663294-line-3)">│</text><text class="terminal-3453663294-r3" x="36.6" y="93.2" textLength="549" clip-path="url(#terminal-3453663294-line-3)">&#160;&#160;&#160;&#160;|&#160;|/&#160;/&#160;&#160;&#160;_|&#160;|__&#160;&#160;&#160;___|&#160;(_)_&#160;__&#160;&#160;&#160;__&#160;_&#160;___</text><text class="terminal-3453663294-r1" x="1110.2" y="93.2" textLength="12.2" clip-path="url(#terminal-3453663294-line-3)">│</text><text class="terminal-3453663294-r2" x="1122.4" y="93.2" textLength="12.2" clip-path="url(#terminal-3453663294-line-3)">
-</text><text class="terminal-3453663294-r1" x="0" y="117.6" textLength="12.2" clip-path="url(#terminal-3453663294-line-4)">│</text><text class="terminal-3453663294-r3" x="36.6" y="117.6" textLength="597.8" clip-path="url(#terminal-3453663294-line-4)">&#160;☸&#160;&#160;|&#160;&#x27;&#160;/&#160;|&#160;|&#160;|&#160;&#x27;_&#160;\&#160;/&#160;_&#160;\&#160;|&#160;|&#160;&#x27;_&#160;\&#160;/&#160;_`&#160;/&#160;__|&#160;&#160;☸</text><text class="terminal-3453663294-r1" x="1110.2" y="117.6" textLength="12.2" clip-path="url(#terminal-3453663294-line-4)">│</text><text class="terminal-3453663294-r2" x="1122.4" y="117.6" textLength="12.2" clip-path="url(#terminal-3453663294-line-4)">
-</text><text class="terminal-3453663294-r1" x="0" y="142" textLength="12.2" clip-path="url(#terminal-3453663294-line-5)">│</text><text class="terminal-3453663294-r3" x="36.6" y="142" textLength="561.2" clip-path="url(#terminal-3453663294-line-5)">&#160;&#160;&#160;&#160;|&#160;.&#160;\&#160;|_|&#160;|&#160;|_)&#160;|&#160;&#160;__/&#160;|&#160;|&#160;|&#160;|&#160;|&#160;(_|&#160;\__&#160;\</text><text class="terminal-3453663294-r1" x="1110.2" y="142" textLength="12.2" clip-path="url(#terminal-3453663294-line-5)">│</text><text class="terminal-3453663294-r2" x="1122.4" y="142" textLength="12.2" clip-path="url(#terminal-3453663294-line-5)">
-</text><text class="terminal-3453663294-r1" x="0" y="166.4" textLength="12.2" clip-path="url(#terminal-3453663294-line-6)">│</text><text class="terminal-3453663294-r3" x="36.6" y="166.4" textLength="561.2" clip-path="url(#terminal-3453663294-line-6)">&#160;&#160;&#160;&#160;|_|\_\__,_|_.__/&#160;\___|_|_|_|&#160;|_|\__,&#160;|___/</text><text class="terminal-3453663294-r1" x="1110.2" y="166.4" textLength="12.2" clip-path="url(#terminal-3453663294-line-6)">│</text><text class="terminal-3453663294-r2" x="1122.4" y="166.4" textLength="12.2" clip-path="url(#terminal-3453663294-line-6)">
-</text><text class="terminal-3453663294-r1" x="0" y="190.8" textLength="12.2" clip-path="url(#terminal-3453663294-line-7)">│</text><text class="terminal-3453663294-r3" x="36.6" y="190.8" textLength="500.2" clip-path="url(#terminal-3453663294-line-7)">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;|___/</text><text class="terminal-3453663294-r1" x="1110.2" y="190.8" textLength="12.2" clip-path="url(#terminal-3453663294-line-7)">│</text><text class="terminal-3453663294-r2" x="1122.4" y="190.8" textLength="12.2" clip-path="url(#terminal-3453663294-line-7)">
-</text><text class="terminal-3453663294-r1" x="0" y="215.2" textLength="12.2" clip-path="url(#terminal-3453663294-line-8)">│</text><text class="terminal-3453663294-r1" x="1110.2" y="215.2" textLength="12.2" clip-path="url(#terminal-3453663294-line-8)">│</text><text class="terminal-3453663294-r2" x="1122.4" y="215.2" textLength="12.2" clip-path="url(#terminal-3453663294-line-8)">
-</text><text class="terminal-3453663294-r1" x="0" y="239.6" textLength="12.2" clip-path="url(#terminal-3453663294-line-9)">│</text><text class="terminal-3453663294-r4" x="36.6" y="239.6" textLength="146.4" clip-path="url(#terminal-3453663294-line-9)">☸&#160;Kubelings&#160;</text><text class="terminal-3453663294-r5" x="183" y="239.6" textLength="24.4" clip-path="url(#terminal-3453663294-line-9)">—&#160;</text><text class="terminal-3453663294-r6" x="207.4" y="239.6" textLength="524.6" clip-path="url(#terminal-3453663294-line-9)">Interactive&#160;Kubernetes&#160;Learning&#160;Environment</text><text class="terminal-3453663294-r1" x="1110.2" y="239.6" textLength="12.2" clip-path="url(#terminal-3453663294-line-9)">│</text><text class="terminal-3453663294-r2" x="1122.4" y="239.6" textLength="12.2" clip-path="url(#terminal-3453663294-line-9)">
-</text><text class="terminal-3453663294-r1" x="0" y="264" textLength="12.2" clip-path="url(#terminal-3453663294-line-10)">│</text><text class="terminal-3453663294-r7" x="36.6" y="264" textLength="902.8" clip-path="url(#terminal-3453663294-line-10)">Master&#160;Kubernetes&#160;concepts&#160;through&#160;hands-on&#160;Python&#160;and&#160;manifest&#160;exercises.</text><text class="terminal-3453663294-r1" x="1110.2" y="264" textLength="12.2" clip-path="url(#terminal-3453663294-line-10)">│</text><text class="terminal-3453663294-r2" x="1122.4" y="264" textLength="12.2" clip-path="url(#terminal-3453663294-line-10)">
-</text><text class="terminal-3453663294-r1" x="0" y="288.4" textLength="12.2" clip-path="url(#terminal-3453663294-line-11)">│</text><text class="terminal-3453663294-r1" x="1110.2" y="288.4" textLength="12.2" clip-path="url(#terminal-3453663294-line-11)">│</text><text class="terminal-3453663294-r2" x="1122.4" y="288.4" textLength="12.2" clip-path="url(#terminal-3453663294-line-11)">
-</text><text class="terminal-3453663294-r1" x="0" y="312.8" textLength="24.4" clip-path="url(#terminal-3453663294-line-12)">╰─</text><text class="terminal-3453663294-r1" x="24.4" y="312.8" textLength="500.2" clip-path="url(#terminal-3453663294-line-12)">─────────────────────────────────────────</text><text class="terminal-3453663294-r8" x="536.8" y="312.8" textLength="73.2" clip-path="url(#terminal-3453663294-line-12)">v0.1.0</text><text class="terminal-3453663294-r1" x="610" y="312.8" textLength="36.6" clip-path="url(#terminal-3453663294-line-12)">&#160;•&#160;</text><text class="terminal-3453663294-r9" x="646.6" y="312.8" textLength="439.2" clip-path="url(#terminal-3453663294-line-12)">Type&#160;&#x27;kubelings&#160;--help&#x27;&#160;for&#160;commands</text><text class="terminal-3453663294-r1" x="1098" y="312.8" textLength="24.4" clip-path="url(#terminal-3453663294-line-12)">─╯</text><text class="terminal-3453663294-r2" x="1122.4" y="312.8" textLength="12.2" clip-path="url(#terminal-3453663294-line-12)">
-</text><text class="terminal-3453663294-r3" x="0" y="337.2" textLength="475.8" clip-path="url(#terminal-3453663294-line-13)">☸&#160;Kubelings&#160;interactive&#160;watcher&#160;active.</text><text class="terminal-3453663294-r10" x="488" y="337.2" textLength="561.2" clip-path="url(#terminal-3453663294-line-13)">Modify&#160;exercise&#160;files&#160;to&#160;see&#160;instant&#160;feedback.</text><text class="terminal-3453663294-r2" x="1122.4" y="337.2" textLength="12.2" clip-path="url(#terminal-3453663294-line-13)">
-</text><text class="terminal-3453663294-r2" x="1122.4" y="361.6" textLength="12.2" clip-path="url(#terminal-3453663294-line-14)">
-</text><text class="terminal-3453663294-r11" x="0" y="386" textLength="24.4" clip-path="url(#terminal-3453663294-line-15)">╭─</text><text class="terminal-3453663294-r11" x="24.4" y="386" textLength="256.2" clip-path="url(#terminal-3453663294-line-15)">─────────────────────</text><text class="terminal-3453663294-r12" x="292.8" y="386" textLength="97.6" clip-path="url(#terminal-3453663294-line-15)">✓&#160;PASSED</text><text class="terminal-3453663294-r11" x="390.4" y="386" textLength="24.4" clip-path="url(#terminal-3453663294-line-15)">:&#160;</text><text class="terminal-3453663294-r5" x="414.8" y="386" textLength="73.2" clip-path="url(#terminal-3453663294-line-15)">pods01</text><text class="terminal-3453663294-r11" x="488" y="386" textLength="353.8" clip-path="url(#terminal-3453663294-line-15)">&#160;—&#160;First&#160;Pod&#160;Manifest&#160;&amp;&#160;Spec&#160;</text><text class="terminal-3453663294-r11" x="841.8" y="386" textLength="256.2" clip-path="url(#terminal-3453663294-line-15)">─────────────────────</text><text class="terminal-3453663294-r11" x="1098" y="386" textLength="24.4" clip-path="url(#terminal-3453663294-line-15)">─╮</text><text class="terminal-3453663294-r2" x="1122.4" y="386" textLength="12.2" clip-path="url(#terminal-3453663294-line-15)">
-</text><text class="terminal-3453663294-r11" x="0" y="410.4" textLength="12.2" clip-path="url(#terminal-3453663294-line-16)">│</text><text class="terminal-3453663294-r11" x="1110.2" y="410.4" textLength="12.2" clip-path="url(#terminal-3453663294-line-16)">│</text><text class="terminal-3453663294-r2" x="1122.4" y="410.4" textLength="12.2" clip-path="url(#terminal-3453663294-line-16)">
-</text><text class="terminal-3453663294-r11" x="0" y="434.8" textLength="12.2" clip-path="url(#terminal-3453663294-line-17)">│</text><text class="terminal-3453663294-r12" x="36.6" y="434.8" textLength="390.4" clip-path="url(#terminal-3453663294-line-17)">✓&#160;Exercise&#160;passed&#160;successfully!&#160;</text><text class="terminal-3453663294-r13" x="427" y="434.8" textLength="97.6" clip-path="url(#terminal-3453663294-line-17)">(18.4ms)</text><text class="terminal-3453663294-r11" x="1110.2" y="434.8" textLength="12.2" clip-path="url(#terminal-3453663294-line-17)">│</text><text class="terminal-3453663294-r2" x="1122.4" y="434.8" textLength="12.2" clip-path="url(#terminal-3453663294-line-17)">
-</text><text class="terminal-3453663294-r11" x="0" y="459.2" textLength="12.2" clip-path="url(#terminal-3453663294-line-18)">│</text><text class="terminal-3453663294-r11" x="1110.2" y="459.2" textLength="12.2" clip-path="url(#terminal-3453663294-line-18)">│</text><text class="terminal-3453663294-r2" x="1122.4" y="459.2" textLength="12.2" clip-path="url(#terminal-3453663294-line-18)">
-</text><text class="terminal-3453663294-r11" x="0" y="483.6" textLength="12.2" clip-path="url(#terminal-3453663294-line-19)">│</text><text class="terminal-3453663294-r5" x="36.6" y="483.6" textLength="85.4" clip-path="url(#terminal-3453663294-line-19)">Output:</text><text class="terminal-3453663294-r11" x="1110.2" y="483.6" textLength="12.2" clip-path="url(#terminal-3453663294-line-19)">│</text><text class="terminal-3453663294-r2" x="1122.4" y="483.6" textLength="12.2" clip-path="url(#terminal-3453663294-line-19)">
-</text><text class="terminal-3453663294-r11" x="0" y="508" textLength="12.2" clip-path="url(#terminal-3453663294-line-20)">│</text><text class="terminal-3453663294-r10" x="36.6" y="508" textLength="341.6" clip-path="url(#terminal-3453663294-line-20)">✓&#160;Pod&#160;manifest&#160;syntax&#160;valid!</text><text class="terminal-3453663294-r11" x="1110.2" y="508" textLength="12.2" clip-path="url(#terminal-3453663294-line-20)">│</text><text class="terminal-3453663294-r2" x="1122.4" y="508" textLength="12.2" clip-path="url(#terminal-3453663294-line-20)">
-</text><text class="terminal-3453663294-r11" x="0" y="532.4" textLength="12.2" clip-path="url(#terminal-3453663294-line-21)">│</text><text class="terminal-3453663294-r10" x="36.6" y="532.4" textLength="439.2" clip-path="url(#terminal-3453663294-line-21)">✓&#160;Containers&#160;specification&#160;verified.</text><text class="terminal-3453663294-r11" x="1110.2" y="532.4" textLength="12.2" clip-path="url(#terminal-3453663294-line-21)">│</text><text class="terminal-3453663294-r2" x="1122.4" y="532.4" textLength="12.2" clip-path="url(#terminal-3453663294-line-21)">
-</text><text class="terminal-3453663294-r11" x="0" y="556.8" textLength="12.2" clip-path="url(#terminal-3453663294-line-22)">│</text><text class="terminal-3453663294-r10" x="36.6" y="556.8" textLength="500.2" clip-path="url(#terminal-3453663294-line-22)">✓&#160;Image&#160;set&#160;to&#160;&#x27;nginx:alpine&#x27;&#160;on&#160;port&#160;80.</text><text class="terminal-3453663294-r11" x="1110.2" y="556.8" textLength="12.2" clip-path="url(#terminal-3453663294-line-22)">│</text><text class="terminal-3453663294-r2" x="1122.4" y="556.8" textLength="12.2" clip-path="url(#terminal-3453663294-line-22)">
-</text><text class="terminal-3453663294-r11" x="0" y="581.2" textLength="12.2" clip-path="url(#terminal-3453663294-line-23)">│</text><text class="terminal-3453663294-r11" x="1110.2" y="581.2" textLength="12.2" clip-path="url(#terminal-3453663294-line-23)">│</text><text class="terminal-3453663294-r2" x="1122.4" y="581.2" textLength="12.2" clip-path="url(#terminal-3453663294-line-23)">
-</text><text class="terminal-3453663294-r11" x="0" y="605.6" textLength="24.4" clip-path="url(#terminal-3453663294-line-24)">╰─</text><text class="terminal-3453663294-r11" x="24.4" y="605.6" textLength="768.6" clip-path="url(#terminal-3453663294-line-24)">───────────────────────────────────────────────────────────────</text><text class="terminal-3453663294-r12" x="805.2" y="605.6" textLength="280.6" clip-path="url(#terminal-3453663294-line-24)">Ready&#160;for&#160;next&#160;exercise</text><text class="terminal-3453663294-r11" x="1098" y="605.6" textLength="24.4" clip-path="url(#terminal-3453663294-line-24)">─╯</text><text class="terminal-3453663294-r2" x="1122.4" y="605.6" textLength="12.2" clip-path="url(#terminal-3453663294-line-24)">
-</text><text class="terminal-3453663294-r2" x="1122.4" y="630" textLength="12.2" clip-path="url(#terminal-3453663294-line-25)">
-</text><text class="terminal-3453663294-r12" x="0" y="654.4" textLength="268.4" clip-path="url(#terminal-3453663294-line-26)">🎉&#160;Great&#160;job!&#160;Exercise&#160;</text><text class="terminal-3453663294-r12" x="280.6" y="654.4" textLength="97.6" clip-path="url(#terminal-3453663294-line-26)">&#x27;pods01&#x27;</text><text class="terminal-3453663294-r12" x="378.2" y="654.4" textLength="97.6" clip-path="url(#terminal-3453663294-line-26)">&#160;passed!</text><text class="terminal-3453663294-r2" x="1122.4" y="654.4" textLength="12.2" clip-path="url(#terminal-3453663294-line-26)">
-</text><text class="terminal-3453663294-r3" x="0" y="678.8" textLength="353.8" clip-path="url(#terminal-3453663294-line-27)">☸&#160;Advancing&#160;to&#160;next&#160;exercise:</text><text class="terminal-3453663294-r5" x="366" y="678.8" textLength="73.2" clip-path="url(#terminal-3453663294-line-27)">pods02</text><text class="terminal-3453663294-r5" x="451.4" y="678.8" textLength="12.2" clip-path="url(#terminal-3453663294-line-27)">(</text><text class="terminal-3453663294-r2" x="463.6" y="678.8" textLength="463.6" clip-path="url(#terminal-3453663294-line-27)">Multi-Container&#160;Pods&#160;&amp;&#160;Sidecar&#160;Pattern</text><text class="terminal-3453663294-r5" x="927.2" y="678.8" textLength="12.2" clip-path="url(#terminal-3453663294-line-27)">)</text><text class="terminal-3453663294-r2" x="1122.4" y="678.8" textLength="12.2" clip-path="url(#terminal-3453663294-line-27)">
-</text><text class="terminal-3453663294-r2" x="1122.4" y="703.2" textLength="12.2" clip-path="url(#terminal-3453663294-line-28)">
-</text><text class="terminal-3453663294-r10" x="0" y="727.6" textLength="268.4" clip-path="url(#terminal-3453663294-line-29)">⚡&#160;Keyboard&#160;shortcuts:&#160;</text><text class="terminal-3453663294-r14" x="280.6" y="727.6" textLength="12.2" clip-path="url(#terminal-3453663294-line-29)">h</text><text class="terminal-3453663294-r10" x="292.8" y="727.6" textLength="97.6" clip-path="url(#terminal-3453663294-line-29)">&#160;hint&#160;|&#160;</text><text class="terminal-3453663294-r14" x="390.4" y="727.6" textLength="12.2" clip-path="url(#terminal-3453663294-line-29)">r</text><text class="terminal-3453663294-r10" x="402.6" y="727.6" textLength="109.8" clip-path="url(#terminal-3453663294-line-29)">&#160;rerun&#160;|&#160;</text><text class="terminal-3453663294-r14" x="512.4" y="727.6" textLength="12.2" clip-path="url(#terminal-3453663294-line-29)">l</text><text class="terminal-3453663294-r10" x="524.6" y="727.6" textLength="97.6" clip-path="url(#terminal-3453663294-line-29)">&#160;list&#160;|&#160;</text><text class="terminal-3453663294-r14" x="622.2" y="727.6" textLength="12.2" clip-path="url(#terminal-3453663294-line-29)">q</text><text class="terminal-3453663294-r10" x="634.4" y="727.6" textLength="97.6" clip-path="url(#terminal-3453663294-line-29)">&#160;quit&#160;|&#160;</text><text class="terminal-3453663294-r14" x="732" y="727.6" textLength="73.2" clip-path="url(#terminal-3453663294-line-29)">Ctrl+C</text><text class="terminal-3453663294-r10" x="805.2" y="727.6" textLength="61" clip-path="url(#terminal-3453663294-line-29)">&#160;exit</text><text class="terminal-3453663294-r2" x="1122.4" y="727.6" textLength="12.2" clip-path="url(#terminal-3453663294-line-29)">
-</text><text class="terminal-3453663294-r2" x="1122.4" y="752" textLength="12.2" clip-path="url(#terminal-3453663294-line-30)">
-</text>
-    </g>
-    </g>
+    <text x="35" y="115" class="term-text c-cyan">┌────────────────────────────────────────────────────────────────────────────┐</text>
+    <text x="35" y="135" class="term-text c-cyan">│ <tspan class="c-white">☸️  KUBELINGS INTERACTIVE ONBOARDING TOUR</tspan> <tspan class="c-dim">(Step 1 of 5)</tspan>                     │</text>
+    <text x="35" y="155" class="term-text c-cyan">├────────────────────────────────────────────────────────────────────────────┤</text>
+    <text x="35" y="180" class="term-text c-white">  Welcome to <tspan class="c-purple">Kubelings</tspan>! Master Kubernetes through test-driven micro-exercises.</text>
+    <text x="35" y="205" class="term-text c-dim">  • Fast client-side AST validation engine (<tspan class="c-green">&lt;15ms feedback loop</tspan>)</text>
+    <text x="35" y="225" class="term-text c-dim">  • Dual-mode verification (100% offline cluster-less OR live cluster)</text>
+    <text x="35" y="245" class="term-text c-dim">  • 26 Chapters, 114 Exercises (Core Workloads ➔ KubeRay ➔ Apple Silicon GPU)</text>
+    <text x="35" y="275" class="term-text c-yellow">  Next step: Checking your local development environment &amp; cluster capabilities...</text>
+    <text x="35" y="305" class="term-text c-cyan">└────────────────────────────────────────────────────────────────────────────┘</text>
+    
+    <text x="35" y="340" class="term-text c-dim">Press <tspan class="c-white">[Enter]</tspan> to continue to Step 2 (Environment Diagnostics) <tspan class="c-cyan cursor">▌</tspan></text>
+  </g>
+
+  <!-- ================= FRAME 2: KUBELINGS WATCH FAIL ================= -->
+  <g class="frame frame-2">
+    <text x="35" y="80" class="term-text c-dim">$ <tspan class="c-white">kubelings watch</tspan></text>
+    
+    <text x="35" y="115" class="term-text c-blue">┌────────────────────────────────────────────────────────────────────────────┐</text>
+    <text x="35" y="135" class="term-text c-blue">│ ☸️  <tspan class="c-white">KUBELINGS WATCH MODE</tspan> │ Chapter 01: Pods │ <tspan class="c-yellow">pods01.py</tspan> │ <tspan class="c-dim">[██░░░░░░░░] 1/114</tspan> │</text>
+    <text x="35" y="155" class="term-text c-blue">├────────────────────────────────────────────────────────────────────────────┤</text>
+    <text x="35" y="180" class="term-text c-red">  ❌ EVALUATION FAILED (12.4ms)</text>
+    <text x="35" y="210" class="term-text c-dim">  ── Schema Diagnostics ─────────────────────────────────────────────────────</text>
+    <text x="35" y="235" class="term-text c-white">  • Pod '<tspan class="c-yellow">nginx-web</tspan>' container '<tspan class="c-yellow">nginx</tspan>' is missing <tspan class="c-red">containerPort: 80</tspan></text>
+    <text x="35" y="255" class="term-text c-white">  • Expected metadata label: <tspan class="c-red">'app': 'web'</tspan></text>
+    <text x="35" y="285" class="term-text c-dim">  ── Hint Status ────────────────────────────────────────────────────────────</text>
+    <text x="35" y="310" class="term-text c-dim">  Press <tspan class="c-yellow">[h]</tspan> to reveal Tier 1 Hint</text>
+    <text x="35" y="335" class="term-text c-blue">├────────────────────────────────────────────────────────────────────────────┤</text>
+    <text x="35" y="355" class="term-text c-dim">│ Hotkeys: <tspan class="c-white">[n]</tspan> Next  <tspan class="c-white">[p]</tspan> Prev  <tspan class="c-yellow">[h]</tspan> Hint  <tspan class="c-white">[l]</tspan> Diff Solution  <tspan class="c-white">[r]</tspan> Rerun  <tspan class="c-white">[q]</tspan> Quit │</text>
+    <text x="35" y="375" class="term-text c-blue">└────────────────────────────────────────────────────────────────────────────┘</text>
+    <text x="35" y="410" class="term-text c-dim">Watching <tspan class="c-white">exercises/01_pods/pods01.py</tspan> for file changes... <tspan class="c-cyan cursor">▌</tspan></text>
+  </g>
+
+  <!-- ================= FRAME 3: WATCH HINT REVEAL ================= -->
+  <g class="frame frame-3">
+    <text x="35" y="80" class="term-text c-dim">$ <tspan class="c-white">kubelings watch</tspan> <tspan class="c-dim">[user pressed 'h']</tspan></text>
+    
+    <text x="35" y="115" class="term-text c-blue">┌────────────────────────────────────────────────────────────────────────────┐</text>
+    <text x="35" y="135" class="term-text c-blue">│ ☸️  <tspan class="c-white">KUBELINGS WATCH MODE</tspan> │ Chapter 01: Pods │ <tspan class="c-yellow">pods01.py</tspan> │ <tspan class="c-dim">[██░░░░░░░░] 1/114</tspan> │</text>
+    <text x="35" y="155" class="term-text c-blue">├────────────────────────────────────────────────────────────────────────────┤</text>
+    <text x="35" y="180" class="term-text c-red">  ❌ EVALUATION FAILED (12.4ms)</text>
+    <text x="35" y="210" class="term-text c-dim">  ── Schema Diagnostics ─────────────────────────────────────────────────────</text>
+    <text x="35" y="235" class="term-text c-white">  • Pod '<tspan class="c-yellow">nginx-web</tspan>' container '<tspan class="c-yellow">nginx</tspan>' is missing <tspan class="c-red">containerPort: 80</tspan></text>
+    <text x="35" y="255" class="term-text c-white">  • Expected metadata label: <tspan class="c-red">'app': 'web'</tspan></text>
+    <text x="35" y="285" class="term-text c-yellow">  ── Hint (Tier 1 of 3) ─────────────────────────────────────────────────────</text>
+    <text x="35" y="310" class="term-text c-yellow">  💡 Check <tspan class="c-white">spec.containers[0].ports</tspan> and define a list with <tspan class="c-green">containerPort: 80</tspan>.</text>
+    <text x="35" y="335" class="term-text c-blue">├────────────────────────────────────────────────────────────────────────────┤</text>
+    <text x="35" y="355" class="term-text c-dim">│ Hotkeys: <tspan class="c-white">[n]</tspan> Next  <tspan class="c-white">[p]</tspan> Prev  <tspan class="c-yellow">[h]</tspan> Next Hint  <tspan class="c-white">[l]</tspan> Diff Solution  <tspan class="c-white">[r]</tspan> Rerun │</text>
+    <text x="35" y="375" class="term-text c-blue">└────────────────────────────────────────────────────────────────────────────┘</text>
+    <text x="35" y="410" class="term-text c-dim">Edit &amp; save <tspan class="c-white">pods01.py</tspan> to re-evaluate... <tspan class="c-green cursor">▌</tspan></text>
+  </g>
+
+  <!-- ================= FRAME 4: ON-SAVE PASS ================= -->
+  <g class="frame frame-4">
+    <text x="35" y="80" class="term-text c-dim">$ <tspan class="c-white">kubelings watch</tspan> <tspan class="c-green">[file saved — re-evaluated in 11.2ms]</tspan></text>
+    
+    <text x="35" y="115" class="term-text c-green">┌────────────────────────────────────────────────────────────────────────────┐</text>
+    <text x="35" y="135" class="term-text c-green">│ ☸️  <tspan class="c-white">KUBELINGS WATCH MODE</tspan> │ Chapter 01: Pods │ <tspan class="c-green">pods01.py ✓</tspan> │ <tspan class="c-green">[████░░░░░░] 2/114</tspan> │</text>
+    <text x="35" y="155" class="term-text c-green">├────────────────────────────────────────────────────────────────────────────┤</text>
+    <text x="35" y="180" class="term-text c-green">  ✅ SUCCESS! Exercise pods01 passed all schema and manifest validations!</text>
+    <text x="35" y="210" class="term-text c-dim">  ── Verification Details ───────────────────────────────────────────────────</text>
+    <text x="35" y="235" class="term-text c-white">  ✓ Pod metadata valid (<tspan class="c-green">name: nginx-web, labels: {app: web}</tspan>)</text>
+    <text x="35" y="255" class="term-text c-white">  ✓ Spec containers valid (<tspan class="c-green">nginx:alpine, containerPort: 80/TCP</tspan>)</text>
+    <text x="35" y="280" class="term-text c-white">  ✓ Sub-15ms offline validation: <tspan class="c-cyan">11.2ms</tspan></text>
+    <text x="35" y="310" class="term-text c-purple">  🚀 Moving to next exercise: <tspan class="c-white">pods02.py (Multi-Container Pod with Shared Volume)</tspan></text>
+    <text x="35" y="335" class="term-text c-green">├────────────────────────────────────────────────────────────────────────────┤</text>
+    <text x="35" y="355" class="term-text c-dim">│ Hotkeys: <tspan class="c-white">[n]</tspan> Next  <tspan class="c-white">[p]</tspan> Prev  <tspan class="c-white">[h]</tspan> Hint  <tspan class="c-white">[l]</tspan> Diff Solution  <tspan class="c-white">[r]</tspan> Rerun  <tspan class="c-white">[q]</tspan> Quit │</text>
+    <text x="35" y="375" class="term-text c-green">└────────────────────────────────────────────────────────────────────────────┘</text>
+    <text x="35" y="410" class="term-text c-dim">Watching <tspan class="c-white">exercises/01_pods/pods02.py</tspan>... <tspan class="c-green cursor">▌</tspan></text>
+  </g>
 </svg>
