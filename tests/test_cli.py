@@ -204,7 +204,7 @@ def test_find_next_incomplete_exercise_returns_first_failing(tmp_path: Path):
     f1 = tmp_path / "ex1.py"
     f1.write_text("print('pass')\n")
     f2 = tmp_path / "ex2.py"
-    f2.write_text("# I AM NOT DONE\n")
+    f2.write_text("assert False, 'failing'\n")
     f3 = tmp_path / "ex3.py"
     f3.write_text("print('pass')\n")
 
@@ -240,9 +240,9 @@ def test_find_next_incomplete_exercise_returns_none_when_all_pass(tmp_path: Path
 def test_find_next_incomplete_exercise_with_start_from(tmp_path: Path):
     """Verify find_next_incomplete_exercise respects start_from parameter."""
     f1 = tmp_path / "ex1.py"
-    f1.write_text("# I AM NOT DONE\n")
+    f1.write_text("assert False, 'ex1 failing'\n")
     f2 = tmp_path / "ex2.py"
-    f2.write_text("# I AM NOT DONE\n")
+    f2.write_text("assert False, 'ex2 failing'\n")
 
     ex1 = Exercise("ex1", "Ex 1", str(f1), "ch1")
     ex2 = Exercise("ex2", "Ex 2", str(f2), "ch1")
@@ -258,9 +258,9 @@ def test_find_next_incomplete_exercise_with_start_from(tmp_path: Path):
 def test_watch_engine_step_advances_on_pass(tmp_path: Path):
     """Verify WatchEngine advances to next exercise when current exercise passes."""
     f1 = tmp_path / "ex1.py"
-    f1.write_text("# I AM NOT DONE\n")
+    f1.write_text("assert False, 'ex1 failing'\n")
     f2 = tmp_path / "ex2.py"
-    f2.write_text("# I AM NOT DONE\n")
+    f2.write_text("assert False, 'ex2 failing'\n")
 
     ex1 = Exercise("ex1", "Ex 1", str(f1), "ch1")
     ex2 = Exercise("ex2", "Ex 2", str(f2), "ch1")
@@ -282,7 +282,7 @@ def test_watch_engine_step_advances_on_pass(tmp_path: Path):
 def test_watch_engine_all_completed_celebration(tmp_path: Path):
     """Verify WatchEngine sets all_completed when final exercise passes."""
     f1 = tmp_path / "ex1.py"
-    f1.write_text("# I AM NOT DONE\n")
+    f1.write_text("assert False, 'ex1 failing'\n")
 
     ex1 = Exercise("ex1", "Ex 1", str(f1), "ch1")
     manifest = Manifest(chapters=[Chapter(1, "ch1", "Ch 1", "Desc", [ex1])])
@@ -314,7 +314,7 @@ def test_watch_engine_file_filter(tmp_path: Path):
 def test_run_watch_loop_graceful_stop_event(tmp_path: Path):
     """Verify run_watch_loop terminates gracefully when stop_event is set."""
     f1 = tmp_path / "ex1.py"
-    f1.write_text("# I AM NOT DONE\n")
+    f1.write_text("assert False, 'ex1 failing'\n")
     ex1 = Exercise("ex1", "Ex 1", str(f1), "ch1")
     manifest = Manifest(chapters=[Chapter(1, "ch1", "Ch 1", "Desc", [ex1])])
 
@@ -328,7 +328,7 @@ def test_run_watch_loop_graceful_stop_event(tmp_path: Path):
 def test_run_watch_loop_handles_keyboard_interrupt(tmp_path: Path):
     """Verify run_watch_loop catches KeyboardInterrupt and exits cleanly."""
     f1 = tmp_path / "ex1.py"
-    f1.write_text("# I AM NOT DONE\n")
+    f1.write_text("assert False, 'ex1 failing'\n")
     ex1 = Exercise("ex1", "Ex 1", str(f1), "ch1")
     manifest = Manifest(chapters=[Chapter(1, "ch1", "Ch 1", "Desc", [ex1])])
 

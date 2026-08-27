@@ -15,7 +15,7 @@ from kubelings.manifest import get_manifest
 from kubelings.models import Exercise, Manifest
 from kubelings.runner import ExerciseRunner, RunResult
 from kubelings.ui import console as default_console
-from kubelings.ui import render_banner, render_result
+from kubelings.ui import render_banner, render_hint, render_progress_table, render_result
 
 try:
     from watchfiles import watch
@@ -57,6 +57,7 @@ class WatcherState:
     exercise: Exercise
     current_hint_index: int = 0
     force_rerun: bool = False
+    action: Optional[str] = None
 
 
 def handle_keypress(key: str, state: WatcherState) -> int:
@@ -72,6 +73,12 @@ def handle_keypress(key: str, state: WatcherState) -> int:
     cleaned = key.lower().strip()
     if cleaned == "q":
         raise KeyboardInterrupt
+    elif key in ("\n", "\r") or cleaned == "n":
+        state.action = "next"
+        return state.current_hint_index
+    elif cleaned == "p":
+        state.action = "prev"
+        return state.current_hint_index
     elif cleaned == "h":
         max_hints = len(state.exercise.hints)
         if max_hints > 0:
@@ -79,6 +86,9 @@ def handle_keypress(key: str, state: WatcherState) -> int:
         return state.current_hint_index
     elif cleaned == "r":
         state.force_rerun = True
+        return state.current_hint_index
+    elif cleaned == "l":
+        state.action = "list"
         return state.current_hint_index
     return state.current_hint_index
 
@@ -96,7 +106,7 @@ def find_next_incomplete_exercise(
         start_from: Optional exercise name to start searching from.
 
     Returns:
-        The first Exercise that contains the NOT_DONE marker or fails execution,
+        The first Exercise whose run_exercise().passed is False,
         or None if all exercises are completed.
     """
     m = manifest or get_manifest()
@@ -112,10 +122,6 @@ def find_next_incomplete_exercise(
                 break
 
     for ex in exercises[start_idx:]:
-        # Fast path: check marker first without subprocess spawn
-        if r.check_marker(ex.file_path):
-            return ex
-
         # Run exercise to verify logic and assertions
         result = r.run_exercise(ex)
         if not result.passed:
@@ -139,6 +145,7 @@ class WatchEngine:
         self.console = console or default_console
         self.all_completed = False
         self.results_map: Dict[str, RunResult] = {}
+        self.current_hint_index: int = 0
         self.current_exercise = find_next_incomplete_exercise(
             self.manifest, self.runner, start_from=start_exercise
         )
@@ -154,6 +161,105 @@ class WatchEngine:
             return False
 
         return p.suffix.lower() in VALID_EXTENSIONS
+
+    def next_exercise(self) -> Optional[Exercise]:
+        """Find and switch to the next exercise in the manifest sequence."""
+        exercises = self.manifest.all_exercises
+        if not exercises:
+            return None
+        if self.current_exercise is None:
+            self.current_exercise = exercises[0]
+            self.current_hint_index = 0
+            self.all_completed = False
+            return self.current_exercise
+
+        try:
+            idx = next(i for i, ex in enumerate(exercises) if ex.name == self.current_exercise.name)
+        except StopIteration:
+            idx = -1
+
+        if idx != -1 and idx + 1 < len(exercises):
+            self.current_exercise = exercises[idx + 1]
+            self.current_hint_index = 0
+            self.all_completed = False
+            return self.current_exercise
+        return None
+
+    def prev_exercise(self) -> Optional[Exercise]:
+        """Find and switch to the previous exercise in the manifest sequence."""
+        exercises = self.manifest.all_exercises
+        if not exercises:
+            return None
+        if self.current_exercise is None:
+            self.current_exercise = exercises[-1]
+            self.current_hint_index = 0
+            self.all_completed = False
+            return self.current_exercise
+
+        try:
+            idx = next(i for i, ex in enumerate(exercises) if ex.name == self.current_exercise.name)
+        except StopIteration:
+            idx = -1
+
+        if idx > 0:
+            self.current_exercise = exercises[idx - 1]
+            self.current_hint_index = 0
+            self.all_completed = False
+            return self.current_exercise
+        return None
+
+    def handle_input_key(self, key: str) -> Optional[Exercise]:
+        """Handle interactive keyboard navigation.
+
+        Args:
+            key: Single key character or string entered.
+
+        Returns:
+            The active Exercise after processing navigation or command, or None.
+        """
+        cleaned = key.lower().strip()
+        if cleaned == "q":
+            raise KeyboardInterrupt
+
+        if key in ("\n", "\r") or cleaned == "n":
+            nxt = self.next_exercise()
+            if nxt is not None:
+                self.evaluate_current()
+                return self.current_exercise
+            else:
+                if self.current_exercise is not None:
+                    self.evaluate_current()
+                return None
+
+        elif cleaned == "p":
+            prv = self.prev_exercise()
+            if prv is not None:
+                self.evaluate_current()
+                return self.current_exercise
+            return None
+
+        elif cleaned == "h":
+            if self.current_exercise is not None:
+                render_hint(
+                    self.current_exercise,
+                    hint_index=self.current_hint_index,
+                    console=self.console,
+                )
+                max_hints = len(self.current_exercise.hints)
+                if max_hints > 0:
+                    self.current_hint_index = min(self.current_hint_index + 1, max_hints)
+            return self.current_exercise
+
+        elif cleaned == "r":
+            if self.current_exercise is not None:
+                self.evaluate_current()
+            return self.current_exercise
+
+        elif cleaned == "l":
+            render_progress_table(self.manifest, self.results_map, console=self.console)
+            return self.current_exercise
+
+        return self.current_exercise
 
     def render_victory(self) -> None:
         """Render victory celebration when all curriculum exercises pass."""
@@ -203,6 +309,7 @@ class WatchEngine:
             next_ex = find_next_incomplete_exercise(self.manifest, self.runner)
             if next_ex is not None:
                 self.current_exercise = next_ex
+                self.current_hint_index = 0
                 self.all_completed = False
                 self.console.print(
                     f"[bold cyan]☸ Advancing to next exercise:[/bold cyan] [bold white]{next_ex.name}[/bold white] ({next_ex.title})\n"
