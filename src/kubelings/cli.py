@@ -8,6 +8,7 @@ import typer
 from rich.panel import Panel
 from rich.text import Text
 
+from kubelings import __version__
 from kubelings.cluster import ClusterDetector
 from kubelings.manifest import get_exercise_by_name, get_manifest
 from kubelings.runner import ExerciseRunner
@@ -47,8 +48,6 @@ def _compat_make_metavar(self: click.core.Parameter, *args: Any, **kwargs: Any) 
 
 
 click.core.Parameter.make_metavar = _compat_make_metavar
-
-__version__ = "0.1.0"
 
 app = typer.Typer(
     name="kubelings",

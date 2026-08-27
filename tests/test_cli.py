@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 from typer.testing import CliRunner
 
+from kubelings import __version__
 from kubelings.cli import app
 from kubelings.models import Chapter, Exercise, Manifest
 from kubelings.runner import ExerciseRunner
@@ -38,14 +39,14 @@ def test_cli_help():
 
 
 def test_cli_version_command_and_flag():
-    """Verify kubelings version command and --version flag output version 0.1.0."""
+    """Verify kubelings version command and --version flag output current package version."""
     res_cmd = runner.invoke(app, ["version"])
     assert res_cmd.exit_code == 0
-    assert "0.1.0" in res_cmd.stdout
+    assert __version__ in res_cmd.stdout
 
     res_flag = runner.invoke(app, ["--version"])
     assert res_flag.exit_code == 0
-    assert "0.1.0" in res_flag.stdout
+    assert __version__ in res_flag.stdout
 
 
 def test_cli_list_command():
