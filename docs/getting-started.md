@@ -2,7 +2,7 @@
 
 ## Quickstart (Zero-Install)
 
-The fastest way to use Kubelings is with [`uvx`](https://github.com/astral-sh/uv):
+The fastest way to use Kubelings is with [`uvx`](https://docs.astral.sh/uv/):
 
 ```bash
 # 1. Initialize exercises in your current directory
@@ -12,7 +12,7 @@ uvx kubelings init
 uvx kubelings watch
 ```
 
-Alternatively with [`pipx`](https://pypa.github.io/pipx/):
+Alternatively with [`pipx`](https://pipx.pypa.io/stable/):
 
 ```bash
 pipx install kubelings

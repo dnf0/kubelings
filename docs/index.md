@@ -2,7 +2,7 @@
 
 **An interactive, hands-on CLI learning environment for Kubernetes.**
 
-Inspired by [rustlings](https://github.com/rust-lang/rustlings), [ziglings](https://github.com/ziglings/exercises), and [raylings](https://github.com/ray-project/raylings), **Kubelings** guides engineers through self-paced micro-exercises directly in the terminal.
+Inspired by [rustlings](https://github.com/rust-lang/rustlings) and [ziglings](https://codeberg.org/ziglings/exercises), **Kubelings** guides engineers through self-paced micro-exercises directly in the terminal.
 
 ---
 

@@ -12,7 +12,7 @@
   <img src="assets/demo.svg" alt="Kubelings Terminal Demo" width="800">
 </p>
 
-Inspired by the pedagogical brilliance of [rustlings](https://github.com/rust-lang/rustlings), [ziglings](https://github.com/ziglings/exercises), and [raylings](https://github.com/ray-project/raylings), **Kubelings** guides engineers through self-paced, iterative exercises. You will fix broken YAML manifests, construct multi-container sidecars, mount storage volumes, write RBAC authorization rules, solve scheduling constraints, build custom Python Kubernetes operators, and troubleshoot production cluster incidents.
+Inspired by the pedagogical brilliance of [rustlings](https://github.com/rust-lang/rustlings) and [ziglings](https://codeberg.org/ziglings/exercises), **Kubelings** guides engineers through self-paced, iterative exercises. You will fix broken YAML manifests, construct multi-container sidecars, mount storage volumes, write RBAC authorization rules, solve scheduling constraints, build custom Python Kubernetes operators, and troubleshoot production cluster incidents.
 
 ---
 
@@ -79,12 +79,12 @@ Learning Kubernetes from static documentation or raw copy-pasted Helm charts is 
 ### Prerequisites
 
 - Python `>= 3.10`
-- [`uv`](https://github.com/dnf0/kubelings/actions) (recommended) or `pip`
+- [`uv`](https://docs.astral.sh/uv/) (recommended) or `pip`
 - *Optional (for live cluster exercises)*: `kubectl` and a local cluster (`kind`, `minikube`, or `k3d`)
 
 ### Running Instantly (No Clone Needed)
 
-You can run Kubelings anywhere using [`uvx`](https://github.com/astral-sh/uv) or [`pipx`](https://pypa.github.io/pipx/):
+You can run Kubelings anywhere using [`uvx`](https://docs.astral.sh/uv/) or [`pipx`](https://pipx.pypa.io/stable/):
 
 ```bash
 # Initialize exercises in your current folder
