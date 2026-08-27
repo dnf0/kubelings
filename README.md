@@ -54,7 +54,7 @@ Learning Kubernetes from static documentation or raw copy-pasted Helm charts is 
                       |
                       v
           +-----------------------+
-          |  Curriculum Manifest  |  (18 Chapters / 82 Exercises)
+          |  Curriculum Manifest  |  (23 Chapters / 102 Exercises)
           +-----------+-----------+
                       |
                       v
@@ -206,7 +206,7 @@ kubelings list
 
 ### 8. Verify Curriculum Progress
 
-Display a rich summary table showing the pass/fail status of all 90 exercises:
+Display a rich summary table showing the pass/fail status of all 102 exercises:
 
 ```bash
 kubelings verify
@@ -232,7 +232,7 @@ kubelings cluster
 
 ## Curriculum & Syllabus
 
-Kubelings covers 20 structured chapters with **90 practical exercises**:
+Kubelings covers 23 structured chapters with **102 practical exercises**:
 
 | Chapter | Title | Topic Overview | Exercises |
 | :--- | :--- | :--- | :--- |
@@ -241,7 +241,7 @@ Kubelings covers 20 structured chapters with **90 practical exercises**:
 | **03** | **Configuration & Secrets** | ConfigMaps, Secrets, environment variable injection, volume mounts, permission modes, and immutable configs. | `config01` – `config05` (5) |
 | **04** | **Storage & Persistent Volumes** | Volume types (`emptyDir`, `hostPath`), PVs, PVCs, access modes, reclaim policies, StorageClasses, and volume snapshots. | `storage01` – `storage05` (5) |
 | **05** | **Services & Networking** | ClusterIP, Headless services, NodePort, LoadBalancer, CoreDNS resolution, ExternalName, and manual Endpoints. | `net01` – `net05` (5) |
-| **06** | **Ingress & Gateway API** | Ingress path routing, TLS termination, URL rewrite annotations, and modern Gateway API (`GatewayClass`, `HTTPRoute`). | `ingress01` – `ingress04` (4) |
+| **06** | **Ingress & Traffic Management** | Ingress path routing, TLS termination, URL rewrite annotations, and ingress class controllers. | `ingress01` – `ingress04` (4) |
 | **07** | **Scheduling & Placement** | `nodeSelector`, node affinity (hard/soft), pod affinity/anti-affinity, taints, tolerations, and topology spread constraints. | `sched01` – `sched05` (5) |
 | **08** | **Security & RBAC** | ServiceAccounts, token management, Roles, RoleBindings, ClusterRoles, container `securityContext`, and Pod Security Standards (PSS). | `rbac01` – `rbac05` (5) |
 | **09** | **Network Policies** | Default Deny isolation, Ingress filtering, Egress filtering, CoreDNS egress rules, named ports, and CIDR IPBlock rules. | `netpol01` – `netpol04` (4) |
@@ -256,6 +256,9 @@ Kubelings covers 20 structured chapters with **90 practical exercises**:
 | **18** | **Advanced Admission Webhooks** | Dynamic MutatingWebhookConfigurations, ValidatingWebhookConfigurations, sidecar injection, and CRD conversion webhooks. | `webhook01` – `webhook04` (4) |
 | **19** | **Package Management with Helm** | Helm `Chart.yaml` v3 metadata, Go templating, `_helpers.tpl`, `values.schema.json` validation, and subchart overrides. | `helm01` – `helm04` (4) |
 | **20** | **Declarative Customization with Kustomize** | `kustomization.yaml` bases, `configMapGenerator`, `secretGenerator`, strategic merge patches, and multi-environment overlays. | `kustomize01` – `kustomize04` (4) |
+| **21** | **Gateway API & Traffic Routing** | Next-gen Gateway API standard (`GatewayClass`, `Gateway`, `HTTPRoute`), canary traffic splitting, URL rewrite filters, and `ReferenceGrant`. | `gateway01` – `gateway04` (4) |
+| **22** | **Infrastructure as Data (Crossplane)** | CompositeResourceDefinitions (`XRD`), Compositions, Managed Resources, and application-level self-service Claims. | `crossplane01` – `crossplane04` (4) |
+| **23** | **eBPF Security & Observability (Tetragon)** | Real-time kernel `sys_execve` process tracing, sensitive file access auditing, synchronous `Sigkill` enforcement, and socket connect tracing. | `tetragon01` – `tetragon04` (4) |
 
 ---
 

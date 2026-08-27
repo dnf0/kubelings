@@ -1158,6 +1158,162 @@ def build_manifest() -> Manifest:
                 ),
             ],
         ),
+        Chapter(
+            number=21,
+            name="21_gateway_api",
+            title="Next-Gen Traffic Routing with Kubernetes Gateway API",
+            description="GatewayClass, Gateway Listeners, HTTPRoute, Canary Traffic Splitting, and ReferenceGrant",
+            exercises=[
+                Exercise(
+                    name="gateway01",
+                    title="GatewayClass and Gateway Declaration",
+                    path="exercises/21_gateway_api/gateway01.py",
+                    chapter_name="21_gateway_api",
+                    hints=[
+                        "Set apiVersion to gateway.networking.k8s.io/v1 and kind to GatewayClass or Gateway",
+                        "Configure controllerName in GatewayClass and gatewayClassName in Gateway",
+                        "Define HTTP listener on port 80 with allowedRoutes namespace policy",
+                    ],
+                ),
+                Exercise(
+                    name="gateway02",
+                    title="HTTPRoute Path & Header-Based Routing",
+                    path="exercises/21_gateway_api/gateway02.py",
+                    chapter_name="21_gateway_api",
+                    hints=[
+                        "Attach HTTPRoute to Gateway using parentRefs with name and namespace",
+                        "Match path prefixes using PathPrefix type in rules",
+                        "Add header matches under rules.matches to route traffic based on custom headers",
+                    ],
+                ),
+                Exercise(
+                    name="gateway03",
+                    title="Canary Traffic Splitting & URL Rewriting",
+                    path="exercises/21_gateway_api/gateway03.py",
+                    chapter_name="21_gateway_api",
+                    hints=[
+                        "Specify multiple backendRefs with integer weight values summing to 100",
+                        "Apply URLRewrite filter to rewrite URL prefixes before forwarding to backends",
+                        "Use RequestHeaderModifier filter to inject custom tracing headers",
+                    ],
+                ),
+                Exercise(
+                    name="gateway04",
+                    title="Cross-Namespace Security with ReferenceGrant",
+                    path="exercises/21_gateway_api/gateway04.py",
+                    chapter_name="21_gateway_api",
+                    hints=[
+                        "Create ReferenceGrant in target backend namespace to authorize cross-namespace references",
+                        "Specify source HTTPRoute namespace in spec.from list",
+                        "Grant access to specific Service resource names in spec.to list",
+                    ],
+                ),
+            ],
+        ),
+        Chapter(
+            number=22,
+            name="22_crossplane_iac",
+            title="Infrastructure as Data with Crossplane",
+            description="CompositeResourceDefinitions (XRDs), Compositions, Managed Resources, and Developer Claims",
+            exercises=[
+                Exercise(
+                    name="crossplane01",
+                    title="CompositeResourceDefinition (XRD) Schema",
+                    path="exercises/22_crossplane_iac/crossplane01.py",
+                    chapter_name="22_crossplane_iac",
+                    hints=[
+                        "Define XRD under apiextensions.crossplane.io/v1 with group and names",
+                        "Specify claimNames to allow developers to create namespaced claims",
+                        "Define OpenAPI v3 schema validation rules for custom parameters",
+                    ],
+                ),
+                Exercise(
+                    name="crossplane02",
+                    title="Composition and Field Path Transforms",
+                    path="exercises/22_crossplane_iac/crossplane02.py",
+                    chapter_name="22_crossplane_iac",
+                    hints=[
+                        "Link Composition to XRD via compositeTypeRef",
+                        "Define base managed resources under spec.resources",
+                        "Use FromCompositeFieldPath patches to map claim parameters to cloud resource fields",
+                    ],
+                ),
+                Exercise(
+                    name="crossplane03",
+                    title="ProviderConfig and Resource Deletion Policies",
+                    path="exercises/22_crossplane_iac/crossplane03.py",
+                    chapter_name="22_crossplane_iac",
+                    hints=[
+                        "Configure ProviderConfig with credentials secret reference",
+                        "Set providerConfigRef on managed cloud resources",
+                        "Set deletionPolicy to Delete or Orphan depending on lifecycle needs",
+                    ],
+                ),
+                Exercise(
+                    name="crossplane04",
+                    title="Developer Self-Service Claims & Connection Secrets",
+                    path="exercises/22_crossplane_iac/crossplane04.py",
+                    chapter_name="22_crossplane_iac",
+                    hints=[
+                        "Instantiate namespaced claim matching XRD claimNames.kind",
+                        "Use compositionSelector to choose cloud provider or environment composition",
+                        "Set writeConnectionSecretToRef to securely output generated credentials into a Secret",
+                    ],
+                ),
+            ],
+        ),
+        Chapter(
+            number=23,
+            name="23_ebpf_tetragon",
+            title="Kernel-Level Security & Observability with eBPF Tetragon",
+            description="Process Execution Auditing, Sensitive File Tracing, Kernel Sigkill Actions, and Socket Probes",
+            exercises=[
+                Exercise(
+                    name="tetragon01",
+                    title="Process Execution Tracing with sys_execve",
+                    path="exercises/23_ebpf_tetragon/tetragon01.py",
+                    chapter_name="23_ebpf_tetragon",
+                    hints=[
+                        "Set apiVersion to cilium.io/v1alpha1 and kind to TracingPolicy",
+                        "Trace sys_execve kprobe to capture all binary execution events in the kernel",
+                        "Filter by namespace and binary prefix in matchNamespaces and matchArgs",
+                    ],
+                ),
+                Exercise(
+                    name="tetragon02",
+                    title="Sensitive File & Credential Access Auditing",
+                    path="exercises/23_ebpf_tetragon/tetragon02.py",
+                    chapter_name="23_ebpf_tetragon",
+                    hints=[
+                        "Trace sys_openat syscall with path argument inspection at index 1",
+                        "Specify sensitive paths like /etc/shadow or service account token directories",
+                        "Monitor read and write attempts across container boundaries",
+                    ],
+                ),
+                Exercise(
+                    name="tetragon03",
+                    title="Real-Time Kernel Sigkill Enforcement",
+                    path="exercises/23_ebpf_tetragon/tetragon03.py",
+                    chapter_name="23_ebpf_tetragon",
+                    hints=[
+                        "Match prohibited binaries such as sudo or nsenter with Exact operator",
+                        "Configure matchActions with Sigkill to immediately terminate unauthorized processes in kernel space",
+                        "Provides synchronous runtime prevention before syscall execution completes",
+                    ],
+                ),
+                Exercise(
+                    name="tetragon04",
+                    title="eBPF TCP Socket & Network Egress Observability",
+                    path="exercises/23_ebpf_tetragon/tetragon04.py",
+                    chapter_name="23_ebpf_tetragon",
+                    hints=[
+                        "Attach kprobe to kernel tcp_connect function with sock argument type",
+                        "Filter by workload namespaces requiring strict network auditing",
+                        "Emit events via Post action to Tetragon gRPC stream for zero-overhead egress logging",
+                    ],
+                ),
+            ],
+        ),
     ]
     return Manifest(chapters=chapters)
 
