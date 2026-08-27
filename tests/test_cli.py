@@ -114,7 +114,7 @@ def test_cli_run_command_passing_exercise(tmp_path: Path):
 def test_cli_run_command_failing_exercise(tmp_path: Path):
     """Verify kubelings run executes failing exercise and exits with 1."""
     ex_file = tmp_path / "pods01.py"
-    ex_file.write_text("# I AM NOT DONE\nprint('In progress')\n")
+    ex_file.write_text("assert False, 'Pod spec validation failed'\n")
 
     fake_ex = Exercise(
         name="pods01",
@@ -126,7 +126,11 @@ def test_cli_run_command_failing_exercise(tmp_path: Path):
     with patch("kubelings.cli.get_exercise_by_name", return_value=fake_ex):
         result = runner.invoke(app, ["run", "pods01"])
         assert result.exit_code == 1
-        assert "IN PROGRESS" in result.stdout or "I AM NOT DONE" in result.stdout
+        assert (
+            "FAILED" in result.stdout
+            or "✗" in result.stdout
+            or "Pod spec validation failed" in result.stdout
+        )
 
 
 def test_cli_verify_command(tmp_path: Path):

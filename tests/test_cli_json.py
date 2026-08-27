@@ -59,6 +59,48 @@ def test_cli_run_json_passing(tmp_path: Path):
         assert data["exit_code"] == 0
 
 
+def test_cli_run_json_with_marker_passes_if_exit_code_zero(tmp_path: Path):
+    ex_file = tmp_path / "pods01.py"
+    ex_file.write_text("# I AM NOT DONE\nprint('Execution succeeded!')\n")
+
+    fake_ex = Exercise(
+        name="pods01",
+        title="First Pod",
+        path=str(ex_file),
+        chapter_name="01_pods",
+    )
+
+    with patch("kubelings.cli.get_exercise_by_name", return_value=fake_ex):
+        result = runner.invoke(app, ["run", "pods01", "--json"])
+        assert result.exit_code == 0
+        data = json.loads(result.stdout)
+        assert data["exercise"] == "pods01"
+        assert data["passed"] is True
+        assert data["has_not_done_marker"] is True
+        assert data["exit_code"] == 0
+
+
+def test_cli_run_json_failing_assertion(tmp_path: Path):
+    ex_file = tmp_path / "pods01.py"
+    ex_file.write_text("assert False, 'Validation failed: container image missing'\n")
+
+    fake_ex = Exercise(
+        name="pods01",
+        title="First Pod",
+        path=str(ex_file),
+        chapter_name="01_pods",
+    )
+
+    with patch("kubelings.cli.get_exercise_by_name", return_value=fake_ex):
+        result = runner.invoke(app, ["run", "pods01", "--json"])
+        assert result.exit_code == 1
+        data = json.loads(result.stdout)
+        assert data["exercise"] == "pods01"
+        assert data["passed"] is False
+        assert data["exit_code"] != 0
+        assert "Validation failed" in data["error"]
+
+
 def test_cli_run_json_invalid_exercise():
     result = runner.invoke(app, ["run", "nonexistent_ex", "--json"])
     assert result.exit_code == 1

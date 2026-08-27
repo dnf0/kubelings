@@ -19,8 +19,8 @@ class RunResult:
 
     exercise: Exercise
     passed: bool
-    has_not_done_marker: bool
-    output: str
+    has_not_done_marker: bool = False
+    output: str = ""
     error: Optional[str] = None
     exit_code: int = 0
     duration_ms: float = 0.0
@@ -91,7 +91,7 @@ class ExerciseRunner:
 
             stdout = proc.stdout or ""
             stderr = proc.stderr or ""
-            passed = (proc.returncode == 0) and not has_marker
+            passed = proc.returncode == 0
 
             error_msg: Optional[str] = None
             if stderr:
