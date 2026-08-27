@@ -77,3 +77,15 @@ cursor --install-extension dist/kubelings-vscode.vsix
 2. Click the **`...`** (Views and More Actions) menu in the top-right corner of the Extensions pane.
 3. Select **Install from VSIX...** and choose `dist/kubelings-vscode.vsix`.
 
+---
+
+## 🌐 The *lings Ecosystem
+
+If you enjoy the hands-on, terminal-driven learning loop of **Kubelings**, explore the other interactive platforms in our `*lings` suite:
+
+- 🏗️ [**Terralings**](https://github.com/dnf0/terralings) – Master Terraform and OpenTofu through interactive infrastructure-as-code exercises.
+- 🇪🇸 [**Spanglings**](https://github.com/dnf0/spanglings) – Developer-grade CLI & interactive TUI for learning intermediate-to-advanced Spanish (B1–C1).
+- ⚡ [**Raylings**](https://github.com/dnf0/raylings) – Learn distributed AI, Ray Core actors, and scalable clusters through hands-on Python exercises.
+
+> *All projects in the `*lings` suite are deeply inspired by the pioneering terminal-based pedagogy of [Rustlings](https://github.com/rust-lang/rustlings) and [Ziglings](https://codeberg.org/ziglings/exercises).*
+
