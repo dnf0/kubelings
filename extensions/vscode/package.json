@@ -4,6 +4,12 @@
   "description": "Interactive Kubernetes learning environment inside VS Code / Cursor.",
   "version": "0.5.0",
   "publisher": "dnf0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dnf0/kubelings.git",
+    "directory": "extensions/vscode"
+  },
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -20,7 +26,7 @@
     "education"
   ],
   "main": "./dist/extension.js",
-  "icon": "icons/kubelings-dark.svg",
+  "icon": "icons/icon.png",
   "activationEvents": [
     "onView:kubelings.curriculumView"
   ],
