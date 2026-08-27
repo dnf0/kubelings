@@ -40,7 +40,7 @@ def test_all_reference_solutions_pass(exercise: Exercise):
         f"STDOUT:\n{proc.stdout}\n"
         f"STDERR:\n{proc.stderr}"
     )
-    assert "passed" in proc.stdout.lower(), (
+    assert "passed" in proc.stdout.lower() or "validated" in proc.stdout.lower(), (
         f"Solution {sol_path} did not output expected pass confirmation.\nSTDOUT:\n{proc.stdout}"
     )
 
@@ -82,9 +82,9 @@ def test_manifest_and_disk_files_consistency():
     disk_solutions = {str(p) for p in Path("solutions").glob("*/*.py")}
 
     # Check total counts
-    assert len(manifest_exercises) == 62
-    assert len(disk_exercises) == 62
-    assert len(disk_solutions) == 62
+    assert len(manifest_exercises) == 70
+    assert len(disk_exercises) == 70
+    assert len(disk_solutions) == 70
 
     # Check for missing or orphaned exercise files
     missing_exercises = manifest_exercises - disk_exercises

@@ -159,8 +159,10 @@ class WatchEngine:
         """Render victory celebration when all curriculum exercises pass."""
         text = Text()
         text.append(VICTORY_BANNER.strip("\n"), style="bold green")
+        num_ch = len(self.manifest.chapters)
+        num_ex = len(self.manifest.all_exercises)
         text.append(
-            "\n\nAll 13 chapters and 55 exercises have been verified successfully!\n",
+            f"\n\nAll {num_ch} chapters and {num_ex} exercises have been verified successfully!\n",
             style="bold cyan",
         )
         text.append(

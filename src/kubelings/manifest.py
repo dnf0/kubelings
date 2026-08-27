@@ -794,6 +794,110 @@ def build_manifest() -> Manifest:
                 ),
             ],
         ),
+        Chapter(
+            number=14,
+            name="14_gitops_argocd",
+            title="GitOps Continuous Delivery with ArgoCD",
+            description="Application CRDs, ApplicationSets, Sync Policies, and Progressive Delivery Rollouts",
+            exercises=[
+                Exercise(
+                    name="gitops01",
+                    title="ArgoCD Application CRD & Sync Policies",
+                    path="exercises/14_gitops_argocd/gitops01.py",
+                    chapter_name="14_gitops_argocd",
+                    hints=[
+                        "Set apiVersion to argoproj.io/v1alpha1 and kind to Application",
+                        "Configure source repoURL, targetRevision, and path",
+                        "Enable automated.prune: true and automated.selfHeal: true under syncPolicy",
+                    ],
+                ),
+                Exercise(
+                    name="gitops02",
+                    title="ArgoCD ApplicationSet Matrix Generator",
+                    path="exercises/14_gitops_argocd/gitops02.py",
+                    chapter_name="14_gitops_argocd",
+                    hints=[
+                        "ApplicationSets generate multiple Applications across clusters and folders",
+                        "Use git directory generator under spec.generators",
+                        "Reference {{path.basename}} in the template metadata and destination namespace",
+                    ],
+                ),
+                Exercise(
+                    name="gitops03",
+                    title="Sync Windows, ServerSideApply & Retry Backoff",
+                    path="exercises/14_gitops_argocd/gitops03.py",
+                    chapter_name="14_gitops_argocd",
+                    hints=[
+                        "Include 'CreateNamespace=true' and 'ServerSideApply=true' in syncOptions",
+                        "Configure exponential retry backoff with duration and factor",
+                        "Automated sync policies ensure drift correction",
+                    ],
+                ),
+                Exercise(
+                    name="gitops04",
+                    title="Progressive Delivery with Argo Rollouts",
+                    path="exercises/14_gitops_argocd/gitops04.py",
+                    chapter_name="14_gitops_argocd",
+                    hints=[
+                        "Argo Rollouts replaces Deployment with advanced canary and blue-green strategies",
+                        "Define spec.strategy.canary.steps with setWeight and pause durations",
+                        "Canary steps shift traffic gradually before full promotion",
+                    ],
+                ),
+            ],
+        ),
+        Chapter(
+            number=15,
+            name="15_service_mesh_cilium",
+            title="Service Mesh, eBPF & Cilium",
+            description="CiliumNetworkPolicies, L7 HTTP Routing, Mutual TLS, and Hubble Observability",
+            exercises=[
+                Exercise(
+                    name="mesh01",
+                    title="Cilium L7 HTTP Filtering & Routing",
+                    path="exercises/15_service_mesh_cilium/mesh01.py",
+                    chapter_name="15_service_mesh_cilium",
+                    hints=[
+                        "Set apiVersion to cilium.io/v2 and kind to CiliumNetworkPolicy",
+                        "Define endpointSelector to match target workload pods",
+                        "Configure toPorts rules with http methods and paths under ingress",
+                    ],
+                ),
+                Exercise(
+                    name="mesh02",
+                    title="Strict Mutual TLS & PeerAuthentication",
+                    path="exercises/15_service_mesh_cilium/mesh02.py",
+                    chapter_name="15_service_mesh_cilium",
+                    hints=[
+                        "PeerAuthentication configures namespace-wide mTLS encryption",
+                        "Set spec.mtls.mode to 'STRICT'",
+                        "Ensures all inter-service traffic is cryptographically authenticated",
+                    ],
+                ),
+                Exercise(
+                    name="mesh03",
+                    title="CiliumClusterwideNetworkPolicy with DNS FQDN Egress",
+                    path="exercises/15_service_mesh_cilium/mesh03.py",
+                    chapter_name="15_service_mesh_cilium",
+                    hints=[
+                        "CiliumClusterwideNetworkPolicy applies across all cluster namespaces",
+                        "Use toFQDNs with matchName and matchPattern for domain filtering",
+                        "Intercept DNS traffic via port 53 / 443 rules",
+                    ],
+                ),
+                Exercise(
+                    name="mesh04",
+                    title="Hubble Observability & OpenTelemetry Tracing",
+                    path="exercises/15_service_mesh_cilium/mesh04.py",
+                    chapter_name="15_service_mesh_cilium",
+                    hints=[
+                        "Attach prometheus.io/scrape and telemetry annotations to Pod metadata",
+                        "Hubble extracts L4/L7 flow metrics via eBPF without code modification",
+                        "Trace headers propagate distributed context across mesh services",
+                    ],
+                ),
+            ],
+        ),
     ]
     return Manifest(chapters=chapters)
 
