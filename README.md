@@ -87,6 +87,9 @@ Learning Kubernetes from static documentation or raw copy-pasted Helm charts is 
 You can run Kubelings anywhere using [`uvx`](https://docs.astral.sh/uv/) or [`pipx`](https://pipx.pypa.io/stable/):
 
 ```bash
+# Launch the interactive guided onboarding tour
+uvx kubelings tour
+
 # Initialize exercises in your current folder
 uvx kubelings init
 
@@ -98,9 +101,12 @@ Or install globally:
 
 ```bash
 pipx install kubelings
+kubelings tour
 kubelings init
 kubelings watch
 ```
+
+> 📖 **New to Kubelings?** Check out the [**Complete Onboarding & Learner's Guide**](docs/onboarding-guide.md) for a visual step-by-step tutorial!
 
 ### Local Development Installation
 
@@ -136,7 +142,19 @@ kubelings --help
 
 ## Interactive Learning Commands
 
-### 1. Watch Mode (`kubelings watch`)
+### 1. Interactive Onboarding Tour (`kubelings tour`)
+
+Launch the rich, 5-step terminal walkthrough with live environment probes, workflow introduction, and guided `pods01` resolution:
+
+```bash
+kubelings tour
+# or run non-interactively / output json
+kubelings tour --non-interactive
+kubelings tour --step 4
+kubelings tour --json
+```
+
+### 2. Watch Mode (`kubelings watch`)
 
 Start the interactive development loop. Whenever you save a file in `exercises/`, Kubelings immediately evaluates your changes.
 
@@ -145,12 +163,14 @@ kubelings watch
 ```
 
 > **Interactive Hotkeys**:
+> - `n` / `Enter` : Advance to next exercise
+> - `p` : Navigate to previous exercise
 > - `h` : Reveal progressive hint tier
 > - `r` : Force rerun current exercise
 > - `l` : List curriculum exercises
 > - `q` : Exit watcher
 
-### 2. Interactive Terminal TUI Dashboard (`kubelings tui` / `kubelings dashboard`)
+### 3. Interactive Terminal TUI Dashboard (`kubelings tui` / `kubelings dashboard`)
 
 Explore the curriculum, browse code, and trigger evaluations inside a split-pane full-screen terminal interface:
 
@@ -160,7 +180,7 @@ kubelings tui
 kubelings dashboard
 ```
 
-### 3. Resource Relationship Topology Visualizer (`kubelings tree`)
+### 4. Resource Relationship Topology Visualizer (`kubelings tree`)
 
 Render an architectural relationship topology tree of Kubernetes workloads, services, endpoints, volumes, and network policies:
 
@@ -170,7 +190,7 @@ kubelings tree pods01
 kubelings tree deployment.yaml
 ```
 
-### 4. Universal Manifest Linter (`kubelings lint`)
+### 5. Universal Manifest Linter (`kubelings lint`)
 
 Audit any Kubernetes manifest against security standards, reliability probes, and schema best practices:
 
@@ -180,7 +200,7 @@ kubelings lint exercises/01_pods/pods01.py
 kubelings lint manifests/production/
 ```
 
-### 5. Run a Single Exercise
+### 6. Run a Single Exercise
 
 Execute and evaluate a single exercise directly:
 
@@ -188,7 +208,7 @@ Execute and evaluate a single exercise directly:
 kubelings run pods01
 ```
 
-### 6. Progressive Hints
+### 7. Progressive Hints
 
 Get step-by-step tips for any exercise:
 
@@ -196,7 +216,7 @@ Get step-by-step tips for any exercise:
 kubelings hint pods01
 ```
 
-### 7. List All Chapters & Exercises
+### 8. List All Chapters & Exercises
 
 Browse the entire curriculum syllabus, descriptions, and exercise paths:
 
@@ -204,7 +224,7 @@ Browse the entire curriculum syllabus, descriptions, and exercise paths:
 kubelings list
 ```
 
-### 8. Verify Curriculum Progress
+### 9. Verify Curriculum Progress
 
 Display a rich summary table showing the pass/fail status of all 102 exercises:
 
@@ -212,7 +232,7 @@ Display a rich summary table showing the pass/fail status of all 102 exercises:
 kubelings verify
 ```
 
-### 9. Test Reference Solutions
+### 10. Test Reference Solutions
 
 Run built-in self-testing across reference solutions:
 
@@ -220,7 +240,7 @@ Run built-in self-testing across reference solutions:
 kubelings test
 ```
 
-### 10. Cluster Connectivity Status
+### 11. Cluster Connectivity Status
 
 Check whether `kubelings` is running in offline validation mode or connected to a live Kubernetes cluster:
 
@@ -236,6 +256,7 @@ Kubelings provides an official extension for **Visual Studio Code** and **Cursor
 
 ### ✨ Extension Features
 
+- 🗺️ **Interactive Welcome Walkthrough**: Built-in editor walkthrough (`Kubelings: Open Welcome Walkthrough`) guiding you through curriculum navigation, live cluster verification, and first exercise resolution.
 - 📚 **Activity Bar Curriculum Tree View**: Browse all 23 chapters and 102 exercises directly from the sidebar with real-time pass/fail status and chapter completion counters.
 - 📊 **Status Bar Progress Indicator**: Persistent status bar item showing your total completion percentage, current progress, and next active exercise. Click to jump straight to the exercise.
 - ⚡ **On-Save Diagnostics**: Automatic in-editor validation whenever you save an exercise manifest (`exercises/**/*.py`), surfacing schema errors, missing attributes, or assertion failures.

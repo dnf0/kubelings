@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **VS Code Extension**: Streamlined on-save diagnostics to emit error squiggles on genuine validation/assertion failures without requiring comment removal.
 
 ### Added
+- **Interactive Onboarding Tour (`kubelings tour`)**: Rich 5-step terminal onboarding tour with live runtime/cluster probes, pedagogical philosophy, inner learning loop and hotkeys explanation, guided first exercise (`pods01`) resolution with error inspection and solution diffing, and VS Code extension tooling setup. Supports `--step`, `--non-interactive`, and `--json` flags.
+- **VS Code Extension Native Walkthrough**: Declarative welcome walkthrough (`contributes.walkthroughs` in `package.json` with `kubelings.walkthrough`) featuring 5 markdown stages (`welcome.md`, `cluster.md`, `watch.md`, `exercise.md`, `quickfixes.md`), `Kubelings: Open Welcome Walkthrough` command, and `KubelingsCliBridge.tour()` method.
+- **Comprehensive Learner's Onboarding Guide (`docs/onboarding-guide.md`)**: In-depth illustrated tutorial covering quickstart zero-install runs (`uvx kubelings tour`), the inner loop workflow, step-by-step resolution of `pods01.py`, VS Code integration, 5-tier curriculum progression roadmap (102 exercises across 23 chapters), and an essential commands cheat sheet.
+- **CLI JSON Serialization**: Added `--json` flag support across `kubelings tour`, `kubelings list`, and `kubelings verify` commands for seamless IDE integration.
 - **Full 13-Chapter Curriculum (62 Exercises)**:
   - **Chapter 01 (Pods & Core Workloads)**: Pod manifests, multi-container sidecars, init containers, resource requests/limits, Downward API, and Pod Disruption Budgets (`pods01`–`pods06`).
   - **Chapter 02 (Controllers & Replication)**: ReplicaSets, Deployments, rolling updates, rollbacks, StatefulSets, DaemonSets, and Jobs/CronJobs (`ctrl01`–`ctrl06`).

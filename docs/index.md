@@ -14,7 +14,8 @@ Learning Kubernetes from static documentation or copy-pasted manifests often lea
 - 🔁 **Active Problem Solving**: 102 real-world exercises across 23 chapters starting in a broken state that you fix and verify.
 - ☸ **Dual-Mode Engine**: Practice 100% offline or connect to a real cluster (`kind`, `minikube`, `k3d`, or cloud).
 - 💡 **Progressive Hinting**: Multi-tier clues when you get stuck without spoiling the answer.
-- 🚀 **Zero-Install Run**: Start practicing immediately with `uvx kubelings init && uvx kubelings watch`.
+- 🚀 **Zero-Install Run**: Start practicing immediately with `uvx kubelings tour`, `uvx kubelings init`, and `uvx kubelings watch`.
+- 📖 **Complete Onboarding Guide**: Visual step-by-step tutorial available in the [**Learner's Onboarding Guide**](onboarding-guide.md).
 
 ---
 
@@ -60,6 +61,7 @@ Kubelings offers an official extension for **Visual Studio Code** and **Cursor**
 
 ### ✨ Extension Features
 
+- 🗺️ **Interactive Welcome Walkthrough**: Built-in editor walkthrough (`Kubelings: Open Welcome Walkthrough`) guiding you through curriculum navigation, live cluster verification, and first exercise resolution.
 - 📚 **Activity Bar Curriculum Tree View**: Browse all 23 chapters and 102 exercises directly from the sidebar with real-time pass/fail status and chapter completion counters.
 - 📊 **Status Bar Progress Indicator**: Persistent status bar item showing your total completion percentage, current progress, and next active exercise. Click to jump straight to the exercise.
 - ⚡ **On-Save Diagnostics**: Automatic in-editor validation whenever you save an exercise manifest (`exercises/**/*.py`), surfacing schema errors, missing attributes, or assertion failures.

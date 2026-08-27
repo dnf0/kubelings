@@ -1,14 +1,19 @@
 # Getting Started
 
+> 📖 **Looking for a deep-dive walkthrough?** See the [**Complete Onboarding & Learner's Guide**](onboarding-guide.md) for an illustrated tutorial covering installation, the CLI tour, solving `pods01`, and VS Code setup.
+
 ## Quickstart (Zero-Install)
 
-The fastest way to use Kubelings is with [`uvx`](https://docs.astral.sh/uv/):
+The fastest way to get started with Kubelings is using [`uvx`](https://docs.astral.sh/uv/):
 
 ```bash
-# 1. Initialize exercises in your current directory
+# 1. Take the interactive 5-step onboarding tour
+uvx kubelings tour
+
+# 2. Initialize exercises in your current directory
 uvx kubelings init
 
-# 2. Launch the interactive watch engine
+# 3. Launch the interactive watch engine
 uvx kubelings watch
 ```
 
@@ -16,6 +21,7 @@ Alternatively with [`pipx`](https://pipx.pypa.io/stable/):
 
 ```bash
 pipx install kubelings
+kubelings tour
 kubelings init
 kubelings watch
 ```
