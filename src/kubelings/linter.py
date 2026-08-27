@@ -159,7 +159,7 @@ class ManifestLinter:
         return diagnostics
 
     def lint_file(self, file_path: Path) -> List[LintDiagnostic]:
-        """Parse and lint a YAML/JSON file from disk."""
+        """Parse and lint a YAML/JSON or Python exercise file from disk."""
         if not file_path.exists():
             return [
                 LintDiagnostic(
@@ -173,19 +173,31 @@ class ManifestLinter:
 
         content = file_path.read_text(encoding="utf-8")
         diagnostics: List[LintDiagnostic] = []
+        docs: List[Any] = []
 
-        try:
-            docs = list(yaml.safe_load_all(content))
-        except yaml.YAMLError as e:
-            return [
-                LintDiagnostic(
-                    rule_id="SYN001_YAML_SYNTAX",
-                    severity=LintSeverity.ERROR,
-                    message=f"YAML syntax parsing error: {e}",
-                    suggestion="Fix YAML indentation and syntax.",
-                    path=str(file_path),
-                )
-            ]
+        if file_path.suffix == ".py":
+            import re
+            yaml_blocks = re.findall(r'"""(.*?)"""', content, re.DOTALL)
+            for block in yaml_blocks:
+                try:
+                    loaded = list(yaml.safe_load_all(block.strip()))
+                    docs.extend([d for d in loaded if isinstance(d, dict) and ("kind" in d or "apiVersion" in d)])
+                except Exception:
+                    pass
+            # If no embedded manifests found in docstrings, nothing to flag as syntax error
+        else:
+            try:
+                docs = list(yaml.safe_load_all(content))
+            except yaml.YAMLError as e:
+                return [
+                    LintDiagnostic(
+                        rule_id="SYN001_YAML_SYNTAX",
+                        severity=LintSeverity.ERROR,
+                        message=f"YAML syntax parsing error: {e}",
+                        suggestion="Fix YAML indentation and syntax.",
+                        path=str(file_path),
+                    )
+                ]
 
         for doc in docs:
             if doc and isinstance(doc, dict):

@@ -378,5 +378,106 @@ def reset_cmd(
         raise typer.Exit(code=1)
 
 
+@app.command("tree")
+def tree_cmd(
+    target: str = typer.Argument("pods01", help="Exercise name, file path, or YAML manifest to visualize"),
+) -> None:
+    """Render architectural relationship topology tree for Kubernetes resources."""
+    from pathlib import Path
+    import yaml
+    from kubelings.topology import render_topology_tree
+
+    ex = get_exercise_by_name(target)
+    manifests = []
+    
+    if ex:
+        # Check solution first if exists, else exercise
+        target_path = ex.solution_path if ex.solution_path.exists() else ex.file_path
+        if target_path.exists():
+            content = target_path.read_text(encoding="utf-8")
+            # Extract YAML blocks from docstring or inline YAML
+            try:
+                # First try direct YAML parse
+                manifests = list(yaml.safe_load_all(content))
+            except Exception:
+                pass
+            if not manifests or not any(isinstance(m, dict) for m in manifests):
+                # Look for YAML inside python multiline strings
+                import re
+                yaml_blocks = re.findall(r'"""(.*?)"""', content, re.DOTALL)
+                for block in yaml_blocks:
+                    try:
+                        docs = list(yaml.safe_load_all(block.strip()))
+                        manifests.extend([d for d in docs if isinstance(d, dict) and "kind" in d])
+                    except Exception:
+                        pass
+    else:
+        file_path = Path(target)
+        if file_path.exists():
+            content = file_path.read_text(encoding="utf-8")
+            try:
+                manifests = [d for d in yaml.safe_load_all(content) if isinstance(d, dict)]
+            except Exception as e:
+                console.print(f"[bold red]Error parsing YAML:[/bold red] {e}")
+                raise typer.Exit(code=1)
+        else:
+            console.print(f"[bold red]Target not found:[/bold red] {target}")
+            raise typer.Exit(code=1)
+
+    if not manifests:
+        # Provide sample manifest fallback
+        manifests = [
+            {"apiVersion": "v1", "kind": "Pod", "metadata": {"name": target, "namespace": "default"}}
+        ]
+
+    render_topology_tree(manifests, console=console)
+
+
+@app.command("lint")
+def lint_cmd(
+    target: str = typer.Argument(..., help="Path to Kubernetes YAML/JSON manifest or exercise file to lint"),
+) -> None:
+    """Evaluate Kubernetes manifests against security, reliability, and schema rules."""
+    from pathlib import Path
+    from kubelings.linter import ManifestLinter, LintSeverity, render_lint_table
+
+    file_path = Path(target)
+    if not file_path.exists():
+        console.print(f"[bold red]Error: File not found:[/bold red] {target}")
+        raise typer.Exit(code=1)
+
+    linter = ManifestLinter()
+    diagnostics = linter.lint_file(file_path)
+
+    # If it's a python exercise file, extract manifests from docstrings / code
+    if file_path.suffix == ".py" and not diagnostics:
+        import yaml, re
+        content = file_path.read_text(encoding="utf-8")
+        yaml_blocks = re.findall(r'"""(.*?)"""', content, re.DOTALL)
+        for block in yaml_blocks:
+            try:
+                for doc in yaml.safe_load_all(block.strip()):
+                    if isinstance(doc, dict) and "kind" in doc:
+                        diagnostics.extend(linter.lint_manifest(doc, file_path=str(file_path)))
+            except Exception:
+                pass
+
+    render_lint_table(diagnostics, console=console)
+    has_errors = any(d.severity == LintSeverity.ERROR for d in diagnostics)
+    if has_errors:
+        raise typer.Exit(code=1)
+
+
+@app.command("tui")
+@app.command("dashboard")
+def tui_cmd() -> None:
+    """Launch full-screen interactive terminal TUI dashboard."""
+    from kubelings.tui import TuiApp
+
+    app_instance = TuiApp(console=console)
+    layout = app_instance.generate_layout()
+    console.print(layout)
+
+
 if __name__ == "__main__":
     app()
