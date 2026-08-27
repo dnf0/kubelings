@@ -23,7 +23,7 @@ Kubelings is an interactive, test-driven learning platform inspired by [Rustling
 2. **Sub-30ms Instant Feedback**: All manifests and resource specifications are evaluated in-memory locally. You get instant validation on file save without waiting for remote API server roundtrips.
 3. **Test-Driven Mastery**: Exercises pass strictly when genuine Kubernetes schema validations, constraints, and controller assertions succeed. No magic comments required!
 4. **Dual-Mode Flexibility**:
-   - **Offline Mode**: 100% of the 23 chapters work entirely offline with zero cluster installation needed.
+   - **Offline Mode**: 100% of the 26 chapters work entirely offline with zero cluster installation needed.
    - **Live Cluster Mode**: Seamlessly connect to `kind`, `minikube`, `k3d`, or remote clusters for live reconciliation testing in isolated ephemeral namespaces.
 
 ---

@@ -82,7 +82,7 @@ The extension automatically discovers Python virtual environments (`.venv`) and 
 | `kubelings.showSolutionDiff` | **Kubelings: Compare with Reference Solution** | Open a side-by-side diff comparing current exercise with solution. |
 | `kubelings.startWatch` | **Kubelings: Start Watch Mode in Terminal** | Launch interactive `kubelings watch` loop in terminal. |
 | `kubelings.checkCluster` | **Kubelings: Check Cluster Connection** | Check offline vs live Kubernetes cluster connectivity. |
-| `kubelings.testAll` | **Kubelings: Test All Reference Solutions** | Run test suite against all 102 curriculum solutions. |
+| `kubelings.testAll` | **Kubelings: Test All Reference Solutions** | Run test suite against all 114 curriculum solutions. |
 
 ---
 
