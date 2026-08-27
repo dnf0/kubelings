@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Chapter 19: Package Management with Helm
 Exercise 19.3: Helm values.schema.json Validation Schema

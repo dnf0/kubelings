@@ -19,8 +19,6 @@ Complete the multi-document manifest below:
    - restartPolicy: 'OnFailure'
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifests

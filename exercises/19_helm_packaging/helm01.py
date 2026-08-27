@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Chapter 19: Package Management with Helm
 Exercise 19.1: Helm Chart.yaml Metadata & Dependencies

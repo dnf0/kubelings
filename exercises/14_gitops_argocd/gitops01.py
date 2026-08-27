@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Exercise: GitOps with ArgoCD Application CRD (gitops01)
 

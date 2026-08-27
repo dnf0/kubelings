@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Chapter 18: Advanced Admission Webhooks & Dynamic Interception
 Exercise 18.4: CRD Conversion Webhook Strategy

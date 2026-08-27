@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Chapter 19: Package Management with Helm
 Exercise 19.4: Helm Subcharts & Global Values

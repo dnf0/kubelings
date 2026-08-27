@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Chapter 20: Declarative Customization with Kustomize
 Exercise 20.1: Kustomize Base Manifests & Metadata Transformations

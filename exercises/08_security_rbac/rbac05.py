@@ -19,8 +19,6 @@ Restricted) through namespace labels across three modes: `enforce`, `audit`, and
      and container `capabilities.drop` includes 'ALL'.
 """
 
-# I AM NOT DONE
-
 from typing import Any, Dict
 
 import yaml

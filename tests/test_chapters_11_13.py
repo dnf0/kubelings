@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from kubelings.manifest import get_manifest
-from kubelings.runner import NOT_DONE_MARKER, ExerciseRunner
+from kubelings.runner import NOT_DONE_MARKER
 
 CHAPTER_DIRS = [
     "11_autoscaling",
@@ -45,10 +45,8 @@ def test_expected_file_count():
 
 @pytest.mark.parametrize("exercise_path", ALL_EXERCISE_FILES, ids=lambda p: p.name)
 def test_exercise_files_exist_and_fail_initially(exercise_path: Path):
-    """Verify every exercise file exists, contains the NOT_DONE marker, and fails."""
+    """Verify every exercise file exists and fails initially."""
     assert exercise_path.exists(), f"Exercise file missing: {exercise_path}"
-    content = exercise_path.read_text(encoding="utf-8")
-    assert NOT_DONE_MARKER in content, f"Exercise {exercise_path} missing '{NOT_DONE_MARKER}'"
 
     # Running the exercise directly via subprocess should fail with non-zero exit code
     env = os.environ.copy()
@@ -93,14 +91,9 @@ def test_solution_files_exist_and_pass(solution_path: Path):
 def test_manifest_matches_chapters_11_to_13_files():
     """Verify manifest definitions match exercise files on disk."""
     manifest = get_manifest()
-    runner = ExerciseRunner()
 
     for ch in manifest.chapters[10:13]:
         assert ch.name in CHAPTER_DIRS
         for ex in ch.exercises:
             assert ex.file_path.exists(), f"Manifest exercise file missing: {ex.path}"
             assert ex.solution_path.exists(), f"Manifest solution file missing: {ex.solution_path}"
-            # Runner should detect marker on exercise
-            assert runner.check_marker(ex.file_path) is True
-            # Runner should detect no marker on solution
-            assert runner.check_marker(ex.solution_path) is False

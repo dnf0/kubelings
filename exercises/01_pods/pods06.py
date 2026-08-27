@@ -13,8 +13,6 @@ Define a PodDisruptionBudget manifest named 'web-pdb':
 4. spec.selector.matchLabels: app: web
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifest

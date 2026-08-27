@@ -24,8 +24,6 @@ pod with process namespace sharing (`shareProcessNamespace: true`).
    - Return list of dicts with keys: `reason`, `message`, `count`.
 """
 
-# I AM NOT DONE
-
 from typing import Any, Dict, List
 
 import yaml

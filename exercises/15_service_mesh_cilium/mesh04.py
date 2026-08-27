@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Exercise: Hubble Observability & OpenTelemetry Tracing (mesh04)
 

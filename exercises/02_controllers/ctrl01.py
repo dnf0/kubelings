@@ -10,8 +10,6 @@ Fix the ReplicaSet manifest below.
 3. The pod template container should run 'nginx:alpine'.
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifest

@@ -25,8 +25,6 @@ of Ingress, featuring role-oriented resource separation:
    - Returns a dict mapping each backend service name to its percentage of total traffic (0.0 to 100.0).
 """
 
-# I AM NOT DONE
-
 from typing import Any, Dict
 
 import yaml

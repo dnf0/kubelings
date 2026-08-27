@@ -19,8 +19,6 @@ Paths can be matched using `pathType: Prefix` or `pathType: Exact`.
    - Longest matching prefix wins when multiple paths match. Return None if no match.
 """
 
-# I AM NOT DONE
-
 from typing import Any, Dict, Optional
 
 import yaml

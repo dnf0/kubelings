@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Exercise: crossplane02.py
 Topic: Crossplane - Composition and Field Path Transforms

@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Exercise: tetragon03.py
 Topic: eBPF Security - Real-Time Kernel Enforcement and Sigkill Actions

@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Exercise: gateway04.py
 Topic: Gateway API - ReferenceGrant Cross-Namespace Security

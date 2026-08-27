@@ -15,8 +15,6 @@ The `terminationGracePeriodSeconds` defines the maximum window granted before `S
    - lifecycle.preStop (httpGet): path '/prepare-shutdown', port 80
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifest

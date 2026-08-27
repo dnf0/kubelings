@@ -24,8 +24,6 @@ Implement the `reconcile_database` operator function according to these rules:
         Return action "NONE" with status_patch {"phase": "Progressing", "observedGeneration": generation}.
 """
 
-# I AM NOT DONE
-
 from typing import Any, Dict, Optional
 
 import yaml

@@ -23,8 +23,6 @@ Fields:
    - Evaluates if adding 1 pod to `candidate_zone` keeps `max(counts) - min(counts) <= max_skew`.
 """
 
-# I AM NOT DONE
-
 from typing import Dict
 
 import yaml

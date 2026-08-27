@@ -14,8 +14,6 @@ Fix and complete the DaemonSet manifest below:
    key: "node-role.kubernetes.io/control-plane", operator: "Exists", effect: "NoSchedule"
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifest

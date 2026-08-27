@@ -50,8 +50,6 @@ Define a CustomResourceDefinition 'backups.backup.example.com':
               type: object
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifest

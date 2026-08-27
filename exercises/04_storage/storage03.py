@@ -29,8 +29,6 @@ And three Reclaim Policies:
      - other -> raise ValueError("Unknown reclaim policy")
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifest

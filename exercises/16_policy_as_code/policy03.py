@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Chapter 16: Policy as Code with Kyverno & Gatekeeper
 Exercise 16.3: Kyverno Generate Policy for Default Deny NetworkPolicy

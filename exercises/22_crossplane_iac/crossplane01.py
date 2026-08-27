@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Exercise: crossplane01.py
 Topic: Crossplane - CompositeResourceDefinition (XRD)

@@ -16,8 +16,6 @@ Fix Pod 'gpu-worker' in namespace 'ml-workloads':
 3. Add toleration for taint: key='sku', operator='Equal', value='gpu-worker', effect='NoSchedule'.
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifest

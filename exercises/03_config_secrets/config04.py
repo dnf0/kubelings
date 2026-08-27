@@ -14,8 +14,6 @@ Complete the Pod manifest below:
 - Mount 'tls-certs' at '/etc/tls' with readOnly: true.
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifest

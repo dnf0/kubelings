@@ -16,8 +16,6 @@ Benefits:
    - Otherwise, return True.
 """
 
-# I AM NOT DONE
-
 from typing import Any, Dict
 
 import yaml

@@ -15,8 +15,6 @@ Rules can select traffic by podSelector (within the same namespace) or namespace
    - Returns True if any ingress rule allows the given source labels, destination port, and protocol.
 """
 
-# I AM NOT DONE
-
 from typing import Any, Dict
 
 import yaml

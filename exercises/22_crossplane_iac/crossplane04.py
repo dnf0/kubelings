@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Exercise: crossplane04.py
 Topic: Crossplane - Developer Self-Service Claims and Connection Secrets

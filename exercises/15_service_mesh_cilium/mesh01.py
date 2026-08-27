@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Exercise: Cilium L7 HTTP NetworkPolicy (mesh01)
 

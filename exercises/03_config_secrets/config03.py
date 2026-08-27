@@ -18,8 +18,6 @@ are automatically encoded by the apiserver upon creation.
 2. Implement `decode_secret_data` to decode all values in the secret's `data` dictionary.
 """
 
-# I AM NOT DONE
-
 import base64  # noqa: F401
 from typing import Any, Dict
 

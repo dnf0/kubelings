@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Exercise: tetragon01.py
 Topic: eBPF Observability - Tetragon TracingPolicy Process Execution Auditing

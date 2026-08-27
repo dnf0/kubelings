@@ -25,8 +25,6 @@ succeeds once, granting a startup grace budget.
      initialDelaySeconds + (periodSeconds * failureThreshold).
 """
 
-# I AM NOT DONE
-
 from typing import Any, Dict
 
 import yaml

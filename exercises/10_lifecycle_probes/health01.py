@@ -19,8 +19,6 @@ and restarts the container to recover from deadlocks or unhandled exceptions.
      - failureThreshold: 3
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifest

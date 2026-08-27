@@ -7,8 +7,6 @@ Fix the YAML manifest below to define a valid Pod named 'nginx-web'
 running nginx:alpine on container port 80 with label 'app: web'.
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifest

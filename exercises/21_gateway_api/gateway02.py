@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Exercise: gateway02.py
 Topic: Gateway API - HTTPRoute Path Matching and Backend Routing

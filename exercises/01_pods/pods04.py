@@ -13,8 +13,6 @@ Kubernetes assigns a QoS class to Pods based on container compute resources:
 2. Implement the `compute_qos_class` function to calculate the QoS class for any pod manifest.
 """
 
-# I AM NOT DONE
-
 from typing import Any, Dict
 
 import yaml

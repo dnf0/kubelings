@@ -20,8 +20,6 @@ metrics such as CPU and Memory utilization.
      - Resource metric for Memory target averageUtilization: 80%
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifest

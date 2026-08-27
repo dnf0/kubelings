@@ -20,8 +20,6 @@ before forwarding the request to the upstream microservice).
    - Example: pattern `^/payments(/|$)(.*)` with rewrite `/$2` converts `/payments/v1/charge` to `/v1/charge`.
 """
 
-# I AM NOT DONE
-
 import re  # noqa: F401
 from typing import Optional
 

@@ -12,8 +12,6 @@ In the multi-document manifest below:
    - Inject the specific PORT key as CUSTOM_PORT using `valueFrom.configMapKeyRef`.
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifests

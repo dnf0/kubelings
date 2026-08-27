@@ -21,8 +21,6 @@ Kubernetes allows routing to non-cluster resources using:
    - Returns True if metadata.name matches and endpoint port matches service targetPort (or port).
 """
 
-# I AM NOT DONE
-
 from typing import Any, Dict
 
 import yaml

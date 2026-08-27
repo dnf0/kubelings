@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Chapter 17: Multi-Tenancy, Virtual Clusters & HNC
 Exercise 17.3: Virtual Cluster (vcluster) Control Plane Manifest

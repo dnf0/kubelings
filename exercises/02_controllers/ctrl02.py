@@ -13,8 +13,6 @@ Configure the Deployment manifest below:
 4. Pod template runs container 'api' with image 'python:3.12-slim'.
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifest

@@ -13,8 +13,6 @@ connections—including DNS resolution via CoreDNS—unless explicitly allowed.
    - Egress Rule 2 (Backend API): Allow TCP port 8080 to pods with label `app: backend` (same namespace).
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifest

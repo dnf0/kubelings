@@ -19,8 +19,6 @@ CoreDNS provides internal service discovery.
    - Otherwise, return the standard Service FQDN.
 """
 
-# I AM NOT DONE
-
 from typing import Optional
 
 import yaml

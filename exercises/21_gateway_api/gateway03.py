@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Exercise: gateway03.py
 Topic: Gateway API - Weighted Canary Traffic Splitting and URL Rewrite Filters

@@ -20,8 +20,6 @@ Taint Effects:
      is matched by at least one toleration in `pod_tolerations`.
 """
 
-# I AM NOT DONE
-
 from typing import Any, Dict, List
 
 import yaml

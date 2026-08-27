@@ -35,8 +35,6 @@ the operation with custom status codes and messages.
    - Otherwise, accepts the request (`allowed: True`).
 """
 
-# I AM NOT DONE
-
 from typing import Any, Dict
 
 import yaml

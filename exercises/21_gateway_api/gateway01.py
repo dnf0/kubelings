@@ -1,4 +1,3 @@
-# I AM NOT DONE
 """
 Exercise: gateway01.py
 Topic: Gateway API - GatewayClass and Gateway Declaration

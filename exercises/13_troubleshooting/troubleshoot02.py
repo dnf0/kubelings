@@ -18,8 +18,6 @@ Fix the deployment configuration for the payment application:
    - Add imagePullSecrets referencing 'regcred'
 """
 
-# I AM NOT DONE
-
 import yaml
 
 from kubelings.validator import validate_manifests

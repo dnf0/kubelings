@@ -19,8 +19,6 @@ When paired with a StatefulSet, each Pod receives a predictable, stable FQDN:
    - Returns a list of FQDN strings for `replicas` statefulset pods (index 0 to replicas-1).
 """
 
-# I AM NOT DONE
-
 from typing import List
 
 import yaml
