@@ -693,5 +693,44 @@ def tui_cmd() -> None:
     console.print(layout)
 
 
+@app.command("tour")
+def onboarding_tour(
+    step: Optional[int] = typer.Option(
+        None,
+        "--step",
+        "-s",
+        help="Jump directly to a specific tour step (1-5).",
+    ),
+    non_interactive: bool = typer.Option(
+        False,
+        "--non-interactive",
+        help="Execute tour without waiting for interactive input prompts.",
+    ),
+    json_output: bool = typer.Option(
+        False,
+        "--json",
+        help="Output tour step metadata in JSON format.",
+    ),
+) -> None:
+    """Take the interactive 5-step onboarding tour for new learners."""
+    from kubelings.tour import OnboardingTour
+
+    tour = OnboardingTour(console=console)
+
+    if json_output:
+        print(json.dumps(tour.to_json(), indent=2))
+        return
+
+    interactive = not non_interactive
+    if step is not None:
+        try:
+            tour.run_step(step, interactive=interactive)
+        except ValueError as err:
+            console.print(f"[bold red]Error:[/bold red] {err}")
+            raise typer.Exit(code=1)
+    else:
+        tour.run_all(interactive=interactive)
+
+
 if __name__ == "__main__":
     app()

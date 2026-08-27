@@ -36,6 +36,30 @@ def test_cli_help():
     assert "cluster" in result.stdout
     assert "watch" in result.stdout
     assert "version" in result.stdout
+    assert "tour" in result.stdout
+
+
+def test_cli_tour_command():
+    """Verify kubelings tour --non-interactive executes all 5 steps with exit code 0."""
+    result = runner.invoke(app, ["tour", "--non-interactive"])
+    assert result.exit_code == 0
+    assert "Kubelings" in result.stdout or "Welcome" in result.stdout or "Step 1" in result.stdout
+
+
+def test_cli_tour_specific_step():
+    """Verify kubelings tour with --step 3 jumps directly to step 3."""
+    result = runner.invoke(app, ["tour", "--step", "3", "--non-interactive"])
+    assert result.exit_code == 0
+    assert "Workflow" in result.stdout or "Step 3" in result.stdout or "Hotkeys" in result.stdout
+
+
+def test_cli_tour_invalid_step():
+    """Verify kubelings tour with an invalid step number handles errors cleanly."""
+    result = runner.invoke(app, ["tour", "--step", "99", "--non-interactive"])
+    assert result.exit_code == 1
+    assert (
+        "Error" in result.stdout or "Invalid" in result.stdout or "invalid" in result.stdout.lower()
+    )
 
 
 def test_cli_version_command_and_flag():

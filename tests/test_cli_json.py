@@ -169,3 +169,14 @@ def test_cli_hint_json_invalid_exercise():
     assert result.exit_code == 1
     data = json.loads(result.stdout)
     assert "error" in data
+
+
+def test_cli_tour_json():
+    """Verify kubelings tour --json outputs structured tour metadata."""
+    result = runner.invoke(app, ["tour", "--json"])
+    assert result.exit_code == 0
+    data = json.loads(result.stdout)
+    assert "total_steps" in data
+    assert data["total_steps"] == 5
+    assert "steps" in data
+    assert len(data["steps"]) == 5
