@@ -64,7 +64,9 @@ def run_user_code(user_code_str, filename="exercise.py"):
     start_time = time.perf_counter()
     stdout_buf = io.StringIO()
     old_stdout = sys.stdout
+    old_stderr = sys.stderr
     sys.stdout = stdout_buf
+    sys.stderr = stdout_buf
     
     global_env = {"__name__": "__main__"}
     try:
@@ -86,7 +88,7 @@ def run_user_code(user_code_str, filename="exercise.py"):
             "output": stdout_buf.getvalue(),
             "durationMs": round(duration, 2)
         }
-    except Exception as e:
+    except BaseException as e:
         duration = (time.perf_counter() - start_time) * 1000
         tb = traceback.format_exc()
         return {
@@ -98,6 +100,7 @@ def run_user_code(user_code_str, filename="exercise.py"):
         }
     finally:
         sys.stdout = old_stdout
+        sys.stderr = old_stderr
 `);
 
   self.postMessage({
@@ -134,13 +137,13 @@ self.onmessage = async function(e) {
       return;
     }
 
+    let resProxy = null;
     try {
       pyodide.globals.set("temp_code_str", msg.code || "");
       pyodide.globals.set("temp_filename", msg.filename || "exercise.py");
 
-      const resProxy = await pyodide.runPythonAsync("run_user_code(temp_code_str, temp_filename)");
+      resProxy = await pyodide.runPythonAsync("run_user_code(temp_code_str, temp_filename)");
       const resultObj = resProxy.toJs({ dict_converter: Object.fromEntries });
-      resProxy.destroy();
 
       self.postMessage({
         type: "RUN_RESULT",
@@ -157,6 +160,10 @@ self.onmessage = async function(e) {
         output: "",
         durationMs: 0
       });
+    } finally {
+      if (resProxy && typeof resProxy.destroy === "function") {
+        resProxy.destroy();
+      }
     }
   }
 };
