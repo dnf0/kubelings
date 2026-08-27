@@ -5,8 +5,8 @@ from kubelings.manifest import get_exercise_by_name, get_manifest
 
 def test_manifest_chapters_16_18_count():
     manifest = get_manifest()
-    assert len(manifest.chapters) == 18
-    assert len(manifest.all_exercises) == 82
+    assert len(manifest.chapters) >= 18
+    assert len(manifest.all_exercises) >= 82
 
 
 def test_chapter_16_policy_as_code():

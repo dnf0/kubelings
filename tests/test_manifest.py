@@ -27,8 +27,8 @@ def test_exercise_dataclass_properties():
 
 def test_manifest_loads_all_chapters():
     manifest = get_manifest()
-    assert len(manifest.chapters) == 18
-    assert len(manifest.all_exercises) == 82
+    assert len(manifest.chapters) == 20
+    assert len(manifest.all_exercises) == 90
 
     first = manifest.all_exercises[0]
     assert first.name == "pods01"
@@ -36,11 +36,11 @@ def test_manifest_loads_all_chapters():
     assert first.path == "exercises/01_pods/pods01.py"
 
     last = manifest.all_exercises[-1]
-    assert last.name == "webhook04"
-    assert last.chapter_name == "18_admission_webhooks"
+    assert last.name == "kustomize04"
+    assert last.chapter_name == "20_kustomize_overlays"
 
 
-def test_all_18_chapters_structure():
+def test_all_20_chapters_structure():
     manifest = get_manifest()
     expected_chapters = [
         (1, "01_pods", 6),
@@ -61,6 +61,8 @@ def test_all_18_chapters_structure():
         (16, "16_policy_as_code", 4),
         (17, "17_multitenancy_vcluster", 4),
         (18, "18_admission_webhooks", 4),
+        (19, "19_helm_packaging", 4),
+        (20, "20_kustomize_overlays", 4),
     ]
 
     for number, name, count in expected_chapters:
@@ -110,8 +112,13 @@ def test_get_next_exercise():
     assert next_across is not None
     assert next_across.name == "ctrl01"
 
+    # Test next exercise across chapters
+    next_across_v2 = get_next_exercise("webhook04")
+    assert next_across_v2 is not None
+    assert next_across_v2.name == "helm01"
+
     # Test last exercise returns None
-    assert get_next_exercise("webhook04") is None
+    assert get_next_exercise("kustomize04") is None
 
     # Test nonexistent exercise returns None
     assert get_next_exercise("nonexistent") is None
