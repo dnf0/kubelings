@@ -123,7 +123,10 @@ async function getOrSelectWorkspaceFolder(): Promise<string | undefined> {
         relPath = relPathOrItem;
         exName = maybeName || path.basename(relPath, '.py');
       } else if (relPathOrItem instanceof ExerciseTreeItem) {
-        relPath = relPathOrItem.exercise.path;
+        relPath =
+          relPathOrItem.fullPath && fs.existsSync(relPathOrItem.fullPath)
+            ? relPathOrItem.fullPath
+            : relPathOrItem.exercise.path;
         exName = relPathOrItem.exercise.name;
       } else if (
         relPathOrItem &&
@@ -131,7 +134,10 @@ async function getOrSelectWorkspaceFolder(): Promise<string | undefined> {
         'exercise' in relPathOrItem
       ) {
         const item = relPathOrItem as ExerciseTreeItem;
-        relPath = item.exercise?.path;
+        relPath =
+          item.fullPath && fs.existsSync(item.fullPath)
+            ? item.fullPath
+            : item.exercise?.path;
         exName = item.exercise?.name;
       }
 

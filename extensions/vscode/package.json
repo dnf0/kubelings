@@ -2,7 +2,7 @@
   "name": "kubelings-vscode",
   "displayName": "Kubelings - Learn Kubernetes by Doing",
   "description": "Interactive Kubernetes learning environment inside VS Code / Cursor.",
-  "version": "0.9.9",
+  "version": "0.9.10",
   "publisher": "dnf0",
   "license": "Apache-2.0",
   "repository": {
@@ -202,12 +202,13 @@
     }
   },
   "scripts": {
+    "vscode:prepublish": "npm run build",
     "compile": "tsc -p ./",
     "watch-tsc": "tsc -watch -p ./",
     "build": "node esbuild.js",
     "watch": "node esbuild.js --watch",
-    "test": "tsc -p ./ && node --test dist/test/*.test.js",
-    "package": "vsce package -o ../../dist/kubelings-vscode.vsix"
+    "test": "npm run build && tsc -p ./ && node --test dist/test/*.test.js",
+    "package": "npm run build && vsce package -o ../../dist/kubelings-vscode.vsix"
   },
   "devDependencies": {
     "@types/node": "^20.11.24",
