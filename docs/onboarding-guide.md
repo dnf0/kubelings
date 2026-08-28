@@ -105,7 +105,7 @@ The tour guides you through 5 rich, color-coded steps:
 | **1** | **Welcome & Philosophy** | Introduces test-driven micro-learning and in-memory verification. |
 | **2** | **Environment Verification** | Probes your Python runtime, exercise workspace, and checks for active Kubernetes clusters (while confirming pure offline mode readiness). |
 | **3** | **Workflow & Hotkeys** | Details the inner watch loop, file saving triggers, and terminal keybindings. |
-| **4** | **Guided First Exercise** | Live-evaluates `exercises/01_pods/pods01.py`, shows real failure diagnostics, explains required schema attributes, and displays the solution diff. |
+| **4** | **Guided First Exercise** | Live-evaluates `exercises/01_pods/pods01.yaml`, shows real failure diagnostics, explains required schema attributes, and displays the solution diff. |
 | **5** | **IDE Tooling & Next Steps** | Introduces the VS Code / Cursor extension and gives a 1-click launch into `kubelings watch`. |
 
 ### Tour CLI Flags
@@ -129,7 +129,7 @@ Mastering Kubernetes with Kubelings follows a simple, addictive 5-step rhythm:
                              v
   2. OPEN
   +--------------------------------------------------------+
-  |  Open active file in editor (e.g. pods01.py)           |
+  |  Open active file in editor (e.g. pods01.yaml)         |
   +--------------------------------------------------------+
                              |
                              v
@@ -169,7 +169,7 @@ While `kubelings watch` is active in your terminal, use these keyboard shortcuts
 
 ## 5. Walkthrough: Solving Your First Exercise (`pods01`)
 
-Let's walk through solving the very first exercise in the curriculum: `exercises/01_pods/pods01.py`.
+Let's walk through solving the very first exercise in the curriculum: `exercises/01_pods/pods01.yaml`.
 
 ### Step 5.1: Initial State & Failure Inspection
 
@@ -177,7 +177,7 @@ When you start `kubelings watch`, you will see:
 
 ```
 ======================================================================
-  EXERCISE: exercises/01_pods/pods01.py
+  EXERCISE: exercises/01_pods/pods01.yaml
   TOPIC:    First Pod Manifest & Spec
 ======================================================================
 
@@ -188,43 +188,39 @@ When you start `kubelings watch`, you will see:
 
 ### Step 5.2: Inspecting the Starter Code
 
-Open `exercises/01_pods/pods01.py` in your code editor:
+Open `exercises/01_pods/pods01.yaml` in your code editor:
 
-```python
-# exercises/01_pods/pods01.py
-"""
-Exercise: exercises/01_pods/pods01.py
-Topic: First Pod Manifest & Spec
+```yaml
+# Exercise: exercises/01_pods/pods01.yaml
+# Topic: First Pod Manifest & Spec
+#
+# Instructions:
+# Fix the YAML manifest below to define a valid Pod named 'nginx-web'
+# running nginx:alpine on container port 80 with label 'app: web'.
 
-Instructions:
-Fix the YAML manifest below to define a valid Pod named 'nginx-web'
-running nginx:alpine on container port 80 with label 'app: web'.
-"""
-
-import yaml
-from kubelings.validator import validate_manifest
-
-# TODO: Fix the Pod manifest below:
-# 1. Add label 'app: web' under metadata.labels
-# 2. Add container port 80 under spec.containers[0].ports
-POD_MANIFEST = """
 apiVersion: v1
 kind: Pod
 metadata:
-  name: nginx-web
+  # TODO: Set the Pod name to 'nginx-web'
+  name: ???
+  labels:
+    # TODO: Add label 'app: web'
+    app: ???
 spec:
   containers:
   - name: nginx
-    image: nginx:alpine
-"""
+    # TODO: Set container image to 'nginx:alpine'
+    image: ???
+    ports:
+    # TODO: Set containerPort to 80
+    - containerPort: 0
 ```
 
 ### Step 5.3: Applying the Fix
 
-Add the missing `labels` block under `metadata` and the `ports` list under `containers`:
+Fill in the blanks with the correct values:
 
-```python
-POD_MANIFEST = """
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -237,7 +233,6 @@ spec:
     image: nginx:alpine
     ports:
     - containerPort: 80
-"""
 ```
 
 ### Step 5.4: Watching it Turn Green
@@ -246,12 +241,12 @@ Save the file. Within 30 milliseconds, the watcher updates:
 
 ```
 ======================================================================
-  ✓ exercises/01_pods/pods01.py PASSED!
+  ✓ exercises/01_pods/pods01.yaml PASSED!
 ======================================================================
   [n/Enter] Next exercise  |  [p] Previous  |  [h] Hint  |  [q] Quit
 ```
 
-Press `Enter` or `n` to advance directly to `pods02.py`!
+Press `Enter` or `n` to advance directly to `pods02.yaml`!
 
 ---
 
@@ -382,6 +377,6 @@ Ready to start your Kubernetes mastery journey?
 
 1. Run **`kubelings tour`** in your terminal.
 2. Launch **`kubelings watch`**.
-3. Open **`exercises/01_pods/pods01.py`** and write your first Pod!
+3. Open **`exercises/01_pods/pods01.yaml`** and write your first Pod!
 
 Have fun and happy Kubeling! ☸️

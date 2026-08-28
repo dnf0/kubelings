@@ -31,21 +31,14 @@ Learning Kubernetes from static documentation or copy-pasted manifests often lea
 
 ## Quick Example
 
-```python
-# exercises/01_pods/pods01.py
-"""
-Exercise: exercises/01_pods/pods01.py
-Topic: First Pod Manifest & Spec
+```yaml
+# exercises/01_pods/pods01.yaml
+# Topic: First Pod Manifest & Spec
+#
+# Instructions:
+# Fix the YAML manifest below to define a valid Pod named 'nginx-web'
+# running nginx:alpine on container port 80 with label 'app: web'.
 
-Instructions:
-Fix the YAML manifest below to define a valid Pod named 'nginx-web'
-running nginx:alpine on container port 80 with label 'app: web'.
-"""
-
-import yaml
-from kubelings.validator import validate_manifest
-
-POD_MANIFEST = """
 apiVersion: v1
 kind: Pod
 metadata:
@@ -58,7 +51,6 @@ spec:
     image: nginx:alpine
     ports:
     - containerPort: 80
-"""
 ```
 
 Save the file and watch the terminal UI immediately validate your solution. Press `n` or `Enter` to advance to the next exercise!

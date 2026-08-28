@@ -203,7 +203,7 @@ kubelings tree deployment.yaml
 Audit any Kubernetes manifest against security standards, reliability probes, and schema best practices:
 
 ```bash
-kubelings lint exercises/01_pods/pods01.py
+kubelings lint exercises/01_pods/pods01.yaml
 # or lint production manifests
 kubelings lint manifests/production/
 ```

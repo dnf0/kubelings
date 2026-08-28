@@ -7,10 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.11] - 2026-08-28
+
 ### Changed
-- **Pure Test-Driven Validation**: Retired the `# I AM NOT DONE` magic comment requirement across all 102 curriculum exercises. Exercise completion is now purely evaluated via test assertions and schema validation.
-- **Interactive Navigation**: Added `[n]` / `[Enter]` to advance to the next exercise and `[p]` to navigate to the previous exercise directly within the terminal watcher.
-- **VS Code Extension**: Streamlined on-save diagnostics to emit error squiggles on genuine validation/assertion failures without requiring comment removal.
+- **Native YAML Curriculum Architecture**: Converted all 114 exercises across all 26 chapters from Python scripts with embedded string literals into pure `.yaml` manifests. Learners now get full editor syntax highlighting, bracket matching, indentation guides, and Kubernetes JSON schema autocompletion out of the box.
+- **Decoupled Core Validator Engine**: Extracted all test assertion logic out of user exercise files into 26 modular chapter validator packages (`src/kubelings/validators/ch01_pods.py` through `ch26_hardware_acceleration_dra.py`) utilizing a decorator-based dynamic discovery registry (`@register_validator`).
+- **Human-Friendly YAML Diagnostics**: Replaced confusing Python stack traces with visual, colored YAML syntax diagnostics (`format_yaml_error`) displaying precise line/column coordinates and code pointer snippets on syntax mistakes (e.g. duplicate keys, indentation errors).
+- **VS Code Extension Modernization (`dnf0.kubelings-vscode@0.9.11`)**: Updated path resolution engine (`pathUtils.ts`) to prioritize `.yaml` -> `.yml` -> `.py` candidate resolution, contributed `kubelings.openSolution` and `kubelings.resetExercise` commands, and enabled real-time YAML document diagnostics on save.
+- **Playground Bundle Streamlining**: Updated `scripts/build_playground_bundle.py` to directly bundle pure YAML starter and solution manifests for the WebAssembly browser playground.
 
 ### Added
 - **Interactive WebAssembly Browser Playground (`docs/playground.md`)**: Zero-install client-side learning environment powered by Pyodide (Python 3.12 WebAssembly), Monaco Editor, PyYAML, and the in-memory Kubelings schema validator. Features split-pane layout, progressive hints (`💡 Reveal Hint`), side-by-side Monaco diff inspection (`🔍 Compare Solution`), dark/light theme synchronization with MkDocs Material, and 11 flagship showcase exercises across all 6 learning tiers (Pods, Controllers, ConfigMaps, Storage, Scheduling, Network Policies, Autoscaling, GitOps, Gateway API, KubeRay, and Apple Silicon GPU acceleration).

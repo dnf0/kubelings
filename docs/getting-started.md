@@ -48,7 +48,7 @@ uv pip install -e ".[dev]"
 ## The Kubelings Workflow
 
 1. Run `kubelings watch` in your terminal.
-2. Open the reported file in your editor (e.g. `exercises/01_pods/pods01.py`).
+2. Open the reported file in your editor (e.g. `exercises/01_pods/pods01.yaml`).
 3. Read the comments, specification instructions, and error diagnostic output in the terminal.
 4. Edit the file to satisfy the Kubernetes manifest schema or validation logic.
 5. Save the file. The watcher will evaluate your solution in `< 30ms` and display the green checkmark once all tests pass.

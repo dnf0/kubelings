@@ -164,7 +164,7 @@ kubelings lint <PATH>
 
 **Examples:**
 ```bash
-kubelings lint exercises/01_pods/pods01.py
+kubelings lint exercises/01_pods/pods01.yaml
 kubelings lint manifests/production/
 ```
 

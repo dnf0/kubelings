@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "kubelings"
-version = "0.9.10"
+version = "0.9.11"
 description = "An interactive, hands-on CLI learning environment for Kubernetes"
 readme = "README.md"
 requires-python = ">=3.10"
