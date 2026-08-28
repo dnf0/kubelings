@@ -239,7 +239,7 @@ class OnboardingTour:
         flow_text.append("kubelings watch", style="bold yellow")
         flow_text.append(" in your terminal to start the live exercise watcher.\n", style="white")
         flow_text.append("2. Open the exercise file (e.g., ", style="white")
-        flow_text.append("exercises/01_pods/pods01.py", style="bold cyan")
+        flow_text.append("exercises/01_pods/pods01.yaml", style="bold cyan")
         flow_text.append(") in your favorite editor.\n", style="white")
         flow_text.append("3. Edit the manifest or code and save the file.\n", style="white")
         flow_text.append(
@@ -300,7 +300,7 @@ class OnboardingTour:
             exercise = Exercise(
                 name="pods01",
                 title="First Pod Manifest & Spec",
-                path="exercises/01_pods/pods01.py",
+                path="exercises/01_pods/pods01.yaml",
                 chapter_name="01_pods",
                 hints=[
                     "Set metadata.name to 'nginx-web'",
@@ -345,7 +345,7 @@ spec:
         renderables.append(
             Panel(
                 broken_syntax,
-                title="[bold yellow]exercises/01_pods/pods01.py (Initial State)[/bold yellow]",
+                title="[bold yellow]exercises/01_pods/pods01.yaml (Initial State)[/bold yellow]",
                 border_style="yellow",
                 padding=(0, 1),
             )
@@ -399,7 +399,7 @@ spec:
         renderables.append(
             Panel(
                 sol_syntax,
-                title="[bold green]Reference Solution Explanation (solutions/01_pods/pods01.py)[/bold green]",
+                title="[bold green]Reference Solution Explanation (solutions/01_pods/pods01.yaml)[/bold green]",
                 border_style="green",
                 padding=(0, 1),
             )

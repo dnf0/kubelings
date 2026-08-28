@@ -7,8 +7,6 @@ from typing import Any, Dict, List
 from kubelings.validator import validate_manifest, validate_manifests
 from kubelings.validators import register_validator
 
-MANIFESTS = '\napiVersion: v1\nkind: ServiceAccount\nmetadata:\n  name: build-robot-sa\n  namespace: ci-runners\nautomountServiceAccountToken: false\n---\napiVersion: v1\nkind: Pod\nmetadata:\n  name: build-worker-pod\n  namespace: ci-runners\nspec:\n  serviceAccountName: build-robot-sa\n  automountServiceAccountToken: false\n  containers:\n  - name: runner\n    image: alpine:3.19\n    command: ["sh", "-c", "echo Ready && sleep 3600"]\n'
-
 
 @register_validator("rbac01")
 def validate_rbac01(manifest: Any, raw_yaml: str = "") -> None:

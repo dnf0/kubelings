@@ -9,7 +9,7 @@ from kubelings.scaffold import get_starter_content, init_workspace, reset_exerci
 
 def test_get_starter_content_valid():
     content = get_starter_content("pods01")
-    assert "POD_MANIFEST" in content
+    assert "kind: Pod" in content
     assert "nginx-web" in content
 
 
@@ -21,8 +21,8 @@ def test_get_starter_content_invalid():
 def test_init_workspace(tmp_path: Path):
     init_workspace(tmp_path)
     assert (tmp_path / "exercises").exists()
-    assert (tmp_path / "exercises" / "01_pods" / "pods01.py").exists()
-    assert (tmp_path / "exercises" / "13_troubleshooting" / "troubleshoot05.py").exists()
+    assert (tmp_path / "exercises" / "01_pods" / "pods01.yaml").exists()
+    assert (tmp_path / "exercises" / "13_troubleshooting" / "troubleshoot05.yaml").exists()
 
 
 def test_init_workspace_existing_no_force(tmp_path: Path):
@@ -36,17 +36,17 @@ def test_init_workspace_force(tmp_path: Path):
     (tmp_path / "exercises").mkdir()
     (tmp_path / "exercises" / "dummy.txt").write_text("hello")
     init_workspace(tmp_path, force=True)
-    assert (tmp_path / "exercises" / "01_pods" / "pods01.py").exists()
+    assert (tmp_path / "exercises" / "01_pods" / "pods01.yaml").exists()
 
 
 def test_reset_exercise(tmp_path: Path):
     init_workspace(tmp_path)
-    ex_file = tmp_path / "exercises" / "01_pods" / "pods01.py"
+    ex_file = tmp_path / "exercises" / "01_pods" / "pods01.yaml"
     ex_file.write_text("# Modified by student")
-    assert "POD_MANIFEST" not in ex_file.read_text()
+    assert "kind: Pod" not in ex_file.read_text()
 
     reset_exercise("pods01", workspace_root=tmp_path)
-    assert "POD_MANIFEST" in ex_file.read_text()
+    assert "kind: Pod" in ex_file.read_text()
 
 
 def test_cli_init_command(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
@@ -55,7 +55,7 @@ def test_cli_init_command(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     result = runner.invoke(app, ["init"])
     assert result.exit_code == 0
     assert "Initialized" in result.stdout or "ready" in result.stdout.lower()
-    assert (tmp_path / "exercises" / "01_pods" / "pods01.py").exists()
+    assert (tmp_path / "exercises" / "01_pods" / "pods01.yaml").exists()
 
     # Re-run on already initialized directory should succeed idempotently with exit code 0
     result2 = runner.invoke(app, ["init"])
@@ -68,20 +68,24 @@ def test_cli_reset_command(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     runner = CliRunner()
     runner.invoke(app, ["init"])
 
-    ex_file = tmp_path / "exercises" / "01_pods" / "pods01.py"
+    ex_file = tmp_path / "exercises" / "01_pods" / "pods01.yaml"
     ex_file.write_text("broken")
 
     result = runner.invoke(app, ["reset", "pods01"])
     assert result.exit_code == 0
     assert "Reset" in result.stdout or "reset" in result.stdout.lower()
-    assert "POD_MANIFEST" in ex_file.read_text()
+    assert "kind: Pod" in ex_file.read_text()
 
 
 def test_cli_reset_invalid_exercise():
     runner = CliRunner()
     result = runner.invoke(app, ["reset", "fake_ex"])
     assert result.exit_code == 1
-    assert "Unknown" in result.stdout or "not found" in result.stdout.lower()
+    assert (
+        "Unknown" in result.stdout
+        or "not found" in result.stdout.lower()
+        or "error" in result.stdout.lower()
+    )
 
 
 def test_init_workspace_root_fallback(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):

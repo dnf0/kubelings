@@ -1,18 +1,15 @@
 """Tests for Chapter 21 (Gateway API), Chapter 22 (Crossplane IaC), and Chapter 23 (eBPF Tetragon)."""
 
-import importlib.util
 from pathlib import Path
-from typing import Any
+
+import pytest
 
 from kubelings.manifest import get_exercise_by_name, get_manifest
+from kubelings.models import Exercise
+from kubelings.runner import ExerciseRunner
+from kubelings.validators import load_all_validators
 
-
-def _load_module_from_path(file_path: Path) -> Any:
-    spec = importlib.util.spec_from_file_location(file_path.stem, file_path)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+load_all_validators()
 
 
 def test_manifest_23_chapters_and_102_exercises():
@@ -57,61 +54,33 @@ def test_chapter_23_manifest_structure():
         assert ex.chapter_name == "23_ebpf_tetragon"
 
 
-def test_gateway01_solution():
-    mod = _load_module_from_path(Path("solutions/21_gateway_api/gateway01.py"))
-    mod.verify()
+@pytest.mark.parametrize("ex_name", ["gateway01", "gateway02", "gateway03", "gateway04"])
+def test_gateway_solutions(ex_name: str):
+    sol_path = Path(f"solutions/21_gateway_api/{ex_name}.yaml")
+    assert sol_path.exists(), f"Solution missing: {sol_path}"
+    ex = Exercise(name=ex_name, title=ex_name, path=str(sol_path), chapter_name="21_gateway_api")
+    runner = ExerciseRunner()
+    result = runner.run_exercise(ex)
+    assert result.passed, f"Solution {sol_path} failed: {result.error}"
 
 
-def test_gateway02_solution():
-    mod = _load_module_from_path(Path("solutions/21_gateway_api/gateway02.py"))
-    mod.verify()
+@pytest.mark.parametrize(
+    "ex_name", ["crossplane01", "crossplane02", "crossplane03", "crossplane04"]
+)
+def test_crossplane_solutions(ex_name: str):
+    sol_path = Path(f"solutions/22_crossplane_iac/{ex_name}.yaml")
+    assert sol_path.exists(), f"Solution missing: {sol_path}"
+    ex = Exercise(name=ex_name, title=ex_name, path=str(sol_path), chapter_name="22_crossplane_iac")
+    runner = ExerciseRunner()
+    result = runner.run_exercise(ex)
+    assert result.passed, f"Solution {sol_path} failed: {result.error}"
 
 
-def test_gateway03_solution():
-    mod = _load_module_from_path(Path("solutions/21_gateway_api/gateway03.py"))
-    mod.verify()
-
-
-def test_gateway04_solution():
-    mod = _load_module_from_path(Path("solutions/21_gateway_api/gateway04.py"))
-    mod.verify()
-
-
-def test_crossplane01_solution():
-    mod = _load_module_from_path(Path("solutions/22_crossplane_iac/crossplane01.py"))
-    mod.verify()
-
-
-def test_crossplane02_solution():
-    mod = _load_module_from_path(Path("solutions/22_crossplane_iac/crossplane02.py"))
-    mod.verify()
-
-
-def test_crossplane03_solution():
-    mod = _load_module_from_path(Path("solutions/22_crossplane_iac/crossplane03.py"))
-    mod.verify()
-
-
-def test_crossplane04_solution():
-    mod = _load_module_from_path(Path("solutions/22_crossplane_iac/crossplane04.py"))
-    mod.verify()
-
-
-def test_tetragon01_solution():
-    mod = _load_module_from_path(Path("solutions/23_ebpf_tetragon/tetragon01.py"))
-    mod.verify()
-
-
-def test_tetragon02_solution():
-    mod = _load_module_from_path(Path("solutions/23_ebpf_tetragon/tetragon02.py"))
-    mod.verify()
-
-
-def test_tetragon03_solution():
-    mod = _load_module_from_path(Path("solutions/23_ebpf_tetragon/tetragon03.py"))
-    mod.verify()
-
-
-def test_tetragon04_solution():
-    mod = _load_module_from_path(Path("solutions/23_ebpf_tetragon/tetragon04.py"))
-    mod.verify()
+@pytest.mark.parametrize("ex_name", ["tetragon01", "tetragon02", "tetragon03", "tetragon04"])
+def test_tetragon_solutions(ex_name: str):
+    sol_path = Path(f"solutions/23_ebpf_tetragon/{ex_name}.yaml")
+    assert sol_path.exists(), f"Solution missing: {sol_path}"
+    ex = Exercise(name=ex_name, title=ex_name, path=str(sol_path), chapter_name="23_ebpf_tetragon")
+    runner = ExerciseRunner()
+    result = runner.run_exercise(ex)
+    assert result.passed, f"Solution {sol_path} failed: {result.error}"

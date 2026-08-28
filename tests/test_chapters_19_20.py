@@ -1,20 +1,11 @@
 """Tests for Chapter 19 (Helm Packaging) & Chapter 20 (Kustomize Overlays)."""
 
-import importlib.util
 from pathlib import Path
-from typing import Any
 
 import jsonschema
+import yaml
 
 from kubelings.manifest import get_exercise_by_name, get_manifest
-
-
-def _load_module_from_path(file_path: Path) -> Any:
-    spec = importlib.util.spec_from_file_location(file_path.stem, file_path)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
 
 
 def test_manifest_20_chapters_and_90_exercises():
@@ -48,8 +39,9 @@ def test_chapter_20_manifest_structure():
 
 
 def test_helm01_chart_metadata():
-    mod = _load_module_from_path(Path("solutions/19_helm_packaging/helm01.py"))
-    meta = mod.get_chart_metadata()
+    meta = yaml.safe_load(
+        Path("solutions/19_helm_packaging/helm01.yaml").read_text(encoding="utf-8")
+    )
     assert meta["apiVersion"] == "v2"
     assert meta["name"] == "webapp-chart"
     assert meta["version"] == "1.2.0"
@@ -62,19 +54,9 @@ def test_helm01_chart_metadata():
 
 
 def test_helm02_named_templates():
-    mod = _load_module_from_path(Path("solutions/19_helm_packaging/helm02.py"))
-    assert mod.chart_fullname("mychart", "prod-release") == "prod-release-mychart"
-    assert mod.chart_fullname("mychart", "prod-release", "custom-name") == "custom-name"
-    assert mod.chart_fullname("mychart", "mychart-prod") == "mychart-prod"
-
-    values = {
-        "Chart": {"Name": "web"},
-        "Release": {"Name": "prod"},
-        "replicaCount": 3,
-        "image": {"repository": "nginx", "tag": "1.25-alpine"},
-        "service": {"port": 8080},
-    }
-    dep = mod.render_deployment(values)
+    dep = yaml.safe_load(
+        Path("solutions/19_helm_packaging/helm02.yaml").read_text(encoding="utf-8")
+    )
     assert dep["apiVersion"] == "apps/v1"
     assert dep["kind"] == "Deployment"
     assert dep["metadata"]["name"] == "prod-web"
@@ -84,8 +66,9 @@ def test_helm02_named_templates():
 
 
 def test_helm03_values_schema():
-    mod = _load_module_from_path(Path("solutions/19_helm_packaging/helm03.py"))
-    schema = mod.get_values_schema()
+    schema = yaml.safe_load(
+        Path("solutions/19_helm_packaging/helm03.yaml").read_text(encoding="utf-8")
+    )
     assert schema["$schema"] == "http://json-schema.org/draft-07/schema#"
     assert "replicaCount" in schema["required"]
     assert "image" in schema["required"]
@@ -100,8 +83,9 @@ def test_helm03_values_schema():
 
 
 def test_helm04_subcharts_and_globals():
-    mod = _load_module_from_path(Path("solutions/19_helm_packaging/helm04.py"))
-    values = mod.get_parent_values()
+    values = yaml.safe_load(
+        Path("solutions/19_helm_packaging/helm04.yaml").read_text(encoding="utf-8")
+    )
     assert values["global"]["environment"] == "production"
     assert values["global"]["registry"] == "registry.k8s.io"
     assert values["redis"]["architecture"] == "replication"
@@ -110,8 +94,9 @@ def test_helm04_subcharts_and_globals():
 
 
 def test_kustomize01_base():
-    mod = _load_module_from_path(Path("solutions/20_kustomize_overlays/kustomize01.py"))
-    base = mod.get_kustomization_base()
+    base = yaml.safe_load(
+        Path("solutions/20_kustomize_overlays/kustomize01.yaml").read_text(encoding="utf-8")
+    )
     assert base["apiVersion"] == "kustomize.config.k8s.io/v1beta1"
     assert base["kind"] == "Kustomization"
     assert "deployment.yaml" in base["resources"]
@@ -121,8 +106,9 @@ def test_kustomize01_base():
 
 
 def test_kustomize02_generators():
-    mod = _load_module_from_path(Path("solutions/20_kustomize_overlays/kustomize02.py"))
-    kust = mod.get_generator_kustomization()
+    kust = yaml.safe_load(
+        Path("solutions/20_kustomize_overlays/kustomize02.yaml").read_text(encoding="utf-8")
+    )
     assert kust["apiVersion"] == "kustomize.config.k8s.io/v1beta1"
     assert kust["kind"] == "Kustomization"
     assert len(kust["configMapGenerator"]) == 1
@@ -133,8 +119,9 @@ def test_kustomize02_generators():
 
 
 def test_kustomize03_patches():
-    mod = _load_module_from_path(Path("solutions/20_kustomize_overlays/kustomize03.py"))
-    kust = mod.get_patch_kustomization()
+    kust = yaml.safe_load(
+        Path("solutions/20_kustomize_overlays/kustomize03.yaml").read_text(encoding="utf-8")
+    )
     assert kust["apiVersion"] == "kustomize.config.k8s.io/v1beta1"
     assert "../../base" in kust["resources"]
     assert len(kust["patches"]) == 1
@@ -144,8 +131,9 @@ def test_kustomize03_patches():
 
 
 def test_kustomize04_prod_overlay():
-    mod = _load_module_from_path(Path("solutions/20_kustomize_overlays/kustomize04.py"))
-    overlay = mod.get_prod_overlay()
+    overlay = yaml.safe_load(
+        Path("solutions/20_kustomize_overlays/kustomize04.yaml").read_text(encoding="utf-8")
+    )
     assert overlay["apiVersion"] == "kustomize.config.k8s.io/v1beta1"
     assert "../../base" in overlay["resources"]
     assert overlay["namespace"] == "production"

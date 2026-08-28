@@ -1,14 +1,15 @@
 """Tests for Chapters 4 to 7 Curriculum & Reference Solutions."""
 
-import os
-import subprocess
-import sys
 from pathlib import Path
 
 import pytest
 
 from kubelings.manifest import get_manifest
-from kubelings.runner import NOT_DONE_MARKER
+from kubelings.models import Exercise
+from kubelings.runner import NOT_DONE_MARKER, ExerciseRunner
+from kubelings.validators import load_all_validators
+
+load_all_validators()
 
 CHAPTER_DIRS = [
     "04_storage",
@@ -17,15 +18,15 @@ CHAPTER_DIRS = [
     "07_scheduling",
 ]
 EXPECTED_EXERCISES = {
-    "04_storage": [f"storage0{i}.py" for i in range(1, 6)],
-    "05_services_networking": [f"net0{i}.py" for i in range(1, 6)],
-    "06_ingress_gateway": [f"ingress0{i}.py" for i in range(1, 5)],
-    "07_scheduling": [f"sched0{i}.py" for i in range(1, 6)],
+    "04_storage": [f"storage0{i}.yaml" for i in range(1, 6)],
+    "05_services_networking": [f"net0{i}.yaml" for i in range(1, 6)],
+    "06_ingress_gateway": [f"ingress0{i}.yaml" for i in range(1, 5)],
+    "07_scheduling": [f"sched0{i}.yaml" for i in range(1, 6)],
 }
 
 
 def get_chapter_files(base_dir: str):
-    """Collect all python files for chapters 4 to 7."""
+    """Collect all YAML files for chapters 4 to 7."""
     files = []
     base = Path(base_dir)
     for ch in CHAPTER_DIRS:
@@ -49,20 +50,12 @@ def test_expected_file_count():
 def test_exercise_files_exist_and_fail_initially(exercise_path: Path):
     """Verify every exercise file exists and fails initially."""
     assert exercise_path.exists(), f"Exercise file missing: {exercise_path}"
-
-    # Running the exercise directly via subprocess should fail with non-zero exit code
-    env = os.environ.copy()
-    env["PYTHONPATH"] = f"{Path.cwd() / 'src'}:{env.get('PYTHONPATH', '')}".strip(":")
-    proc = subprocess.run(
-        [sys.executable, str(exercise_path)],
-        capture_output=True,
-        text=True,
-        timeout=10,
-        env=env,
-    )
-    assert proc.returncode != 0, (
-        f"Exercise {exercise_path} should fail initially, but returned exit code 0.\nOutput: {proc.stdout}\nError: {proc.stderr}"
-    )
+    name = exercise_path.stem
+    chapter_name = exercise_path.parent.name
+    ex = Exercise(name=name, title=name, path=str(exercise_path), chapter_name=chapter_name)
+    runner = ExerciseRunner()
+    result = runner.run_exercise(ex)
+    assert not result.passed, f"Exercise {exercise_path} should fail initially, but passed."
 
 
 @pytest.mark.parametrize("solution_path", ALL_SOLUTION_FILES, ids=lambda p: p.name)
@@ -73,21 +66,14 @@ def test_solution_files_exist_and_pass(solution_path: Path):
     assert NOT_DONE_MARKER not in content, (
         f"Solution {solution_path} must not contain '{NOT_DONE_MARKER}'"
     )
-
-    # Running the solution directly via subprocess must pass with exit code 0
-    env = os.environ.copy()
-    env["PYTHONPATH"] = f"{Path.cwd() / 'src'}:{env.get('PYTHONPATH', '')}".strip(":")
-    proc = subprocess.run(
-        [sys.executable, str(solution_path)],
-        capture_output=True,
-        text=True,
-        timeout=10,
-        env=env,
+    name = solution_path.stem
+    chapter_name = solution_path.parent.name
+    ex = Exercise(name=name, title=name, path=str(solution_path), chapter_name=chapter_name)
+    runner = ExerciseRunner()
+    result = runner.run_exercise(ex)
+    assert result.passed, (
+        f"Solution {solution_path} failed validation.\nError: {result.error}\nOutput: {result.output}"
     )
-    assert proc.returncode == 0, (
-        f"Solution {solution_path} failed with exit code {proc.returncode}.\nOutput: {proc.stdout}\nError: {proc.stderr}"
-    )
-    assert "passed!" in proc.stdout, f"Solution {solution_path} did not print pass confirmation"
 
 
 def test_manifest_matches_chapters_4_to_7_files():

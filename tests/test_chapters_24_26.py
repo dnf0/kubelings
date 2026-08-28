@@ -1,21 +1,13 @@
-import importlib.util
-import os
-import subprocess
-import sys
 from pathlib import Path
-from typing import Any
 
 import pytest
 
+from kubelings.models import Exercise
+from kubelings.runner import ExerciseRunner
 from kubelings.validator import validate_manifest_text
+from kubelings.validators import load_all_validators
 
-
-def _load_module_from_path(file_path: Path) -> Any:
-    spec = importlib.util.spec_from_file_location(file_path.stem, file_path)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+load_all_validators()
 
 
 def test_ray01_raycluster_validation():
@@ -209,27 +201,26 @@ spec:
 
 @pytest.mark.parametrize("ex_num", ["01", "02", "03", "04"])
 def test_chapter_24_solutions_pass(ex_num: str):
-    sol_path = Path(f"solutions/24_kuberay_ml/ray{ex_num}.py")
+    sol_path = Path(f"solutions/24_kuberay_ml/ray{ex_num}.yaml")
     assert sol_path.exists(), f"Solution file missing: {sol_path}"
-    mod = _load_module_from_path(sol_path)
-    mod.verify()
+    ex = Exercise(
+        name=f"ray{ex_num}", title=f"ray{ex_num}", path=str(sol_path), chapter_name="24_kuberay_ml"
+    )
+    runner = ExerciseRunner()
+    result = runner.run_exercise(ex)
+    assert result.passed, f"Solution {sol_path} failed: {result.error}"
 
 
 @pytest.mark.parametrize("ex_num", ["01", "02", "03", "04"])
 def test_chapter_24_starters_fail(ex_num: str):
-    ex_path = Path(f"exercises/24_kuberay_ml/ray{ex_num}.py")
+    ex_path = Path(f"exercises/24_kuberay_ml/ray{ex_num}.yaml")
     assert ex_path.exists(), f"Exercise file missing: {ex_path}"
-
-    env = os.environ.copy()
-    env["PYTHONPATH"] = f"{Path.cwd() / 'src'}:{env.get('PYTHONPATH', '')}".strip(":")
-    proc = subprocess.run(
-        [sys.executable, str(ex_path)],
-        capture_output=True,
-        text=True,
-        timeout=10,
-        env=env,
+    ex = Exercise(
+        name=f"ray{ex_num}", title=f"ray{ex_num}", path=str(ex_path), chapter_name="24_kuberay_ml"
     )
-    assert proc.returncode != 0, f"Starter {ex_path} should fail initially but returned 0."
+    runner = ExerciseRunner()
+    result = runner.run_exercise(ex)
+    assert not result.passed, f"Starter {ex_path} should fail initially but passed."
 
 
 def test_kueue01_resource_flavor_and_cluster_queue():
@@ -409,27 +400,26 @@ spec:
 
 @pytest.mark.parametrize("ex_name", ["kueue01", "kueue02", "volcano01", "volcano02"])
 def test_chapter_25_solutions_pass(ex_name: str):
-    sol_path = Path(f"solutions/25_batch_kueue_volcano/{ex_name}.py")
+    sol_path = Path(f"solutions/25_batch_kueue_volcano/{ex_name}.yaml")
     assert sol_path.exists(), f"Solution file missing: {sol_path}"
-    mod = _load_module_from_path(sol_path)
-    mod.verify()
+    ex = Exercise(
+        name=ex_name, title=ex_name, path=str(sol_path), chapter_name="25_batch_kueue_volcano"
+    )
+    runner = ExerciseRunner()
+    result = runner.run_exercise(ex)
+    assert result.passed, f"Solution {sol_path} failed: {result.error}"
 
 
 @pytest.mark.parametrize("ex_name", ["kueue01", "kueue02", "volcano01", "volcano02"])
 def test_chapter_25_starters_fail(ex_name: str):
-    ex_path = Path(f"exercises/25_batch_kueue_volcano/{ex_name}.py")
+    ex_path = Path(f"exercises/25_batch_kueue_volcano/{ex_name}.yaml")
     assert ex_path.exists(), f"Exercise file missing: {ex_path}"
-
-    env = os.environ.copy()
-    env["PYTHONPATH"] = f"{Path.cwd() / 'src'}:{env.get('PYTHONPATH', '')}".strip(":")
-    proc = subprocess.run(
-        [sys.executable, str(ex_path)],
-        capture_output=True,
-        text=True,
-        timeout=10,
-        env=env,
+    ex = Exercise(
+        name=ex_name, title=ex_name, path=str(ex_path), chapter_name="25_batch_kueue_volcano"
     )
-    assert proc.returncode != 0, f"Starter {ex_path} should fail initially but returned 0."
+    runner = ExerciseRunner()
+    result = runner.run_exercise(ex)
+    assert not result.passed, f"Starter {ex_path} should fail initially but passed."
 
 
 def test_accel01_nvidia_mig_partitioning():
@@ -664,27 +654,26 @@ spec:
 
 @pytest.mark.parametrize("ex_name", ["accel01", "accel02", "accel03", "accel04"])
 def test_chapter_26_solutions_pass(ex_name: str):
-    sol_path = Path(f"solutions/26_hardware_acceleration_dra/{ex_name}.py")
+    sol_path = Path(f"solutions/26_hardware_acceleration_dra/{ex_name}.yaml")
     assert sol_path.exists(), f"Solution file missing: {sol_path}"
-    mod = _load_module_from_path(sol_path)
-    mod.verify()
+    ex = Exercise(
+        name=ex_name, title=ex_name, path=str(sol_path), chapter_name="26_hardware_acceleration_dra"
+    )
+    runner = ExerciseRunner()
+    result = runner.run_exercise(ex)
+    assert result.passed, f"Solution {sol_path} failed: {result.error}"
 
 
 @pytest.mark.parametrize("ex_name", ["accel01", "accel02", "accel03", "accel04"])
 def test_chapter_26_starters_fail(ex_name: str):
-    ex_path = Path(f"exercises/26_hardware_acceleration_dra/{ex_name}.py")
+    ex_path = Path(f"exercises/26_hardware_acceleration_dra/{ex_name}.yaml")
     assert ex_path.exists(), f"Exercise file missing: {ex_path}"
-
-    env = os.environ.copy()
-    env["PYTHONPATH"] = f"{Path.cwd() / 'src'}:{env.get('PYTHONPATH', '')}".strip(":")
-    proc = subprocess.run(
-        [sys.executable, str(ex_path)],
-        capture_output=True,
-        text=True,
-        timeout=10,
-        env=env,
+    ex = Exercise(
+        name=ex_name, title=ex_name, path=str(ex_path), chapter_name="26_hardware_acceleration_dra"
     )
-    assert proc.returncode != 0, f"Starter {ex_path} should fail initially but returned 0."
+    runner = ExerciseRunner()
+    result = runner.run_exercise(ex)
+    assert not result.passed, f"Starter {ex_path} should fail initially but passed."
 
 
 def test_chapters_24_26_manifest_registration():

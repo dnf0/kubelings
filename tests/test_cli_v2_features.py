@@ -14,7 +14,7 @@ def test_cli_tree_command():
 
 
 def test_cli_lint_command_on_exercise():
-    result = runner.invoke(app, ["lint", "solutions/01_pods/pods01.py"])
+    result = runner.invoke(app, ["lint", "solutions/01_pods/pods01.yaml"])
     assert result.exit_code == 0
     assert "Manifest Linter" in result.output
 

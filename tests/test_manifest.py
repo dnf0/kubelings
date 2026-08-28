@@ -15,13 +15,13 @@ def test_exercise_dataclass_properties():
     ex = Exercise(
         name="pods01",
         title="First Pod Manifest & Spec",
-        path="exercises/01_pods/pods01.py",
+        path="exercises/01_pods/pods01.yaml",
         chapter_name="01_pods",
         hints=["Hint 1", "Hint 2"],
         requires_cluster=False,
     )
-    assert ex.file_path == Path("exercises/01_pods/pods01.py")
-    assert ex.solution_path == Path("solutions/01_pods/pods01.py")
+    assert ex.file_path == Path("exercises/01_pods/pods01.yaml")
+    assert ex.solution_path == Path("solutions/01_pods/pods01.yaml")
     assert ex.requires_cluster is False
 
 
@@ -33,7 +33,7 @@ def test_manifest_loads_all_chapters():
     first = manifest.all_exercises[0]
     assert first.name == "pods01"
     assert first.chapter_name == "01_pods"
-    assert first.path == "exercises/01_pods/pods01.py"
+    assert first.path == "exercises/01_pods/pods01.yaml"
 
     last = manifest.all_exercises[-1]
     assert last.name == "accel04"
@@ -82,7 +82,7 @@ def test_all_26_chapters_structure():
             assert ex.chapter_name == name
             assert ex.name.isalnum()
             assert ex.path.startswith(f"exercises/{name}/")
-            assert ex.path.endswith(".py")
+            assert ex.path.endswith(".yaml")
             assert len(ex.hints) >= 2, f"Exercise {ex.name} should have at least 2 hints"
             assert all(isinstance(h, str) and len(h) > 0 for h in ex.hints)
 
@@ -91,15 +91,15 @@ def test_get_exercise_by_name():
     ex = get_exercise_by_name("pods01")
     assert ex is not None
     assert ex.name == "pods01"
-    assert ex.path == "exercises/01_pods/pods01.py"
+    assert ex.path == "exercises/01_pods/pods01.yaml"
 
     # Test by relative path
-    ex_by_path = get_exercise_by_name("exercises/01_pods/pods01.py")
+    ex_by_path = get_exercise_by_name("exercises/01_pods/pods01.yaml")
     assert ex_by_path is not None
     assert ex_by_path.name == "pods01"
 
     # Test by filename
-    ex_by_file = get_exercise_by_name("pods01.py")
+    ex_by_file = get_exercise_by_name("pods01.yaml")
     assert ex_by_file is not None
     assert ex_by_file.name == "pods01"
 

@@ -17,7 +17,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="pods01",
                     title="First Pod Manifest & Spec",
-                    path="exercises/01_pods/pods01.py",
+                    path="exercises/01_pods/pods01.yaml",
                     chapter_name="01_pods",
                     hints=[
                         "Set metadata.name to 'nginx-web'",
@@ -28,7 +28,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="pods02",
                     title="Multi-Container Pods & Sidecar Pattern",
-                    path="exercises/01_pods/pods02.py",
+                    path="exercises/01_pods/pods02.yaml",
                     chapter_name="01_pods",
                     hints=[
                         "Define an emptyDir volume under spec.volumes",
@@ -39,7 +39,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="pods03",
                     title="Init Containers for Initialization",
-                    path="exercises/01_pods/pods03.py",
+                    path="exercises/01_pods/pods03.yaml",
                     chapter_name="01_pods",
                     hints=[
                         "Define an initContainers block in the pod spec",
@@ -50,7 +50,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="pods04",
                     title="Resource Requests, Limits & QoS",
-                    path="exercises/01_pods/pods04.py",
+                    path="exercises/01_pods/pods04.yaml",
                     chapter_name="01_pods",
                     hints=[
                         "Set resources.requests and resources.limits for cpu and memory",
@@ -61,7 +61,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="pods05",
                     title="Downward API & Env Variables",
-                    path="exercises/01_pods/pods05.py",
+                    path="exercises/01_pods/pods05.yaml",
                     chapter_name="01_pods",
                     hints=[
                         "Use valueFrom.fieldRef.fieldPath to inject pod metadata",
@@ -72,7 +72,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="pods06",
                     title="Pod Disruption Budgets & Static Pods",
-                    path="exercises/01_pods/pods06.py",
+                    path="exercises/01_pods/pods06.yaml",
                     chapter_name="01_pods",
                     hints=[
                         "Define a PodDisruptionBudget manifest with policy/v1",
@@ -91,7 +91,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="ctrl01",
                     title="ReplicaSets & Label Selectors",
-                    path="exercises/02_controllers/ctrl01.py",
+                    path="exercises/02_controllers/ctrl01.yaml",
                     chapter_name="02_controllers",
                     hints=[
                         "Set apiVersion to 'apps/v1' and kind to 'ReplicaSet'",
@@ -102,7 +102,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="ctrl02",
                     title="Deployments & Rolling Updates",
-                    path="exercises/02_controllers/ctrl02.py",
+                    path="exercises/02_controllers/ctrl02.yaml",
                     chapter_name="02_controllers",
                     hints=[
                         "Set strategy.type to 'RollingUpdate'",
@@ -113,7 +113,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="ctrl03",
                     title="Deployment Rollbacks & Revision History",
-                    path="exercises/02_controllers/ctrl03.py",
+                    path="exercises/02_controllers/ctrl03.yaml",
                     chapter_name="02_controllers",
                     hints=[
                         "Configure spec.revisionHistoryLimit to retain deployment revisions",
@@ -124,7 +124,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="ctrl04",
                     title="StatefulSets & Stable Network IDs",
-                    path="exercises/02_controllers/ctrl04.py",
+                    path="exercises/02_controllers/ctrl04.yaml",
                     chapter_name="02_controllers",
                     hints=[
                         "StatefulSets require serviceName pointing to a headless Service",
@@ -135,7 +135,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="ctrl05",
                     title="DaemonSets for Node-Level Daemons",
-                    path="exercises/02_controllers/ctrl05.py",
+                    path="exercises/02_controllers/ctrl05.yaml",
                     chapter_name="02_controllers",
                     hints=[
                         "DaemonSets run exactly one pod per eligible node",
@@ -146,7 +146,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="ctrl06",
                     title="Jobs & CronJobs",
-                    path="exercises/02_controllers/ctrl06.py",
+                    path="exercises/02_controllers/ctrl06.yaml",
                     chapter_name="02_controllers",
                     hints=[
                         "Set completions and parallelism in Job spec",
@@ -165,7 +165,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="config01",
                     title="ConfigMaps as Environment Variables",
-                    path="exercises/03_config_secrets/config01.py",
+                    path="exercises/03_config_secrets/config01.yaml",
                     chapter_name="03_config_secrets",
                     hints=[
                         "Define ConfigMap with data key-value pairs",
@@ -176,7 +176,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="config02",
                     title="ConfigMaps Mounted as Volumes",
-                    path="exercises/03_config_secrets/config02.py",
+                    path="exercises/03_config_secrets/config02.yaml",
                     chapter_name="03_config_secrets",
                     hints=[
                         "Define a volume with configMap source in pod spec",
@@ -187,7 +187,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="config03",
                     title="Secrets & Base64 Encoding",
-                    path="exercises/03_config_secrets/config03.py",
+                    path="exercises/03_config_secrets/config03.yaml",
                     chapter_name="03_config_secrets",
                     hints=[
                         "Set kind to 'Secret' and type to 'Opaque'",
@@ -198,7 +198,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="config04",
                     title="Secret Volume Mounts & Permissions",
-                    path="exercises/03_config_secrets/config04.py",
+                    path="exercises/03_config_secrets/config04.yaml",
                     chapter_name="03_config_secrets",
                     hints=[
                         "Mount secret as a volume with defaultMode set to octal permissions (e.g. 0400)",
@@ -209,7 +209,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="config05",
                     title="Immutable ConfigMaps and Secrets",
-                    path="exercises/03_config_secrets/config05.py",
+                    path="exercises/03_config_secrets/config05.yaml",
                     chapter_name="03_config_secrets",
                     hints=[
                         "Set immutable: true at the top level of ConfigMap or Secret manifest",
@@ -228,7 +228,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="storage01",
                     title="Volume Types (emptyDir & hostPath)",
-                    path="exercises/04_storage/storage01.py",
+                    path="exercises/04_storage/storage01.yaml",
                     chapter_name="04_storage",
                     hints=[
                         "emptyDir provides scratch space tied to the pod lifecycle",
@@ -239,7 +239,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="storage02",
                     title="PersistentVolumes & PersistentVolumeClaims",
-                    path="exercises/04_storage/storage02.py",
+                    path="exercises/04_storage/storage02.yaml",
                     chapter_name="04_storage",
                     hints=[
                         "PV represents cluster-wide storage provisioned by admin or dynamically",
@@ -250,7 +250,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="storage03",
                     title="Access Modes & Reclaim Policies",
-                    path="exercises/04_storage/storage03.py",
+                    path="exercises/04_storage/storage03.yaml",
                     chapter_name="04_storage",
                     hints=[
                         "Access modes include ReadWriteOnce, ReadOnlyMany, ReadWriteMany",
@@ -261,7 +261,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="storage04",
                     title="StorageClasses & Dynamic Provisioning",
-                    path="exercises/04_storage/storage04.py",
+                    path="exercises/04_storage/storage04.yaml",
                     chapter_name="04_storage",
                     hints=[
                         "StorageClass defines volume provisioner and parameters",
@@ -272,7 +272,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="storage05",
                     title="Volume Snapshots & Volume Expansion",
-                    path="exercises/04_storage/storage05.py",
+                    path="exercises/04_storage/storage05.yaml",
                     chapter_name="04_storage",
                     hints=[
                         "Set allowVolumeExpansion: true on StorageClass to enable PVC resizing",
@@ -291,7 +291,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="net01",
                     title="ClusterIP Services & Port Mapping",
-                    path="exercises/05_services_networking/net01.py",
+                    path="exercises/05_services_networking/net01.yaml",
                     chapter_name="05_services_networking",
                     hints=[
                         "ClusterIP provides stable internal IP and DNS name",
@@ -302,7 +302,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="net02",
                     title="Headless Services & Stateful Addressing",
-                    path="exercises/05_services_networking/net02.py",
+                    path="exercises/05_services_networking/net02.yaml",
                     chapter_name="05_services_networking",
                     hints=[
                         "Set spec.clusterIP to 'None' to create a headless service",
@@ -313,7 +313,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="net03",
                     title="NodePort & LoadBalancer Service Types",
-                    path="exercises/05_services_networking/net03.py",
+                    path="exercises/05_services_networking/net03.yaml",
                     chapter_name="05_services_networking",
                     hints=[
                         "NodePort exposes service on static port (30000-32767) across all node IPs",
@@ -324,7 +324,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="net04",
                     title="CoreDNS Internal Service Resolution",
-                    path="exercises/05_services_networking/net04.py",
+                    path="exercises/05_services_networking/net04.yaml",
                     chapter_name="05_services_networking",
                     hints=[
                         "FQDN format: <service-name>.<namespace>.svc.cluster.local",
@@ -335,7 +335,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="net05",
                     title="ExternalName Services & Manual Endpoints",
-                    path="exercises/05_services_networking/net05.py",
+                    path="exercises/05_services_networking/net05.yaml",
                     chapter_name="05_services_networking",
                     hints=[
                         "ExternalName maps service to external CNAME without proxying",
@@ -354,7 +354,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="ingress01",
                     title="Ingress Host & Path Routing",
-                    path="exercises/06_ingress_gateway/ingress01.py",
+                    path="exercises/06_ingress_gateway/ingress01.yaml",
                     chapter_name="06_ingress_gateway",
                     hints=[
                         "Define Ingress with networking.k8s.io/v1",
@@ -365,7 +365,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="ingress02",
                     title="Ingress TLS Termination",
-                    path="exercises/06_ingress_gateway/ingress02.py",
+                    path="exercises/06_ingress_gateway/ingress02.yaml",
                     chapter_name="06_ingress_gateway",
                     hints=[
                         "Add spec.tls array to Ingress resource",
@@ -376,7 +376,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="ingress03",
                     title="Ingress Annotations & Rewrites",
-                    path="exercises/06_ingress_gateway/ingress03.py",
+                    path="exercises/06_ingress_gateway/ingress03.yaml",
                     chapter_name="06_ingress_gateway",
                     hints=[
                         "Use ingressClassName or kubernetes.io/ingress.class annotation",
@@ -387,7 +387,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="ingress04",
                     title="Gateway API Fundamentals",
-                    path="exercises/06_ingress_gateway/ingress04.py",
+                    path="exercises/06_ingress_gateway/ingress04.yaml",
                     chapter_name="06_ingress_gateway",
                     hints=[
                         "Gateway API separates GatewayClass, Gateway, and HTTPRoute",
@@ -406,7 +406,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="sched01",
                     title="Node Placement (nodeName & nodeSelector)",
-                    path="exercises/07_scheduling/sched01.py",
+                    path="exercises/07_scheduling/sched01.yaml",
                     chapter_name="07_scheduling",
                     hints=[
                         "spec.nodeName bypasses scheduler and assigns pod directly to a node",
@@ -417,7 +417,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="sched02",
                     title="Node Affinity & Constraints",
-                    path="exercises/07_scheduling/sched02.py",
+                    path="exercises/07_scheduling/sched02.yaml",
                     chapter_name="07_scheduling",
                     hints=[
                         "requiredDuringSchedulingIgnoredDuringExecution is a hard requirement",
@@ -428,7 +428,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="sched03",
                     title="Pod Affinity & Pod Anti-Affinity",
-                    path="exercises/07_scheduling/sched03.py",
+                    path="exercises/07_scheduling/sched03.yaml",
                     chapter_name="07_scheduling",
                     hints=[
                         "topologyKey determines failure domain (e.g., kubernetes.io/hostname)",
@@ -439,7 +439,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="sched04",
                     title="Taints and Tolerations",
-                    path="exercises/07_scheduling/sched04.py",
+                    path="exercises/07_scheduling/sched04.yaml",
                     chapter_name="07_scheduling",
                     hints=[
                         "Nodes have taints with key, value, and effect (NoSchedule, PreferNoSchedule, NoExecute)",
@@ -450,7 +450,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="sched05",
                     title="Topology Spread Constraints",
-                    path="exercises/07_scheduling/sched05.py",
+                    path="exercises/07_scheduling/sched05.yaml",
                     chapter_name="07_scheduling",
                     hints=[
                         "spec.topologySpreadConstraints evens distribution across zones or hosts",
@@ -469,7 +469,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="rbac01",
                     title="ServiceAccounts & Token Management",
-                    path="exercises/08_security_rbac/rbac01.py",
+                    path="exercises/08_security_rbac/rbac01.yaml",
                     chapter_name="08_security_rbac",
                     hints=[
                         "Define ServiceAccount with apiVersion: v1",
@@ -480,7 +480,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="rbac02",
                     title="Roles & RoleBindings",
-                    path="exercises/08_security_rbac/rbac02.py",
+                    path="exercises/08_security_rbac/rbac02.yaml",
                     chapter_name="08_security_rbac",
                     hints=[
                         "Role defines namespace-scoped permissions (apiGroups, resources, verbs)",
@@ -491,7 +491,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="rbac03",
                     title="ClusterRoles & ClusterRoleBindings",
-                    path="exercises/08_security_rbac/rbac03.py",
+                    path="exercises/08_security_rbac/rbac03.yaml",
                     chapter_name="08_security_rbac",
                     hints=[
                         "ClusterRole grants cluster-wide permissions or non-resource URLs (/healthz)",
@@ -502,7 +502,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="rbac04",
                     title="Pod & Container SecurityContext",
-                    path="exercises/08_security_rbac/rbac04.py",
+                    path="exercises/08_security_rbac/rbac04.yaml",
                     chapter_name="08_security_rbac",
                     hints=[
                         "Set runAsNonRoot: true and runAsUser to a non-zero UID",
@@ -513,7 +513,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="rbac05",
                     title="Pod Security Standards (PSS/PSA)",
-                    path="exercises/08_security_rbac/rbac05.py",
+                    path="exercises/08_security_rbac/rbac05.yaml",
                     chapter_name="08_security_rbac",
                     hints=[
                         "Namespace labels configure Pod Security Admission",
@@ -532,7 +532,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="netpol01",
                     title="Default Deny Network Policy",
-                    path="exercises/09_network_policies/netpol01.py",
+                    path="exercises/09_network_policies/netpol01.yaml",
                     chapter_name="09_network_policies",
                     hints=[
                         "Set policyTypes to ['Ingress', 'Egress'] with empty ingress and egress arrays",
@@ -543,7 +543,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="netpol02",
                     title="Ingress Traffic Filtering",
-                    path="exercises/09_network_policies/netpol02.py",
+                    path="exercises/09_network_policies/netpol02.yaml",
                     chapter_name="09_network_policies",
                     hints=[
                         "Define spec.ingress with 'from' selectors and 'ports'",
@@ -554,7 +554,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="netpol03",
                     title="Egress Traffic & DNS Access",
-                    path="exercises/09_network_policies/netpol03.py",
+                    path="exercises/09_network_policies/netpol03.yaml",
                     chapter_name="09_network_policies",
                     hints=[
                         "Define spec.egress rules allowing specific destinations",
@@ -565,7 +565,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="netpol04",
                     title="Named Ports & IPBlock CIDR Exceptions",
-                    path="exercises/09_network_policies/netpol04.py",
+                    path="exercises/09_network_policies/netpol04.yaml",
                     chapter_name="09_network_policies",
                     hints=[
                         "Use named ports in NetworkPolicy rules matching container port names",
@@ -584,7 +584,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="health01",
                     title="Liveness Probes",
-                    path="exercises/10_lifecycle_probes/health01.py",
+                    path="exercises/10_lifecycle_probes/health01.yaml",
                     chapter_name="10_lifecycle_probes",
                     hints=[
                         "Liveness probe restarts container if health check fails",
@@ -595,7 +595,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="health02",
                     title="Readiness Probes",
-                    path="exercises/10_lifecycle_probes/health02.py",
+                    path="exercises/10_lifecycle_probes/health02.yaml",
                     chapter_name="10_lifecycle_probes",
                     hints=[
                         "Readiness probe gates traffic from Service endpoints",
@@ -606,7 +606,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="health03",
                     title="Startup Probes",
-                    path="exercises/10_lifecycle_probes/health03.py",
+                    path="exercises/10_lifecycle_probes/health03.yaml",
                     chapter_name="10_lifecycle_probes",
                     hints=[
                         "Startup probe disables liveness and readiness checks until it succeeds",
@@ -617,7 +617,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="health04",
                     title="Lifecycle Hooks & Graceful Shutdown",
-                    path="exercises/10_lifecycle_probes/health04.py",
+                    path="exercises/10_lifecycle_probes/health04.yaml",
                     chapter_name="10_lifecycle_probes",
                     hints=[
                         "lifecycle.preStop executes command or HTTP request before SIGTERM",
@@ -636,7 +636,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="autoscale01",
                     title="Horizontal Pod Autoscaler (HPA v2)",
-                    path="exercises/11_autoscaling/autoscale01.py",
+                    path="exercises/11_autoscaling/autoscale01.yaml",
                     chapter_name="11_autoscaling",
                     hints=[
                         "apiVersion: autoscaling/v2, kind: HorizontalPodAutoscaler",
@@ -647,7 +647,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="autoscale02",
                     title="HPA Custom Scaling Behavior",
-                    path="exercises/11_autoscaling/autoscale02.py",
+                    path="exercises/11_autoscaling/autoscale02.yaml",
                     chapter_name="11_autoscaling",
                     hints=[
                         "spec.behavior allows configuring scaleUp and scaleDown policies independently",
@@ -658,7 +658,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="autoscale03",
                     title="Vertical Pod Autoscaler (VPA)",
-                    path="exercises/11_autoscaling/autoscale03.py",
+                    path="exercises/11_autoscaling/autoscale03.yaml",
                     chapter_name="11_autoscaling",
                     hints=[
                         "VPA adjusts CPU/memory requests and limits automatically",
@@ -669,7 +669,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="autoscale04",
                     title="Event-Driven Autoscaling (KEDA)",
-                    path="exercises/11_autoscaling/autoscale04.py",
+                    path="exercises/11_autoscaling/autoscale04.yaml",
                     chapter_name="11_autoscaling",
                     hints=[
                         "KEDA ScaledObject maps event triggers (Kafka, RabbitMQ, SQS, Prometheus) to workloads",
@@ -688,7 +688,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="crd01",
                     title="CustomResourceDefinition (CRD) Schema",
-                    path="exercises/12_crds_and_operators/crd01.py",
+                    path="exercises/12_crds_and_operators/crd01.yaml",
                     chapter_name="12_crds_and_operators",
                     hints=[
                         "apiVersion: apiextensions.k8s.io/v1, kind: CustomResourceDefinition",
@@ -699,7 +699,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="crd02",
                     title="CRD Subresources & Printer Columns",
-                    path="exercises/12_crds_and_operators/crd02.py",
+                    path="exercises/12_crds_and_operators/crd02.yaml",
                     chapter_name="12_crds_and_operators",
                     hints=[
                         "spec.versions[].subresources.status: {} enables /status subresource",
@@ -710,7 +710,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="crd03",
                     title="Python Kubernetes Operator Loop",
-                    path="exercises/12_crds_and_operators/crd03.py",
+                    path="exercises/12_crds_and_operators/crd03.yaml",
                     chapter_name="12_crds_and_operators",
                     hints=[
                         "Operator watches Custom Resource events using watch.Watch stream",
@@ -721,7 +721,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="crd04",
                     title="Dynamic Admission Webhooks",
-                    path="exercises/12_crds_and_operators/crd04.py",
+                    path="exercises/12_crds_and_operators/crd04.yaml",
                     chapter_name="12_crds_and_operators",
                     hints=[
                         "MutatingWebhookConfiguration modifies objects before admission",
@@ -740,7 +740,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="troubleshoot01",
                     title="Debugging CrashLoopBackOff & Exit Codes",
-                    path="exercises/13_troubleshooting/troubleshoot01.py",
+                    path="exercises/13_troubleshooting/troubleshoot01.yaml",
                     chapter_name="13_troubleshooting",
                     hints=[
                         "Exit code 137 indicates container was OOMKilled by Linux kernel",
@@ -751,7 +751,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="troubleshoot02",
                     title="Debugging ImagePullBackOff",
-                    path="exercises/13_troubleshooting/troubleshoot02.py",
+                    path="exercises/13_troubleshooting/troubleshoot02.yaml",
                     chapter_name="13_troubleshooting",
                     hints=[
                         "ImagePullBackOff indicates failure to fetch container image",
@@ -762,7 +762,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="troubleshoot03",
                     title="Debugging Pending Pods & Scheduling Failures",
-                    path="exercises/13_troubleshooting/troubleshoot03.py",
+                    path="exercises/13_troubleshooting/troubleshoot03.yaml",
                     chapter_name="13_troubleshooting",
                     hints=[
                         "Pending status usually means no node can satisfy resource requests or affinity/taints",
@@ -773,7 +773,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="troubleshoot04",
                     title="ResourceQuotas & LimitRanges",
-                    path="exercises/13_troubleshooting/troubleshoot04.py",
+                    path="exercises/13_troubleshooting/troubleshoot04.yaml",
                     chapter_name="13_troubleshooting",
                     hints=[
                         "ResourceQuota limits total resource consumption (CPU, Memory, Pods) in a namespace",
@@ -784,7 +784,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="troubleshoot05",
                     title="Ephemeral Debug Containers & Event Triage",
-                    path="exercises/13_troubleshooting/troubleshoot05.py",
+                    path="exercises/13_troubleshooting/troubleshoot05.yaml",
                     chapter_name="13_troubleshooting",
                     hints=[
                         "kubectl debug attaches ephemeral container to running pod for live diagnostics",
@@ -803,7 +803,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="gitops01",
                     title="ArgoCD Application CRD & Sync Policies",
-                    path="exercises/14_gitops_argocd/gitops01.py",
+                    path="exercises/14_gitops_argocd/gitops01.yaml",
                     chapter_name="14_gitops_argocd",
                     hints=[
                         "Set apiVersion to argoproj.io/v1alpha1 and kind to Application",
@@ -814,7 +814,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="gitops02",
                     title="ArgoCD ApplicationSet Matrix Generator",
-                    path="exercises/14_gitops_argocd/gitops02.py",
+                    path="exercises/14_gitops_argocd/gitops02.yaml",
                     chapter_name="14_gitops_argocd",
                     hints=[
                         "ApplicationSets generate multiple Applications across clusters and folders",
@@ -825,7 +825,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="gitops03",
                     title="Sync Windows, ServerSideApply & Retry Backoff",
-                    path="exercises/14_gitops_argocd/gitops03.py",
+                    path="exercises/14_gitops_argocd/gitops03.yaml",
                     chapter_name="14_gitops_argocd",
                     hints=[
                         "Include 'CreateNamespace=true' and 'ServerSideApply=true' in syncOptions",
@@ -836,7 +836,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="gitops04",
                     title="Progressive Delivery with Argo Rollouts",
-                    path="exercises/14_gitops_argocd/gitops04.py",
+                    path="exercises/14_gitops_argocd/gitops04.yaml",
                     chapter_name="14_gitops_argocd",
                     hints=[
                         "Argo Rollouts replaces Deployment with advanced canary and blue-green strategies",
@@ -855,7 +855,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="mesh01",
                     title="Cilium L7 HTTP Filtering & Routing",
-                    path="exercises/15_service_mesh_cilium/mesh01.py",
+                    path="exercises/15_service_mesh_cilium/mesh01.yaml",
                     chapter_name="15_service_mesh_cilium",
                     hints=[
                         "Set apiVersion to cilium.io/v2 and kind to CiliumNetworkPolicy",
@@ -866,7 +866,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="mesh02",
                     title="Strict Mutual TLS & PeerAuthentication",
-                    path="exercises/15_service_mesh_cilium/mesh02.py",
+                    path="exercises/15_service_mesh_cilium/mesh02.yaml",
                     chapter_name="15_service_mesh_cilium",
                     hints=[
                         "PeerAuthentication configures namespace-wide mTLS encryption",
@@ -877,7 +877,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="mesh03",
                     title="CiliumClusterwideNetworkPolicy with DNS FQDN Egress",
-                    path="exercises/15_service_mesh_cilium/mesh03.py",
+                    path="exercises/15_service_mesh_cilium/mesh03.yaml",
                     chapter_name="15_service_mesh_cilium",
                     hints=[
                         "CiliumClusterwideNetworkPolicy applies across all cluster namespaces",
@@ -888,7 +888,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="mesh04",
                     title="Hubble Observability & OpenTelemetry Tracing",
-                    path="exercises/15_service_mesh_cilium/mesh04.py",
+                    path="exercises/15_service_mesh_cilium/mesh04.yaml",
                     chapter_name="15_service_mesh_cilium",
                     hints=[
                         "Attach prometheus.io/scrape and telemetry annotations to Pod metadata",
@@ -907,7 +907,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="policy01",
                     title="Kyverno ClusterPolicy for Required Labels",
-                    path="exercises/16_policy_as_code/policy01.py",
+                    path="exercises/16_policy_as_code/policy01.yaml",
                     chapter_name="16_policy_as_code",
                     hints=[
                         "Set apiVersion to kyverno.io/v1 and kind to ClusterPolicy",
@@ -918,7 +918,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="policy02",
                     title="Kyverno Mutating Policy for Security Defaults",
-                    path="exercises/16_policy_as_code/policy02.py",
+                    path="exercises/16_policy_as_code/policy02.yaml",
                     chapter_name="16_policy_as_code",
                     hints=[
                         "Use mutate.patchStrategicMerge under the rule definition",
@@ -929,7 +929,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="policy03",
                     title="Kyverno Generate Policy for Default Deny NetworkPolicy",
-                    path="exercises/16_policy_as_code/policy03.py",
+                    path="exercises/16_policy_as_code/policy03.yaml",
                     chapter_name="16_policy_as_code",
                     hints=[
                         "Define rule matching Namespace resource creation",
@@ -940,7 +940,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="policy04",
                     title="OPA Gatekeeper ConstraintTemplate & Constraint",
-                    path="exercises/16_policy_as_code/policy04.py",
+                    path="exercises/16_policy_as_code/policy04.yaml",
                     chapter_name="16_policy_as_code",
                     hints=[
                         "ConstraintTemplate defines custom CRD and Rego evaluation logic",
@@ -959,7 +959,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="tenant01",
                     title="HNC Hierarchical Subnamespace Anchor",
-                    path="exercises/17_multitenancy_vcluster/tenant01.py",
+                    path="exercises/17_multitenancy_vcluster/tenant01.yaml",
                     chapter_name="17_multitenancy_vcluster",
                     hints=[
                         "Set apiVersion to hnc.x-k8s.io/v1alpha2 and kind to SubnamespaceAnchor",
@@ -970,7 +970,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="tenant02",
                     title="Tenant ResourceQuotas and LimitRanges",
-                    path="exercises/17_multitenancy_vcluster/tenant02.py",
+                    path="exercises/17_multitenancy_vcluster/tenant02.yaml",
                     chapter_name="17_multitenancy_vcluster",
                     hints=[
                         "Combine ResourceQuota and LimitRange across multi-document YAML (---)",
@@ -981,7 +981,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="tenant03",
                     title="Virtual Cluster (vcluster) Control Plane",
-                    path="exercises/17_multitenancy_vcluster/tenant03.py",
+                    path="exercises/17_multitenancy_vcluster/tenant03.yaml",
                     chapter_name="17_multitenancy_vcluster",
                     hints=[
                         "Set kind to VirtualCluster and apiVersion to vcluster.loft.sh/v1alpha1",
@@ -992,7 +992,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="tenant04",
                     title="Multi-Tenant Network Isolation & Egress Filtering",
-                    path="exercises/17_multitenancy_vcluster/tenant04.py",
+                    path="exercises/17_multitenancy_vcluster/tenant04.yaml",
                     chapter_name="17_multitenancy_vcluster",
                     hints=[
                         "Define NetworkPolicy with ingress and egress policyTypes",
@@ -1011,7 +1011,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="webhook01",
                     title="MutatingWebhookConfiguration Manifest",
-                    path="exercises/18_admission_webhooks/webhook01.py",
+                    path="exercises/18_admission_webhooks/webhook01.yaml",
                     chapter_name="18_admission_webhooks",
                     hints=[
                         "Set kind to MutatingWebhookConfiguration under admissionregistration.k8s.io/v1",
@@ -1022,7 +1022,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="webhook02",
                     title="ValidatingWebhookConfiguration Manifest",
-                    path="exercises/18_admission_webhooks/webhook02.py",
+                    path="exercises/18_admission_webhooks/webhook02.yaml",
                     chapter_name="18_admission_webhooks",
                     hints=[
                         "Set kind to ValidatingWebhookConfiguration",
@@ -1033,7 +1033,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="webhook03",
                     title="Dynamic Sidecar Injection AdmissionReview Response",
-                    path="exercises/18_admission_webhooks/webhook03.py",
+                    path="exercises/18_admission_webhooks/webhook03.yaml",
                     chapter_name="18_admission_webhooks",
                     hints=[
                         "Return AdmissionReview payload with uid, allowed=True, patchType=JSONPatch",
@@ -1044,7 +1044,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="webhook04",
                     title="CRD Webhook Conversion Strategy",
-                    path="exercises/18_admission_webhooks/webhook04.py",
+                    path="exercises/18_admission_webhooks/webhook04.yaml",
                     chapter_name="18_admission_webhooks",
                     hints=[
                         "Set spec.conversion.strategy to 'Webhook'",
@@ -1063,7 +1063,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="helm01",
                     title="Helm Chart.yaml Metadata & Dependencies",
-                    path="exercises/19_helm_packaging/helm01.py",
+                    path="exercises/19_helm_packaging/helm01.yaml",
                     chapter_name="19_helm_packaging",
                     hints=[
                         "Set apiVersion to 'v2' for Helm v3 chart standard",
@@ -1074,7 +1074,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="helm02",
                     title="Helm Go Templating & Named Helpers (_helpers.tpl)",
-                    path="exercises/19_helm_packaging/helm02.py",
+                    path="exercises/19_helm_packaging/helm02.yaml",
                     chapter_name="19_helm_packaging",
                     hints=[
                         "Implement fullname helper formatting release-chart naming",
@@ -1085,7 +1085,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="helm03",
                     title="Helm values.schema.json Validation Schema",
-                    path="exercises/19_helm_packaging/helm03.py",
+                    path="exercises/19_helm_packaging/helm03.yaml",
                     chapter_name="19_helm_packaging",
                     hints=[
                         "Use JSONSchema Draft-7 with $schema declaration",
@@ -1096,7 +1096,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="helm04",
                     title="Helm Subcharts & Global Values",
-                    path="exercises/19_helm_packaging/helm04.py",
+                    path="exercises/19_helm_packaging/helm04.yaml",
                     chapter_name="19_helm_packaging",
                     hints=[
                         "Define global dictionary for cross-chart shared configuration",
@@ -1115,7 +1115,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="kustomize01",
                     title="Kustomize Base Manifests & Metadata Transformations",
-                    path="exercises/20_kustomize_overlays/kustomize01.py",
+                    path="exercises/20_kustomize_overlays/kustomize01.yaml",
                     chapter_name="20_kustomize_overlays",
                     hints=[
                         "Set apiVersion to kustomize.config.k8s.io/v1beta1 and kind to Kustomization",
@@ -1126,7 +1126,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="kustomize02",
                     title="Kustomize ConfigMap & Secret Generators",
-                    path="exercises/20_kustomize_overlays/kustomize02.py",
+                    path="exercises/20_kustomize_overlays/kustomize02.yaml",
                     chapter_name="20_kustomize_overlays",
                     hints=[
                         "Define configMapGenerator and secretGenerator lists with literals",
@@ -1137,7 +1137,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="kustomize03",
                     title="Kustomize Strategic Merge & JSON6902 Target Patches",
-                    path="exercises/20_kustomize_overlays/kustomize03.py",
+                    path="exercises/20_kustomize_overlays/kustomize03.yaml",
                     chapter_name="20_kustomize_overlays",
                     hints=[
                         "Target specific resources by group, version, kind, and name",
@@ -1148,7 +1148,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="kustomize04",
                     title="Kustomize Multi-Environment Overlays & Image Transforms",
-                    path="exercises/20_kustomize_overlays/kustomize04.py",
+                    path="exercises/20_kustomize_overlays/kustomize04.yaml",
                     chapter_name="20_kustomize_overlays",
                     hints=[
                         "Reference base manifests via resources path",
@@ -1167,7 +1167,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="gateway01",
                     title="GatewayClass and Gateway Declaration",
-                    path="exercises/21_gateway_api/gateway01.py",
+                    path="exercises/21_gateway_api/gateway01.yaml",
                     chapter_name="21_gateway_api",
                     hints=[
                         "Set apiVersion to gateway.networking.k8s.io/v1 and kind to GatewayClass or Gateway",
@@ -1178,7 +1178,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="gateway02",
                     title="HTTPRoute Path & Header-Based Routing",
-                    path="exercises/21_gateway_api/gateway02.py",
+                    path="exercises/21_gateway_api/gateway02.yaml",
                     chapter_name="21_gateway_api",
                     hints=[
                         "Attach HTTPRoute to Gateway using parentRefs with name and namespace",
@@ -1189,7 +1189,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="gateway03",
                     title="Canary Traffic Splitting & URL Rewriting",
-                    path="exercises/21_gateway_api/gateway03.py",
+                    path="exercises/21_gateway_api/gateway03.yaml",
                     chapter_name="21_gateway_api",
                     hints=[
                         "Specify multiple backendRefs with integer weight values summing to 100",
@@ -1200,7 +1200,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="gateway04",
                     title="Cross-Namespace Security with ReferenceGrant",
-                    path="exercises/21_gateway_api/gateway04.py",
+                    path="exercises/21_gateway_api/gateway04.yaml",
                     chapter_name="21_gateway_api",
                     hints=[
                         "Create ReferenceGrant in target backend namespace to authorize cross-namespace references",
@@ -1219,7 +1219,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="crossplane01",
                     title="CompositeResourceDefinition (XRD) Schema",
-                    path="exercises/22_crossplane_iac/crossplane01.py",
+                    path="exercises/22_crossplane_iac/crossplane01.yaml",
                     chapter_name="22_crossplane_iac",
                     hints=[
                         "Define XRD under apiextensions.crossplane.io/v1 with group and names",
@@ -1230,7 +1230,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="crossplane02",
                     title="Composition and Field Path Transforms",
-                    path="exercises/22_crossplane_iac/crossplane02.py",
+                    path="exercises/22_crossplane_iac/crossplane02.yaml",
                     chapter_name="22_crossplane_iac",
                     hints=[
                         "Link Composition to XRD via compositeTypeRef",
@@ -1241,7 +1241,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="crossplane03",
                     title="ProviderConfig and Resource Deletion Policies",
-                    path="exercises/22_crossplane_iac/crossplane03.py",
+                    path="exercises/22_crossplane_iac/crossplane03.yaml",
                     chapter_name="22_crossplane_iac",
                     hints=[
                         "Configure ProviderConfig with credentials secret reference",
@@ -1252,7 +1252,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="crossplane04",
                     title="Developer Self-Service Claims & Connection Secrets",
-                    path="exercises/22_crossplane_iac/crossplane04.py",
+                    path="exercises/22_crossplane_iac/crossplane04.yaml",
                     chapter_name="22_crossplane_iac",
                     hints=[
                         "Instantiate namespaced claim matching XRD claimNames.kind",
@@ -1271,7 +1271,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="tetragon01",
                     title="Process Execution Tracing with sys_execve",
-                    path="exercises/23_ebpf_tetragon/tetragon01.py",
+                    path="exercises/23_ebpf_tetragon/tetragon01.yaml",
                     chapter_name="23_ebpf_tetragon",
                     hints=[
                         "Set apiVersion to cilium.io/v1alpha1 and kind to TracingPolicy",
@@ -1282,7 +1282,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="tetragon02",
                     title="Sensitive File & Credential Access Auditing",
-                    path="exercises/23_ebpf_tetragon/tetragon02.py",
+                    path="exercises/23_ebpf_tetragon/tetragon02.yaml",
                     chapter_name="23_ebpf_tetragon",
                     hints=[
                         "Trace sys_openat syscall with path argument inspection at index 1",
@@ -1293,7 +1293,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="tetragon03",
                     title="Real-Time Kernel Sigkill Enforcement",
-                    path="exercises/23_ebpf_tetragon/tetragon03.py",
+                    path="exercises/23_ebpf_tetragon/tetragon03.yaml",
                     chapter_name="23_ebpf_tetragon",
                     hints=[
                         "Match prohibited binaries such as sudo or nsenter with Exact operator",
@@ -1304,7 +1304,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="tetragon04",
                     title="eBPF TCP Socket & Network Egress Observability",
-                    path="exercises/23_ebpf_tetragon/tetragon04.py",
+                    path="exercises/23_ebpf_tetragon/tetragon04.yaml",
                     chapter_name="23_ebpf_tetragon",
                     hints=[
                         "Attach kprobe to kernel tcp_connect function with sock argument type",
@@ -1323,7 +1323,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="ray01",
                     title="RayCluster Core Architecture & Head Node",
-                    path="exercises/24_kuberay_ml/ray01.py",
+                    path="exercises/24_kuberay_ml/ray01.yaml",
                     chapter_name="24_kuberay_ml",
                     hints=[
                         "Set apiVersion to ray.io/v1 and kind to RayCluster with metadata.name ray-cluster-ml",
@@ -1335,7 +1335,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="ray02",
                     title="Heterogeneous Worker Pools & Autoscaling",
-                    path="exercises/24_kuberay_ml/ray02.py",
+                    path="exercises/24_kuberay_ml/ray02.yaml",
                     chapter_name="24_kuberay_ml",
                     hints=[
                         "In spec.workerGroupSpecs, create two separate worker groups: cpu-workers and gpu-workers",
@@ -1346,7 +1346,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="ray03",
                     title="RayJob for Distributed Batch Fine-Tuning",
-                    path="exercises/24_kuberay_ml/ray03.py",
+                    path="exercises/24_kuberay_ml/ray03.yaml",
                     chapter_name="24_kuberay_ml",
                     hints=[
                         "Set apiVersion to ray.io/v1 and kind to RayJob with metadata.name ray-finetune-job",
@@ -1358,7 +1358,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="ray04",
                     title="RayService for Production LLM Serving",
-                    path="exercises/24_kuberay_ml/ray04.py",
+                    path="exercises/24_kuberay_ml/ray04.yaml",
                     chapter_name="24_kuberay_ml",
                     hints=[
                         "Set apiVersion to ray.io/v1 and kind to RayService with metadata.name ray-llm-service",
@@ -1377,7 +1377,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="kueue01",
                     title="Kueue ResourceFlavor & ClusterQueue Cohort Borrowing",
-                    path="exercises/25_batch_kueue_volcano/kueue01.py",
+                    path="exercises/25_batch_kueue_volcano/kueue01.yaml",
                     chapter_name="25_batch_kueue_volcano",
                     hints=[
                         "Define ResourceFlavor 'default-flavor' and ClusterQueue 'cluster-queue-ai' with apiVersion kueue.x-k8s.io/v1beta1",
@@ -1388,7 +1388,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="kueue02",
                     title="Kueue LocalQueue & Suspended Workload Gating",
-                    path="exercises/25_batch_kueue_volcano/kueue02.py",
+                    path="exercises/25_batch_kueue_volcano/kueue02.yaml",
                     chapter_name="25_batch_kueue_volcano",
                     hints=[
                         "Define LocalQueue 'team-a-queue' in namespace team-a pointing to clusterQueue 'cluster-queue-ai'",
@@ -1399,7 +1399,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="volcano01",
                     title="Volcano Gang Scheduling & Deadlock Prevention",
-                    path="exercises/25_batch_kueue_volcano/volcano01.py",
+                    path="exercises/25_batch_kueue_volcano/volcano01.yaml",
                     chapter_name="25_batch_kueue_volcano",
                     hints=[
                         "Set apiVersion to batch.volcano.sh/v1alpha1 and kind to Job with metadata.name distributed-training-gang",
@@ -1410,7 +1410,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="volcano02",
                     title="Volcano Queue & Fair-Share Scheduling",
-                    path="exercises/25_batch_kueue_volcano/volcano02.py",
+                    path="exercises/25_batch_kueue_volcano/volcano02.yaml",
                     chapter_name="25_batch_kueue_volcano",
                     hints=[
                         "Set apiVersion to scheduling.volcano.sh/v1beta1 and kind to Queue with metadata.name ai-research-queue",
@@ -1429,7 +1429,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="accel01",
                     title="NVIDIA MIG Slicing & Partitioning",
-                    path="exercises/26_hardware_acceleration_dra/accel01.py",
+                    path="exercises/26_hardware_acceleration_dra/accel01.yaml",
                     chapter_name="26_hardware_acceleration_dra",
                     hints=[
                         "Set spec.nodeSelector to 'nvidia.com/gpu.product: NVIDIA-A100-SXM4-80GB'",
@@ -1440,7 +1440,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="accel02",
                     title="Apple Silicon GPU & Metal MPS Acceleration",
-                    path="exercises/26_hardware_acceleration_dra/accel02.py",
+                    path="exercises/26_hardware_acceleration_dra/accel02.yaml",
                     chapter_name="26_hardware_acceleration_dra",
                     hints=[
                         "Set spec.nodeSelector to 'kubernetes.io/arch: arm64'",
@@ -1451,7 +1451,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="accel03",
                     title="Dynamic Resource Allocation (DRA) Standard",
-                    path="exercises/26_hardware_acceleration_dra/accel03.py",
+                    path="exercises/26_hardware_acceleration_dra/accel03.yaml",
                     chapter_name="26_hardware_acceleration_dra",
                     hints=[
                         "Define ResourceClaimTemplate gpu-dra-claim-template with apiVersion resource.k8s.io/v1alpha3",
@@ -1462,7 +1462,7 @@ def build_manifest() -> Manifest:
                 Exercise(
                     name="accel04",
                     title="Production vLLM LLM Inference Server",
-                    path="exercises/26_hardware_acceleration_dra/accel04.py",
+                    path="exercises/26_hardware_acceleration_dra/accel04.yaml",
                     chapter_name="26_hardware_acceleration_dra",
                     hints=[
                         "Define Deployment vllm-openai-server with image vllm/vllm-openai:latest and matchLabels app: vllm-server",
