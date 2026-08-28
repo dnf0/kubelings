@@ -19,6 +19,9 @@ jobs:
     permissions:
       contents: write
       id-token: write
+    env:
+      PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
     steps:
       - name: Checkout repository
@@ -81,7 +84,7 @@ jobs:
           fi
 
       - name: Publish to PyPI
-        if: ${{ secrets.PYPI_API_TOKEN != '' }}
+        if: ${{ env.PYPI_API_TOKEN != '' }}
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist-python/
@@ -89,9 +92,7 @@ jobs:
           skip-existing: true
 
       - name: Publish to VS Code Marketplace
-        if: ${{ secrets.VSCE_PAT != '' }}
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        if: ${{ env.VSCE_PAT != '' }}
         run: |
           cd extensions/vscode
           npx @vscode/vsce publish --no-dependencies --skip-duplicate -p "$VSCE_PAT"
