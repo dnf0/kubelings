@@ -199,6 +199,7 @@ export const mockVscode = {
     showInformationMessage: async (msg: string, ...items: string[]) => items[0],
     showErrorMessage: async (msg: string, ...items: string[]) => undefined,
     showWarningMessage: async (msg: string, ...items: string[]) => undefined,
+    showOpenDialog: async (options?: any) => [Uri.file('/mock/selected/dir')],
     showTextDocument: async (doc: any) => ({ document: doc }),
     registerTreeDataProvider: (id: string, provider: any) => ({
       dispose: () => {},

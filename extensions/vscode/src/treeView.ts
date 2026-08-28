@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { KubelingsCliBridge } from './cliBridge';
@@ -10,13 +11,19 @@ import { CliChapter, CliExercise } from './types';
 export class ChapterTreeItem extends vscode.TreeItem {
   public readonly chapter: CliChapter;
 
-  constructor(chapter: CliChapter) {
+  constructor(chapter: CliChapter, workspaceRoot?: string) {
     const formattedNum = String(chapter.number).padStart(2, '0');
     const label = `${formattedNum}: ${chapter.title}`;
 
     const total = chapter.exercises ? chapter.exercises.length : 0;
     const completed = chapter.exercises
-      ? chapter.exercises.filter((ex) => ex.has_not_done === false).length
+      ? chapter.exercises.filter((ex) => {
+          if (!workspaceRoot) {
+            return false;
+          }
+          const fullPath = resolveExercisePath(ex.path, workspaceRoot);
+          return fs.existsSync(fullPath) && ex.has_not_done === false;
+        }).length
       : 0;
 
     const isAllCompleted = total > 0 && completed === total;
@@ -45,29 +52,32 @@ export class ExerciseTreeItem extends vscode.TreeItem {
   public readonly exercise: CliExercise;
   public readonly fullPath: string;
 
-  constructor(exercise: CliExercise, workspaceRoot: string) {
+  constructor(exercise: CliExercise, workspaceRoot?: string) {
     super(exercise.name, vscode.TreeItemCollapsibleState.None);
 
     this.exercise = exercise;
-    this.fullPath = resolveExercisePath(exercise.path, workspaceRoot);
+    this.fullPath = workspaceRoot ? resolveExercisePath(exercise.path, workspaceRoot) : '';
 
     this.description = exercise.title;
     this.contextValue = 'exerciseItem';
 
+    const fileExists = Boolean(this.fullPath && fs.existsSync(this.fullPath));
+
     let statusText = 'Not Started';
-    if (exercise.has_not_done === false) {
+    if (fileExists && exercise.has_not_done === false) {
       statusText = 'Completed';
       this.iconPath = new vscode.ThemeIcon(
         'pass-filled',
         new vscode.ThemeColor('testing.iconPassed')
       );
-    } else if (exercise.has_not_done === true) {
+    } else if (fileExists && exercise.has_not_done === true) {
       statusText = 'In Progress';
       this.iconPath = new vscode.ThemeIcon(
         'sync~spin',
         new vscode.ThemeColor('testing.iconQueued')
       );
     } else {
+      statusText = 'Not Started';
       this.iconPath = new vscode.ThemeIcon('circle-outline');
     }
 
@@ -117,9 +127,9 @@ export class KubelingsTreeDataProvider
       try {
         const listResponse = await this.cliBridge.list();
         this.cachedChapters = listResponse.chapters || [];
-        return this.cachedChapters.map((chapter) => new ChapterTreeItem(chapter));
+        return this.cachedChapters.map((chapter) => new ChapterTreeItem(chapter, workspaceRoot));
       } catch (error) {
-        return this.cachedChapters.map((chapter) => new ChapterTreeItem(chapter));
+        return this.cachedChapters.map((chapter) => new ChapterTreeItem(chapter, workspaceRoot));
       }
     }
 
@@ -138,19 +148,13 @@ export class KubelingsTreeDataProvider
 
   public findExercise(exerciseName: string): CliExercise | undefined {
     for (const chapter of this.cachedChapters) {
-      const found = chapter.exercises.find((ex) => ex.name === exerciseName);
-      if (found) {
-        return found;
+      if (chapter.exercises) {
+        const found = chapter.exercises.find((ex) => ex.name === exerciseName);
+        if (found) {
+          return found;
+        }
       }
     }
     return undefined;
-  }
-
-  public getAllExercises(): CliExercise[] {
-    const result: CliExercise[] = [];
-    for (const chapter of this.cachedChapters) {
-      result.push(...chapter.exercises);
-    }
-    return result;
   }
 }

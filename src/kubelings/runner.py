@@ -52,12 +52,12 @@ class ExerciseRunner:
         """Check if an exercise file contains NOT_DONE markers, TODOs, or cloze blanks."""
         p = Path(path)
         if not p.exists() or not p.is_file():
-            return False
+            return True
         try:
             content = p.read_text(encoding="utf-8", errors="replace")
             return any(marker in content for marker in INCOMPLETE_MARKERS)
         except OSError:
-            return False
+            return True
 
     def run_exercise(
         self,

@@ -541,7 +541,14 @@ def init_cmd(
 
     from kubelings.scaffold import init_workspace
 
-    target_path = Path(directory) if directory else Path.cwd()
+    if directory:
+        target_path = Path(directory).resolve()
+    else:
+        cwd = Path.cwd()
+        if str(cwd) in ("/", "\\"):
+            target_path = Path.home() / "kubelings"
+        else:
+            target_path = cwd
     try:
         init_workspace(target_path, force=force)
         console.print(

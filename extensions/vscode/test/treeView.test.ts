@@ -1,5 +1,8 @@
 import './vscodeMock';
 import * as assert from 'node:assert';
+import * as fs from 'node:fs';
+import * as os from 'node:os';
+import * as path from 'node:path';
 import { describe, it } from 'node:test';
 import * as vscode from 'vscode';
 import { KubelingsCliBridge } from '../src/cliBridge';
@@ -11,6 +14,17 @@ import {
 import { CliChapter, CliExercise, CliListResponse } from '../src/types';
 
 describe('Kubelings Tree View - ChapterTreeItem', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'kubelings-treeview-test-'));
+  const ex1Path = path.join(tmpDir, 'exercises', '01_pods', 'pods01.py');
+  const ex2Path = path.join(tmpDir, 'exercises', '01_pods', 'pods02.py');
+  const deploy1Path = path.join(tmpDir, 'exercises', '02_controllers', 'deploy01.py');
+
+  fs.mkdirSync(path.dirname(ex1Path), { recursive: true });
+  fs.mkdirSync(path.dirname(deploy1Path), { recursive: true });
+  fs.writeFileSync(ex1Path, '# pods01');
+  fs.writeFileSync(ex2Path, '# pods02');
+  fs.writeFileSync(deploy1Path, '# deploy01');
+
   const sampleChapterIncomplete: CliChapter = {
     number: 1,
     name: '01_pods',
@@ -54,13 +68,13 @@ describe('Kubelings Tree View - ChapterTreeItem', () => {
   };
 
   it('formats chapter label with zero-padded number and title', () => {
-    const item = new ChapterTreeItem(sampleChapterIncomplete);
+    const item = new ChapterTreeItem(sampleChapterIncomplete, tmpDir);
     assert.strictEqual(item.label, '01: Kubernetes Core Workloads & Pods');
     assert.strictEqual(item.contextValue, 'chapterItem');
   });
 
   it('displays in-progress count in description for incomplete chapters', () => {
-    const item = new ChapterTreeItem(sampleChapterIncomplete);
+    const item = new ChapterTreeItem(sampleChapterIncomplete, tmpDir);
     assert.strictEqual(item.description, '(1/2 ⏳)');
     assert.strictEqual(
       item.collapsibleState,
@@ -69,7 +83,7 @@ describe('Kubelings Tree View - ChapterTreeItem', () => {
   });
 
   it('displays completion tick in description for completed chapters and collapses if chapter > 1', () => {
-    const item = new ChapterTreeItem(sampleChapterCompleted);
+    const item = new ChapterTreeItem(sampleChapterCompleted, tmpDir);
     assert.strictEqual(item.description, '(1/1 ✓)');
     assert.strictEqual(
       item.collapsibleState,
@@ -77,8 +91,14 @@ describe('Kubelings Tree View - ChapterTreeItem', () => {
     );
   });
 
+  it('marks chapter as not completed if exercise files are missing on disk', () => {
+    const missingDir = '/nonexistent/empty/dir';
+    const item = new ChapterTreeItem(sampleChapterCompleted, missingDir);
+    assert.strictEqual(item.description, '(0/1 ⏳)');
+  });
+
   it('includes comprehensive tooltip information', () => {
-    const item = new ChapterTreeItem(sampleChapterIncomplete);
+    const item = new ChapterTreeItem(sampleChapterIncomplete, tmpDir);
     const tooltip = String(item.tooltip || '');
     assert.ok(tooltip.includes('Kubernetes Core Workloads & Pods'));
     assert.ok(tooltip.includes('Progress: 1/2 Completed'));
@@ -86,7 +106,15 @@ describe('Kubelings Tree View - ChapterTreeItem', () => {
 });
 
 describe('Kubelings Tree View - ExerciseTreeItem', () => {
-  const workspaceRoot = '/test/workspace';
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'kubelings-ex-test-'));
+  const ex1Path = path.join(tmpDir, 'exercises', '01_pods', 'pods01.py');
+  const ex2Path = path.join(tmpDir, 'exercises', '01_pods', 'pods02.py');
+  const ex3Path = path.join(tmpDir, 'exercises', '01_pods', 'pods03.py');
+
+  fs.mkdirSync(path.dirname(ex1Path), { recursive: true });
+  fs.writeFileSync(ex1Path, '# pods01');
+  fs.writeFileSync(ex2Path, '# pods02');
+  fs.writeFileSync(ex3Path, '# pods03');
 
   const completedEx: CliExercise = {
     name: 'pods01',
@@ -115,8 +143,8 @@ describe('Kubelings Tree View - ExerciseTreeItem', () => {
     requires_cluster: false,
   };
 
-  it('configures completed exercise item with pass icon', () => {
-    const item = new ExerciseTreeItem(completedEx, workspaceRoot);
+  it('configures completed exercise item with pass icon when file exists', () => {
+    const item = new ExerciseTreeItem(completedEx, tmpDir);
     assert.strictEqual(item.label, 'pods01');
     assert.strictEqual(item.description, 'First Pod Manifest');
     assert.strictEqual(item.contextValue, 'exerciseItem');
@@ -131,8 +159,17 @@ describe('Kubelings Tree View - ExerciseTreeItem', () => {
     ]);
   });
 
+  it('configures missing file as Not Started even if has_not_done is false', () => {
+    const missingDir = '/nonexistent/empty/dir';
+    const item = new ExerciseTreeItem(completedEx, missingDir);
+    const icon = item.iconPath as vscode.ThemeIcon;
+    assert.strictEqual(icon.id, 'circle-outline');
+    const tooltip = String(item.tooltip || '');
+    assert.ok(tooltip.includes('Status: Not Started'));
+  });
+
   it('configures in-progress exercise item with queued sync icon', () => {
-    const item = new ExerciseTreeItem(inProgressEx, workspaceRoot);
+    const item = new ExerciseTreeItem(inProgressEx, tmpDir);
     const icon = item.iconPath as vscode.ThemeIcon;
     assert.strictEqual(icon.id, 'sync~spin');
     const tooltip = String(item.tooltip || '');
@@ -140,7 +177,7 @@ describe('Kubelings Tree View - ExerciseTreeItem', () => {
   });
 
   it('configures not started exercise item with circle outline icon', () => {
-    const item = new ExerciseTreeItem(notStartedEx, workspaceRoot);
+    const item = new ExerciseTreeItem(notStartedEx, tmpDir);
     const icon = item.iconPath as vscode.ThemeIcon;
     assert.strictEqual(icon.id, 'circle-outline');
     const tooltip = String(item.tooltip || '');
@@ -149,6 +186,11 @@ describe('Kubelings Tree View - ExerciseTreeItem', () => {
 });
 
 describe('Kubelings Tree View - KubelingsTreeDataProvider', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'kubelings-tdp-test-'));
+  const ex1Path = path.join(tmpDir, 'exercises', '01_pods', 'pods01.py');
+  fs.mkdirSync(path.dirname(ex1Path), { recursive: true });
+  fs.writeFileSync(ex1Path, '# pods01');
+
   const mockChapters: CliChapter[] = [
     {
       number: 1,
@@ -179,7 +221,7 @@ describe('Kubelings Tree View - KubelingsTreeDataProvider', () => {
   }
 
   it('retrieves root chapter items when element is undefined', async () => {
-    const bridge = new MockBridge({ workspaceRoot: '/test/workspace' });
+    const bridge = new MockBridge({ workspaceRoot: tmpDir });
     const provider = new KubelingsTreeDataProvider(bridge);
 
     const roots = await provider.getChildren();
@@ -192,10 +234,10 @@ describe('Kubelings Tree View - KubelingsTreeDataProvider', () => {
   });
 
   it('retrieves child exercise items for a given chapter item', async () => {
-    const bridge = new MockBridge({ workspaceRoot: '/test/workspace' });
+    const bridge = new MockBridge({ workspaceRoot: tmpDir });
     const provider = new KubelingsTreeDataProvider(bridge);
 
-    const chapterItem = new ChapterTreeItem(mockChapters[0]);
+    const chapterItem = new ChapterTreeItem(mockChapters[0], tmpDir);
     const children = await provider.getChildren(chapterItem);
 
     assert.strictEqual(children.length, 1);
@@ -207,19 +249,19 @@ describe('Kubelings Tree View - KubelingsTreeDataProvider', () => {
   });
 
   it('returns empty array when children requested for an exercise item', async () => {
-    const bridge = new MockBridge({ workspaceRoot: '/test/workspace' });
+    const bridge = new MockBridge({ workspaceRoot: tmpDir });
     const provider = new KubelingsTreeDataProvider(bridge);
 
     const exItem = new ExerciseTreeItem(
       mockChapters[0].exercises[0],
-      '/test/workspace'
+      tmpDir
     );
     const children = await provider.getChildren(exItem);
     assert.deepStrictEqual(children, []);
   });
 
   it('fires onDidChangeTreeData event on refresh', async () => {
-    const bridge = new MockBridge({ workspaceRoot: '/test/workspace' });
+    const bridge = new MockBridge({ workspaceRoot: tmpDir });
     const provider = new KubelingsTreeDataProvider(bridge);
 
     let fired = false;
@@ -232,7 +274,7 @@ describe('Kubelings Tree View - KubelingsTreeDataProvider', () => {
   });
 
   it('finds cached exercise by name', async () => {
-    const bridge = new MockBridge({ workspaceRoot: '/test/workspace' });
+    const bridge = new MockBridge({ workspaceRoot: tmpDir });
     const provider = new KubelingsTreeDataProvider(bridge);
 
     await provider.getChildren(); // populates cache

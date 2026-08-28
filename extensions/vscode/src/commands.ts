@@ -73,6 +73,32 @@ export function registerCommands(
   );
   context.subscriptions.push(refreshCmd);
 
+/**
+ * Helper to prompt the user for a workspace folder if no folder is currently open.
+ */
+async function getOrSelectWorkspaceFolder(): Promise<string | undefined> {
+  if (
+    vscode.workspace.workspaceFolders &&
+    vscode.workspace.workspaceFolders.length > 0
+  ) {
+    return vscode.workspace.workspaceFolders[0].uri.fsPath;
+  }
+
+  const selected = await vscode.window.showOpenDialog({
+    canSelectFiles: false,
+    canSelectFolders: true,
+    canSelectMany: false,
+    openLabel: 'Select Workspace Folder',
+    title: 'Select Folder for Kubelings Exercises',
+  });
+
+  if (selected && selected.length > 0) {
+    return selected[0].fsPath;
+  }
+
+  return undefined;
+}
+
   // 2. kubelings.openExercise
   const openExerciseCmd = vscode.commands.registerCommand(
     'kubelings.openExercise',
@@ -101,25 +127,48 @@ export function registerCommands(
         return;
       }
 
+      const hasOpenFolder = Boolean(
+        vscode.workspace.workspaceFolders &&
+          vscode.workspace.workspaceFolders.length > 0
+      );
       const workspaceRoot = cliBridge.getEffectiveWorkspaceRoot();
       let resolved = resolveExercisePath(relPath, workspaceRoot);
 
       if (!fs.existsSync(resolved)) {
         const choice = await vscode.window.showInformationMessage(
-          'Exercise file was not found locally. Would you like to initialize the Kubelings exercise workspace here?',
+          'Exercise file was not found locally. Would you like to initialize the Kubelings exercise workspace?',
           'Initialize Exercises',
           'Cancel'
         );
 
         if (choice === 'Initialize Exercises') {
+          let targetDir = workspaceRoot;
+          let shouldOpenFolder = false;
+
+          if (!hasOpenFolder) {
+            const selectedDir = await getOrSelectWorkspaceFolder();
+            if (!selectedDir) {
+              return;
+            }
+            targetDir = selectedDir;
+            shouldOpenFolder = true;
+          }
+
           try {
-            await cliBridge.init(workspaceRoot);
+            await cliBridge.init(targetDir);
             vscode.window.showInformationMessage(
               'Kubelings exercises initialized successfully! 🎉'
             );
+            if (shouldOpenFolder) {
+              await vscode.commands.executeCommand(
+                'vscode.openFolder',
+                vscode.Uri.file(targetDir)
+              );
+              return;
+            }
             treeDataProvider.refresh();
             statusBar.refresh().catch(() => {});
-            resolved = resolveExercisePath(relPath, workspaceRoot);
+            resolved = resolveExercisePath(relPath, targetDir);
           } catch (e: unknown) {
             const message = e instanceof Error ? e.message : String(e);
             vscode.window.showErrorMessage(
@@ -157,12 +206,34 @@ export function registerCommands(
   const initExercisesCmd = vscode.commands.registerCommand(
     'kubelings.initExercises',
     async () => {
-      const workspaceRoot = cliBridge.getEffectiveWorkspaceRoot();
+      const hasOpenFolder = Boolean(
+        vscode.workspace.workspaceFolders &&
+          vscode.workspace.workspaceFolders.length > 0
+      );
+      let targetDir = cliBridge.getEffectiveWorkspaceRoot();
+      let shouldOpenFolder = false;
+
+      if (!hasOpenFolder) {
+        const selectedDir = await getOrSelectWorkspaceFolder();
+        if (!selectedDir) {
+          return;
+        }
+        targetDir = selectedDir;
+        shouldOpenFolder = true;
+      }
+
       try {
-        await cliBridge.init(workspaceRoot);
+        await cliBridge.init(targetDir);
         vscode.window.showInformationMessage(
           'Kubelings exercises initialized successfully! 🎉'
         );
+        if (shouldOpenFolder) {
+          await vscode.commands.executeCommand(
+            'vscode.openFolder',
+            vscode.Uri.file(targetDir)
+          );
+          return;
+        }
         treeDataProvider.refresh();
         statusBar.refresh().catch(() => {});
       } catch (err: unknown) {

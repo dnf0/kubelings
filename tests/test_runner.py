@@ -62,9 +62,9 @@ def test_check_marker_present_and_absent(tmp_path: Path):
     assert ExerciseRunner.check_marker(exercise_file) is False
     assert runner.check_marker(exercise_file) is False
 
-    # 3. Nonexistent file returns False
+    # 3. Nonexistent file returns True (considered incomplete/not done)
     nonexistent = tmp_path / "does_not_exist.py"
-    assert ExerciseRunner.check_marker(nonexistent) is False
+    assert ExerciseRunner.check_marker(nonexistent) is True
 
 
 def test_runner_passes_purely_on_exit_code_zero(tmp_path: Path):
