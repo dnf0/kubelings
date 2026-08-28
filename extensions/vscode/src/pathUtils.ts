@@ -105,6 +105,18 @@ export function resolveExercisePath(
   exPath: string,
   workspaceRoot?: string
 ): string {
+  if (!exPath || typeof exPath !== 'string') {
+    return '';
+  }
+
+  // 1. If path is already an absolute path that exists on disk
+  if (path.isAbsolute(exPath) && fs.existsSync(exPath)) {
+    return exPath;
+  }
+
+  // Normalize path: strip leading slashes so it is treated as a relative path
+  const cleanPath = exPath.replace(/^[/\\]+/, '');
+
   const isInvalidRoot = (p?: string): boolean => {
     if (!p || typeof p !== 'string') {
       return true;
@@ -122,70 +134,43 @@ export function resolveExercisePath(
   const isExplicit = !isInvalidRoot(workspaceRoot);
   const root = getEffectiveWorkspaceRoot(workspaceRoot);
 
-  // 1. If path is already absolute and exists on disk
-  if (path.isAbsolute(exPath) && fs.existsSync(exPath)) {
-    return exPath;
-  }
-
   // 2. Direct resolve with workspaceRoot (e.g. workspaceRoot/exercises/01_pods/pods01.py)
-  const directPath = path.resolve(root, exPath);
+  const directPath = path.resolve(root, cleanPath);
   if (fs.existsSync(directPath)) {
     return directPath;
   }
 
-  // 3. If workspaceRoot is itself inside 'exercises' or ends with 'exercises', strip leading 'exercises/'
+  // 3. If cleanPath starts with 'exercises/' or 'solutions/', try stripping the prefix
   const isExercisesPrefix =
-    exPath.startsWith('exercises/') || exPath.startsWith('exercises\\');
-  if (isExercisesPrefix) {
-    const stripped = exPath.replace(/^exercises[/\\]/, '');
-    const strippedPath = path.resolve(root, stripped);
-    if (fs.existsSync(strippedPath)) {
-      return strippedPath;
-    }
-
-    // 4. If workspace is inside an individual chapter directory (e.g. 01_pods), check basename
-    const filenameOnly = path.basename(exPath);
-    const directFile = path.resolve(root, filenameOnly);
-    if (fs.existsSync(directFile)) {
-      return directFile;
-    }
-  }
-
-  // Also check solutions/ prefix stripping if resolving solution paths
+    cleanPath.startsWith('exercises/') || cleanPath.startsWith('exercises\\');
   const isSolutionsPrefix =
-    exPath.startsWith('solutions/') || exPath.startsWith('solutions\\');
-  if (isSolutionsPrefix) {
-    const stripped = exPath.replace(/^solutions[/\\]/, '');
+    cleanPath.startsWith('solutions/') || cleanPath.startsWith('solutions\\');
+
+  if (isExercisesPrefix || isSolutionsPrefix) {
+    const stripped = cleanPath.replace(/^(exercises|solutions)[/\\]/, '');
     const strippedPath = path.resolve(root, stripped);
     if (fs.existsSync(strippedPath)) {
       return strippedPath;
     }
 
-    const filenameOnly = path.basename(exPath);
+    // 4. If workspace is inside an individual chapter directory, check basename
+    const filenameOnly = path.basename(cleanPath);
     const directFile = path.resolve(root, filenameOnly);
     if (fs.existsSync(directFile)) {
       return directFile;
     }
   }
 
-  // 5. If workspaceRoot is in a subfolder of a repo, search parent directories up to 8 levels
+  // 5. If workspaceRoot is in a subfolder, search parent directories up to 8 levels
   let cur = root;
   for (let i = 0; i < 8; i++) {
-    const candidateFull = path.resolve(cur, exPath);
+    const candidateFull = path.resolve(cur, cleanPath);
     if (fs.existsSync(candidateFull)) {
       return candidateFull;
     }
 
-    if (isExercisesPrefix) {
-      const stripped = exPath.replace(/^exercises[/\\]/, '');
-      const candidateStripped = path.resolve(cur, stripped);
-      if (fs.existsSync(candidateStripped)) {
-        return candidateStripped;
-      }
-    }
-
-    if (isSolutionsPrefix) {
-      const stripped = exPath.replace(/^solutions[/\\]/, '');
+    if (isExercisesPrefix || isSolutionsPrefix) {
+      const stripped = cleanPath.replace(/^(exercises|solutions)[/\\]/, '');
       const candidateStripped = path.resolve(cur, stripped);
       if (fs.existsSync(candidateStripped)) {
         return candidateStripped;
@@ -199,7 +184,7 @@ export function resolveExercisePath(
     cur = parent;
   }
 
-  // 6. Check standard directories if no explicit root was given (e.g. ~/kubelings, ~/repos/kubelings)
+  // 6. Check standard candidate directories (e.g. ~/kubelings, ~/repos/kubelings) when no explicit root
   if (!isExplicit) {
     const home = os.homedir();
     const standardDirs = [
@@ -210,16 +195,20 @@ export function resolveExercisePath(
       path.join(home, 'src', 'kubelings'),
     ];
     for (const standardDir of standardDirs) {
-      const candidate = path.resolve(standardDir, exPath);
+      const candidate = path.resolve(standardDir, cleanPath);
       if (fs.existsSync(candidate)) {
         return candidate;
       }
-      if (isExercisesPrefix) {
-        const stripped = exPath.replace(/^exercises[/\\]/, '');
+      if (isExercisesPrefix || isSolutionsPrefix) {
+        const stripped = cleanPath.replace(/^(exercises|solutions)[/\\]/, '');
         const strippedCand = path.resolve(standardDir, stripped);
         if (fs.existsSync(strippedCand)) {
           return strippedCand;
         }
+      }
+      const candBase = path.resolve(standardDir, path.basename(cleanPath));
+      if (fs.existsSync(candBase)) {
+        return candBase;
       }
     }
   }

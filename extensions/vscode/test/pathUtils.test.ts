@@ -125,4 +125,11 @@ describe('Kubelings pathUtils - resolveExercisePath', () => {
     assert.ok(fs.existsSync(resolved));
     assert.ok(resolved.endsWith(path.join('01_pods', 'pods01.py')));
   });
+
+  it('resolves exercise with leading slash correctly', () => {
+    const resolved = resolveExercisePath('/exercises/01_pods/pods01.py', '/');
+    assert.ok(fs.existsSync(resolved));
+    assert.ok(resolved.endsWith(path.join('01_pods', 'pods01.py')));
+    assert.notStrictEqual(resolved, '/exercises/01_pods/pods01.py');
+  });
 });

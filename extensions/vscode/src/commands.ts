@@ -142,7 +142,11 @@ async function getOrSelectWorkspaceFolder(): Promise<string | undefined> {
 
       const hasOpenFolder = Boolean(
         vscode.workspace.workspaceFolders &&
-          vscode.workspace.workspaceFolders.length > 0
+          vscode.workspace.workspaceFolders.length > 0 &&
+          vscode.workspace.workspaceFolders[0].uri.fsPath !== '/' &&
+          vscode.workspace.workspaceFolders[0].uri.fsPath !== '\\' &&
+          vscode.workspace.workspaceFolders[0].uri.fsPath !== '/exercises' &&
+          vscode.workspace.workspaceFolders[0].uri.fsPath !== '\\exercises'
       );
       const workspaceRoot = cliBridge.getEffectiveWorkspaceRoot();
       let resolved = resolveExercisePath(relPath, workspaceRoot);
