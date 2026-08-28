@@ -1,0 +1,54 @@
+# Exercise: exercises/06_ingress_gateway/ingress03.yaml
+# Topic: Ingress Annotations & Rewrites
+#
+# Context & Why:
+# Because standard Kubernetes Ingress specifications are intentionally generic across different ingress
+# providers, provider-specific features (such as URI path rewriting, SSL redirection, and request size limits)
+# are configured using metadata annotations.
+# In `ingress-nginx`, the `rewrite-target` annotation paired with regular expression capture groups in
+# `pathType: ImplementationSpecific` paths (e.g. `/payments(/|$)(.*)`) allows stripping URL prefixes
+# before proxying requests downstream. This enables microservices to serve root-level routes (e.g. `/v1/charge`)
+# without needing internal awareness of their public URL prefix routing (`/payments/v1/charge`).
+#
+# Instructions:
+# Ingress controllers support custom behavior via annotations.
+# A common requirement is URI path rewriting (e.g., stripping the `/payments` prefix
+# before forwarding the request to the upstream microservice).
+#
+# 1. Configure the Ingress annotations:
+#    - `nginx.ingress.kubernetes.io/rewrite-target`: '/$2'
+#    - `nginx.ingress.kubernetes.io/ssl-redirect`: 'true'
+#    - `nginx.ingress.kubernetes.io/proxy-body-size`: '50m'
+# 2. Complete rule in Ingress:
+#    - host: 'api.company.com'
+#    - path: '/payments(/|$)(.*)' with `pathType: ImplementationSpecific`
+#    - service: 'payments-service', port: 8080
+# 3. Implement `apply_rewrite_rule(path_regex, rewrite_template, request_path)`:
+#    - Uses regex to rewrite matching request URIs.
+#    - Example: pattern `^/payments(/|$)(.*)` with rewrite `/$2` converts `/payments/v1/charge` to `/v1/charge`.
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rewrite-ingress
+  annotations:
+    # TODO: Add annotations for rewrite-target ('/$2'), ssl-redirect ('true'), and proxy-body-size ('50m')
+    # WHY: NGINX ingress annotations configure reverse proxy rewrite rules, HTTPS enforcement, and client upload payload thresholds.
+    nginx.ingress.kubernetes.io/rewrite-target: ???
+    nginx.ingress.kubernetes.io/ssl-redirect: ???
+    nginx.ingress.kubernetes.io/proxy-body-size: ???
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: api.company.com
+    http:
+      paths:
+      # TODO: Set path regex to '/payments(/|$)(.*)'
+      # WHY: Defines the regex capture group matched by the rewrite-target annotation ($2).
+      - path: ???
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: payments-service
+            port:
+              number: 8080

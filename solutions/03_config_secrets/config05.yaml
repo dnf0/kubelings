@@ -1,0 +1,13 @@
+# Exercise: solutions/03_config_secrets/config05.yaml
+# Topic: Immutable ConfigMaps and Secrets
+#
+# Reference Solution
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-feature-flags
+immutable: true
+data:
+  NEW_UI: "true"
+  MAX_WORKERS: "8"

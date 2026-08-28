@@ -1,0 +1,43 @@
+# Exercise: exercises/26_hardware_acceleration_dra/accel01.yaml
+# Topic: NVIDIA Multi-Instance GPU (MIG) Slicing & Partitioning
+#
+# Context & Why:
+# High-end AI accelerators (such as NVIDIA A100-80GB and H100) are expensive, and running small
+# inference models, feature extractors, or embedding services on a full physical GPU results in
+# severe resource underutilization.
+#
+# NVIDIA Multi-Instance GPU (MIG) technology solves this at the hardware silicon level:
+# - Partitions a single physical GPU into up to 7 separate, completely isolated GPU instances.
+# - Each MIG slice has dedicated Streaming Multiprocessors (SMs), memory controllers, and DRAM bandwidth.
+# - Provides guaranteed Quality of Service (QoS) and hardware-level fault isolation (a crashing container
+#   on one slice cannot corrupt GPU memory or affect another slice).
+# - In Kubernetes, the NVIDIA GPU Operator advertises MIG profiles as extended resources
+#   (e.g. `nvidia.com/mig-3g.40gb: 1`), enabling fine-grained, cost-effective GPU scheduling.
+#
+# Task:
+# Fix the Pod manifest below to schedule an inference workload on an NVIDIA A100 GPU sliced with Multi-Instance GPU (MIG):
+# 1. Set 'apiVersion' to 'v1' and 'kind' to 'Pod'.
+# 2. Set 'metadata.name' to 'mig-inference-pod'.
+# 3. In 'spec.nodeSelector', constrain scheduling to nodes with 'nvidia.com/gpu.product: NVIDIA-A100-SXM4-80GB'.
+# 4. In 'spec.containers', define container 'inference-worker' using image 'nvcr.io/nvidia/tritonserver:24.01-py3'.
+# 5. Under 'resources.limits' and 'resources.requests', allocate 1 slice of 'nvidia.com/mig-3g.40gb: 1'.
+# 6. Under 'env', set 'NVIDIA_VISIBLE_DEVICES' to 'all'.
+
+apiVersion: ???
+kind: ???
+metadata:
+  name: ???
+spec:
+  nodeSelector:
+    nvidia.com/gpu.product: ???
+  containers:
+    - name: ???
+      image: ???
+      resources:
+        limits:
+          nvidia.com/mig-3g.40gb: 0
+        requests:
+          nvidia.com/mig-3g.40gb: 0
+      env:
+        - name: ???
+          value: ???

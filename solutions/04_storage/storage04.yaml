@@ -1,0 +1,29 @@
+# Exercise: solutions/04_storage/storage04.yaml
+# Topic: StorageClasses & Dynamic Provisioning
+#
+# Reference Solution
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: fast-ebs
+provisioner: ebs.csi.aws.com
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+parameters:
+  type: gp3
+  iops: "3000"
+  encrypted: "true"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dynamic-db-pvc
+spec:
+  storageClassName: fast-ebs
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi

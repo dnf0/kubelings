@@ -1,0 +1,25 @@
+# Exercise: solutions/09_network_policies/netpol04.yaml
+# Topic: Named Ports & IPBlock CIDR Exceptions
+#
+# Reference Solution
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: external-api-egress
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: gateway
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - ipBlock:
+        cidr: 192.168.0.0/16
+        except:
+        - 192.168.1.0/24
+    ports:
+    - protocol: TCP
+      port: http

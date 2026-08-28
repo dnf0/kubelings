@@ -1,0 +1,13 @@
+# Chapter 19: Package Management with Helm
+# Exercise 19.1: Helm Chart.yaml Metadata & Dependencies (Solution)
+
+apiVersion: v2
+name: webapp-chart
+version: 1.2.0
+appVersion: 2.4.1
+description: A robust web application Helm chart with subchart dependencies
+dependencies:
+  - name: redis
+    version: 17.3.0
+    repository: https://charts.bitnami.com/bitnami
+    condition: redis.enabled

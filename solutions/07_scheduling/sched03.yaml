@@ -1,0 +1,30 @@
+# Exercise: solutions/07_scheduling/sched03.yaml
+# Topic: Pod Affinity & Pod Anti-Affinity
+#
+# Reference Solution
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-frontend
+  labels:
+    app: web-frontend
+spec:
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app: web-frontend
+        topologyKey: kubernetes.io/hostname
+    podAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app: redis-cache
+          topologyKey: topology.kubernetes.io/zone
+  containers:
+  - name: web
+    image: nginx:alpine

@@ -1,0 +1,38 @@
+# Solution: solutions/24_kuberay_ml/ray02.yaml
+# Topic: Heterogeneous Worker Pools & Autoscaling
+
+apiVersion: ray.io/v1
+kind: RayCluster
+metadata:
+  name: ray-cluster-heterogeneous
+spec:
+  headGroupSpec:
+    rayStartParams:
+      dashboard-host: '0.0.0.0'
+    template:
+      spec:
+        containers:
+          - name: ray-head
+            image: rayproject/ray:2.35.0
+  workerGroupSpecs:
+    - groupName: cpu-workers
+      replicas: 2
+      minReplicas: 2
+      maxReplicas: 10
+      template:
+        spec:
+          containers:
+            - name: ray-cpu-worker
+              image: rayproject/ray:2.35.0
+    - groupName: gpu-workers
+      replicas: 1
+      minReplicas: 0
+      maxReplicas: 4
+      template:
+        spec:
+          containers:
+            - name: ray-gpu-worker
+              image: rayproject/ray:2.35.0-gpu
+              resources:
+                limits:
+                  nvidia.com/gpu: 1

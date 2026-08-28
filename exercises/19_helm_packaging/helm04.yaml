@@ -1,0 +1,41 @@
+# Chapter 19: Package Management with Helm
+# Exercise 19.4: Helm Subcharts & Global Values
+#
+# Context & Why:
+# Large cloud-native platforms often build "umbrella charts" that orchestrate multiple
+# dependent microservices and datastores (e.g., Redis, PostgreSQL, ingress controllers)
+# under a unified deployment lifecycle. Managing configuration across nested subcharts
+# requires understanding Helm's hierarchical value resolution model.
+#
+# In Helm, subchart values are namespaced under the subchart name (e.g. `redis.architecture`
+# overrides the default settings of the child Redis chart). Furthermore, values placed under
+# the special top-level `global` dictionary are automatically accessible by every template across
+# both the parent chart and all child subcharts. This eliminates repetitive parameter definitions
+# for shared cluster-wide settings like container registries, domain names, or target environments.
+#
+# Task: Construct a parent chart values.yaml structure configuring subchart overrides and global values.
+# Requirements:
+# - Structure must contain:
+#     - global: dictionary with keys:
+#         - environment: 'production'
+#         - registry: 'registry.k8s.io'
+#     - redis (subchart override): dictionary with keys:
+#         - architecture: 'replication'
+#         - auth: {'enabled': True, 'secretName': 'redis-credentials'}
+#     - postgresql (subchart override): dictionary with keys:
+#         - enabled: False
+#         - primary: {'persistence': {'size': '20Gi'}}
+
+global:
+  environment: ???
+  registry: ???
+redis:
+  architecture: ???
+  auth:
+    enabled: ???
+    secretName: ???
+postgresql:
+  enabled: ???
+  primary:
+    persistence:
+      size: ???

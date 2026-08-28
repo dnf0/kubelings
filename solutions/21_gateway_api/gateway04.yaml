@@ -1,0 +1,17 @@
+# Solution: gateway04.yaml
+# Topic: Gateway API - ReferenceGrant Cross-Namespace Security
+
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: allow-edge-to-backend
+  namespace: backend
+spec:
+  from:
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    namespace: edge
+  to:
+  - group: ''
+    kind: Service
+    name: account-service

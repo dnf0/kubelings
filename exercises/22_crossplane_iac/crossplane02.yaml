@@ -1,0 +1,59 @@
+# Exercise: crossplane02.yaml
+# Topic: Crossplane - Composition and Field Path Transforms
+#
+# Context & Why:
+# While an XRD defines the API interface contract, a `Composition` provides the concrete infrastructure
+# implementation by assembling one or more Managed Resources (MRs).
+#
+# Compositions allow platform teams to:
+# - Bind high-level composite resources (`compositeTypeRef`) to specific cloud provider implementations
+#   (e.g., mapping `XPostgreSQLInstance` to an AWS RDS `Instance` or GCP `CloudSQLInstance`).
+# - Enforce organizational compliance, baseline defaults, and security configurations
+#   (e.g., setting `skipFinalSnapshot`, enforcing encryption, or configuring backup retention).
+# - Patch values dynamically from composite fields to managed resource fields using `FromCompositeFieldPath`
+#   (e.g., mapping `spec.parameters.storageGB` to `spec.forProvider.allocatedStorage` and
+#   `spec.parameters.engineVersion` to `spec.forProvider.engineVersion`).
+#
+# This separation gives platform teams the power to refactor or switch underlying cloud primitives
+# without impacting developer claims.
+#
+# Task:
+# Define a Crossplane Composition that binds an XRD to an underlying AWS RDS managed database:
+# 1. 'apiVersion': 'apiextensions.crossplane.io/v1', 'kind': 'Composition'
+# 2. Named 'postgres-aws-composition' with labels {'provider': 'aws', 'db': 'postgres'}
+# 3. 'spec.compositeTypeRef':
+#    - 'apiVersion': 'database.kubelings.io/v1alpha1'
+#    - 'kind': 'XPostgreSQLInstance'
+# 4. 'spec.resources': Define 1 base managed resource:
+#    - Base resource: 'apiVersion': 'rds.aws.upbound.io/v1beta1', 'kind': 'Instance'
+#    - Base spec: {'forProvider': {'instanceClass': 'db.t3.micro', 'skipFinalSnapshot': True}}
+#    - Patches:
+#      * Patch 1: 'FromCompositeFieldPath' from 'spec.parameters.storageGB' to 'spec.forProvider.allocatedStorage'
+#      * Patch 2: 'FromCompositeFieldPath' from 'spec.parameters.engineVersion' to 'spec.forProvider.engineVersion'
+
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: ???
+  labels:
+    provider: ???
+    db: ???
+spec:
+  compositeTypeRef:
+    apiVersion: database.kubelings.io/v1alpha1
+    kind: XPostgreSQLInstance
+  resources:
+  - base:
+      apiVersion: rds.aws.upbound.io/v1beta1
+      kind: Instance
+      spec:
+        forProvider:
+          instanceClass: ???
+          skipFinalSnapshot: ???
+    patches:
+    - type: ???
+      fromFieldPath: ???
+      toFieldPath: ???
+    - type: ???
+      fromFieldPath: ???
+      toFieldPath: ???

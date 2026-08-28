@@ -1,0 +1,25 @@
+# Exercise: solutions/10_lifecycle_probes/health04.yaml
+# Topic: Lifecycle Hooks & Graceful Shutdown
+#
+# Reference Solution
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: graceful-web-pod
+spec:
+  terminationGracePeriodSeconds: 60
+  containers:
+  - name: web-server
+    image: nginx:alpine
+    lifecycle:
+      postStart:
+        exec:
+          command:
+          - /bin/sh
+          - "-c"
+          - "echo Ready > /var/log/started.log"
+      preStop:
+        httpGet:
+          path: /prepare-shutdown
+          port: 80

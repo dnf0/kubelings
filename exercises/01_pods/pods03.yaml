@@ -1,0 +1,30 @@
+# Exercise: exercises/01_pods/pods03.yaml
+# Topic: Init Containers for Initialization
+#
+# Context & Why:
+# Init containers are specialized containers that run sequentially to completion
+# before any application containers start. If an init container fails, the kubelet
+# restarts the Pod repeatedly until it succeeds (or according to its restartPolicy).
+# In production architectures, init containers isolate setup logic—such as running
+# database schema migrations, seeding initial configuration files, or waiting for
+# dependent backend services to become reachable—preventing the main application
+# container from entering crash loops or needing embedded bootstrapping scripts.
+#
+# Instructions:
+# Complete the Pod manifest named 'init-service-demo'.
+# 1. Add an initContainer named 'init-db-wait' with image 'busybox:1.36'.
+# 2. The init container must run the command: ["sh", "-c", "echo waiting for db..."]
+# 3. The main container should be named 'main-app' with image 'nginx:alpine'.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: init-service-demo
+spec:
+  # TODO: Define initContainers with container 'init-db-wait' running image 'busybox:1.36' and command ["sh", "-c", "echo waiting for db..."]
+  # WHY: Init containers guarantee that environment setup and dependency checks finish before the primary application container is launched.
+  containers:
+  # TODO: Set the main application container name to 'main-app'
+  # WHY: Naming application containers clearly differentiates core workloads from preceding initialization stages in pod inspection and log aggregation.
+  - name: ???
+    image: nginx:alpine

@@ -1,0 +1,35 @@
+# Solution: gateway03.yaml
+# Topic: Gateway API - Weighted Canary Traffic Splitting and URL Rewrite Filters
+
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: frontend-canary-route
+  namespace: frontend
+spec:
+  parentRefs:
+  - name: main-gateway
+    namespace: infra-gateway
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /app
+    filters:
+    - type: URLRewrite
+      urlRewrite:
+        path:
+          type: ReplacePrefixMatch
+          replacePrefixMatch: /
+    - type: RequestHeaderModifier
+      requestHeaderModifier:
+        set:
+        - name: X-Forwarded-By
+          value: GatewayAPI
+    backendRefs:
+    - name: frontend-v1
+      port: 80
+      weight: 80
+    - name: frontend-v2
+      port: 80
+      weight: 20

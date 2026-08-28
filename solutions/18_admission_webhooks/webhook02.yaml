@@ -1,0 +1,29 @@
+# Chapter 18: Advanced Admission Webhooks & Dynamic Interception
+# Exercise 18.2: ValidatingWebhookConfiguration Manifest (Solution)
+
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: security-validator
+webhooks:
+  - name: validate-security.kubelings.io
+    rules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+        scope: "Namespaced"
+    clientConfig:
+      service:
+        namespace: security-system
+        name: validator-svc
+        path: /validate
+      caBundle: "QWxhZGRpbjpvcGVuIHNlc2FtZQ=="
+    admissionReviewVersions: ["v1"]
+    sideEffects: None
+    failurePolicy: Ignore
+    namespaceSelector:
+      matchExpressions:
+        - key: environment
+          operator: In
+          values: ["prod", "stage"]

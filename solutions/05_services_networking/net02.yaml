@@ -1,0 +1,19 @@
+# Exercise: solutions/05_services_networking/net02.yaml
+# Topic: Headless Services & Stateful Addressing
+#
+# Reference Solution
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: cassandra-headless
+  namespace: databases
+spec:
+  clusterIP: "None"
+  selector:
+    app: cassandra
+  ports:
+  - name: cql
+    protocol: TCP
+    port: 9042
+    targetPort: 9042

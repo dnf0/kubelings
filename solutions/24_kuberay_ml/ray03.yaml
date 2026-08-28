@@ -1,0 +1,21 @@
+# Solution: solutions/24_kuberay_ml/ray03.yaml
+# Topic: RayJob for Distributed Batch Fine-Tuning
+
+apiVersion: ray.io/v1
+kind: RayJob
+metadata:
+  name: ray-finetune-job
+spec:
+  entrypoint: python fine_tune.py --epochs 3
+  shutdownAfterJobFinishes: true
+  ttlSecondsAfterFinished: 300
+  rayClusterSpec:
+    rayVersion: '2.35.0'
+    headGroupSpec:
+      rayStartParams:
+        dashboard-host: '0.0.0.0'
+      template:
+        spec:
+          containers:
+            - name: ray-head
+              image: rayproject/ray:2.35.0

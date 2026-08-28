@@ -1,0 +1,27 @@
+# Solution: Progressive Delivery with Argo Rollouts (gitops04)
+
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: payment-service
+spec:
+  replicas: 5
+  strategy:
+    canary:
+      steps:
+      - setWeight: 20
+      - pause:
+          duration: 10m
+      - setWeight: 50
+      - pause:
+          duration: 30m
+  template:
+    metadata:
+      labels:
+        app: payment
+    spec:
+      containers:
+      - name: payment-api
+        image: payment:v2.0.0
+        ports:
+        - containerPort: 8080

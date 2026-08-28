@@ -1,0 +1,27 @@
+# Solution: solutions/25_batch_kueue_volcano/volcano01.yaml
+# Topic: Volcano Gang Scheduling & Deadlock Prevention
+
+apiVersion: batch.volcano.sh/v1alpha1
+kind: Job
+metadata:
+  name: distributed-training-gang
+spec:
+  minAvailable: 4
+  schedulerName: volcano
+  tasks:
+    - name: master
+      replicas: 1
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: train-master
+              image: pytorch/pytorch:2.2.0-cuda12.1-cudnn8-runtime
+    - name: worker
+      replicas: 3
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: train-worker
+              image: pytorch/pytorch:2.2.0-cuda12.1-cudnn8-runtime

@@ -1,0 +1,27 @@
+# Exercise: solutions/02_controllers/ctrl05.yaml
+# Topic: DaemonSets for Node-Level Daemons
+#
+# Reference Solution
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluentbit-daemon
+spec:
+  selector:
+    matchLabels:
+      name: fluentbit
+  template:
+    metadata:
+      labels:
+        name: fluentbit
+    spec:
+      nodeSelector:
+        logging: enabled
+      tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+      containers:
+      - name: fluentbit
+        image: fluent/fluent-bit:2.2

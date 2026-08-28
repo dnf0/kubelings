@@ -1,0 +1,25 @@
+# Exercise: solutions/01_pods/pods02.yaml
+# Topic: Multi-Container Pods & Sidecar Pattern
+#
+# Reference Solution
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-logger
+spec:
+  volumes:
+  - name: shared-logs
+    emptyDir: {}
+  containers:
+  - name: app
+    image: alpine:3.19
+    volumeMounts:
+    - name: shared-logs
+      mountPath: /var/log/app
+  - name: sidecar-logger
+    image: busybox:1.36
+    volumeMounts:
+    - name: shared-logs
+      mountPath: /var/log/shared
+      readOnly: true

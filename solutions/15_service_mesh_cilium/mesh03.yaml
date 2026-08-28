@@ -1,0 +1,20 @@
+# Solution: CiliumClusterwideNetworkPolicy with DNS Inspection (mesh03)
+
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: secure-external-egress
+spec:
+  nodeSelector:
+    matchLabels: {}
+  egress:
+  - toFQDNs:
+    - matchName: api.github.com
+    - matchPattern: '*.amazonaws.com'
+    toPorts:
+    - ports:
+      - port: '443'
+        protocol: TCP
+      rules:
+        dns:
+        - matchPattern: '*'

@@ -1,0 +1,53 @@
+# Chapter 18: Advanced Admission Webhooks & Dynamic Interception
+# Exercise 18.2: ValidatingWebhookConfiguration Manifest
+#
+# Context & Why:
+# Validating admission webhooks execute as the final security gate before any object is written
+# to etcd. Unlike mutating webhooks, validating webhooks cannot alter the resource payload; they
+# only emit a binary allow/deny decision along with a human-readable rejection message.
+#
+# In enterprise platforms, not all namespaces require the same strict validation, and non-critical
+# validations should not cause cluster outages if the validator service goes down.
+# A `ValidatingWebhookConfiguration` leverages `namespaceSelector` (e.g. `matchExpressions` targeting
+# `environment in [prod, stage]`) to scope validation strictly to critical environments.
+# Setting `failurePolicy: Ignore` ensures fail-open resilience for non-blocking advisory policies,
+# preventing cluster admission bottlenecks during webhook outages.
+#
+# Task:
+# Fix the ValidatingWebhookConfiguration manifest function to return the parsed manifest dictionary
+# validating Pod CREATE and UPDATE requests in 'prod' and 'stage' namespaces.
+
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: ???
+webhooks:
+- name: ???
+  rules:
+  - apiGroups:
+    - ???
+    apiVersions:
+    - ???
+    operations:
+    - ???
+    - ???
+    resources:
+    - ???
+    scope: ???
+  clientConfig:
+    service:
+      namespace: ???
+      name: ???
+      path: ???
+    caBundle: ???
+  admissionReviewVersions:
+  - ???
+  sideEffects: ???
+  failurePolicy: ???
+  namespaceSelector:
+    matchExpressions:
+    - key: ???
+      operator: ???
+      values:
+      - ???
+      - ???

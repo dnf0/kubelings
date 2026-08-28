@@ -1,0 +1,31 @@
+# Exercise: solutions/08_security_rbac/rbac02.yaml
+# Topic: Roles & RoleBindings
+#
+# Reference Solution
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pod-manager-role
+  namespace: staging
+rules:
+- apiGroups: [""]
+  resources: ["pods", "pods/log"]
+  verbs: ["get", "list", "watch", "create", "delete"]
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: bind-pod-manager
+  namespace: staging
+subjects:
+- kind: ServiceAccount
+  name: staging-deployer
+  namespace: staging
+roleRef:
+  kind: Role
+  name: pod-manager-role
+  apiGroup: rbac.authorization.k8s.io

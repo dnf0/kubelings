@@ -1,0 +1,18 @@
+# Chapter 19: Package Management with Helm
+# Exercise 19.4: Helm Subcharts & Global Values (Solution)
+
+global:
+  environment: production
+  registry: registry.k8s.io
+
+redis:
+  architecture: replication
+  auth:
+    enabled: true
+    secretName: redis-credentials
+
+postgresql:
+  enabled: false
+  primary:
+    persistence:
+      size: 20Gi

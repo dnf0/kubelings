@@ -1,0 +1,35 @@
+# Exercise: solutions/06_ingress_gateway/ingress02.yaml
+# Topic: Ingress TLS Termination
+#
+# Reference Solution
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: secure-ingress
+spec:
+  tls:
+  - hosts:
+    - secure.example.com
+    - api.secure.example.com
+    secretName: wildcard-tls-secret
+  rules:
+  - host: secure.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: secure-web-service
+            port:
+              number: 443
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: wildcard-tls-secret
+type: kubernetes.io/tls
+data:
+  tls.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCg==
+  tls.key: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCg==

@@ -1,0 +1,46 @@
+# Exercise: exercises/09_network_policies/netpol04.yaml
+# Topic: Named Ports & IPBlock CIDR Exceptions
+#
+# Context & Why:
+# Kubernetes NetworkPolicies can control traffic beyond the cluster perimeter by defining `ipBlock`
+# CIDR ranges for external destinations (e.g., third-party payment APIs, legacy on-premises databases).
+# The `except` block enables fine-grained network segmentation by carving out sensitive internal subnets
+# from broader CIDR ranges. Furthermore, referencing `ports.port` as a named port string (e.g. 'http')
+# rather than a numeric literal decouples the security policy from container port remapping, allowing
+# developers to modify application container ports without modifying network security manifests.
+#
+# Instructions:
+# 1. Configure NetworkPolicy 'external-api-egress' in namespace 'default':
+#    - Targets pods with label `app: gateway`.
+#    - Egress rule: Allow TCP traffic to named port 'http' for IP range '192.168.0.0/16',
+#      EXCEPT subnet '192.168.1.0/24'.
+# 2. Implement `is_ip_in_ipblock(ip_str, cidr_str, except_cidrs)`:
+#    - Uses python's standard `ipaddress` module to check if `ip_str` falls within `cidr_str`
+#      and is NOT in any of the subnets listed in `except_cidrs`.
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: external-api-egress
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: gateway
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - ipBlock:
+        # TODO: Set the target network CIDR '192.168.0.0/16'.
+        # WHY: Authorizes egress to the entire corporate external private network block.
+        cidr: ???
+        except:
+        # TODO: Carve out the restricted management subnet '192.168.1.0/24'.
+        # WHY: Blocks access to sensitive management and database subnets within the wider CIDR.
+        - ???
+    ports:
+    - protocol: TCP
+      # TODO: Specify the named port 'http'.
+      # WHY: Allows port indirection so changes to container port numbers do not break network policy enforcement.
+      port: ???

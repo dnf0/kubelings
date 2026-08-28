@@ -1,0 +1,24 @@
+# Exercise: solutions/10_lifecycle_probes/health01.yaml
+# Topic: Liveness Probes
+#
+# Reference Solution
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-liveness-pod
+spec:
+  containers:
+  - name: web
+    image: nginx:1.25-alpine
+    livenessProbe:
+      httpGet:
+        path: /healthz
+        port: 8080
+        httpHeaders:
+        - name: X-Custom-Header
+          value: Awesome
+      initialDelaySeconds: 15
+      periodSeconds: 10
+      timeoutSeconds: 2
+      failureThreshold: 3

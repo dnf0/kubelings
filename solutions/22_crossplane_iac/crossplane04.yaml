@@ -1,0 +1,18 @@
+# Solution: crossplane04.yaml
+# Topic: Crossplane - Developer Self-Service Claims and Connection Secrets
+
+apiVersion: database.kubelings.io/v1alpha1
+kind: PostgreSQLInstance
+metadata:
+  name: production-postgres-claim
+  namespace: production
+spec:
+  parameters:
+    storageGB: 100
+    engineVersion: '16.1'
+  compositionSelector:
+    matchLabels:
+      provider: aws
+      db: postgres
+  writeConnectionSecretToRef:
+    name: production-postgres-conn

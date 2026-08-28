@@ -1,0 +1,26 @@
+# Chapter 18: Advanced Admission Webhooks & Dynamic Interception
+# Exercise 18.3: Dynamic Sidecar Injection AdmissionReview Response
+#
+# Context & Why:
+# When a Kubernetes mutating admission webhook intercepts an API request, the API server
+# expects a structured JSON response conforming to the `admission.k8s.io/v1` `AdmissionReview`
+# schema. To modify the incoming resource, the webhook response must declare `allowed: true`,
+# `patchType: "JSONPatch"`, and supply a base64-encoded array of RFC 6902 JSON patch operations.
+#
+# In sidecar injection workflows (e.g. Istio sidecars, Vault agents, OpenTelemetry collectors),
+# the webhook server crafts an RFC 6902 "add" operation on `/spec/containers/-` to append the
+# sidecar container spec to the Pod. Generating a correctly structured AdmissionReview response
+# ensures that the API server can decode and apply the patch seamlessly before persisting the Pod.
+#
+# Task:
+# Fix `build_admission_review_response(uid)` to return a valid `AdmissionReview` dictionary with
+# `apiVersion: "admission.k8s.io/v1"`, `kind: "AdmissionReview"`, and response fields containing
+# the provided `uid`, `allowed: True`, `patchType: "JSONPatch"`, and the base64-encoded `patch_b64`.
+
+apiVersion: admission.k8s.io/v1
+kind: AdmissionReview
+response:
+  uid: ???
+  allowed: ???
+  patchType: ???
+  patch: ???

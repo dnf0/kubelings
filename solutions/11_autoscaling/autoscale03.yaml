@@ -1,0 +1,29 @@
+# Exercise: solutions/11_autoscaling/autoscale03.yaml
+# Topic: Vertical Pod Autoscaler (VPA)
+#
+# Reference Solution
+
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: analytics-vpa
+  namespace: data-platform
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: analytics-worker
+  updatePolicy:
+    updateMode: "Auto"
+  resourcePolicy:
+    containerPolicies:
+    - containerName: "worker"
+      minAllowed:
+        cpu: "100m"
+        memory: "128Mi"
+      maxAllowed:
+        cpu: "2"
+        memory: "4Gi"
+      controlledResources:
+      - "cpu"
+      - "memory"

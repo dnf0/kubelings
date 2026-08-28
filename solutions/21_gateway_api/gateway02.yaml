@@ -1,0 +1,32 @@
+# Solution: gateway02.yaml
+# Topic: Gateway API - HTTPRoute Path Matching and Backend Routing
+
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: api-service-route
+  namespace: apps
+spec:
+  parentRefs:
+  - name: main-gateway
+    namespace: infra-gateway
+  hostnames:
+  - api.example.com
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /v1/users
+    backendRefs:
+    - name: users-v1-svc
+      port: 8080
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /v1/orders
+      headers:
+      - name: X-Beta-Features
+        value: enabled
+    backendRefs:
+    - name: orders-beta-svc
+      port: 9090

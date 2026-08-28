@@ -1,0 +1,62 @@
+# Exercise: gateway03.yaml
+# Topic: Gateway API - Weighted Canary Traffic Splitting and URL Rewrite Filters
+#
+# Context & Why:
+# Progressive delivery strategies (such as canary rollouts and blue/green deployments) require
+# fine-grained control over traffic distribution and request modification before requests hit
+# backend pods.
+#
+# Traditional Ingress controllers required vendor-specific annotations (e.g. `nginx.ingress.kubernetes.io/canary-weight`)
+# which led to fragmented configurations across cloud environments. The Gateway API elevates these
+# capabilities into native, standardized API primitives:
+# - `backendRefs[*].weight`: Enables declarative weighted traffic shifting across multiple backend
+#   services (e.g., 80% to stable `frontend-v1` and 20% to canary `frontend-v2`).
+# - `filters`: Provides standard request/response mutations directly in the data plane:
+#   * `URLRewrite`: Modifies incoming URI paths (e.g. rewriting `/app` prefix to `/`) before passing to upstream services.
+#   * `RequestHeaderModifier`: Injects, mutates, or removes HTTP headers (e.g., adding `X-Forwarded-By: GatewayAPI`)
+#     to maintain traceability across service boundaries.
+#
+# Task:
+# Define an HTTPRoute configured for advanced canary traffic management:
+# 1. 'apiVersion': 'gateway.networking.k8s.io/v1', 'kind': 'HTTPRoute'
+# 2. Named 'frontend-canary-route' in namespace 'frontend'
+# 3. Attach to parentRef Gateway 'main-gateway' in namespace 'infra-gateway'
+# 4. Define a single rule matching path prefix '/app':
+#    a. Filter 1: 'URLRewrite' with path 'ReplacePrefixMatch' set to '/'
+#    b. Filter 2: 'RequestHeaderModifier' setting header 'X-Forwarded-By' to 'GatewayAPI'
+#    c. Split traffic across 2 backendRefs:
+#       - 'frontend-v1' service on port 80 with weight 80
+#       - 'frontend-v2' service on port 80 with weight 20
+
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: ???
+  namespace: ???
+spec:
+  parentRefs:
+  - name: ???
+    namespace: ???
+  rules:
+  - matches:
+    - path:
+        type: ???
+        value: ???
+    filters:
+    - type: ???
+      urlRewrite:
+        path:
+          type: ???
+          replacePrefixMatch: ???
+    - type: ???
+      requestHeaderModifier:
+        set:
+        - name: ???
+          value: ???
+    backendRefs:
+    - name: ???
+      port: ???
+      weight: ???
+    - name: ???
+      port: ???
+      weight: ???

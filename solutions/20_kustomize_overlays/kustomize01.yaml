@@ -1,0 +1,15 @@
+# Chapter 20: Declarative Customization with Kustomize
+# Exercise 20.1: Kustomize Base Manifests & Metadata Transformations (Solution)
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - deployment.yaml
+  - service.yaml
+namespace: ecommerce-core
+namePrefix: core-
+commonLabels:
+  app.kubernetes.io/managed-by: kustomize
+  tier: backend
+commonAnnotations:
+  team: platform

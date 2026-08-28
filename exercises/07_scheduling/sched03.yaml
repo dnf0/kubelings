@@ -1,0 +1,57 @@
+# Exercise: exercises/07_scheduling/sched03.yaml
+# Topic: Pod Affinity & Pod Anti-Affinity
+#
+# Context & Why:
+# Inter-pod affinity and anti-affinity allow scheduling decisions to depend on the labels of *other pods*
+# already running in the cluster rather than node labels alone:
+# 1. `Pod Anti-Affinity`: Essential for High Availability (HA). By specifying hard anti-affinity against
+#    pods with the same application label on `topologyKey: kubernetes.io/hostname`, the scheduler guarantees
+#    that no two replicas run on the same physical worker node. If a node fails, only a single replica is lost.
+# 2. `Pod Affinity`: Optimizes performance for latency-sensitive microservices. By specifying affinity towards
+#    companion pods (e.g., placing web frontend pods in the same Availability Zone `topologyKey: topology.kubernetes.io/zone`
+#    as their Redis cache), inter-service network latency is minimized and cross-AZ data egress fees are eliminated.
+#
+# Instructions:
+# Pod Affinity and Anti-Affinity schedule pods based on labels of *other pods*
+# already running on nodes within a specific topology domain (e.g. hostname or zone).
+#
+# Use cases:
+# 1. Pod Anti-Affinity: Spread replicas across different hosts/nodes for high availability.
+# 2. Pod Affinity: Co-locate tightly-coupled microservices (e.g. web app and in-memory cache) in the same zone.
+#
+# 1. Complete the Pod manifest:
+#    - name: 'web-frontend'
+#    - hard anti-affinity: do NOT co-locate with another pod having label `app: web-frontend` on the same `topologyKey: kubernetes.io/hostname`.
+#    - soft affinity (weight 100): prefer co-locating with pods having label `app: redis-cache` in the same `topologyKey: topology.kubernetes.io/zone`.
+# 2. Implement `can_coexist_on_host(running_pod_labels_on_node, pod_manifest)`:
+#    - Returns False if placing the pod on this host violates its hard podAntiAffinity rule. Otherwise True.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-frontend
+  labels:
+    app: web-frontend
+spec:
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      # TODO: Configure anti-affinity matching app: 'web-frontend' with topologyKey: 'kubernetes.io/hostname'
+      # WHY: Guarantees that multiple web-frontend pods are never scheduled on the same host node, ensuring HA.
+      - labelSelector:
+          matchLabels:
+            app: ???
+        topologyKey: ???
+    podAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app: redis-cache
+          # TODO: Set topologyKey to 'topology.kubernetes.io/zone'
+          # WHY: Encourages placing web pods in the same availability zone as the redis-cache to minimize network latency.
+          topologyKey: ???
+  containers:
+  - name: web
+    image: nginx:alpine

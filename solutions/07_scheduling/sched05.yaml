@@ -1,0 +1,22 @@
+# Exercise: solutions/07_scheduling/sched05.yaml
+# Topic: Topology Spread Constraints
+#
+# Reference Solution
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: payment-processor
+  labels:
+    app: payment-processor
+spec:
+  topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: topology.kubernetes.io/zone
+    whenUnsatisfiable: DoNotSchedule
+    labelSelector:
+      matchLabels:
+        app: payment-processor
+  containers:
+  - name: processor
+    image: python:3.11-slim

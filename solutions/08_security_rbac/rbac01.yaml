@@ -1,0 +1,24 @@
+# Exercise: solutions/08_security_rbac/rbac01.yaml
+# Topic: ServiceAccounts & Token Management
+#
+# Reference Solution
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: build-robot-sa
+  namespace: ci-runners
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: build-worker-pod
+  namespace: ci-runners
+spec:
+  serviceAccountName: build-robot-sa
+  automountServiceAccountToken: false
+  containers:
+  - name: runner
+    image: alpine:3.19
+    command: ["sh", "-c", "echo Ready && sleep 3600"]

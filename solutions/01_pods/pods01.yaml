@@ -1,0 +1,17 @@
+# Exercise: solutions/01_pods/pods01.yaml
+# Topic: First Pod Manifest & Spec
+#
+# Reference Solution
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-web
+  labels:
+    app: web
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+    ports:
+    - containerPort: 80

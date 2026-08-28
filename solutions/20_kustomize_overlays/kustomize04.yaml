@@ -1,0 +1,16 @@
+# Chapter 20: Declarative Customization with Kustomize
+# Exercise 20.4: Kustomize Multi-Environment Overlays & Image Transforms (Solution)
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+namespace: production
+namePrefix: prod-
+images:
+  - name: webapp
+    newName: quay.io/company/webapp
+    newTag: v3.1.0
+replicas:
+  - name: webapp
+    count: 10

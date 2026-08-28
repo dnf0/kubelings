@@ -1,0 +1,25 @@
+# Solution: solutions/24_kuberay_ml/ray04.yaml
+# Topic: RayService for Production LLM Serving
+
+apiVersion: ray.io/v1
+kind: RayService
+metadata:
+  name: ray-llm-service
+spec:
+  serviceUnhealthyThreshold: 300
+  rayClusterSpec:
+    rayVersion: '2.35.0'
+    headGroupSpec:
+      rayStartParams:
+        dashboard-host: '0.0.0.0'
+      template:
+        spec:
+          containers:
+            - name: ray-head
+              image: rayproject/ray:2.35.0
+  serveConfigV2: |
+    applications:
+      - name: llm_app
+        route_prefix: /v1
+        import_path: llm_serve:model
+        runtime_env: {}

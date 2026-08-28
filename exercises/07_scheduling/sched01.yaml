@@ -1,0 +1,50 @@
+# Exercise: exercises/07_scheduling/sched01.yaml
+# Topic: Node Placement (nodeName & nodeSelector)
+#
+# Context & Why:
+# Kubernetes provides several tiers of node placement control to map workloads to specialized hardware:
+# 1. `nodeName`: The most direct (and rigid) placement mechanism. Setting `spec.nodeName` assigns the Pod
+#    directly to a named node, completely bypassing the `kube-scheduler` scheduling loop and filter plugins.
+#    This is primarily used by internal system components or custom schedulers.
+# 2. `nodeSelector`: The simplest declarative constraint mechanism. It specifies a map of key-value pairs
+#    that candidate worker nodes must possess in their `metadata.labels` (e.g. `accelerator: nvidia-tesla-v100`)
+#    for the `kube-scheduler` to consider them eligible during the filtering phase.
+#
+# Instructions:
+# Kubernetes provides basic node assignment mechanisms:
+# 1. `nodeName`: Hardcodes the exact node where the pod runs, completely bypassing the kube-scheduler.
+# 2. `nodeSelector`: Simple key-value label matching against candidate nodes.
+#
+# 1. Configure Pod 1 'pinned-pod':
+#    - Hardcode placement to node 'worker-node-03' via `nodeName`
+# 2. Configure Pod 2 'gpu-pod':
+#    - Select nodes with labels: `accelerator: nvidia-tesla-v100` and `disktype: nvme`
+# 3. Implement `match_node_selector(pod_manifest, node_name, node_labels)`:
+#    - If `nodeName` is defined: returns True only if `node_name == spec.nodeName`.
+#    - If `nodeSelector` is defined: returns True only if every key-value pair in `nodeSelector` exists in `node_labels`.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pinned-pod
+spec:
+  # TODO: Set nodeName to 'worker-node-03'
+  # WHY: Directly assigns the pod to worker-node-03, bypassing the scheduler algorithm entirely.
+  nodeName: ???
+  containers:
+  - name: app
+    image: nginx:alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gpu-pod
+spec:
+  nodeSelector:
+    # TODO: Require node labels accelerator: 'nvidia-tesla-v100' and disktype: 'nvme'
+    # WHY: Ensures the GPU training pod is scheduled only on worker nodes equipped with specialized hardware.
+    accelerator: ???
+    disktype: ???
+  containers:
+  - name: cuda-runner
+    image: nvidia/cuda:12.0-base

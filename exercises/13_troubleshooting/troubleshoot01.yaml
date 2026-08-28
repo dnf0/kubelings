@@ -1,0 +1,56 @@
+# Exercise: exercises/13_troubleshooting/troubleshoot01.yaml
+# Topic: Debugging CrashLoopBackOff & Exit Codes
+#
+# Context & Why:
+# `CrashLoopBackOff` is one of the most frequent incident conditions encountered in Kubernetes operations.
+# It indicates that a container started, crashed or exited unexpectedly, and is repeatedly restarting with
+# exponentially increasing back-off delays (10s, 20s, 40s, up to 5m). Rapid root-cause triage starts with
+# inspecting the container termination exit code: exit code 137 signals `SIGKILL` (typically Linux kernel OOMKiller
+# invoked when container memory exceeds `limits.memory`), exit code 143 signals standard `SIGTERM`, exit code 127
+# indicates a missing executable or broken path, and exit code 1 indicates an uncaught runtime exception or missing
+# configuration parameter (such as a database connection string).
+#
+# Instructions:
+# When a container in Kubernetes repeatedly terminates and restarts, its status
+# transitions to `CrashLoopBackOff`. The container exit code provides the primary
+# clue to the root cause:
+# - Exit code 137: Terminated by SIGKILL (often OOMKilled due to memory limits).
+# - Exit code 143: Terminated by SIGTERM (graceful termination).
+# - Exit code 1: Application-level exception / unhandled error / missing config.
+# - Exit code 127: Executable or command binary not found.
+#
+# 1. Implement `diagnose_exit_code(exit_code: int) -> dict`:
+#    - Return dictionary with keys "reason" and "cause" for codes 137, 143, 1, 127,
+#      or "Unknown" for other codes.
+# 2. Fix Pod 'crasher-pod-fixed' in namespace 'troubleshoot':
+#    - Set container 'api-server' memory requests to "256Mi" and memory limits to "512Mi".
+#    - Set CPU requests to "250m" and CPU limits to "500m".
+#    - Supply the missing environment variable 'DATABASE_URL' = 'postgres://db.internal:5432/app'.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: crasher-pod-fixed
+  namespace: troubleshoot
+spec:
+  containers:
+  - name: api-server
+    image: nginx:alpine
+    resources:
+      requests:
+        # TODO: Set CPU requests to "250m".
+        # WHY: Informs kube-scheduler of guaranteed compute needs to avoid node overcommit.
+        cpu: ???
+        # TODO: Set memory requests to "256Mi".
+        # WHY: Guarantees baseline memory allocation for stable operation.
+        memory: ???
+      limits:
+        cpu: "500m"
+        # TODO: Set memory limits to "512Mi".
+        # WHY: Provides sufficient memory ceiling to prevent kernel OOMKilled termination (exit 137).
+        memory: ???
+    env:
+    # TODO: Add missing environment variable 'DATABASE_URL' with value 'postgres://db.internal:5432/app'.
+    # WHY: Supplying required database connection credentials prevents application crash on startup (exit 1).
+    - name: ???
+      value: ???

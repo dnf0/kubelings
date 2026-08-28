@@ -1,0 +1,45 @@
+# Solution: solutions/26_hardware_acceleration_dra/accel04.yaml
+# Topic: High-Throughput Production LLM Inference Server with vLLM
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm-openai-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm-server
+  template:
+    metadata:
+      labels:
+        app: vllm-server
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:latest
+          args:
+            - "--model"
+            - "meta-llama/Llama-3-8B-Instruct"
+            - "--gpu-memory-utilization"
+            - "0.90"
+            - "--port"
+            - "8000"
+          ports:
+            - containerPort: 8000
+              name: http
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+          volumeMounts:
+            - name: model-cache
+              mountPath: /root/.cache/huggingface
+      volumes:
+        - name: model-cache
+          persistentVolumeClaim:
+            claimName: model-weights-pvc

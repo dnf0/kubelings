@@ -1,0 +1,27 @@
+# Chapter 16: Policy as Code with Kyverno & Gatekeeper
+# Exercise 16.3: Kyverno Generate Policy for Default Deny NetworkPolicy (Solution)
+
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: generate-default-deny
+spec:
+  rules:
+  - name: generate-deny-all
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    generate:
+      apiVersion: networking.k8s.io/v1
+      kind: NetworkPolicy
+      name: default-deny-all
+      namespace: "{{request.object.metadata.name}}"
+      synchronize: true
+      data:
+        spec:
+          podSelector: {}
+          policyTypes:
+          - Ingress
+          - Egress

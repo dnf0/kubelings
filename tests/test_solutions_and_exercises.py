@@ -1,80 +1,62 @@
 """End-to-end test suite verifying all curriculum exercises and reference solutions."""
 
-import os
-import subprocess
-import sys
 from pathlib import Path
 
 import pytest
 
-from kubelings.manifest import get_manifest
+from kubelings.manifest import build_manifest
 from kubelings.models import Exercise
-from kubelings.runner import NOT_DONE_MARKER
+from kubelings.runner import ExerciseRunner
+from kubelings.validators import load_all_validators
 
-manifest = get_manifest()
+load_all_validators()
+manifest = build_manifest()
+
+
+@pytest.fixture(scope="module")
+def runner() -> ExerciseRunner:
+    return ExerciseRunner()
 
 
 @pytest.mark.parametrize("exercise", manifest.all_exercises, ids=lambda ex: ex.name)
-def test_all_reference_solutions_pass(exercise: Exercise):
-    """Verify that every reference solution exists, does not have NOT_DONE, and passes."""
-    sol_path = exercise.solution_path
-    assert sol_path.exists(), f"Missing solution for {exercise.name} at {sol_path}"
-
-    content = sol_path.read_text(encoding="utf-8")
-    assert NOT_DONE_MARKER not in content, (
-        f"Solution {sol_path} must not contain '{NOT_DONE_MARKER}'"
+def test_all_reference_solutions_pass(runner: ExerciseRunner, exercise: Exercise):
+    """Verify that every reference solution exists and passes."""
+    sol_ex = Exercise(
+        name=exercise.name,
+        title=exercise.title,
+        path=f"solutions/{exercise.chapter_name}/{exercise.name}.yaml",
+        chapter_name=exercise.chapter_name,
     )
-
-    env = os.environ.copy()
-    env["PYTHONPATH"] = f"{Path.cwd() / 'src'}:{env.get('PYTHONPATH', '')}".strip(":")
-
-    proc = subprocess.run(
-        [sys.executable, str(sol_path)],
-        capture_output=True,
-        text=True,
-        timeout=30,
-        env=env,
-    )
-    assert proc.returncode == 0, (
-        f"Solution {sol_path} failed with exit code {proc.returncode}.\n"
-        f"STDOUT:\n{proc.stdout}\n"
-        f"STDERR:\n{proc.stderr}"
-    )
-    assert "passed" in proc.stdout.lower() or "validated" in proc.stdout.lower(), (
-        f"Solution {sol_path} did not output expected pass confirmation.\nSTDOUT:\n{proc.stdout}"
+    result = runner.run_exercise(sol_ex)
+    assert result.passed, (
+        f"Solution {exercise.name} failed validation.\n"
+        f"Error: {result.error}\n"
+        f"Output: {result.output}"
     )
 
 
 @pytest.mark.parametrize("exercise", manifest.all_exercises, ids=lambda ex: ex.name)
-def test_starter_exercises_fail(exercise: Exercise):
+def test_starter_exercises_fail(runner: ExerciseRunner, exercise: Exercise):
     """Verify that every starter exercise exists and fails when run initially."""
-    ex_path = exercise.file_path
-    assert ex_path.exists(), f"Missing exercise file for {exercise.name} at {ex_path}"
-
-    env = os.environ.copy()
-    env["PYTHONPATH"] = f"{Path.cwd() / 'src'}:{env.get('PYTHONPATH', '')}".strip(":")
-
-    proc = subprocess.run(
-        [sys.executable, str(ex_path)],
-        capture_output=True,
-        text=True,
-        timeout=30,
-        env=env,
+    starter_ex = Exercise(
+        name=exercise.name,
+        title=exercise.title,
+        path=f"exercises/{exercise.chapter_name}/{exercise.name}.yaml",
+        chapter_name=exercise.chapter_name,
     )
-    assert proc.returncode != 0, (
-        f"Starter exercise {ex_path} was expected to fail, but exited with code 0.\n"
-        f"STDOUT:\n{proc.stdout}\n"
-        f"STDERR:\n{proc.stderr}"
-    )
+    result = runner.run_exercise(starter_ex)
+    assert not result.passed, f"Starter exercise {exercise.name} was expected to fail, but passed."
 
 
 def test_manifest_and_disk_files_consistency():
     """Verify there are no orphaned files in exercises/ or solutions/ and all manifest items exist."""
     manifest_exercises = {ex.path for ex in manifest.all_exercises}
-    manifest_solutions = {str(ex.solution_path) for ex in manifest.all_exercises}
+    manifest_solutions = {
+        f"solutions/{ex.chapter_name}/{ex.name}.yaml" for ex in manifest.all_exercises
+    }
 
-    disk_exercises = {str(p) for p in Path("exercises").glob("*/*.py")}
-    disk_solutions = {str(p) for p in Path("solutions").glob("*/*.py")}
+    disk_exercises = {str(p) for p in Path("exercises").glob("*/*.yaml")}
+    disk_solutions = {str(p) for p in Path("solutions").glob("*/*.yaml")}
 
     # Check total counts
     assert len(manifest_exercises) == 114

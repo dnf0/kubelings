@@ -1,0 +1,36 @@
+# Exercise: solutions/04_storage/storage05.yaml
+# Topic: Volume Snapshots & Volume Expansion
+#
+# Reference Solution
+
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshotClass
+metadata:
+  name: csi-aws-vsc
+driver: ebs.csi.aws.com
+deletionPolicy: Delete
+---
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshot
+metadata:
+  name: prod-db-snap-01
+spec:
+  volumeSnapshotClassName: csi-aws-vsc
+  source:
+    persistentVolumeClaimName: dynamic-db-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: restored-db-pvc
+spec:
+  storageClassName: fast-ebs
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  dataSource:
+    name: prod-db-snap-01
+    kind: VolumeSnapshot
+    apiGroup: snapshot.storage.k8s.io

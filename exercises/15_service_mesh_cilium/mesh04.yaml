@@ -1,0 +1,47 @@
+# Exercise: Hubble Observability & OpenTelemetry Tracing (mesh04)
+#
+# Context & Why:
+# Observability into complex distributed microservices traditionally required heavy
+# sidecar proxy injection (e.g. Envoy in every Pod) and invasive code instrumentation.
+# Sidecars consume significant CPU/memory resources and introduce latency overheads.
+#
+# Cilium Hubble delivers deep network flow, service graph, and security visibility
+# directly from Linux kernel eBPF hooks without requiring per-pod sidecars. Standard
+# Kubernetes annotations on workloads guide the observability pipeline: `sidecar.istio.io/inject: "false"`
+# opts into sidecarless/ambient mesh architectures, `prometheus.io/scrape` coordinates metric
+# harvesting on specific ports, and `telemetry.cilium.io/trace: "b3"` enables eBPF-driven
+# distributed trace context propagation for OpenTelemetry collectors.
+#
+# Task:
+# Complete `get_observable_pod_manifest()` returning a Pod manifest configured for mesh observability:
+# 1. apiVersion: "v1"
+# 2. kind: "Pod"
+# 3. metadata:
+#    - name: "order-service"
+#    - annotations:
+#      - "sidecar.istio.io/inject": "false" # Using eBPF ambient mesh
+#      - "prometheus.io/scrape": "true"
+#      - "prometheus.io/port": "9090"
+#      - "telemetry.cilium.io/trace": "b3"
+# 4. spec:
+#    - containers:
+#      - name: "order-api"
+#      - image: "orders:v1.0"
+#      - ports:
+#        - containerPort: 9090
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ???
+  annotations:
+    sidecar.istio.io/inject: ???
+    prometheus.io/scrape: ???
+    prometheus.io/port: ???
+    telemetry.cilium.io/trace: ???
+spec:
+  containers:
+  - name: ???
+    image: ???
+    ports:
+    - containerPort: ???

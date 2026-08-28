@@ -1,0 +1,15 @@
+# Exercise: solutions/03_config_secrets/config03.yaml
+# Topic: Secrets: Base64 Encoding & stringData
+#
+# Reference Solution
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-credentials
+type: Opaque
+data:
+  username: YWRtaW4=
+  password: c3VwZXJzZWNyZXQ=
+stringData:
+  api_key: "prod-api-key-998877"

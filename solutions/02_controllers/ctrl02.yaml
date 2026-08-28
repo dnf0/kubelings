@@ -1,0 +1,27 @@
+# Exercise: solutions/02_controllers/ctrl02.yaml
+# Topic: Deployments & Rolling Updates
+#
+# Reference Solution
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+spec:
+  replicas: 4
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+      - name: api
+        image: python:3.12-slim

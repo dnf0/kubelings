@@ -1,0 +1,20 @@
+# Chapter 16: Policy as Code with Kyverno & Gatekeeper
+# Exercise 16.2: Kyverno Mutating Policy for Security Context Defaults (Solution)
+
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: mutate-pod-security
+spec:
+  rules:
+  - name: inject-run-as-non-root
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    mutate:
+      patchStrategicMerge:
+        spec:
+          +(securityContext):
+            runAsNonRoot: true

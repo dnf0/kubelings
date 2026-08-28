@@ -1,0 +1,26 @@
+# Solution: solutions/25_batch_kueue_volcano/kueue02.yaml
+# Topic: Kueue LocalQueue & Suspended Workload Gating
+
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: LocalQueue
+metadata:
+  name: team-a-queue
+  namespace: team-a
+spec:
+  clusterQueue: cluster-queue-ai
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: train-job
+  namespace: team-a
+  labels:
+    kueue.x-k8s.io/queue-name: team-a-queue
+spec:
+  suspend: true
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: trainer
+          image: pytorch/pytorch:2.2.0-cuda12.1-cudnn8-runtime

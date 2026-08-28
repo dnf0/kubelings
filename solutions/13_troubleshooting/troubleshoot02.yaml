@@ -1,0 +1,25 @@
+# Exercise: solutions/13_troubleshooting/troubleshoot02.yaml
+# Topic: Debugging ImagePullBackOff
+#
+# Reference Solution
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: regcred
+  namespace: finance
+type: kubernetes.io/dockerconfigjson
+stringData:
+  .dockerconfigjson: '{"auths":{"privateregistry.io":{"username":"finance-bot","password":"secrettoken"}}}'
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: payment-service
+  namespace: finance
+spec:
+  imagePullSecrets:
+  - name: regcred
+  containers:
+  - name: app
+    image: privateregistry.io/payment-app:v1.0.0

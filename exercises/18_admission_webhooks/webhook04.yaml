@@ -1,0 +1,55 @@
+# Chapter 18: Advanced Admission Webhooks & Dynamic Interception
+# Exercise 18.4: CRD Conversion Webhook Strategy
+#
+# Context & Why:
+# CustomResourceDefinitions (CRDs) frequently undergo API evolution as platforms mature,
+# introducing breaking changes between versions (e.g. migrating from `v1alpha1` to `v1`).
+# However, in production environments, multiple API versions must be served simultaneously:
+# older client controllers continue writing `v1alpha1` manifests while new components adopt `v1`.
+#
+# Kubernetes supports multi-version CRDs via CRD Conversion Webhooks (`conversion.strategy: Webhook`).
+# When a client queries or submits an older resource version, the kube-apiserver invokes the
+# registered conversion service (`app-converter-svc` at `/crdconvert`) with a `ConversionReview`
+# request. The converter dynamically converts the custom resource between schema representations
+# in memory while persisting only the canonical storage version (`storage: true`), ensuring zero-downtime
+# API migrations without schema fragmentation.
+#
+# Task:
+# Fix the CustomResourceDefinition manifest function to return the parsed manifest dictionary
+# specifying a Webhook conversion strategy for migrating between v1alpha1 and v1 of 'AppDeployment'.
+
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: ???
+spec:
+  group: ???
+  names:
+    kind: AppDeployment
+    plural: ???
+    singular: ???
+  scope: ???
+  conversion:
+    strategy: ???
+    webhook:
+      conversionReviewVersions:
+      - ???
+      - ???
+      clientConfig:
+        service:
+          namespace: ???
+          name: ???
+          path: ???
+  versions:
+  - name: ???
+    served: ???
+    storage: ???
+    schema:
+      openAPIV3Schema:
+        type: ???
+  - name: ???
+    served: ???
+    storage: ???
+    schema:
+      openAPIV3Schema:
+        type: ???

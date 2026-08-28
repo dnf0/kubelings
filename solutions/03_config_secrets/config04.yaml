@@ -1,0 +1,22 @@
+# Exercise: solutions/03_config_secrets/config04.yaml
+# Topic: Secret Volume Mounts & Permissions (defaultMode)
+#
+# Reference Solution
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secure-cert-pod
+spec:
+  volumes:
+  - name: tls-certs
+    secret:
+      secretName: tls-secret
+      defaultMode: 256
+  containers:
+  - name: secure-web
+    image: nginx:alpine
+    volumeMounts:
+    - name: tls-certs
+      mountPath: /etc/tls
+      readOnly: true

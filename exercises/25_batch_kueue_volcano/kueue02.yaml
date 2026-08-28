@@ -1,0 +1,49 @@
+# Exercise: exercises/25_batch_kueue_volcano/kueue02.yaml
+# Topic: Kueue LocalQueue & Suspended Workload Gating
+#
+# Context & Why:
+# In multi-tenant Kubernetes clusters, developers submit jobs to namespace-scoped `LocalQueue` resources,
+# which map tenant namespaces to upstream cluster-wide `ClusterQueue` instances.
+#
+# Workload Admission & Gating Mechanics:
+# - When developers submit standard Kubernetes `Job`, PyTorchJob, or RayJob resources, they must label the
+#   workload with `kueue.x-k8s.io/queue-name: <local-queue-name>`.
+# - The job is authored with `spec.suspend: true`. This prevents the standard Kubernetes job controller
+#   from spawning pods immediately and overwhelming cluster node resources.
+# - Kueue evaluates resource quotas in the associated ClusterQueue. Once capacity is available, Kueue's
+#   admission controller unsuspends the job (`spec.suspend: false`), allowing pods to schedule deterministically
+#   without causing resource thrashing or OOM issues.
+#
+# Task:
+# Fix the Kueue LocalQueue and Batch Job manifests below:
+# 1. Define a 'LocalQueue' named 'team-a-queue' in namespace 'team-a' with 'apiVersion: kueue.x-k8s.io/v1beta1'.
+# 2. Point 'spec.clusterQueue' to 'cluster-queue-ai'.
+# 3. Define a 'batch/v1' 'Job' named 'train-job' in namespace 'team-a'.
+# 4. In 'metadata.labels', add label 'kueue.x-k8s.io/queue-name: team-a-queue' so Kueue intercepts the Job.
+# 5. In Job 'spec', set 'suspend: true' to gate execution until Kueue admits the workload.
+# 6. In 'spec.template.spec', configure container 'trainer' with image
+#    'pytorch/pytorch:2.2.0-cuda12.1-cudnn8-runtime' and 'restartPolicy: Never'.
+
+apiVersion: ???
+kind: ???
+metadata:
+  name: ???
+  namespace: ???
+spec:
+  clusterQueue: ???
+---
+apiVersion: ???
+kind: ???
+metadata:
+  name: ???
+  namespace: ???
+  labels:
+    kueue.x-k8s.io/queue-name: ???
+spec:
+  suspend: false
+  template:
+    spec:
+      restartPolicy: ???
+      containers:
+        - name: ???
+          image: ???

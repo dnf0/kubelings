@@ -1,0 +1,27 @@
+# Exercise: solutions/04_storage/storage01.yaml
+# Topic: Volume Types (emptyDir & hostPath)
+#
+# Reference Solution
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: log-collector-pod
+spec:
+  containers:
+  - name: collector
+    image: busybox:1.36
+    command: ["sh", "-c", "tail -f /dev/null"]
+    volumeMounts:
+    - name: scratch-volume
+      mountPath: /tmp/scratch
+    - name: host-log-volume
+      mountPath: /var/log/host-app
+      readOnly: true
+  volumes:
+  - name: scratch-volume
+    emptyDir: {}
+  - name: host-log-volume
+    hostPath:
+      path: /var/log/app
+      type: DirectoryOrCreate

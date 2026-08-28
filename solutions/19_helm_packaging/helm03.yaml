@@ -1,0 +1,40 @@
+# Chapter 19: Package Management with Helm
+# Exercise 19.3: Helm values.schema.json Validation Schema (Solution)
+
+$schema: http://json-schema.org/draft-07/schema#
+type: object
+required:
+- replicaCount
+- image
+- service
+properties:
+  replicaCount:
+    type: integer
+    minimum: 1
+    maximum: 100
+  image:
+    type: object
+    required:
+    - repository
+    - tag
+    properties:
+      repository:
+        type: string
+      tag:
+        type: string
+  service:
+    type: object
+    required:
+    - type
+    - port
+    properties:
+      type:
+        type: string
+        enum:
+        - ClusterIP
+        - NodePort
+        - LoadBalancer
+      port:
+        type: integer
+        minimum: 1
+        maximum: 65535

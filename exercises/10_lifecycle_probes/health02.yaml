@@ -1,0 +1,52 @@
+# Exercise: exercises/10_lifecycle_probes/health02.yaml
+# Topic: Readiness Probes
+#
+# Context & Why:
+# While liveness probes control container restarts, readiness probes govern network routing.
+# During application warmup, schema migrations, or transient downstream saturation, a container
+# may be alive but temporarily unable to serve incoming requests. If traffic continues to hit the pod,
+# users encounter 500/502 errors. When a readiness probe fails, kubelet does NOT restart the container;
+# instead, the Kubernetes endpoints controller temporarily removes the Pod's IP from the Endpoints /
+# EndpointSlice objects of all matching Services. Once the probe succeeds again, traffic routing resumes
+# seamlessly with zero packet loss.
+#
+# Instructions:
+# 1. Configure Pod 'db-service-pod' with container 'db-worker':
+#    - image: 'postgres:16-alpine'
+#    - readinessProbe using exec:
+#      - command: ["pg_isready", "-h", "127.0.0.1", "-p", "5432", "-q"]
+#      - initialDelaySeconds: 5
+#      - periodSeconds: 5
+#      - successThreshold: 1
+#      - failureThreshold: 2
+# 2. Implement `simulate_service_endpoints(pods_state)`:
+#    - Takes a list of pod state dictionaries `[{"ip": "10.244.1.2", "is_ready": True}, ...]`
+#    - Returns a list of IP strings for pods that are currently ready to receive traffic.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: db-service-pod
+spec:
+  containers:
+  - name: db-worker
+    image: postgres:16-alpine
+    readinessProbe:
+      exec:
+        command:
+        # TODO: Specify the postgres readiness CLI utility 'pg_isready'.
+        # WHY: Executes the native Postgres utility to verify local socket and database readiness.
+        - ???
+        - "-h"
+        - "127.0.0.1"
+        - "-p"
+        - "5432"
+        - "-q"
+      # TODO: Set initial delay to 5 seconds.
+      # WHY: Allows the postgres engine to start accepting local connections before testing readiness.
+      initialDelaySeconds: ???
+      periodSeconds: 5
+      successThreshold: 1
+      # TODO: Set failureThreshold to 2 consecutive failures.
+      # WHY: Prevents removing endpoints prematurely on a single transient latency hiccup.
+      failureThreshold: ???

@@ -1,0 +1,17 @@
+# Exercise: solutions/01_pods/pods03.yaml
+# Topic: Init Containers for Initialization
+#
+# Reference Solution
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: init-service-demo
+spec:
+  initContainers:
+  - name: init-db-wait
+    image: busybox:1.36
+    command: ["sh", "-c", "echo waiting for db..."]
+  containers:
+  - name: main-app
+    image: nginx:alpine

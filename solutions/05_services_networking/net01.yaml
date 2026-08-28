@@ -1,0 +1,19 @@
+# Exercise: solutions/05_services_networking/net01.yaml
+# Topic: ClusterIP Services & Port Mapping
+#
+# Reference Solution
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  type: ClusterIP
+  selector:
+    app: backend
+    tier: api
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 8080

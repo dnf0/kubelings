@@ -1,0 +1,36 @@
+# Solution: crossplane01.yaml
+# Topic: Crossplane - CompositeResourceDefinition (XRD)
+
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xpostgresqlinstances.database.kubelings.io
+spec:
+  group: database.kubelings.io
+  names:
+    kind: XPostgreSQLInstance
+    plural: xpostgresqlinstances
+  claimNames:
+    kind: PostgreSQLInstance
+    plural: postgresqlinstances
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  storageGB:
+                    type: integer
+                  engineVersion:
+                    type: string
+                required:
+                - storageGB
+                - engineVersion

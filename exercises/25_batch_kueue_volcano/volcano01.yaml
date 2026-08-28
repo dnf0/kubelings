@@ -1,0 +1,55 @@
+# Exercise: exercises/25_batch_kueue_volcano/volcano01.yaml
+# Topic: Volcano Gang Scheduling & Deadlock Prevention
+#
+# Context & Why:
+# Distributed AI training workloads (such as PyTorch DistributedDataParallel or Horovod) require all
+# participating nodes (parameter server/master and all worker ranks) to be active simultaneously to
+# initialize collective communication (e.g. NCCL all-reduce).
+#
+# Under the standard Kubernetes `default-scheduler`:
+# - Pods are scheduled individually. If a 4-pod job arrives when only 2 GPUs are free, the scheduler
+#   binds 2 pods and leaves 2 pods pending.
+# - The 2 running pods block those GPUs indefinitely while waiting for synchronization with the 2 pending pods.
+# - If another job similarly holds remaining resources, a distributed resource deadlock occurs.
+#
+# Volcano Gang Scheduling solves this:
+# - Custom scheduler (`spec.schedulerName: volcano`) with all-or-nothing scheduling semantics.
+# - `spec.minAvailable: 4` enforces that all 4 pods (1 master + 3 workers) must be schedulable simultaneously
+#   before any pod is bound to a node, eliminating distributed deadlocks completely.
+#
+# Task:
+# Fix the Volcano Job manifest below to perform all-or-nothing gang scheduling for distributed training:
+# 1. Set 'apiVersion' to 'batch.volcano.sh/v1alpha1' and 'kind' to 'Job'.
+# 2. Set 'metadata.name' to 'distributed-training-gang'.
+# 3. Set 'spec.minAvailable' to 4 (ensuring all 4 distributed pods are scheduled together to prevent deadlocks).
+# 4. Set 'spec.schedulerName' to 'volcano'.
+# 5. In 'spec.tasks', configure:
+#    - Task 'master' with replicas: 1, restartPolicy: OnFailure, and container 'train-master'
+#      using image 'pytorch/pytorch:2.2.0-cuda12.1-cudnn8-runtime'.
+#    - Task 'worker' with replicas: 3, restartPolicy: OnFailure, and container 'train-worker'
+#      using image 'pytorch/pytorch:2.2.0-cuda12.1-cudnn8-runtime'.
+
+apiVersion: ???
+kind: ???
+metadata:
+  name: ???
+spec:
+  minAvailable: 0
+  schedulerName: ???
+  tasks:
+    - name: master
+      replicas: 0
+      template:
+        spec:
+          restartPolicy: ???
+          containers:
+            - name: ???
+              image: ???
+    - name: worker
+      replicas: 0
+      template:
+        spec:
+          restartPolicy: ???
+          containers:
+            - name: ???
+              image: ???

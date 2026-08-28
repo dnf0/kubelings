@@ -1,0 +1,50 @@
+# Exercise: exercises/10_lifecycle_probes/health01.yaml
+# Topic: Liveness Probes
+#
+# Context & Why:
+# In production environments, applications can experience fatal edge cases like unrecoverable deadlocks,
+# corrupted heap memory, or infinite loops where the container process remains alive (PID exists) but is
+# incapable of making forward progress. Kubelet liveness probes regularly query container health (via HTTP GET,
+# TCP socket, or exec command). If the probe fails consecutively beyond `failureThreshold`, kubelet terminates
+# the unhealthy container and triggers a restart according to its `restartPolicy`, restoring service availability
+# without requiring human intervention.
+#
+# Instructions:
+# 1. Configure Pod 'web-liveness-pod' with container 'web':
+#    - image: 'nginx:1.25-alpine'
+#    - livenessProbe using httpGet:
+#      - path: '/healthz'
+#      - port: 8080
+#      - httpHeaders: [{'name': 'X-Custom-Header', 'value': 'Awesome'}]
+#      - initialDelaySeconds: 15
+#      - periodSeconds: 10
+#      - timeoutSeconds: 2
+#      - failureThreshold: 3
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-liveness-pod
+spec:
+  containers:
+  - name: web
+    image: nginx:1.25-alpine
+    livenessProbe:
+      httpGet:
+        # TODO: Set the HTTP health check path to '/healthz'.
+        # WHY: Directs kubelet to query the internal health diagnostic route.
+        path: ???
+        # TODO: Set the HTTP probe port to 8080.
+        # WHY: Targets the application listening port for health endpoint probing.
+        port: ???
+        httpHeaders:
+        # TODO: Configure custom HTTP header 'X-Custom-Header: Awesome'.
+        # WHY: Provides authentication or custom routing headers required by the internal health check handler.
+        - name: ???
+          value: ???
+      # TODO: Configure initial delay of 15 seconds.
+      # WHY: Gives the container runtime sufficient time to initialize before health checks begin.
+      initialDelaySeconds: ???
+      periodSeconds: 10
+      timeoutSeconds: 2
+      failureThreshold: 3

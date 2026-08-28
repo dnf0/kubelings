@@ -1,0 +1,14 @@
+# Solution: solutions/25_batch_kueue_volcano/volcano02.yaml
+# Topic: Volcano Queue & Fair-Share Scheduling
+
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: Queue
+metadata:
+  name: ai-research-queue
+spec:
+  weight: 1
+  capability:
+    cpu: "64"
+    memory: 256Gi
+    nvidia.com/gpu: "8"
+  reclaimable: true

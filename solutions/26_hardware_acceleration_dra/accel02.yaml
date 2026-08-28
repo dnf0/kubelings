@@ -1,0 +1,21 @@
+# Solution: solutions/26_hardware_acceleration_dra/accel02.yaml
+# Topic: Apple Silicon GPU & Metal Performance Shaders (MPS) Acceleration
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: apple-silicon-mlx-pod
+spec:
+  nodeSelector:
+    kubernetes.io/arch: arm64
+  containers:
+    - name: local-llm
+      image: python:3.11-slim
+      resources:
+        limits:
+          apple.com/gpu: 1
+      env:
+        - name: PYTORCH_ENABLE_MPS_FALLBACK
+          value: "1"
+        - name: DEVICE
+          value: "mps"

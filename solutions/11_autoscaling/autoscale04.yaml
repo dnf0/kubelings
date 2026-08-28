@@ -1,0 +1,26 @@
+# Exercise: solutions/11_autoscaling/autoscale04.yaml
+# Topic: Event-Driven Autoscaling (KEDA)
+#
+# Reference Solution
+
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: orders-queue-scaler
+  namespace: messaging
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: order-consumer
+  minReplicaCount: 0
+  maxReplicaCount: 30
+  pollingInterval: 15
+  cooldownPeriod: 300
+  triggers:
+  - type: rabbitmq
+    metadata:
+      queueName: orders-queue
+      queueLength: "20"
+      mode: QueueLength
+      host: amqp://guest:guest@rabbitmq.messaging.svc.cluster.local:5672

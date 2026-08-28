@@ -1,0 +1,19 @@
+# Chapter 20: Declarative Customization with Kustomize
+# Exercise 20.2: Kustomize ConfigMap & Secret Generators (Solution)
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+configMapGenerator:
+  - name: app-config
+    literals:
+      - LOG_LEVEL=info
+      - FEATURE_FLAGS=beta
+secretGenerator:
+  - name: api-secret
+    literals:
+      - API_KEY=supersecretkey123
+    type: Opaque
+generatorOptions:
+  disableNameSuffixHash: false
+  labels:
+    generated-by: kustomize

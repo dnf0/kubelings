@@ -1,0 +1,43 @@
+# Exercise: exercises/12_crds_and_operators/crd03.yaml
+# Topic: Python Kubernetes Operator Loop
+#
+# Context & Why:
+# The Kubernetes Operator pattern automates complex application management by continuously executing
+# a control loop (level-triggered reconciliation). Instead of imperative scripts, the operator observes
+# the desired state in the Custom Resource `spec` and compares it with the actual state of underlying
+# cluster resources (e.g., Deployments, StatefulSets, Services). When drift is detected (such as missing child
+# deployments or mismatched replica counts), the controller issues mutation API requests to converge actual
+# state to desired state, updating `.status.phase` (`Creating`, `Scaling`, `Progressing`, `Ready`) to give
+# users real-time visibility into workload progression.
+#
+# Instructions:
+# A Kubernetes Operator encodes domain-specific operational knowledge into software.
+# The core of every operator is the reconciliation loop:
+# 1. Observe the current state of custom resources and child objects.
+# 2. Compare the desired state (`spec`) with observed state.
+# 3. Take corrective actions (create, scale, update) to bring current state to desired state.
+# 4. Update the custom resource `status` subresource with the observed condition and phase.
+#
+# Implement the `reconcile_database` operator function according to these rules:
+# - If `existing_deployment` is None:
+#     Return action "CREATE" with deployment spec (name matching CR name, image "{engine}:{version}", replicas),
+#     and status_patch {"phase": "Creating", "observedGeneration": generation}.
+# - If `existing_deployment` exists:
+#     - If `existing_deployment["replicas"] != replicas`:
+#         Return action "SCALE" with new replicas count,
+#         and status_patch {"phase": "Scaling", "observedGeneration": generation}.
+#     - Else if `existing_deployment.get("readyReplicas", 0) == replicas`:
+#         Return action "NONE" with status_patch {"phase": "Ready", "observedGeneration": generation}.
+#     - Else:
+#         Return action "NONE" with status_patch {"phase": "Progressing", "observedGeneration": generation}.
+
+apiVersion: database.example.com/v1alpha1
+kind: Database
+metadata:
+  name: ???
+  namespace: ???
+  generation: ???
+spec:
+  engine: ???
+  version: ???
+  replicas: ???

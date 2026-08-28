@@ -1,0 +1,30 @@
+# Exercise: solutions/12_crds_and_operators/crd04.yaml
+# Topic: Dynamic Admission Webhooks
+#
+# Reference Solution
+
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: pod-security-webhook
+webhooks:
+- name: validate-security.example.com
+  admissionReviewVersions:
+  - v1
+  sideEffects: None
+  rules:
+  - operations:
+    - CREATE
+    - UPDATE
+    apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    resources:
+    - pods
+  clientConfig:
+    service:
+      name: security-webhook-svc
+      namespace: kube-system
+      path: /validate-pods
+      port: 443

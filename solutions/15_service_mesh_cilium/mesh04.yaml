@@ -1,0 +1,17 @@
+# Solution: Hubble Observability & OpenTelemetry Tracing (mesh04)
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: order-service
+  annotations:
+    sidecar.istio.io/inject: 'false'
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '9090'
+    telemetry.cilium.io/trace: b3
+spec:
+  containers:
+  - name: order-api
+    image: orders:v1.0
+    ports:
+    - containerPort: 9090

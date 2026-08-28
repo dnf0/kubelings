@@ -1,0 +1,55 @@
+# Exercise: exercises/10_lifecycle_probes/health03.yaml
+# Topic: Startup Probes
+#
+# Context & Why:
+# Complex enterprise workloads (such as JVM applications, large machine learning models, or services
+# running schema migrations on boot) often require several minutes to complete initial boot sequence.
+# If configured solely with standard liveness probes, the kubelet may fail the probe during boot and
+# enter a crash loop, killing the container before it ever completes startup. Startup probes solve this
+# by establishing an initial boot grace period: all liveness and readiness probes are completely disabled
+# until the startup probe succeeds once. This decouples slow cold-start handling from sensitive fast-failing
+# runtime liveness checks.
+#
+# Instructions:
+# 1. Configure Pod 'legacy-app-pod' with container 'legacy-app':
+#    - image: 'openjdk:21-slim'
+#    - startupProbe using tcpSocket:
+#      - port: 8080
+#      - initialDelaySeconds: 10
+#      - periodSeconds: 10
+#      - failureThreshold: 30 (Allows up to 10 + (10 * 30) = 310 seconds to start up)
+#    - livenessProbe using httpGet:
+#      - path: '/alive'
+#      - port: 8080
+#      - periodSeconds: 10
+#      - failureThreshold: 3
+# 2. Implement `calculate_max_startup_budget(startup_probe)`:
+#    - Returns the maximum time in seconds the container is allowed to initialize:
+#      initialDelaySeconds + (periodSeconds * failureThreshold).
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: legacy-app-pod
+spec:
+  containers:
+  - name: legacy-app
+    image: openjdk:21-slim
+    startupProbe:
+      tcpSocket:
+        # TODO: Set the TCP socket check port to 8080.
+        # WHY: Kubelet will probe whether the TCP socket opens when the JVM finishes binding its listener.
+        port: ???
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      # TODO: Set failureThreshold to 30.
+      # WHY: Grants 30 attempts of 10s periods (300s) + 10s initial delay = 310s maximum startup window.
+      failureThreshold: ???
+    livenessProbe:
+      httpGet:
+        # TODO: Set liveness HTTP check path to '/alive'.
+        # WHY: Once startup succeeds, regular runtime liveness polling verifies application responsiveness on /alive.
+        path: ???
+        port: 8080
+      periodSeconds: 10
+      failureThreshold: 3

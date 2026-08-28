@@ -1,0 +1,26 @@
+# Exercise: solutions/10_lifecycle_probes/health02.yaml
+# Topic: Readiness Probes
+#
+# Reference Solution
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: db-service-pod
+spec:
+  containers:
+  - name: db-worker
+    image: postgres:16-alpine
+    readinessProbe:
+      exec:
+        command:
+        - pg_isready
+        - "-h"
+        - "127.0.0.1"
+        - "-p"
+        - "5432"
+        - "-q"
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      successThreshold: 1
+      failureThreshold: 2

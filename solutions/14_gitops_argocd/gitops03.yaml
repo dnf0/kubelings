@@ -1,0 +1,14 @@
+# Solution: Sync Windows & Retry Strategies in ArgoCD (gitops03)
+
+automated:
+  prune: true
+  selfHeal: true
+syncOptions:
+- CreateNamespace=true
+- ServerSideApply=true
+retry:
+  limit: 5
+  backoff:
+    duration: 5s
+    factor: 2
+    maxDuration: 3m

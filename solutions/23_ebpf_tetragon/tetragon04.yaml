@@ -1,0 +1,22 @@
+# Solution: tetragon04.yaml
+# Topic: eBPF Network Observability - Tetragon Socket Connect Probes
+
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: trace-outbound-tcp-connections
+spec:
+  kprobes:
+  - call: tcp_connect
+    syscall: false
+    args:
+    - index: 0
+      type: sock
+    selectors:
+    - matchNamespaces:
+      - operator: In
+        values:
+        - backend
+        - database
+      matchActions:
+      - action: Post

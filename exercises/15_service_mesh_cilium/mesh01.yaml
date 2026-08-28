@@ -1,0 +1,66 @@
+# Exercise: Cilium L7 HTTP NetworkPolicy (mesh01)
+#
+# Context & Why:
+# Standard Kubernetes `NetworkPolicy` resources operate exclusively at Layer 3 (IP addresses)
+# and Layer 4 (TCP/UDP port numbers). In microservice architectures, this coarse granularity
+# is insufficient: it cannot distinguish between safe read endpoints (such as `GET /api/v1/public/.*`)
+# and state-modifying or privileged endpoints (such as `POST /api/v1/orders`), nor can it enforce
+# required HTTP authentication headers.
+#
+# Cilium leverages Linux kernel eBPF (extended Berkeley Packet Filter) and integrated Envoy
+# data path proxies to enforce Layer 7 (L7) application-aware security policies. A `CiliumNetworkPolicy`
+# allows platform engineers to specify HTTP verbs, URI regex paths, and header constraints.
+# Because packet inspection happens at the kernel and local socket layers, fine-grained L7 zero-trust
+# security is achieved without injecting intrusive sidecar containers into every application pod.
+#
+# Task:
+# Complete `get_cilium_l7_policy()` to return a `CiliumNetworkPolicy` dictionary:
+# 1. apiVersion: "cilium.io/v2"
+# 2. kind: "CiliumNetworkPolicy"
+# 3. metadata:
+#    - name: "secure-api-l7"
+# 4. spec:
+#    - endpointSelector:
+#      - matchLabels:
+#        - app: "secure-backend"
+#    - ingress:
+#      - fromEndpoints:
+#        - matchLabels:
+#          - app: "frontend"
+#      - toPorts:
+#        - ports:
+#          - port: "8080"
+#            protocol: "TCP"
+#          rules:
+#            http:
+#              - method: "GET"
+#                path: "/api/v1/public/.*"
+#              - method: "POST"
+#                path: "/api/v1/orders"
+#                headers:
+#                  - "X-Client-Role: authorized"
+
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ???
+spec:
+  endpointSelector:
+    matchLabels:
+      app: ???
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        app: ???
+    toPorts:
+    - ports:
+      - port: ???
+        protocol: ???
+      rules:
+        http:
+        - method: ???
+          path: ???
+        - method: ???
+          path: ???
+          headers:
+          - ???

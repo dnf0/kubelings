@@ -1,0 +1,44 @@
+# Exercise: exercises/05_services_networking/net01.yaml
+# Topic: ClusterIP Services & Port Mapping
+#
+# Context & Why:
+# Pods in Kubernetes are ephemeral; when pods scale up, crash, or get rescheduled, their IP addresses
+# change dynamically. A `ClusterIP` Service provides a stable internal virtual IP address and cluster-internal
+# DNS name (`service-name.namespace.svc.cluster.local`) that abstracts away individual pod IPs.
+# The Service controller routes and load balances Layer 4 (TCP/UDP) traffic across all healthy Pods
+# matching its `spec.selector`. In the port configuration:
+# - `port`: The port number on which the Service receives incoming traffic within the cluster.
+# - `targetPort`: The port number on the container where the application process is listening.
+#
+# Instructions:
+# A ClusterIP Service provides a stable virtual IP address and internal DNS name
+# that load balances traffic across all Pods whose labels match `spec.selector`.
+#
+# 1. Complete the Service manifest:
+#    - name: 'backend-service'
+#    - type: ClusterIP
+#    - selector: {app: 'backend', tier: 'api'}
+#    - ports: name 'http', protocol 'TCP', port 80, targetPort 8080
+# 2. Implement `resolve_endpoint_target(service_manifest, pod_manifest)`:
+#    - If the pod's `metadata.labels` match all key/value pairs in `service.spec.selector`,
+#      return the targetPort integer (8080).
+#    - If the labels do not match or selector is missing, return None.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  type: ClusterIP
+  selector:
+    # TODO: Set selector labels app: 'backend' and tier: 'api'
+    # WHY: The service controller builds EndpointSlices matching all pods with these key-value label pairs.
+    app: ???
+    tier: ???
+  ports:
+  - name: http
+    protocol: TCP
+    # TODO: Map incoming service port 80 to container targetPort 8080
+    # WHY: Exposes standard HTTP port 80 to cluster clients while routing to the application's non-privileged container port 8080.
+    port: 0
+    targetPort: 0

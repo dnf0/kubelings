@@ -1,0 +1,69 @@
+# Exercise: ArgoCD ApplicationSet Matrix Generator (gitops02)
+#
+# Context & Why:
+# As Kubernetes platform fleets grow, managing hundreds of standalone ArgoCD
+# Application manifests individually causes severe configuration duplication and
+# operational overhead. The ArgoCD `ApplicationSet` controller solves this by
+# introducing declarative automation to generate multiple `Application` resources
+# from a single templated specification.
+#
+# ApplicationSet generators (such as Git directory generators, List generators,
+# Cluster generators, or Matrix generators combining multiple sources) dynamically
+# discover directories or clusters. The controller automatically creates, updates,
+# and deletes child Application resources as directories in the repository change,
+# enabling scalable multi-tenant and multi-cluster GitOps workflows.
+#
+# Task:
+# Complete `get_applicationset_manifest()` to define an ApplicationSet that uses
+# a `git` generator to discover all services under `apps/*` and deploys them to target clusters.
+#
+# Specification:
+# 1. apiVersion: "argoproj.io/v1alpha1"
+# 2. kind: "ApplicationSet"
+# 3. metadata:
+#    - name: "infra-apps"
+#    - namespace: "argocd"
+# 4. spec:
+#    - generators:
+#      - git:
+#        - repoURL: "https://github.com/my-org/gitops-repo.git"
+#        - revision: "HEAD"
+#        - directories:
+#          - path: "apps/*"
+#    - template:
+#      - metadata:
+#        - name: "{{path.basename}}"
+#      - spec:
+#        - project: "default"
+#        - source:
+#          - repoURL: "https://github.com/my-org/gitops-repo.git"
+#          - targetRevision: "HEAD"
+#          - path: "{{path}}"
+#        - destination:
+#          - server: "https://kubernetes.default.svc"
+#          - namespace: "{{path.basename}}"
+
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: ???
+  namespace: ???
+spec:
+  generators:
+  - git:
+      repoURL: ???
+      revision: ???
+      directories:
+      - path: ???
+  template:
+    metadata:
+      name: ???
+    spec:
+      project: ???
+      source:
+        repoURL: ???
+        targetRevision: ???
+        path: ???
+      destination:
+        server: ???
+        namespace: ???

@@ -1,0 +1,15 @@
+# Exercise: solutions/13_troubleshooting/troubleshoot05.yaml
+# Topic: Ephemeral Debug Containers & Event Triage
+#
+# Reference Solution
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: distroless-app
+  namespace: production
+spec:
+  shareProcessNamespace: true
+  containers:
+  - name: app
+    image: gcr.io/distroless/static:nonroot

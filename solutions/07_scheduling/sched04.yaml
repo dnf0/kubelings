@@ -1,0 +1,22 @@
+# Exercise: solutions/07_scheduling/sched04.yaml
+# Topic: Taints and Tolerations
+#
+# Reference Solution
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ml-trainer
+spec:
+  tolerations:
+  - key: gpu-type
+    operator: Equal
+    value: h100
+    effect: NoSchedule
+  - key: node.kubernetes.io/unreachable
+    operator: Exists
+    effect: NoExecute
+    tolerationSeconds: 120
+  containers:
+  - name: trainer
+    image: pytorch/pytorch:2.2.0-cuda12.1-cudnn8-runtime

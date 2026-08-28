@@ -1,0 +1,50 @@
+# Chapter 19: Package Management with Helm
+# Exercise 19.2: Helm Go Templating & Named Helpers (_helpers.tpl)
+#
+# Context & Why:
+# Helm uses the Go `text/template` engine enhanced with Sprig functions to render Kubernetes
+# manifests dynamically. In production charts, standard named templates in `_helpers.tpl`
+# (especially the `fullname` template) generate consistent resource names.
+#
+# According to RFC 1123, Kubernetes DNS subdomains and resource names must not exceed 63 characters.
+# If a release name and chart name combined exceed 63 characters (e.g., in nested CI/CD pipelines
+# with long branch names), `kubectl` rejects the resulting manifests. The standard `fullname` helper
+# handles overrides, avoids repetitive names when the release name includes the chart name,
+# and truncates output to 63 characters while stripping trailing hyphens (`trunc 63 | trimSuffix "-"`).
+#
+# Task: Implement the standard Helm fullname helper logic and render a Kubernetes Deployment.
+# Requirements:
+# - Function `chart_fullname(chart_name: str, release_name: str, fullname_override: str = "") -> str`:
+#     - If fullname_override is provided, return fullname_override truncated to 63 chars.
+#     - If release_name contains chart_name, return release_name truncated to 63 chars.
+#     - Otherwise return f"{release_name}-{chart_name}" truncated to 63 chars (trimmed of trailing hyphens).
+# - Function `render_deployment(values: dict) -> dict`:
+#     - Generates a Deployment manifest using chart_fullname as metadata.name and selector/template app labels.
+#     - apiVersion: 'apps/v1', kind: 'Deployment'
+#     - replicas: values.get('replicaCount', 1)
+#     - container image: f"{values['image']['repository']}:{values['image']['tag']}"
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ???
+  labels:
+    app.kubernetes.io/name: ???
+    app.kubernetes.io/instance: ???
+spec:
+  replicas: ???
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ???
+      app.kubernetes.io/instance: ???
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ???
+        app.kubernetes.io/instance: ???
+    spec:
+      containers:
+      - name: ???
+        image: ???
+        ports:
+        - containerPort: ???

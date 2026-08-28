@@ -1,0 +1,16 @@
+# Exercise: solutions/08_security_rbac/rbac05.yaml
+# Topic: Pod Security Standards (PSS/PSA)
+#
+# Reference Solution
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: secure-production
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/enforce-version: latest
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/audit-version: latest
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/warn-version: latest

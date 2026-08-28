@@ -1,0 +1,30 @@
+# Exercise: solutions/01_pods/pods05.yaml
+# Topic: Downward API & Environment Variables
+#
+# Reference Solution
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: downward-api-pod
+spec:
+  containers:
+  - name: client-app
+    image: alpine:3.19
+    env:
+    - name: MY_POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: MY_POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+    - name: MY_POD_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.podIP
+    - name: MY_NODE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName

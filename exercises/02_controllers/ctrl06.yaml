@@ -1,0 +1,67 @@
+# Exercise: exercises/02_controllers/ctrl06.yaml
+# Topic: Jobs & CronJobs
+#
+# Context & Why:
+# While Deployments and StatefulSets run non-terminating, continuous workloads,
+# Jobs handle finite, run-to-completion batch tasks (e.g. data migrations, report generation,
+# backups, or ML model evaluations). Jobs manage parallel execution (`parallelism`) and total
+# required successful completions (`completions`), with exponential backoff retries (`backoffLimit`).
+# Because Jobs are designed to terminate, their Pod templates must use `restartPolicy: OnFailure`
+# or `Never` (setting `Always` is rejected). CronJobs add time-based scheduling (standard 5-field cron syntax)
+# on top of Jobs, automatically instantiating Job instances while managing execution history
+# (`successfulJobsHistoryLimit` and `failedJobsHistoryLimit`) to prevent cluster object accumulation.
+#
+# Instructions:
+# Kubernetes Jobs manage finite tasks to completion. CronJobs run Jobs on a time schedule.
+# Important: Pod templates in Jobs/CronJobs must specify restartPolicy as 'OnFailure' or 'Never'
+# ('Always' is illegal in Jobs).
+#
+# Complete the multi-document manifest below:
+# 1. Job 'data-migration-job':
+#    - completions: 5
+#    - parallelism: 2
+#    - backoffLimit: 3
+#    - restartPolicy: 'OnFailure'
+# 2. CronJob 'nightly-cleanup-cron':
+#    - schedule: '0 0 * * *' (midnight daily)
+#    - successfulJobsHistoryLimit: 3
+#    - restartPolicy: 'OnFailure'
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: data-migration-job
+spec:
+  # TODO: Set completions: 5, parallelism: 2, and backoffLimit: 3
+  # WHY: Configures a concurrent worker pool where 2 pods run in parallel until 5 total pods succeed, allowing up to 3 retries on failure.
+  completions: 0
+  parallelism: 0
+  backoffLimit: 0
+  template:
+    spec:
+      # TODO: Change restartPolicy to 'OnFailure' (or 'Never')
+      # WHY: Jobs run finite batch processes to completion; restartPolicy: Always is forbidden because completed pods should not be endlessly restarted.
+      restartPolicy: Always  # ERROR: Jobs do not support restartPolicy: Always
+      containers:
+      - name: worker
+        image: busybox:1.36
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nightly-cleanup-cron
+spec:
+  # TODO: Set schedule to '0 0 * * *' (runs daily at midnight)
+  # WHY: Uses standard 5-field cron syntax (minute, hour, day-of-month, month, day-of-week) to trigger recurring batch jobs.
+  schedule: "????"
+  # TODO: Set successfulJobsHistoryLimit to 3
+  # WHY: Retains only the 3 most recent successful job executions in etcd to conserve API server resources and avoid cluster clutter.
+  successfulJobsHistoryLimit: 0
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: cleanup
+            image: busybox:1.36

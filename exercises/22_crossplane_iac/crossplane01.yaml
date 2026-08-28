@@ -1,0 +1,62 @@
+# Exercise: crossplane01.yaml
+# Topic: Crossplane - CompositeResourceDefinition (XRD)
+#
+# Context & Why:
+# Crossplane extends Kubernetes into a universal control plane capable of orchestrating external
+# cloud infrastructure (AWS, GCP, Azure) using native Kubernetes API machinery.
+#
+# A `CompositeResourceDefinition` (XRD) establishes a custom, declarative platform API. Instead of
+# forcing developers to understand hundreds of raw cloud provider fields (like VPC subnets, parameter
+# groups, or KMS keys), platform engineers define an XRD that:
+# - Declares a schema-validated custom API contract using OpenAPI v3 (`spec.versions[*].schema`).
+# - Defines the cluster-scoped Composite Resource (XR, e.g. `XPostgreSQLInstance`).
+# - Defines the namespace-scoped Claim (XRC, e.g. `PostgreSQLInstance`) that application teams instantiate.
+# - Enforces required input parameters (e.g. `storageGB` and `engineVersion`) directly at API admission time.
+#
+# Task:
+# Define a CompositeResourceDefinition (XRD) to publish a custom cloud database API:
+# 1. 'apiVersion': 'apiextensions.crossplane.io/v1', 'kind': 'CompositeResourceDefinition'
+# 2. Named 'xpostgresqlinstances.database.kubelings.io'
+# 3. 'spec.group': 'database.kubelings.io'
+# 4. 'spec.names':
+#    - kind: 'XPostgreSQLInstance'
+#    - plural: 'xpostgresqlinstances'
+# 5. 'spec.claimNames':
+#    - kind: 'PostgreSQLInstance'
+#    - plural: 'postgresqlinstances'
+# 6. 'spec.versions': A list containing version 'v1alpha1' (served: True, referenceable: True)
+#    with openAPIV3Schema requiring 'storageGB' (integer) and 'engineVersion' (string) under 'spec.parameters'.
+
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: ???
+spec:
+  group: ???
+  names:
+    kind: XPostgreSQLInstance
+    plural: ???
+  claimNames:
+    kind: PostgreSQLInstance
+    plural: ???
+  versions:
+  - name: ???
+    served: ???
+    referenceable: ???
+    schema:
+      openAPIV3Schema:
+        type: ???
+        properties:
+          spec:
+            type: ???
+            properties:
+              parameters:
+                type: ???
+                properties:
+                  storageGB:
+                    type: ???
+                  engineVersion:
+                    type: ???
+                required:
+                - ???
+                - ???

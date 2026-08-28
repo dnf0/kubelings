@@ -1,0 +1,26 @@
+# Exercise: solutions/07_scheduling/sched01.yaml
+# Topic: Node Placement (nodeName & nodeSelector)
+#
+# Reference Solution
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pinned-pod
+spec:
+  nodeName: worker-node-03
+  containers:
+  - name: app
+    image: nginx:alpine
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gpu-pod
+spec:
+  nodeSelector:
+    accelerator: nvidia-tesla-v100
+    disktype: nvme
+  containers:
+  - name: cuda-runner
+    image: nvidia/cuda:12.0-base

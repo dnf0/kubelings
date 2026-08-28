@@ -1,0 +1,29 @@
+# Solution: crossplane02.yaml
+# Topic: Crossplane - Composition and Field Path Transforms
+
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: postgres-aws-composition
+  labels:
+    provider: aws
+    db: postgres
+spec:
+  compositeTypeRef:
+    apiVersion: database.kubelings.io/v1alpha1
+    kind: XPostgreSQLInstance
+  resources:
+  - base:
+      apiVersion: rds.aws.upbound.io/v1beta1
+      kind: Instance
+      spec:
+        forProvider:
+          instanceClass: db.t3.micro
+          skipFinalSnapshot: true
+    patches:
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.storageGB
+      toFieldPath: spec.forProvider.allocatedStorage
+    - type: FromCompositeFieldPath
+      fromFieldPath: spec.parameters.engineVersion
+      toFieldPath: spec.forProvider.engineVersion

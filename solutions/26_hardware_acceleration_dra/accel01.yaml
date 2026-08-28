@@ -1,0 +1,21 @@
+# Solution: solutions/26_hardware_acceleration_dra/accel01.yaml
+# Topic: NVIDIA Multi-Instance GPU (MIG) Slicing & Partitioning
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mig-inference-pod
+spec:
+  nodeSelector:
+    nvidia.com/gpu.product: NVIDIA-A100-SXM4-80GB
+  containers:
+    - name: inference-worker
+      image: nvcr.io/nvidia/tritonserver:24.01-py3
+      resources:
+        limits:
+          nvidia.com/mig-3g.40gb: 1
+        requests:
+          nvidia.com/mig-3g.40gb: 1
+      env:
+        - name: NVIDIA_VISIBLE_DEVICES
+          value: "all"

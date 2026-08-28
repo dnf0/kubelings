@@ -1,0 +1,15 @@
+# Exercise: solutions/12_crds_and_operators/crd03.yaml
+# Topic: Python Kubernetes Operator Loop
+#
+# Reference Solution
+
+apiVersion: database.example.com/v1alpha1
+kind: Database
+metadata:
+  name: prod-postgres
+  namespace: data-tier
+  generation: 1
+spec:
+  engine: postgres
+  version: "16.1"
+  replicas: 3

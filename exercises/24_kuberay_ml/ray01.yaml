@@ -1,0 +1,60 @@
+# Exercise: exercises/24_kuberay_ml/ray01.yaml
+# Topic: RayCluster Core Architecture & Head Node
+#
+# Context & Why:
+# KubeRay is the Kubernetes operator for Ray, the open-source unified compute framework used for
+# scaling AI, machine learning, and data processing workloads.
+#
+# A Ray cluster follows a distributed architecture orchestrated by the `RayCluster` Custom Resource:
+# - Head Node: Runs the Global Control Store (GCS) metadata server on port 6379, the Ray Dashboard
+#   web UI on port 8265, the API server, and cluster scheduling coordinator. Configuring
+#   `rayStartParams` (`dashboard-host: '0.0.0.0'`, `block: 'true'`) ensures external accessibility
+#   and keeps the main head process running.
+# - Worker Nodes: Execute Ray tasks and actors. Organized into `workerGroupSpecs`, workers connect
+#   to the head node's GCS server and scale dynamically between `minReplicas` and `maxReplicas`.
+#
+# Task:
+# Fix the RayCluster YAML manifest below to define a distributed Ray cluster:
+# 1. Set 'apiVersion' to 'ray.io/v1' and 'kind' to 'RayCluster'.
+# 2. Set 'metadata.name' to 'ray-cluster-ml'.
+# 3. In 'spec.headGroupSpec.rayStartParams', set 'dashboard-host' to '0.0.0.0' and 'block' to 'true'.
+# 4. In 'spec.headGroupSpec.template.spec.containers', define container 'ray-head' with image
+#    'rayproject/ray:2.35.0', and ports for GCS (containerPort: 6379, name: gcs) and
+#    Dashboard (containerPort: 8265, name: dashboard).
+# 5. In 'spec.workerGroupSpecs', configure 'worker-group' with replicas: 2, minReplicas: 1, maxReplicas: 5,
+#    and container 'ray-worker' with image 'rayproject/ray:2.35.0' and limits of 2 CPUs and 4Gi memory.
+
+apiVersion: ???
+kind: ???
+metadata:
+  name: ???
+spec:
+  rayVersion: '2.35.0'
+  headGroupSpec:
+    rayStartParams:
+      dashboard-host: '127.0.0.1'
+      block: 'false'
+    template:
+      spec:
+        containers:
+          - name: ???
+            image: ???
+            ports:
+              - containerPort: 0
+                name: gcs
+              - containerPort: 0
+                name: dashboard
+  workerGroupSpecs:
+    - groupName: ???
+      replicas: 0
+      minReplicas: 0
+      maxReplicas: 0
+      template:
+        spec:
+          containers:
+            - name: ???
+              image: ???
+              resources:
+                limits:
+                  cpu: "0"
+                  memory: 0Gi

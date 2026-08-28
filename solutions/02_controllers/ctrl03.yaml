@@ -1,0 +1,23 @@
+# Exercise: solutions/02_controllers/ctrl03.yaml
+# Topic: Deployment Rollbacks & Revision History
+#
+# Reference Solution
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: versioned-app
+spec:
+  replicas: 3
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: versioned-app
+  template:
+    metadata:
+      labels:
+        app: versioned-app
+    spec:
+      containers:
+      - name: web
+        image: nginx:1.24

@@ -1,0 +1,22 @@
+# Exercise: solutions/05_services_networking/net04.yaml
+# Topic: CoreDNS Internal Service Resolution
+#
+# Reference Solution
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dns-client-pod
+spec:
+  dnsPolicy: ClusterFirst
+  dnsConfig:
+    searches:
+      - custom.corp.local
+      - default.svc.cluster.local
+    options:
+      - name: ndots
+        value: "2"
+  containers:
+  - name: client
+    image: curlimages/curl:8.6.0
+    command: ["sh", "-c", "sleep 3600"]

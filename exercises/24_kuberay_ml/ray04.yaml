@@ -1,0 +1,40 @@
+# Exercise: exercises/24_kuberay_ml/ray04.yaml
+# Topic: RayService for Production LLM Serving
+#
+# Context & Why:
+# Serving Large Language Models (LLMs) and deep learning models in production demands high availability,
+# zero-downtime upgrades, request routing, and resilient self-healing.
+#
+# The `RayService` Custom Resource manages Ray Serve deployments on Kubernetes:
+# - Orchestrates both the underlying `RayCluster` and the high-level Ray Serve application graph.
+# - Configures `spec.serveConfigV2` with multi-application routing (e.g. application `llm_app`, route prefix `/v1`,
+#   import path `llm_serve:model`).
+# - Implements zero-downtime blue/green rollouts when updating model weights or serve configurations.
+# - Enforces health checking via `serviceUnhealthyThreshold` (e.g. 300s), ensuring transient initialization
+#   delays during large model weight loading into GPU VRAM do not prematurely trigger pod eviction.
+#
+# Task:
+# Author a RayService manifest named 'ray-llm-service' for serving an LLM model:
+# 1. Set 'apiVersion' to 'ray.io/v1' and 'kind' to 'RayService'.
+# 2. Set 'spec.serviceUnhealthyThreshold' to 300.
+# 3. In 'spec.rayClusterSpec', define 'rayVersion' as '2.35.0' and 'headGroupSpec' with container 'ray-head' running 'rayproject/ray:2.35.0'.
+# 4. In 'spec.serveConfigV2', define an application named 'llm_app' with route prefix '/v1', import path 'llm_serve:model', and empty runtime_env.
+
+apiVersion: ray.io/v1
+kind: RayService
+metadata:
+  name: ray-llm-service
+spec:
+  serviceUnhealthyThreshold: 0
+  rayClusterSpec:
+    rayVersion: '2.35.0'
+    headGroupSpec:
+      rayStartParams:
+        dashboard-host: '0.0.0.0'
+      template:
+        spec:
+          containers:
+            - name: ???
+              image: ???
+  serveConfigV2: |
+    applications: []

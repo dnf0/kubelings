@@ -1,0 +1,32 @@
+# Exercise: solutions/07_scheduling/sched02.yaml
+# Topic: Node Affinity & Constraints
+#
+# Reference Solution
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: affinity-app
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: topology.kubernetes.io/zone
+            operator: In
+            values:
+            - us-east-1a
+            - us-east-1b
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 80
+        preference:
+          matchExpressions:
+          - key: instance-type
+            operator: In
+            values:
+            - c5.2xlarge
+            - c5.4xlarge
+  containers:
+  - name: server
+    image: nginx:alpine

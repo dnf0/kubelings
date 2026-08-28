@@ -1,0 +1,37 @@
+# Solution: solutions/24_kuberay_ml/ray01.yaml
+# Topic: RayCluster Core Architecture & Head Node
+
+apiVersion: ray.io/v1
+kind: RayCluster
+metadata:
+  name: ray-cluster-ml
+spec:
+  rayVersion: '2.35.0'
+  headGroupSpec:
+    rayStartParams:
+      dashboard-host: '0.0.0.0'
+      block: 'true'
+    template:
+      spec:
+        containers:
+          - name: ray-head
+            image: rayproject/ray:2.35.0
+            ports:
+              - containerPort: 6379
+                name: gcs
+              - containerPort: 8265
+                name: dashboard
+  workerGroupSpecs:
+    - groupName: worker-group
+      replicas: 2
+      minReplicas: 1
+      maxReplicas: 5
+      template:
+        spec:
+          containers:
+            - name: ray-worker
+              image: rayproject/ray:2.35.0
+              resources:
+                limits:
+                  cpu: "2"
+                  memory: 4Gi

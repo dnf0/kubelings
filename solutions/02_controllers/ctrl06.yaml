@@ -1,0 +1,35 @@
+# Exercise: solutions/02_controllers/ctrl06.yaml
+# Topic: Jobs & CronJobs
+#
+# Reference Solution
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: data-migration-job
+spec:
+  completions: 5
+  parallelism: 2
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: worker
+        image: busybox:1.36
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nightly-cleanup-cron
+spec:
+  schedule: "0 0 * * *"
+  successfulJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: cleanup
+            image: busybox:1.36

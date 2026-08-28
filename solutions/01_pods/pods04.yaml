@@ -1,0 +1,20 @@
+# Exercise: solutions/01_pods/pods04.yaml
+# Topic: Resource Requests, Limits & Quality of Service (QoS) Classes
+#
+# Reference Solution
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: qos-guaranteed-pod
+spec:
+  containers:
+  - name: backend
+    image: redis:alpine
+    resources:
+      requests:
+        cpu: 500m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi

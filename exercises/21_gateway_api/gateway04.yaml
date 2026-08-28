@@ -1,0 +1,40 @@
+# Exercise: gateway04.yaml
+# Topic: Gateway API - ReferenceGrant Cross-Namespace Security
+#
+# Context & Why:
+# In multi-tenant Kubernetes clusters, routing traffic across namespace boundaries introduces
+# significant security risks. If a Gateway or Route in an ingress namespace (such as `infra-gateway`
+# or `edge`) could arbitrarily forward traffic to any Service in the `backend` namespace without
+# permission, rogue or compromised routes could bypass network policies and access internal services.
+#
+# To enforce least-privilege boundary controls, Gateway API introduces `ReferenceGrant`:
+# - By default, cross-namespace references between Gateways, Routes, and Services are forbidden.
+# - The administrator or owner of the target namespace (`backend`) creates a `ReferenceGrant` to
+#   explicitly specify which source namespaces and resource kinds (e.g. `HTTPRoute` in namespace `edge`)
+#   are authorized to reference specific local resources (e.g. `Service` named `account-service`).
+# - This establishes bidirectional trust: the Route attempts the reference, and the ReferenceGrant authorizes it.
+#
+# Task:
+# Define a ReferenceGrant resource to permit cross-namespace routing:
+# In Kubernetes Gateway API, a Gateway or Route in namespace 'infra-gateway' or 'edge' cannot forward
+# traffic to a Service in 'backend' namespace unless the target namespace explicitly grants access via a ReferenceGrant.
+#
+# 1. 'apiVersion': 'gateway.networking.k8s.io/v1beta1', 'kind': 'ReferenceGrant'
+# 2. Named 'allow-edge-to-backend' in namespace 'backend'
+# 3. 'spec.from': Allow from group 'gateway.networking.k8s.io', kind 'HTTPRoute', namespace 'edge'
+# 4. 'spec.to': Grant access to core group '' (or empty string), kind 'Service', name 'account-service'
+
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: ???
+  namespace: ???
+spec:
+  from:
+  - group: ???
+    kind: HTTPRoute
+    namespace: ???
+  to:
+  - group: ???
+    kind: Service
+    name: ???

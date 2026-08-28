@@ -1,0 +1,27 @@
+# Chapter 19: Package Management with Helm
+# Exercise 19.2: Helm Go Templating & Named Helpers (_helpers.tpl) (Solution)
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prod-web
+  labels:
+    app.kubernetes.io/name: web
+    app.kubernetes.io/instance: prod
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: web
+      app.kubernetes.io/instance: prod
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: web
+        app.kubernetes.io/instance: prod
+    spec:
+      containers:
+      - name: web
+        image: nginx:1.25-alpine
+        ports:
+        - containerPort: 8080

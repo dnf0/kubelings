@@ -1,0 +1,24 @@
+# Chapter 16: Policy as Code with Kyverno & Gatekeeper
+# Exercise 16.1: Kyverno ClusterPolicy for Required Labels (Solution)
+
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-labels
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+  - name: check-team-and-app-labels
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Label 'app.kubernetes.io/name' and 'team' are required."
+      pattern:
+        metadata:
+          labels:
+            app.kubernetes.io/name: "?*"
+            team: "?*"

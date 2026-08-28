@@ -1,0 +1,26 @@
+# Solution: tetragon01.yaml
+# Topic: eBPF Observability - Tetragon TracingPolicy Process Execution Auditing
+
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: audit-process-execution
+spec:
+  kprobes:
+  - call: sys_execve
+    syscall: true
+    args:
+    - index: 0
+      type: string
+    selectors:
+    - matchNamespaces:
+      - operator: In
+        values:
+        - production
+        - payments
+      matchArgs:
+      - index: 0
+        operator: Prefix
+        values:
+        - /bin/
+        - /usr/bin/

@@ -1,0 +1,65 @@
+# Exercise: Progressive Delivery with Argo Rollouts (gitops04)
+#
+# Context & Why:
+# Native Kubernetes Deployments only provide rolling updates or complete recreations,
+# offering little control over traffic shaping or automated verification during release.
+# If a newly deployed image has a latent bug or memory leak, a standard rolling update
+# will replace all healthy pods without giving engineers or automated monitors time to detect it.
+#
+# Argo Rollouts replaces or augments the standard Deployment controller with advanced
+# progressive delivery patterns. A `Rollout` CRD allows defining granular `canary` steps
+# with traffic weighting (`setWeight: 20`) and observational pause durations (`pause: {"duration": "10m"}`).
+# This isolates potential regressions to a small percentage of incoming requests and allows
+# automated metrics analysis or manual health validation before promoting the release to the entire cluster.
+#
+# Task:
+# Complete `get_rollout_manifest()` to define an Argo Rollout resource:
+# 1. apiVersion: "argoproj.io/v1alpha1"
+# 2. kind: "Rollout"
+# 3. metadata:
+#    - name: "payment-service"
+# 4. spec:
+#    - replicas: 5
+#    - strategy:
+#      - canary:
+#        - steps:
+#          - setWeight: 20
+#          - pause: {"duration": "10m"}
+#          - setWeight: 50
+#          - pause: {"duration": "30m"}
+#    - template:
+#      - metadata:
+#        - labels:
+#          - app: "payment"
+#      - spec:
+#        - containers:
+#          - name: "payment-api"
+#          - image: "payment:v2.0.0"
+#          - ports:
+#            - containerPort: 8080
+
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: ???
+spec:
+  replicas: ???
+  strategy:
+    canary:
+      steps:
+      - setWeight: ???
+      - pause:
+          duration: ???
+      - setWeight: ???
+      - pause:
+          duration: ???
+  template:
+    metadata:
+      labels:
+        app: ???
+    spec:
+      containers:
+      - name: ???
+        image: ???
+        ports:
+        - containerPort: ???

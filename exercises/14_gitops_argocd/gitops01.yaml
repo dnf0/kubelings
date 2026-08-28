@@ -1,0 +1,55 @@
+# Exercise: GitOps with ArgoCD Application CRD (gitops01)
+#
+# Context & Why:
+# GitOps establishes Git repositories as the single source of truth for declared
+# system state in Kubernetes. ArgoCD implements this paradigm using an active
+# controller loop that continuously compares desired state (manifests in Git) with
+# the live cluster state.
+#
+# When divergence occurs (e.g., direct manual edits or config drift), ArgoCD detects
+# the 'OutOfSync' condition. Enabling automated sync policies with `selfHeal: True`
+# instructs the controller to automatically revert unauthorized live changes back to
+# the Git baseline. Enabling `prune: True` ensures that when Kubernetes resources
+# are deleted from the Git repository, ArgoCD automatically cleans them up from the
+# cluster, preventing dangerous orphaned workloads and configuration clutter.
+#
+# Task:
+# Complete `get_argocd_application_manifest()` to return a dictionary representing
+# a valid ArgoCD Application resource with:
+# 1. apiVersion: "argoproj.io/v1alpha1"
+# 2. kind: "Application"
+# 3. metadata:
+#    - name: "guestbook-app"
+#    - namespace: "argocd"
+# 4. spec:
+#    - project: "default"
+#    - source:
+#      - repoURL: "https://github.com/argoproj/argocd-example-apps.git"
+#      - targetRevision: "HEAD"
+#      - path: "guestbook"
+#    - destination:
+#      - server: "https://kubernetes.default.svc"
+#      - namespace: "guestbook"
+#    - syncPolicy:
+#      - automated:
+#        - prune: True
+#        - selfHeal: True
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ???
+  namespace: ???
+spec:
+  project: ???
+  source:
+    repoURL: ???
+    targetRevision: ???
+    path: ???
+  destination:
+    server: ???
+    namespace: ???
+  syncPolicy:
+    automated:
+      prune: ???
+      selfHeal: ???

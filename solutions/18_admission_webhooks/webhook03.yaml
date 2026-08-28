@@ -1,0 +1,10 @@
+# Chapter 18: Advanced Admission Webhooks & Dynamic Interception
+# Exercise 18.3: Dynamic Sidecar Injection AdmissionReview Response (Solution)
+
+apiVersion: admission.k8s.io/v1
+kind: AdmissionReview
+response:
+  uid: test-uid-123
+  allowed: true
+  patchType: JSONPatch
+  patch: W3sib3AiOiAiYWRkIiwgInBhdGgiOiAiL3NwZWMvY29udGFpbmVycy8tIiwgInZhbHVlIjogeyJuYW1lIjogInRlbGVtZXRyeS1hZ2VudCIsICJpbWFnZSI6ICJvdGVsL29wZW50ZWxlbWV0cnktY29sbGVjdG9yOmxhdGVzdCJ9fV0=

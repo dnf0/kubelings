@@ -1,0 +1,62 @@
+# Exercise: exercises/04_storage/storage02.yaml
+# Topic: PersistentVolumes & PersistentVolumeClaims
+#
+# Context & Why:
+# Kubernetes decouples storage infrastructure administration from application storage consumption
+# using two complementary API objects:
+# 1. `PersistentVolume` (PV): A piece of storage in the cluster provisioned by an administrator or
+#    dynamically created using StorageClasses. It is a cluster-scoped resource with an independent lifecycle.
+# 2. `PersistentVolumeClaim` (PVC): A namespace-scoped request for storage by a user. PVCs specify
+#    desired size, access modes (e.g. ReadWriteOnce), and optionally a storageClassName.
+# The Kubernetes PersistentVolume controller continuously monitors for unassigned PVCs and binds them
+# to available PVs that satisfy or exceed the requested capacity, matching access modes and storage class.
+#
+# Instructions:
+# Kubernetes decouples storage infrastructure provisioning (PersistentVolume)
+# from application storage requests (PersistentVolumeClaim).
+#
+# 1. Define a PersistentVolume 'task-pv':
+#    - capacity: 10Gi storage
+#    - accessModes: [ReadWriteOnce]
+#    - hostPath: path '/mnt/data'
+#    - storageClassName: 'manual'
+# 2. Define a PersistentVolumeClaim 'task-pvc':
+#    - accessModes: [ReadWriteOnce]
+#    - requests storage: 5Gi
+#    - storageClassName: 'manual'
+# 3. Implement `check_pvc_matches_pv(pv, pvc)`:
+#    - Returns True if pvc requested storage <= pv capacity, storageClassNames match,
+#      and all pvc accessModes are supported by pv accessModes. Otherwise, returns False.
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: task-pv
+spec:
+  capacity:
+    # TODO: Set capacity storage to 10Gi
+    # WHY: Declares the physical storage capacity available on this provisioned volume.
+    storage: ???
+  accessModes:
+    # TODO: Add accessMode 'ReadWriteOnce'
+    # WHY: ReadWriteOnce allows the volume to be mounted as read-write by a single node at a time.
+    - ???
+  storageClassName: manual
+  hostPath:
+    path: /mnt/data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: task-pvc
+spec:
+  accessModes:
+    # TODO: Add accessMode 'ReadWriteOnce'
+    # WHY: Requests single-node read-write access to match the target PersistentVolume.
+    - ???
+  storageClassName: manual
+  resources:
+    requests:
+      # TODO: Request 5Gi storage
+      # WHY: The PVC requests a minimum of 5Gi, which will successfully bind to a 10Gi PV.
+      storage: ???

@@ -1,0 +1,56 @@
+# Exercise: tetragon02.yaml
+# Topic: eBPF Observability - Tetragon File and Token Access Monitoring
+#
+# Context & Why:
+# Container credential exfiltration and unauthorized file tampering are among the most common
+# attack vectors in Kubernetes clusters. Attackers often target:
+# - `/etc/shadow` and `/etc/passwd` to discover user credentials and hashes.
+# - `/var/run/secrets/kubernetes.io/serviceaccount/token` to steal ServiceAccount JWT tokens and
+#   escalate privileges against the Kubernetes API server.
+#
+# Using Tetragon `TracingPolicy`, operators hook the kernel's `sys_openat` system call:
+# - Captures the filepath argument (`args[1]`) at the kernel layer before file access occurs.
+# - Evaluates prefix matchers (`matchArgs: [{operator: 'Prefix', values: [...]}]`) directly in eBPF.
+# - Immediately exposes unauthorized read attempts to security operations without modifying application
+#   container images or injecting intrusive filesystem hooks.
+#
+# Task:
+# Define a TracingPolicy to monitor access to sensitive files and service account tokens:
+# 1. 'apiVersion': 'cilium.io/v1alpha1', 'kind': 'TracingPolicy'
+# 2. Named 'monitor-sensitive-file-access'
+# 3. 'spec.kprobes': Define 1 kernel probe:
+#    - 'call': 'sys_openat'
+#    - 'syscall': True
+#    - 'args': [
+#        {'index': 0, 'type': 'int'},
+#        {'index': 1, 'type': 'string'} (the path parameter)
+#      ]
+#    - 'selectors':
+#      * 'matchArgs': [
+#          {
+#            'index': 1,
+#            'operator': 'Prefix',
+#            'values': ['/etc/shadow', '/var/run/secrets/kubernetes.io']
+#          }
+#        ]
+
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: ???
+spec:
+  kprobes:
+  - call: ???
+    syscall: ???
+    args:
+    - index: ???
+      type: ???
+    - index: ???
+      type: ???
+    selectors:
+    - matchArgs:
+      - index: ???
+        operator: ???
+        values:
+        - ???
+        - ???

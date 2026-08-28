@@ -1,0 +1,26 @@
+# Solution: Cilium L7 HTTP NetworkPolicy (mesh01)
+
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: secure-api-l7
+spec:
+  endpointSelector:
+    matchLabels:
+      app: secure-backend
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        app: frontend
+    toPorts:
+    - ports:
+      - port: '8080'
+        protocol: TCP
+      rules:
+        http:
+        - method: GET
+          path: /api/v1/public/.*
+        - method: POST
+          path: /api/v1/orders
+          headers:
+          - 'X-Client-Role: authorized'

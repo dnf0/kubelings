@@ -1,0 +1,14 @@
+# Exercise: solutions/01_pods/pods06.yaml
+# Topic: Pod Disruption Budgets (PDB)
+#
+# Reference Solution
+
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: web-pdb
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: web

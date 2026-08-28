@@ -1,0 +1,9 @@
+# Chapter 17: Multi-Tenancy, Virtual Clusters & HNC
+# Exercise 17.1: Hierarchical Namespace Controller (HNC) Subnamespace Anchor (Solution)
+
+apiVersion: hnc.x-k8s.io/v1alpha2
+kind: SubnamespaceAnchor
+metadata:
+  name: team-a-dev
+  namespace: team-a
+spec: {}
