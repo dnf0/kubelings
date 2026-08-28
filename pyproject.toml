@@ -84,7 +84,10 @@ allow_zero_version = true
 no_git_verify = false
 tag_format = "v{version}"
 version_toml = ["pyproject.toml:project.version"]
-version_variables = ["src/kubelings/__init__.py:__version__"]
+version_variables = [
+    "src/kubelings/__init__.py:__version__",
+    "extensions/vscode/package.json:version",
+]
 
 [tool.semantic_release.branches.main]
 match = "(main)"
