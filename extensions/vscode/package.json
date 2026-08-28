@@ -60,6 +60,16 @@
         "icon": "$(refresh)"
       },
       {
+        "command": "kubelings.openExercise",
+        "title": "Kubelings: Open Exercise",
+        "icon": "$(file-code)"
+      },
+      {
+        "command": "kubelings.initExercises",
+        "title": "Kubelings: Initialize Exercises in Workspace",
+        "icon": "$(folder-opened)"
+      },
+      {
         "command": "kubelings.runExercise",
         "title": "Kubelings: Run Current Exercise",
         "icon": "$(play)"

@@ -235,4 +235,46 @@ export class KubelingsCliBridge {
     }
     return this.executeJson<CliTourResponse>(args, cwd);
   }
+
+  /**
+   * Initializes or scaffolds curriculum exercises into the target workspace.
+   */
+  public async init(
+    targetDir?: string
+  ): Promise<{ success: boolean; message: string }> {
+    const cwd = targetDir || this.getEffectiveWorkspaceRoot();
+    const resolved = this.resolveCommand(cwd);
+    const args = targetDir
+      ? [...resolved.argsPrefix, 'init', '--dir', targetDir]
+      : [...resolved.argsPrefix, 'init'];
+
+    return new Promise<{ success: boolean; message: string }>((resolve, reject) => {
+      execFile(
+        resolved.command,
+        args,
+        {
+          cwd,
+          maxBuffer: 5 * 1024 * 1024,
+          timeout: 30000,
+          env: { ...process.env, PYTHONUNBUFFERED: '1' },
+        },
+        (error, stdout, stderr) => {
+          if (error && error.code !== 0) {
+            return reject(
+              new Error(
+                stderr?.trim() ||
+                  stdout?.trim() ||
+                  `Command failed with code ${error.code}`
+              )
+            );
+          }
+          resolve({
+            success: true,
+            message: stdout?.trim() || 'Initialized exercises successfully.',
+          });
+        }
+      );
+    });
+  }
 }
+

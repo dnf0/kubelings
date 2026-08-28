@@ -124,7 +124,7 @@ describe('Kubelings Commands - Command Registration and Execution', () => {
     }
   }
 
-  it('registers all 9 expected extension commands', () => {
+  it('registers all 11 expected extension commands', () => {
     const bridge = new MockFullBridge({ workspaceRoot: '/workspace' });
     const treeDataProvider = new KubelingsTreeDataProvider(bridge);
     const statusBar = new KubelingsStatusBar(bridge);
@@ -144,6 +144,8 @@ describe('Kubelings Commands - Command Registration and Execution', () => {
 
     const expectedCommands = [
       'kubelings.refresh',
+      'kubelings.openExercise',
+      'kubelings.initExercises',
       'kubelings.runExercise',
       'kubelings.nextExercise',
       'kubelings.showHint',
@@ -246,4 +248,71 @@ describe('Kubelings Commands - Command Registration and Execution', () => {
     assert.ok(term);
     assert.ok(term.textSent.some((t: string) => t.includes('test')));
   });
+
+  it('executes kubelings.initExercises and notifies user', async () => {
+    let initCalled = false;
+    class MockInitBridge extends MockFullBridge {
+      public override async init(targetDir?: string): Promise<{ success: boolean; message: string }> {
+        initCalled = true;
+        return { success: true, message: 'Initialized successfully' };
+      }
+    }
+
+    const bridge = new MockInitBridge({ workspaceRoot: '/workspace' });
+    const treeDataProvider = new KubelingsTreeDataProvider(bridge);
+    const statusBar = new KubelingsStatusBar(bridge);
+
+    const context: any = { subscriptions: [] };
+    registerCommands(context, {
+      cliBridge: bridge,
+      treeDataProvider,
+      statusBar,
+    });
+
+    let messageShown = '';
+    vscode.window.showInformationMessage = async (msg: string) => {
+      messageShown = msg;
+      return msg;
+    };
+
+    await vscode.commands.executeCommand('kubelings.initExercises');
+    assert.ok(initCalled);
+    assert.ok(messageShown.includes('initialized successfully'));
+  });
+
+  it('executes kubelings.openExercise and prompts for init when missing', async () => {
+    let initCalled = false;
+    class MockMissingBridge extends MockFullBridge {
+      public override async init(targetDir?: string): Promise<{ success: boolean; message: string }> {
+        initCalled = true;
+        return { success: true, message: 'Initialized successfully' };
+      }
+    }
+
+    const bridge = new MockMissingBridge({ workspaceRoot: '/nonexistent/workspace' });
+    const treeDataProvider = new KubelingsTreeDataProvider(bridge);
+    const statusBar = new KubelingsStatusBar(bridge);
+
+    const context: any = { subscriptions: [] };
+    registerCommands(context, {
+      cliBridge: bridge,
+      treeDataProvider,
+      statusBar,
+    });
+
+    (vscode.window as any).showInformationMessage = async (msg: string, ...items: string[]) => {
+      if (items.includes('Initialize Exercises')) {
+        return 'Initialize Exercises';
+      }
+      return undefined;
+    };
+
+    await vscode.commands.executeCommand(
+      'kubelings.openExercise',
+      'exercises/01_pods/pods01.py',
+      'pods01'
+    );
+    assert.ok(initCalled);
+  });
 });
+

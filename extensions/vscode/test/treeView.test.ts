@@ -124,11 +124,11 @@ describe('Kubelings Tree View - ExerciseTreeItem', () => {
     assert.strictEqual(icon.id, 'pass-filled');
     const tooltip = String(item.tooltip || '');
     assert.ok(tooltip.includes('Status: Completed'));
-    assert.strictEqual(item.command?.command, 'vscode.open');
-    assert.strictEqual(
-      item.command?.arguments?.[0]?.fsPath,
-      '/test/workspace/exercises/01_pods/pods01.py'
-    );
+    assert.strictEqual(item.command?.command, 'kubelings.openExercise');
+    assert.deepStrictEqual(item.command?.arguments, [
+      'exercises/01_pods/pods01.py',
+      'pods01',
+    ]);
   });
 
   it('configures in-progress exercise item with queued sync icon', () => {

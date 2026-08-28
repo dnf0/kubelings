@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { KubelingsCliBridge } from './cliBridge';
+import { resolveExercisePath } from './pathUtils';
 import { CliChapter, CliExercise } from './types';
 
 /**
@@ -48,9 +49,7 @@ export class ExerciseTreeItem extends vscode.TreeItem {
     super(exercise.name, vscode.TreeItemCollapsibleState.None);
 
     this.exercise = exercise;
-    this.fullPath = path.isAbsolute(exercise.path)
-      ? exercise.path
-      : path.join(workspaceRoot, exercise.path);
+    this.fullPath = resolveExercisePath(exercise.path, workspaceRoot);
 
     this.description = exercise.title;
     this.contextValue = 'exerciseItem';
@@ -75,9 +74,9 @@ export class ExerciseTreeItem extends vscode.TreeItem {
     this.tooltip = `${exercise.name} - ${exercise.title}\nPath: ${exercise.path}\nStatus: ${statusText}`;
 
     this.command = {
-      command: 'vscode.open',
+      command: 'kubelings.openExercise',
       title: 'Open Exercise',
-      arguments: [vscode.Uri.file(this.fullPath)],
+      arguments: [exercise.path, exercise.name],
     };
   }
 }

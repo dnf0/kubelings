@@ -37,18 +37,18 @@ export class KubelingsDiagnosticsProvider implements vscode.Disposable {
     }
 
     const normalizedPath = document.fileName.replace(/\\/g, '/');
-    if (
-      !/\/exercises\/[^/]+\/[^/]+\.py$/.test(normalizedPath) &&
-      !normalizedPath.includes('/exercises/')
-    ) {
-      return undefined;
-    }
-
     if (!normalizedPath.endsWith('.py')) {
       return undefined;
     }
 
     const exerciseName = path.basename(normalizedPath, '.py');
+    const isExerciseFile =
+      normalizedPath.includes('/exercises/') ||
+      this.treeDataProvider?.findExercise(exerciseName) !== undefined;
+
+    if (!isExerciseFile) {
+      return undefined;
+    }
 
     try {
       const runResult = await this.cliBridge.run(exerciseName);

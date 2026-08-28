@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { KubelingsCliBridge } from './cliBridge';
 import { KubelingsDiagnosticsProvider } from './diagnostics';
+import { resolveExercisePath } from './pathUtils';
 import { KubelingsStatusBar } from './statusBar';
 import { ExerciseTreeItem, KubelingsTreeDataProvider } from './treeView';
 
@@ -72,7 +73,109 @@ export function registerCommands(
   );
   context.subscriptions.push(refreshCmd);
 
-  // 2. kubelings.runExercise
+  // 2. kubelings.openExercise
+  const openExerciseCmd = vscode.commands.registerCommand(
+    'kubelings.openExercise',
+    async (relPathOrItem?: ExerciseTreeItem | string, maybeName?: string) => {
+      let relPath: string | undefined;
+      let exName: string | undefined;
+
+      if (typeof relPathOrItem === 'string') {
+        relPath = relPathOrItem;
+        exName = maybeName || path.basename(relPath, '.py');
+      } else if (relPathOrItem instanceof ExerciseTreeItem) {
+        relPath = relPathOrItem.exercise.path;
+        exName = relPathOrItem.exercise.name;
+      } else if (
+        relPathOrItem &&
+        typeof relPathOrItem === 'object' &&
+        'exercise' in relPathOrItem
+      ) {
+        const item = relPathOrItem as ExerciseTreeItem;
+        relPath = item.exercise?.path;
+        exName = item.exercise?.name;
+      }
+
+      if (!relPath) {
+        vscode.window.showWarningMessage('No exercise path specified to open.');
+        return;
+      }
+
+      const workspaceRoot = cliBridge.getEffectiveWorkspaceRoot();
+      let resolved = resolveExercisePath(relPath, workspaceRoot);
+
+      if (!fs.existsSync(resolved)) {
+        const choice = await vscode.window.showInformationMessage(
+          'Exercise file was not found locally. Would you like to initialize the Kubelings exercise workspace here?',
+          'Initialize Exercises',
+          'Cancel'
+        );
+
+        if (choice === 'Initialize Exercises') {
+          try {
+            await cliBridge.init(workspaceRoot);
+            vscode.window.showInformationMessage(
+              'Kubelings exercises initialized successfully! 🎉'
+            );
+            treeDataProvider.refresh();
+            statusBar.refresh().catch(() => {});
+            resolved = resolveExercisePath(relPath, workspaceRoot);
+          } catch (e: unknown) {
+            const message = e instanceof Error ? e.message : String(e);
+            vscode.window.showErrorMessage(
+              `Failed to initialize exercises: ${message}`
+            );
+            return;
+          }
+        } else {
+          return;
+        }
+      }
+
+      if (fs.existsSync(resolved)) {
+        try {
+          const doc = await vscode.workspace.openTextDocument(
+            vscode.Uri.file(resolved)
+          );
+          await vscode.window.showTextDocument(doc);
+        } catch (err: unknown) {
+          const message = err instanceof Error ? err.message : String(err);
+          vscode.window.showErrorMessage(
+            `Failed to open exercise file: ${message}`
+          );
+        }
+      } else {
+        vscode.window.showErrorMessage(
+          `Exercise file still not found at: ${resolved}`
+        );
+      }
+    }
+  );
+  context.subscriptions.push(openExerciseCmd);
+
+  // 3. kubelings.initExercises
+  const initExercisesCmd = vscode.commands.registerCommand(
+    'kubelings.initExercises',
+    async () => {
+      const workspaceRoot = cliBridge.getEffectiveWorkspaceRoot();
+      try {
+        await cliBridge.init(workspaceRoot);
+        vscode.window.showInformationMessage(
+          'Kubelings exercises initialized successfully! 🎉'
+        );
+        treeDataProvider.refresh();
+        statusBar.refresh().catch(() => {});
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
+        vscode.window.showErrorMessage(
+          `Failed to initialize exercises: ${message}`
+        );
+      }
+    }
+  );
+  context.subscriptions.push(initExercisesCmd);
+
+  // 4. kubelings.runExercise
   const runExerciseCmd = vscode.commands.registerCommand(
     'kubelings.runExercise',
     async (arg?: ExerciseTreeItem | string | vscode.Uri) => {
@@ -111,7 +214,7 @@ export function registerCommands(
   );
   context.subscriptions.push(runExerciseCmd);
 
-  // 3. kubelings.nextExercise
+  // 5. kubelings.nextExercise
   const nextExerciseCmd = vscode.commands.registerCommand(
     'kubelings.nextExercise',
     async () => {
@@ -158,9 +261,7 @@ export function registerCommands(
           return;
         }
 
-        const fullPath = path.isAbsolute(exerciseRelPath)
-          ? exerciseRelPath
-          : path.join(workspaceRoot, exerciseRelPath);
+        const fullPath = resolveExercisePath(exerciseRelPath, workspaceRoot);
 
         if (!fs.existsSync(fullPath)) {
           vscode.window.showErrorMessage(
@@ -277,12 +378,14 @@ export function registerCommands(
         return;
       }
 
-      const fullExercisePath = path.isAbsolute(exerciseRelPath)
-        ? exerciseRelPath
-        : path.join(workspaceRoot, exerciseRelPath);
-      const fullSolutionPath = path.isAbsolute(solutionRelPath)
-        ? solutionRelPath
-        : path.join(workspaceRoot, solutionRelPath);
+      const fullExercisePath = resolveExercisePath(
+        exerciseRelPath,
+        workspaceRoot
+      );
+      const fullSolutionPath = resolveExercisePath(
+        solutionRelPath,
+        workspaceRoot
+      );
 
       if (!fs.existsSync(fullSolutionPath)) {
         vscode.window.showWarningMessage(
