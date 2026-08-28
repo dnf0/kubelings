@@ -57,6 +57,19 @@ def get_starter_content(exercise_name: str) -> str:
 
 def init_workspace(target_dir: Path, force: bool = False) -> None:
     """Scaffold the exercises directory into a target workspace."""
+    resolved_target = target_dir.resolve()
+    if (
+        str(resolved_target) in ("/", "\\", "/exercises", "\\exercises")
+        or resolved_target == Path("/").resolve()
+    ):
+        target_dir = Path.home() / "kubelings"
+
+    try:
+        target_dir.mkdir(parents=True, exist_ok=True)
+    except (PermissionError, OSError):
+        target_dir = Path.home() / "kubelings"
+        target_dir.mkdir(parents=True, exist_ok=True)
+
     target_exercises_dir = target_dir / "exercises"
 
     if target_exercises_dir.exists() and not force:

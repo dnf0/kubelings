@@ -1,5 +1,6 @@
 import { execFile } from 'child_process';
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import { getEffectiveWorkspaceRoot } from './pathUtils';
 import {
@@ -231,10 +232,22 @@ export class KubelingsCliBridge {
   public async init(
     targetDir?: string
   ): Promise<{ success: boolean; message: string }> {
-    const cwd = targetDir || this.getEffectiveWorkspaceRoot();
-    const resolved = this.resolveCommand(cwd);
-    const args = targetDir
-      ? [...resolved.argsPrefix, 'init', '--dir', targetDir]
+    const finalDir = targetDir || this.getEffectiveWorkspaceRoot();
+    if (finalDir && !fs.existsSync(finalDir)) {
+      try {
+        fs.mkdirSync(finalDir, { recursive: true });
+      } catch {
+        // ignore
+      }
+    }
+    const executionCwd =
+      finalDir && fs.existsSync(finalDir) && finalDir !== '/' && finalDir !== '\\'
+        ? finalDir
+        : os.homedir();
+
+    const resolved = this.resolveCommand(executionCwd);
+    const args = finalDir
+      ? [...resolved.argsPrefix, 'init', '--dir', finalDir]
       : [...resolved.argsPrefix, 'init'];
 
     return new Promise<{ success: boolean; message: string }>((resolve, reject) => {
@@ -242,7 +255,7 @@ export class KubelingsCliBridge {
         resolved.command,
         args,
         {
-          cwd,
+          cwd: executionCwd,
           maxBuffer: 5 * 1024 * 1024,
           timeout: 30000,
           env: { ...process.env, PYTHONUNBUFFERED: '1' },

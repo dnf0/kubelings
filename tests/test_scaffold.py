@@ -77,3 +77,18 @@ def test_cli_reset_invalid_exercise():
     result = runner.invoke(app, ["reset", "fake_ex"])
     assert result.exit_code == 1
     assert "Unknown" in result.stdout or "not found" in result.stdout.lower()
+
+
+def test_init_workspace_root_fallback(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(Path, "home", lambda: tmp_path / "fake_home")
+    init_workspace(Path("/"))
+    assert (tmp_path / "fake_home" / "kubelings" / "exercises").exists()
+
+
+def test_cli_init_command_from_root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(Path, "home", lambda: tmp_path / "fake_home")
+    runner = CliRunner()
+    result = runner.invoke(app, ["init", "--dir", "/"])
+    assert result.exit_code == 0
+    assert "Initialized" in result.stdout
+    assert (tmp_path / "fake_home" / "kubelings" / "exercises").exists()

@@ -543,9 +543,14 @@ def init_cmd(
 
     if directory:
         target_path = Path(directory).resolve()
+        if (
+            str(target_path) in ("/", "\\", "/exercises", "\\exercises")
+            or target_path == Path("/").resolve()
+        ):
+            target_path = Path.home() / "kubelings"
     else:
-        cwd = Path.cwd()
-        if str(cwd) in ("/", "\\"):
+        cwd = Path.cwd().resolve()
+        if str(cwd) in ("/", "\\", "/exercises", "\\exercises") or cwd == Path("/").resolve():
             target_path = Path.home() / "kubelings"
         else:
             target_path = cwd
