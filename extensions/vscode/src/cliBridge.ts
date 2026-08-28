@@ -230,7 +230,8 @@ export class KubelingsCliBridge {
    * Initializes or scaffolds curriculum exercises into the target workspace.
    */
   public async init(
-    targetDir?: string
+    targetDir?: string,
+    force: boolean = false
   ): Promise<{ success: boolean; message: string }> {
     const finalDir = targetDir || this.getEffectiveWorkspaceRoot();
     if (finalDir && !fs.existsSync(finalDir)) {
@@ -249,6 +250,10 @@ export class KubelingsCliBridge {
     const args = finalDir
       ? [...resolved.argsPrefix, 'init', '--dir', finalDir]
       : [...resolved.argsPrefix, 'init'];
+
+    if (force) {
+      args.push('--force');
+    }
 
     return new Promise<{ success: boolean; message: string }>((resolve, reject) => {
       execFile(

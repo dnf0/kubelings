@@ -171,10 +171,29 @@ async function getOrSelectWorkspaceFolder(): Promise<string | undefined> {
             resolved = resolveExercisePath(relPath, targetDir);
           } catch (e: unknown) {
             const message = e instanceof Error ? e.message : String(e);
-            vscode.window.showErrorMessage(
-              `Failed to initialize exercises: ${message}`
-            );
-            return;
+            if (
+              message.includes('already exists and is not empty') ||
+              message.includes('Use --force')
+            ) {
+              vscode.window.showInformationMessage(
+                `Kubelings exercises are already initialized in: ${targetDir}`
+              );
+              if (shouldOpenFolder) {
+                await vscode.commands.executeCommand(
+                  'vscode.openFolder',
+                  vscode.Uri.file(targetDir)
+                );
+                return;
+              }
+              treeDataProvider.refresh();
+              statusBar.refresh().catch(() => {});
+              resolved = resolveExercisePath(relPath, targetDir);
+            } else {
+              vscode.window.showErrorMessage(
+                `Failed to initialize exercises: ${message}`
+              );
+              return;
+            }
           }
         } else {
           return;
@@ -238,9 +257,48 @@ async function getOrSelectWorkspaceFolder(): Promise<string | undefined> {
         statusBar.refresh().catch(() => {});
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : String(err);
-        vscode.window.showErrorMessage(
-          `Failed to initialize exercises: ${message}`
-        );
+        if (
+          message.includes('already exists and is not empty') ||
+          message.includes('Use --force')
+        ) {
+          const choice = await vscode.window.showWarningMessage(
+            `Exercises already exist in ${targetDir}. Would you like to keep them or overwrite with fresh starter files?`,
+            'Keep Existing',
+            'Overwrite (Force)'
+          );
+          if (choice === 'Overwrite (Force)') {
+            try {
+              await cliBridge.init(targetDir, true);
+              vscode.window.showInformationMessage(
+                'Kubelings exercises re-initialized with fresh starter files! 🎉'
+              );
+              if (shouldOpenFolder) {
+                await vscode.commands.executeCommand(
+                  'vscode.openFolder',
+                  vscode.Uri.file(targetDir)
+                );
+                return;
+              }
+              treeDataProvider.refresh();
+              statusBar.refresh().catch(() => {});
+            } catch (forceErr: unknown) {
+              const forceMsg =
+                forceErr instanceof Error ? forceErr.message : String(forceErr);
+              vscode.window.showErrorMessage(
+                `Failed to overwrite exercises: ${forceMsg}`
+              );
+            }
+          } else if (choice === 'Keep Existing' && shouldOpenFolder) {
+            await vscode.commands.executeCommand(
+              'vscode.openFolder',
+              vscode.Uri.file(targetDir)
+            );
+          }
+        } else {
+          vscode.window.showErrorMessage(
+            `Failed to initialize exercises: ${message}`
+          );
+        }
       }
     }
   );

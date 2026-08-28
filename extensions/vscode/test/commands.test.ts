@@ -252,7 +252,7 @@ describe('Kubelings Commands - Command Registration and Execution', () => {
   it('executes kubelings.initExercises and notifies user', async () => {
     let initCalled = false;
     class MockInitBridge extends MockFullBridge {
-      public override async init(targetDir?: string): Promise<{ success: boolean; message: string }> {
+      public override async init(targetDir?: string, force?: boolean): Promise<{ success: boolean; message: string }> {
         initCalled = true;
         return { success: true, message: 'Initialized successfully' };
       }
@@ -280,10 +280,51 @@ describe('Kubelings Commands - Command Registration and Execution', () => {
     assert.ok(messageShown.includes('initialized successfully'));
   });
 
+  it('handles already existing exercises gracefully during initExercises', async () => {
+    let forceCalled = false;
+    class MockExistingBridge extends MockFullBridge {
+      public override async init(targetDir?: string, force?: boolean): Promise<{ success: boolean; message: string }> {
+        if (!force) {
+          throw new Error("Target directory '/workspace/exercises' already exists and is not empty. Use --force to overwrite existing files.");
+        }
+        forceCalled = true;
+        return { success: true, message: 'Re-initialized successfully' };
+      }
+    }
+
+    const bridge = new MockExistingBridge({ workspaceRoot: '/workspace' });
+    const treeDataProvider = new KubelingsTreeDataProvider(bridge);
+    const statusBar = new KubelingsStatusBar(bridge);
+
+    const context: any = { subscriptions: [] };
+    registerCommands(context, {
+      cliBridge: bridge,
+      treeDataProvider,
+      statusBar,
+    });
+
+    (vscode.window as any).showWarningMessage = async (msg: string, ...items: string[]) => {
+      if (items.includes('Overwrite (Force)')) {
+        return 'Overwrite (Force)';
+      }
+      return undefined;
+    };
+
+    let infoMsg = '';
+    vscode.window.showInformationMessage = async (msg: string) => {
+      infoMsg = msg;
+      return msg;
+    };
+
+    await vscode.commands.executeCommand('kubelings.initExercises');
+    assert.ok(forceCalled);
+    assert.ok(infoMsg.includes('re-initialized'));
+  });
+
   it('executes kubelings.openExercise and prompts for init when missing', async () => {
     let initCalled = false;
     class MockMissingBridge extends MockFullBridge {
-      public override async init(targetDir?: string): Promise<{ success: boolean; message: string }> {
+      public override async init(targetDir?: string, force?: boolean): Promise<{ success: boolean; message: string }> {
         initCalled = true;
         return { success: true, message: 'Initialized successfully' };
       }
