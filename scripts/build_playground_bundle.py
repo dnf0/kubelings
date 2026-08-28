@@ -8,8 +8,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Any
+
+# Ensure repository src is prioritized for imports
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from kubelings import __version__
 from kubelings.manifest import get_exercise_by_name

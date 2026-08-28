@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { KubelingsCliBridge } from './cliBridge';
@@ -81,13 +82,25 @@ async function getOrSelectWorkspaceFolder(): Promise<string | undefined> {
     vscode.workspace.workspaceFolders &&
     vscode.workspace.workspaceFolders.length > 0
   ) {
-    return vscode.workspace.workspaceFolders[0].uri.fsPath;
+    const fsPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
+    if (
+      fsPath &&
+      fsPath !== '/' &&
+      fsPath !== '\\' &&
+      fsPath !== '/exercises' &&
+      fsPath !== '\\exercises'
+    ) {
+      return fsPath;
+    }
   }
+
+  const defaultUri = vscode.Uri.file(path.join(os.homedir(), 'kubelings'));
 
   const selected = await vscode.window.showOpenDialog({
     canSelectFiles: false,
     canSelectFolders: true,
     canSelectMany: false,
+    defaultUri,
     openLabel: 'Select Workspace Folder',
     title: 'Select Folder for Kubelings Exercises',
   });
@@ -96,7 +109,7 @@ async function getOrSelectWorkspaceFolder(): Promise<string | undefined> {
     return selected[0].fsPath;
   }
 
-  return undefined;
+  return path.join(os.homedir(), 'kubelings');
 }
 
   // 2. kubelings.openExercise
@@ -159,6 +172,7 @@ async function getOrSelectWorkspaceFolder(): Promise<string | undefined> {
             vscode.window.showInformationMessage(
               'Kubelings exercises initialized successfully! 🎉'
             );
+            resolved = resolveExercisePath(relPath, targetDir);
             if (shouldOpenFolder) {
               await vscode.commands.executeCommand(
                 'vscode.openFolder',
@@ -168,7 +182,6 @@ async function getOrSelectWorkspaceFolder(): Promise<string | undefined> {
             }
             treeDataProvider.refresh();
             statusBar.refresh().catch(() => {});
-            resolved = resolveExercisePath(relPath, targetDir);
           } catch (e: unknown) {
             const message = e instanceof Error ? e.message : String(e);
             if (
@@ -227,7 +240,11 @@ async function getOrSelectWorkspaceFolder(): Promise<string | undefined> {
     async () => {
       const hasOpenFolder = Boolean(
         vscode.workspace.workspaceFolders &&
-          vscode.workspace.workspaceFolders.length > 0
+          vscode.workspace.workspaceFolders.length > 0 &&
+          vscode.workspace.workspaceFolders[0].uri.fsPath !== '/' &&
+          vscode.workspace.workspaceFolders[0].uri.fsPath !== '\\' &&
+          vscode.workspace.workspaceFolders[0].uri.fsPath !== '/exercises' &&
+          vscode.workspace.workspaceFolders[0].uri.fsPath !== '\\exercises'
       );
       let targetDir = cliBridge.getEffectiveWorkspaceRoot();
       let shouldOpenFolder = false;

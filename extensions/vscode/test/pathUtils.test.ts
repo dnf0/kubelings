@@ -16,7 +16,14 @@ describe('Kubelings pathUtils - getEffectiveWorkspaceRoot', () => {
     const root = getEffectiveWorkspaceRoot();
     assert.notStrictEqual(root, '/');
     assert.notStrictEqual(root, '\\');
+    assert.notStrictEqual(root, '/exercises');
     assert.ok(root.length > 0);
+  });
+
+  it('rejects root "/" even if passed as explicitRoot', () => {
+    const root = getEffectiveWorkspaceRoot('/');
+    assert.notStrictEqual(root, '/');
+    assert.ok(root.includes('kubelings'));
   });
 });
 
@@ -111,5 +118,11 @@ describe('Kubelings pathUtils - resolveExercisePath', () => {
     } finally {
       fs.rmSync(tmpDir, { recursive: true, force: true });
     }
+  });
+
+  it('resolves exercise from standard directory when root is invalid', () => {
+    const resolved = resolveExercisePath('exercises/01_pods/pods01.py', '/');
+    assert.ok(fs.existsSync(resolved));
+    assert.ok(resolved.endsWith(path.join('01_pods', 'pods01.py')));
   });
 });

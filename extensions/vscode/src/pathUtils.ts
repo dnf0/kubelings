@@ -10,12 +10,26 @@ export function getEffectiveWorkspaceRoot(
   explicitRoot?: string,
   repoName: string = 'kubelings'
 ): string {
-  // 1. If an explicit root was passed and is non-empty
-  if (explicitRoot && explicitRoot.trim().length > 0) {
-    return explicitRoot;
+  const isInvalidRoot = (p?: string): boolean => {
+    if (!p || typeof p !== 'string') {
+      return true;
+    }
+    const trimmed = p.trim();
+    return (
+      trimmed.length === 0 ||
+      trimmed === '/' ||
+      trimmed === '\\' ||
+      trimmed === '/exercises' ||
+      trimmed === '\\exercises'
+    );
+  };
+
+  // 1. If an explicit root was passed and is valid
+  if (!isInvalidRoot(explicitRoot)) {
+    return explicitRoot!;
   }
 
-  // 2. If VS Code has an open folder, use it
+  // 2. If VS Code has an open folder, use it if not root
   try {
     const vsc = require('vscode');
     if (
@@ -23,7 +37,7 @@ export function getEffectiveWorkspaceRoot(
       vsc.workspace.workspaceFolders.length > 0
     ) {
       const fsPath = vsc.workspace.workspaceFolders[0]?.uri?.fsPath;
-      if (fsPath && typeof fsPath === 'string' && fsPath.trim().length > 0) {
+      if (!isInvalidRoot(fsPath)) {
         return fsPath;
       }
     }
@@ -34,9 +48,7 @@ export function getEffectiveWorkspaceRoot(
   // 3. If process.cwd() is valid and NOT root ('/' or '\')
   const cwd = process.cwd();
   if (
-    cwd &&
-    cwd !== '/' &&
-    cwd !== '\\' &&
+    !isInvalidRoot(cwd) &&
     fs.existsSync(cwd) &&
     (fs.existsSync(path.join(cwd, 'exercises')) ||
       fs.existsSync(path.join(cwd, 'pyproject.toml')) ||
@@ -45,11 +57,11 @@ export function getEffectiveWorkspaceRoot(
     return cwd;
   }
 
-  // 4. Check standard candidate directories (e.g. ~/repos/kubelings, ~/kubelings, ~/Developer/kubelings)
+  // 4. Check standard candidate directories (e.g. ~/kubelings, ~/repos/kubelings, ~/Developer/kubelings)
   const home = os.homedir();
   const candidates = [
-    path.join(home, 'repos', repoName),
     path.join(home, repoName),
+    path.join(home, 'repos', repoName),
     path.join(home, 'Developer', repoName),
     path.join(home, 'Documents', repoName),
     path.join(home, 'src', repoName),
@@ -57,7 +69,11 @@ export function getEffectiveWorkspaceRoot(
 
   for (const candidate of candidates) {
     try {
-      if (fs.existsSync(candidate) && fs.statSync(candidate).isDirectory()) {
+      if (
+        fs.existsSync(candidate) &&
+        (fs.existsSync(path.join(candidate, 'exercises')) ||
+          fs.statSync(candidate).isDirectory())
+      ) {
         return candidate;
       }
     } catch {
@@ -66,12 +82,12 @@ export function getEffectiveWorkspaceRoot(
   }
 
   // 5. If process.cwd() is not root '/', fallback to cwd
-  if (cwd && cwd !== '/' && cwd !== '\\') {
+  if (!isInvalidRoot(cwd) && fs.existsSync(cwd)) {
     return cwd;
   }
 
-  // 6. Fall back safely to user home directory (NEVER root '/')
-  return home || (process.platform === 'win32' ? 'C:\\' : '/tmp');
+  // 6. Fall back safely to ~/kubelings (NEVER root '/')
+  return path.join(home, repoName);
 }
 
 /**
@@ -82,12 +98,28 @@ export function getEffectiveWorkspaceRoot(
  * 3. Stripping 'exercises/' prefix if workspace is already inside exercises/ (e.g. workspaceRoot/01_pods/pods01.py)
  * 4. Checking if workspace is inside an individual chapter directory (e.g. workspaceRoot/pods01.py)
  * 5. Ascending parent directory traversal up to 8 levels (both full path and stripped path)
- * 6. Fallback to direct resolution against workspace root
+ * 6. Checking standard locations (~/kubelings, ~/repos/kubelings, etc.)
+ * 7. Fallback to direct resolution against workspace root
  */
 export function resolveExercisePath(
   exPath: string,
   workspaceRoot?: string
 ): string {
+  const isInvalidRoot = (p?: string): boolean => {
+    if (!p || typeof p !== 'string') {
+      return true;
+    }
+    const trimmed = p.trim();
+    return (
+      trimmed.length === 0 ||
+      trimmed === '/' ||
+      trimmed === '\\' ||
+      trimmed === '/exercises' ||
+      trimmed === '\\exercises'
+    );
+  };
+
+  const isExplicit = !isInvalidRoot(workspaceRoot);
   const root = getEffectiveWorkspaceRoot(workspaceRoot);
 
   // 1. If path is already absolute and exists on disk
@@ -167,6 +199,31 @@ export function resolveExercisePath(
     cur = parent;
   }
 
-  // 6. Default fallback to direct resolution
+  // 6. Check standard directories if no explicit root was given (e.g. ~/kubelings, ~/repos/kubelings)
+  if (!isExplicit) {
+    const home = os.homedir();
+    const standardDirs = [
+      path.join(home, 'kubelings'),
+      path.join(home, 'repos', 'kubelings'),
+      path.join(home, 'Developer', 'kubelings'),
+      path.join(home, 'Documents', 'kubelings'),
+      path.join(home, 'src', 'kubelings'),
+    ];
+    for (const standardDir of standardDirs) {
+      const candidate = path.resolve(standardDir, exPath);
+      if (fs.existsSync(candidate)) {
+        return candidate;
+      }
+      if (isExercisesPrefix) {
+        const stripped = exPath.replace(/^exercises[/\\]/, '');
+        const strippedCand = path.resolve(standardDir, stripped);
+        if (fs.existsSync(strippedCand)) {
+          return strippedCand;
+        }
+      }
+    }
+  }
+
+  // 7. Default fallback to direct resolution
   return directPath;
 }
