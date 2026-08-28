@@ -7,3 +7,5 @@ node_modules/**
 **/*.map
 dist/test/**
 dist/src/**
+.env*
+*.vsix

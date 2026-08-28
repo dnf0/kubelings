@@ -5,6 +5,7 @@
 [![Python: 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Type checker: pyright](https://img.shields.io/badge/types-pyright-green.svg)](https://github.com/microsoft/pyright)
+[![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/dnf0.kubelings-vscode?logo=visual-studio-code&label=VS%20Code%20Extension)](https://marketplace.visualstudio.com/items?itemName=dnf0.kubelings-vscode)
 [![Playground](https://img.shields.io/badge/Playground-⚡%20Try%20in%20Browser-blueviolet)](https://dnf0.github.io/kubelings/playground/)
 
 > **Master Kubernetes from scratch through small, interactive, hands-on terminal exercises.**
@@ -275,7 +276,13 @@ Kubelings provides an official extension for **Visual Studio Code** and **Cursor
 
 ### 📦 Extension Installation
 
-#### Via Command Line (VSIX)
+#### Option 1: Install from VS Code Marketplace (Recommended)
+
+👉 **[Install from VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=dnf0.kubelings-vscode)**
+
+Or search for `Kubelings` directly inside the Extensions view in VS Code or Cursor (`Ctrl+Shift+X` / `Cmd+Shift+X`).
+
+#### Option 2: Install from VSIX via Command Line
 
 ```bash
 # For VS Code
@@ -285,7 +292,7 @@ code --install-extension dist/kubelings-vscode.vsix
 cursor --install-extension dist/kubelings-vscode.vsix
 ```
 
-#### Via Editor UI (VSIX)
+#### Option 3: Install from VSIX via Editor UI
 
 1. Open the Extensions view (`Ctrl+Shift+X` / `Cmd+Shift+X`).
 2. Click the **`...`** (Views and More Actions) menu in the top-right corner of the Extensions pane.

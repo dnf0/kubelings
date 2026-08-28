@@ -10,6 +10,11 @@
     "url": "https://github.com/dnf0/kubelings.git",
     "directory": "extensions/vscode"
   },
+  "homepage": "https://dnf0.github.io/kubelings/",
+  "bugs": {
+    "url": "https://github.com/dnf0/kubelings/issues"
+  },
+  "qna": "marketplace",
   "engines": {
     "vscode": "^1.85.0"
   },

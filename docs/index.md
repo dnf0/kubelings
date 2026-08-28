@@ -3,6 +3,7 @@
 **An interactive, hands-on CLI learning environment for Kubernetes.**
 
 [![Playground](https://img.shields.io/badge/Playground-⚡%20Try%20in%20Browser-blueviolet)](https://dnf0.github.io/kubelings/playground/)
+[![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/dnf0.kubelings-vscode?logo=visual-studio-code&label=VS%20Code%20Extension)](https://marketplace.visualstudio.com/items?itemName=dnf0.kubelings-vscode)
 
 Inspired by [rustlings](https://github.com/rust-lang/rustlings) and [ziglings](https://codeberg.org/ziglings/exercises), **Kubelings** guides engineers through self-paced micro-exercises directly in the terminal.
 

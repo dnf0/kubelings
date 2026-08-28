@@ -1,6 +1,6 @@
 # Kubelings for VS Code & Cursor ☸️
 
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](../../LICENSE)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/dnf0/kubelings/blob/main/LICENSE)
 [![VS Code](https://img.shields.io/badge/VS%20Code-1.85+-blue.svg)](https://code.visualstudio.com/)
 
 **Kubelings for VS Code and Cursor** brings the interactive Kubernetes learning experience directly into your code editor. Learn Kubernetes hands-on through guided micro-exercises with real-time feedback, curriculum exploration, progressive hints, and side-by-side solution diffing.
