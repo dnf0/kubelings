@@ -4,7 +4,21 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { describe, it } from 'node:test';
-import { resolveExercisePath } from '../src/pathUtils';
+import { getEffectiveWorkspaceRoot, resolveExercisePath } from '../src/pathUtils';
+
+describe('Kubelings pathUtils - getEffectiveWorkspaceRoot', () => {
+  it('returns explicit root if passed', () => {
+    const root = getEffectiveWorkspaceRoot('/custom/explicit/path');
+    assert.strictEqual(root, '/custom/explicit/path');
+  });
+
+  it('never returns root "/" or empty string', () => {
+    const root = getEffectiveWorkspaceRoot();
+    assert.notStrictEqual(root, '/');
+    assert.notStrictEqual(root, '\\');
+    assert.ok(root.length > 0);
+  });
+});
 
 describe('Kubelings pathUtils - resolveExercisePath', () => {
   it('resolves directly when file exists in root workspace', () => {

@@ -1,5 +1,78 @@
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
+
+/**
+ * Returns the effective workspace root, preventing read-only root ('/') crashes
+ * when VS Code is opened without an active workspace folder.
+ */
+export function getEffectiveWorkspaceRoot(
+  explicitRoot?: string,
+  repoName: string = 'kubelings'
+): string {
+  // 1. If an explicit root was passed and is non-empty
+  if (explicitRoot && explicitRoot.trim().length > 0) {
+    return explicitRoot;
+  }
+
+  // 2. If VS Code has an open folder, use it
+  try {
+    const vsc = require('vscode');
+    if (
+      vsc?.workspace?.workspaceFolders &&
+      vsc.workspace.workspaceFolders.length > 0
+    ) {
+      const fsPath = vsc.workspace.workspaceFolders[0]?.uri?.fsPath;
+      if (fsPath && typeof fsPath === 'string' && fsPath.trim().length > 0) {
+        return fsPath;
+      }
+    }
+  } catch {
+    // vscode module not available
+  }
+
+  // 3. If process.cwd() is valid and NOT root ('/' or '\')
+  const cwd = process.cwd();
+  if (
+    cwd &&
+    cwd !== '/' &&
+    cwd !== '\\' &&
+    fs.existsSync(cwd) &&
+    (fs.existsSync(path.join(cwd, 'exercises')) ||
+      fs.existsSync(path.join(cwd, 'pyproject.toml')) ||
+      cwd.toLowerCase().includes(repoName.toLowerCase()))
+  ) {
+    return cwd;
+  }
+
+  // 4. Check standard candidate directories (e.g. ~/repos/kubelings, ~/kubelings, ~/Developer/kubelings)
+  const home = os.homedir();
+  const candidates = [
+    path.join(home, 'repos', repoName),
+    path.join(home, repoName),
+    path.join(home, 'Developer', repoName),
+    path.join(home, 'Documents', repoName),
+    path.join(home, 'src', repoName),
+  ];
+
+  for (const candidate of candidates) {
+    try {
+      if (fs.existsSync(candidate) && fs.statSync(candidate).isDirectory()) {
+        return candidate;
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  // 5. If process.cwd() is not root '/', fallback to cwd
+  if (cwd && cwd !== '/' && cwd !== '\\') {
+    return cwd;
+  }
+
+  // 6. Fall back safely to user home directory (NEVER root '/')
+  return home || (process.platform === 'win32' ? 'C:\\' : '/tmp');
+}
 
 /**
  * Robustly resolves an exercise relative path (e.g. "exercises/01_pods/pods01.py")
@@ -15,16 +88,7 @@ export function resolveExercisePath(
   exPath: string,
   workspaceRoot?: string
 ): string {
-  let root: string;
-  try {
-    const vsc = require('vscode');
-    root =
-      workspaceRoot ||
-      vsc?.workspace?.workspaceFolders?.[0]?.uri?.fsPath ||
-      process.cwd();
-  } catch {
-    root = workspaceRoot || process.cwd();
-  }
+  const root = getEffectiveWorkspaceRoot(workspaceRoot);
 
   // 1. If path is already absolute and exists on disk
   if (path.isAbsolute(exPath) && fs.existsSync(exPath)) {

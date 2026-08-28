@@ -29,6 +29,18 @@ def test_check_marker_present_and_absent(tmp_path: Path):
     exercise_file.write_text("# I AM NOT DONE\nprint('hello')\n")
     assert ExerciseRunner.check_marker(exercise_file) is True
 
+    # With TODO
+    exercise_file.write_text("# TODO: implement container port\nprint('hello')\n")
+    assert ExerciseRunner.check_marker(exercise_file) is True
+
+    # With cloze blank
+    exercise_file.write_text("port = ___\n")
+    assert ExerciseRunner.check_marker(exercise_file) is True
+
+    # With FIXME
+    exercise_file.write_text("# FIXME: broken selector\n")
+    assert ExerciseRunner.check_marker(exercise_file) is True
+
     # Also test on instance
     runner = ExerciseRunner()
     assert runner.check_marker(exercise_file) is True

@@ -1,6 +1,7 @@
 import { execFile } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
+import { getEffectiveWorkspaceRoot } from './pathUtils';
 import {
   CliClusterResponse,
   CliHintResponse,
@@ -29,19 +30,7 @@ export class KubelingsCliBridge {
    * Retrieves the effective workspace directory.
    */
   public getEffectiveWorkspaceRoot(): string {
-    if (this.workspaceRoot) {
-      return this.workspaceRoot;
-    }
-    try {
-      // Safely access vscode workspace if loaded in extension runtime
-      const vscode = require('vscode');
-      if (vscode?.workspace?.workspaceFolders?.length > 0) {
-        return vscode.workspace.workspaceFolders[0].uri.fsPath;
-      }
-    } catch {
-      // vscode not loaded (e.g. running outside extension host in tests)
-    }
-    return process.cwd();
+    return getEffectiveWorkspaceRoot(this.workspaceRoot);
   }
 
   /**

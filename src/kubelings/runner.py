@@ -12,6 +12,16 @@ from kubelings.models import Exercise
 
 NOT_DONE_MARKER = "I AM NOT DONE"
 
+INCOMPLETE_MARKERS = (
+    "I AM NOT DONE",
+    "TODO",
+    "FIXME",
+    "___",
+    "/* ??? */",
+    "<!-- ANSWER -->",
+    "???",
+)
+
 
 @dataclass
 class RunResult:
@@ -39,13 +49,13 @@ class ExerciseRunner:
 
     @staticmethod
     def check_marker(path: Union[Path, str]) -> bool:
-        """Check if an exercise file contains the NOT_DONE marker."""
+        """Check if an exercise file contains NOT_DONE markers, TODOs, or cloze blanks."""
         p = Path(path)
         if not p.exists() or not p.is_file():
             return False
         try:
             content = p.read_text(encoding="utf-8", errors="replace")
-            return NOT_DONE_MARKER in content
+            return any(marker in content for marker in INCOMPLETE_MARKERS)
         except OSError:
             return False
 
