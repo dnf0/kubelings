@@ -555,14 +555,17 @@ def init_cmd(
         else:
             target_path = cwd
     try:
-        init_workspace(target_path, force=force)
-        console.print(
-            f"[bold green]✓ Initialized exercises in:[/bold green] [bold cyan]{target_path / 'exercises'}[/bold cyan]\n"
-            "[dim]Run 'kubelings watch' to begin learning Kubernetes![/dim]"
-        )
-    except FileExistsError as err:
-        console.print(f"[bold yellow]Warning:[/bold yellow] {err}")
-        raise typer.Exit(code=1)
+        updated = init_workspace(target_path, force=force)
+        if updated:
+            console.print(
+                f"[bold green]✓ Initialized exercises in:[/bold green] [bold cyan]{target_path / 'exercises'}[/bold cyan]\n"
+                "[dim]Run 'kubelings watch' to begin learning Kubernetes![/dim]"
+            )
+        else:
+            console.print(
+                f"[bold green]✓ Exercises already present in:[/bold green] [bold cyan]{target_path / 'exercises'}[/bold cyan]\n"
+                "[dim]Run 'kubelings watch' to begin learning Kubernetes, or 'kubelings init --force' to overwrite.[/dim]"
+            )
     except Exception as err:
         console.print(f"[bold red]Error initializing workspace:[/bold red] {err}")
         raise typer.Exit(code=1)

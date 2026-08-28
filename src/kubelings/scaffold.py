@@ -55,8 +55,13 @@ def get_starter_content(exercise_name: str) -> str:
     return exercise_file.read_text(encoding="utf-8")
 
 
-def init_workspace(target_dir: Path, force: bool = False) -> None:
-    """Scaffold the exercises directory into a target workspace."""
+def init_workspace(target_dir: Path, force: bool = False) -> bool:
+    """Scaffold the exercises directory into a target workspace.
+
+    Returns:
+        True if exercise files were copied or overwritten.
+        False if the exercises directory already exists with content and force is False.
+    """
     resolved_target = target_dir.resolve()
     if (
         str(resolved_target) in ("/", "\\", "/exercises", "\\exercises")
@@ -75,13 +80,11 @@ def init_workspace(target_dir: Path, force: bool = False) -> None:
     if target_exercises_dir.exists() and not force:
         # Check if directory has existing contents
         if any(target_exercises_dir.iterdir()):
-            raise FileExistsError(
-                f"Target directory '{target_exercises_dir}' already exists and is not empty. "
-                "Use --force to overwrite existing files."
-            )
+            return False
 
     source_exercises_dir = _find_package_exercises_dir()
     shutil.copytree(source_exercises_dir, target_exercises_dir, dirs_exist_ok=force)
+    return True
 
 
 def reset_exercise(exercise_name: str, workspace_root: Optional[Path] = None) -> Path:

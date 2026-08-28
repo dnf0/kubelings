@@ -28,8 +28,8 @@ def test_init_workspace(tmp_path: Path):
 def test_init_workspace_existing_no_force(tmp_path: Path):
     (tmp_path / "exercises").mkdir()
     (tmp_path / "exercises" / "dummy.txt").write_text("hello")
-    with pytest.raises(FileExistsError):
-        init_workspace(tmp_path, force=False)
+    res = init_workspace(tmp_path, force=False)
+    assert res is False
 
 
 def test_init_workspace_force(tmp_path: Path):
@@ -56,6 +56,11 @@ def test_cli_init_command(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     assert result.exit_code == 0
     assert "Initialized" in result.stdout or "ready" in result.stdout.lower()
     assert (tmp_path / "exercises" / "01_pods" / "pods01.py").exists()
+
+    # Re-run on already initialized directory should succeed idempotently with exit code 0
+    result2 = runner.invoke(app, ["init"])
+    assert result2.exit_code == 0
+    assert "already present" in result2.stdout.lower()
 
 
 def test_cli_reset_command(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
