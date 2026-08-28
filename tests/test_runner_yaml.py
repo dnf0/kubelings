@@ -90,7 +90,7 @@ def test_format_yaml_error_without_mark() -> None:
 
 @pytest.mark.parametrize(
     "marker",
-    ["???", "TODO", "FIXME", "I AM NOT DONE", "___", "/* ??? */", "<!-- ANSWER -->"],
+    ["???", "I AM NOT DONE", "___", "/* ??? */", "<!-- ANSWER -->"],
 )
 def test_runner_incomplete_marker_handling(tmp_path: Path, marker: str) -> None:
     incomplete_file = tmp_path / f"incomplete_{hash(marker)}.yaml"
@@ -111,7 +111,7 @@ def test_runner_incomplete_marker_handling(tmp_path: Path, marker: str) -> None:
     assert result.passed is False
     assert result.has_not_done_marker is True
     assert result.exit_code == 1
-    assert "Exercise still contains incomplete markers" in result.output
+    assert result.error is not None and "incomplete placeholder markers" in result.error
 
 
 def test_runner_multi_doc_yaml(tmp_path: Path) -> None:

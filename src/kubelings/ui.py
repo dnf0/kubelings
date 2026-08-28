@@ -94,21 +94,24 @@ def render_result(result: RunResult, console: Optional[Console] = None) -> Panel
         border_style = "yellow"
 
         summary = Text()
-        summary.append("The exercise file contains the ", style="yellow")
-        summary.append("'# I AM NOT DONE'", style="bold yellow underline")
-        summary.append(" marker.\n\n", style="yellow")
+        summary.append(
+            "The exercise file contains incomplete placeholder markers ('???').\n\n",
+            style="yellow",
+        )
         summary.append(f"Edit the file at: [cyan]{ex.path}[/cyan]\n", style="dim")
         summary.append(
-            "When you have finished the exercise, remove the marker to verify your solution.",
+            "Fill in the required values and save the file to verify your solution.",
             style="italic yellow",
         )
 
-        if result.output.strip():
+        if result.error and result.error.strip():
+            summary.append(f"\n\n[bold red]Status:[/bold red] {result.error.strip()}\n")
+        elif result.output.strip():
             summary.append(f"\n\nOutput ({result.duration_ms:.1f}ms):\n", style="bold")
             summary.append(result.output.strip(), style="dim white")
 
         renderables.append(summary)
-        subtitle = "[yellow]Remove '# I AM NOT DONE' when ready[/yellow]"
+        subtitle = "[yellow]Fill in the blanks to solve[/yellow]"
 
     else:
         title_text = (

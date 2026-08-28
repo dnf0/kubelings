@@ -17,13 +17,11 @@ from kubelings.validators import get_validator
 NOT_DONE_MARKER = "I AM NOT DONE"
 
 INCOMPLETE_MARKERS = (
-    "I AM NOT DONE",
-    "TODO",
-    "FIXME",
+    "???",
     "___",
     "/* ??? */",
     "<!-- ANSWER -->",
-    "???",
+    "I AM NOT DONE",
 )
 
 
@@ -118,8 +116,8 @@ class ExerciseRunner:
                     exercise=exercise,
                     passed=False,
                     has_not_done_marker=True,
-                    output="Exercise still contains incomplete markers (??? or TODO). Fill them in to complete the exercise.",
-                    error=None,
+                    output="",
+                    error="Exercise still contains incomplete placeholder markers ('???'). Fill them in to complete the exercise.",
                     exit_code=1,
                     duration_ms=round(elapsed_ms, 2),
                 )
