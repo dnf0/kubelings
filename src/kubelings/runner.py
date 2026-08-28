@@ -8,7 +8,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, Union
 
+import yaml
+
 from kubelings.models import Exercise
+from kubelings.validator import ManifestValidationError
+from kubelings.validators import get_validator
 
 NOT_DONE_MARKER = "I AM NOT DONE"
 
@@ -34,6 +38,30 @@ class RunResult:
     error: Optional[str] = None
     exit_code: int = 0
     duration_ms: float = 0.0
+
+
+def format_yaml_error(err: yaml.YAMLError, file_path: Path) -> str:
+    """Format a PyYAML error into a clean diagnostic string."""
+    mark = getattr(err, "problem_mark", None)
+    if mark is not None:
+        line = mark.line + 1
+        col = mark.column + 1
+        problem = getattr(err, "problem", str(err))
+        snippet = getattr(mark, "get_snippet", lambda: None)()
+
+        msg_lines = [
+            f"❌ YAML Syntax Error in {file_path}:",
+            f"   Line {line}, Column {col}: {problem}",
+        ]
+        if snippet:
+            parts = snippet.splitlines()
+            if len(parts) >= 2:
+                msg_lines.append(f"   > {parts[0]}")
+                msg_lines.append(f"     {parts[1]}")
+            elif len(parts) == 1:
+                msg_lines.append(f"   > {parts[0]}")
+        return "\n".join(msg_lines)
+    return f"❌ YAML Syntax Error in {file_path}:\n   {err}"
 
 
 class ExerciseRunner:
@@ -79,6 +107,106 @@ class ExerciseRunner:
                 error=f"Exercise file not found: {file_path}",
                 exit_code=1,
                 duration_ms=0.0,
+            )
+
+        if file_path.suffix in (".yaml", ".yml"):
+            start_time = time.perf_counter()
+            has_marker = self.check_marker(file_path)
+            if has_marker:
+                elapsed_ms = (time.perf_counter() - start_time) * 1000.0
+                return RunResult(
+                    exercise=exercise,
+                    passed=False,
+                    has_not_done_marker=True,
+                    output="Exercise still contains incomplete markers (??? or TODO). Fill them in to complete the exercise.",
+                    error=None,
+                    exit_code=1,
+                    duration_ms=round(elapsed_ms, 2),
+                )
+
+            try:
+                raw_text = file_path.read_text(encoding="utf-8", errors="replace")
+            except OSError as exc:
+                elapsed_ms = (time.perf_counter() - start_time) * 1000.0
+                return RunResult(
+                    exercise=exercise,
+                    passed=False,
+                    has_not_done_marker=False,
+                    output="",
+                    error=f"Failed to read exercise file: {exc}",
+                    exit_code=1,
+                    duration_ms=round(elapsed_ms, 2),
+                )
+
+            try:
+                parsed_docs = list(yaml.safe_load_all(raw_text))
+            except yaml.YAMLError as exc:
+                elapsed_ms = (time.perf_counter() - start_time) * 1000.0
+                formatted_err = format_yaml_error(exc, file_path)
+                return RunResult(
+                    exercise=exercise,
+                    passed=False,
+                    has_not_done_marker=False,
+                    output="",
+                    error=formatted_err,
+                    exit_code=1,
+                    duration_ms=round(elapsed_ms, 2),
+                )
+
+            docs = [d for d in parsed_docs if d is not None]
+            manifest = docs[0] if len(docs) == 1 else (docs if len(docs) > 1 else {})
+
+            validator = get_validator(exercise.name)
+            if validator is None:
+                elapsed_ms = (time.perf_counter() - start_time) * 1000.0
+                return RunResult(
+                    exercise=exercise,
+                    passed=False,
+                    has_not_done_marker=False,
+                    output="",
+                    error=f"No validator registered for exercise '{exercise.name}'",
+                    exit_code=1,
+                    duration_ms=round(elapsed_ms, 2),
+                )
+
+            try:
+                validator(manifest, raw_text)
+            except (AssertionError, ManifestValidationError) as exc:
+                elapsed_ms = (time.perf_counter() - start_time) * 1000.0
+                err_msg = str(exc)
+                error_text = (
+                    f"❌ Validation Failed: {err_msg}" if err_msg else "❌ Validation Failed"
+                )
+                return RunResult(
+                    exercise=exercise,
+                    passed=False,
+                    has_not_done_marker=False,
+                    output="",
+                    error=error_text,
+                    exit_code=1,
+                    duration_ms=round(elapsed_ms, 2),
+                )
+            except Exception as exc:
+                elapsed_ms = (time.perf_counter() - start_time) * 1000.0
+                return RunResult(
+                    exercise=exercise,
+                    passed=False,
+                    has_not_done_marker=False,
+                    output="",
+                    error=f"❌ Validation Error: {exc}",
+                    exit_code=1,
+                    duration_ms=round(elapsed_ms, 2),
+                )
+
+            elapsed_ms = (time.perf_counter() - start_time) * 1000.0
+            return RunResult(
+                exercise=exercise,
+                passed=True,
+                has_not_done_marker=False,
+                output=f"✓ {exercise.name} passed!",
+                error=None,
+                exit_code=0,
+                duration_ms=round(elapsed_ms, 2),
             )
 
         has_marker = self.check_marker(file_path)
@@ -153,3 +281,12 @@ class ExerciseRunner:
                 exit_code=1,
                 duration_ms=round(elapsed_ms, 2),
             )
+
+
+__all__ = [
+    "INCOMPLETE_MARKERS",
+    "NOT_DONE_MARKER",
+    "ExerciseRunner",
+    "RunResult",
+    "format_yaml_error",
+]
