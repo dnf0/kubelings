@@ -2,6 +2,18 @@
 Exercise: crossplane01.py
 Topic: Crossplane - CompositeResourceDefinition (XRD)
 
+Context & Why:
+Crossplane extends Kubernetes into a universal control plane capable of orchestrating external
+cloud infrastructure (AWS, GCP, Azure) using native Kubernetes API machinery.
+
+A `CompositeResourceDefinition` (XRD) establishes a custom, declarative platform API. Instead of
+forcing developers to understand hundreds of raw cloud provider fields (like VPC subnets, parameter
+groups, or KMS keys), platform engineers define an XRD that:
+- Declares a schema-validated custom API contract using OpenAPI v3 (`spec.versions[*].schema`).
+- Defines the cluster-scoped Composite Resource (XR, e.g. `XPostgreSQLInstance`).
+- Defines the namespace-scoped Claim (XRC, e.g. `PostgreSQLInstance`) that application teams instantiate.
+- Enforces required input parameters (e.g. `storageGB` and `engineVersion`) directly at API admission time.
+
 Task:
 Define a CompositeResourceDefinition (XRD) to publish a custom cloud database API:
 1. 'apiVersion': 'apiextensions.crossplane.io/v1', 'kind': 'CompositeResourceDefinition'
@@ -21,7 +33,9 @@ import yaml
 
 
 def build_xrd() -> dict:
-    # TODO: Define and return CompositeResourceDefinition manifest
+    # TODO: Define and return the CompositeResourceDefinition (XRD) manifest specifying the OpenAPI schema, composite kind, and claim names.
+    # WHY: XRDs establish custom platform APIs with schema validation in Kubernetes, enabling platform engineers to encapsulate
+    #      complex multi-cloud infrastructure requirements into simplified, standardized domain abstractions for development teams.
     return {}
 
 

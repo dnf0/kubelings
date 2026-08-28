@@ -2,6 +2,15 @@
 Exercise: exercises/13_troubleshooting/troubleshoot01.py
 Topic: Debugging CrashLoopBackOff & Exit Codes
 
+Context & Why:
+`CrashLoopBackOff` is one of the most frequent incident conditions encountered in Kubernetes operations.
+It indicates that a container started, crashed or exited unexpectedly, and is repeatedly restarting with
+exponentially increasing back-off delays (10s, 20s, 40s, up to 5m). Rapid root-cause triage starts with
+inspecting the container termination exit code: exit code 137 signals `SIGKILL` (typically Linux kernel OOMKiller
+invoked when container memory exceeds `limits.memory`), exit code 143 signals standard `SIGTERM`, exit code 127
+indicates a missing executable or broken path, and exit code 1 indicates an uncaught runtime exception or missing
+configuration parameter (such as a database connection string).
+
 Instructions:
 When a container in Kubernetes repeatedly terminates and restarts, its status
 transitions to `CrashLoopBackOff`. The container exit code provides the primary
@@ -38,19 +47,28 @@ spec:
     image: nginx:alpine
     resources:
       requests:
+        # TODO: Set CPU requests to "250m".
+        # WHY: Informs kube-scheduler of guaranteed compute needs to avoid node overcommit.
         cpu: ???
+        # TODO: Set memory requests to "256Mi".
+        # WHY: Guarantees baseline memory allocation for stable operation.
         memory: ???
       limits:
         cpu: "500m"
+        # TODO: Set memory limits to "512Mi".
+        # WHY: Provides sufficient memory ceiling to prevent kernel OOMKilled termination (exit 137).
         memory: ???
     env:
+    # TODO: Add missing environment variable 'DATABASE_URL' with value 'postgres://db.internal:5432/app'.
+    # WHY: Supplying required database connection credentials prevents application crash on startup (exit 1).
     - name: ???
       value: ???
 """
 
 
 def diagnose_exit_code(exit_code: int) -> Dict[str, Any]:
-    # TODO: Implement exit code diagnosis logic
+    # TODO: Implement exit code lookup returning reason and cause descriptions for codes 137 (OOMKilled), 143 (SIGTERM), 1 (ApplicationError), and 127 (CommandNotFound).
+    # WHY: Automates rapid failure classification during Kubernetes incident triage.
     return {
         "reason": "TODO",
         "cause": "TODO",

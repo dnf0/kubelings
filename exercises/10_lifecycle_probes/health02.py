@@ -2,11 +2,16 @@
 Exercise: exercises/10_lifecycle_probes/health02.py
 Topic: Readiness Probes
 
-Instructions:
-Readiness probes indicate whether a container is ready to accept incoming client requests.
-When a readiness probe fails, the pod is NOT restarted; instead, the endpoints controller
-removes the Pod IP from all Services matching the pod's selectors until the probe succeeds again.
+Context & Why:
+While liveness probes control container restarts, readiness probes govern network routing.
+During application warmup, schema migrations, or transient downstream saturation, a container
+may be alive but temporarily unable to serve incoming requests. If traffic continues to hit the pod,
+users encounter 500/502 errors. When a readiness probe fails, kubelet does NOT restart the container;
+instead, the Kubernetes endpoints controller temporarily removes the Pod's IP from the Endpoints /
+EndpointSlice objects of all matching Services. Once the probe succeeds again, traffic routing resumes
+seamlessly with zero packet loss.
 
+Instructions:
 1. Configure Pod 'db-service-pod' with container 'db-worker':
    - image: 'postgres:16-alpine'
    - readinessProbe using exec:
@@ -38,22 +43,29 @@ spec:
     readinessProbe:
       exec:
         command:
+        # TODO: Specify the postgres readiness CLI utility 'pg_isready'.
+        # WHY: Executes the native Postgres utility to verify local socket and database readiness.
         - ???
         - "-h"
         - "127.0.0.1"
         - "-p"
         - "5432"
         - "-q"
+      # TODO: Set initial delay to 5 seconds.
+      # WHY: Allows the postgres engine to start accepting local connections before testing readiness.
       initialDelaySeconds: ???
       periodSeconds: 5
       successThreshold: 1
+      # TODO: Set failureThreshold to 2 consecutive failures.
+      # WHY: Prevents removing endpoints prematurely on a single transient latency hiccup.
       failureThreshold: ???
 """
 
 
 def simulate_service_endpoints(pods_state: List[Dict[str, Any]]) -> List[str]:
     """Filter the list of pod endpoints to only include IPs of pods with is_ready=True."""
-    # TODO: Implement endpoint filtering based on readiness state
+    # TODO: Implement endpoint filtering based on readiness state (is_ready == True).
+    # WHY: Mirrors the core Kubernetes endpoints controller logic that synchronizes Service backends with healthy pods.
     return []
 
 

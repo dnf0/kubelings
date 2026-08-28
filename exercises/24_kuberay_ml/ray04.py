@@ -2,7 +2,19 @@
 Exercise: exercises/24_kuberay_ml/ray04.py
 Topic: RayService for Production LLM Serving
 
-Instructions:
+Context & Why:
+Serving Large Language Models (LLMs) and deep learning models in production demands high availability,
+zero-downtime upgrades, request routing, and resilient self-healing.
+
+The `RayService` Custom Resource manages Ray Serve deployments on Kubernetes:
+- Orchestrates both the underlying `RayCluster` and the high-level Ray Serve application graph.
+- Configures `spec.serveConfigV2` with multi-application routing (e.g. application `llm_app`, route prefix `/v1`,
+  import path `llm_serve:model`).
+- Implements zero-downtime blue/green rollouts when updating model weights or serve configurations.
+- Enforces health checking via `serviceUnhealthyThreshold` (e.g. 300s), ensuring transient initialization
+  delays during large model weight loading into GPU VRAM do not prematurely trigger pod eviction.
+
+Task:
 Author a RayService manifest named 'ray-llm-service' for serving an LLM model:
 1. Set 'apiVersion' to 'ray.io/v1' and 'kind' to 'RayService'.
 2. Set 'spec.serviceUnhealthyThreshold' to 300.
@@ -14,6 +26,8 @@ import yaml
 
 from kubelings.validator import validate_manifest_text
 
+# TODO: Configure the RayService manifest with the unhealthy threshold tolerance, cluster template, and declarative serveConfigV2 LLM application routing.
+# WHY: RayService provides zero-downtime blue/green model rollouts, dynamic autoscaling, and self-healing health monitoring for production LLM serving pipelines on Kubernetes.
 RAY_SERVICE_MANIFEST = """
 apiVersion: ray.io/v1
 kind: RayService

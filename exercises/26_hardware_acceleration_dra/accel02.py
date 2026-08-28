@@ -2,7 +2,19 @@
 Exercise: exercises/26_hardware_acceleration_dra/accel02.py
 Topic: Apple Silicon GPU & Metal Performance Shaders (MPS) Acceleration
 
-Instructions:
+Context & Why:
+Local developer environments and edge Kubernetes deployments frequently run on Apple Silicon hardware
+(M1/M2/M3/M4) equipped with Unified Memory Architecture (UMA) and Metal Performance Shaders (MPS).
+
+Running AI/ML workloads on Apple Silicon in Kubernetes requires:
+- Architecture constraints: Targeting ARM64 worker nodes via `kubernetes.io/arch: arm64`.
+- Hardware device plugins: Exposing on-chip Apple GPU cores as extended resources (`apple.com/gpu: 1`).
+- Framework acceleration runtime: Configuring PyTorch runtime environment variables:
+  * `DEVICE: mps`: Directs tensor operations to the Apple Metal GPU pipeline.
+  * `PYTORCH_ENABLE_MPS_FALLBACK: 1`: Ensures operations not yet implemented natively in Apple MPS
+    gracefully fall back to CPU execution without throwing fatal runtime exceptions.
+
+Task:
 Fix the Pod manifest below to enable Apple Silicon GPU acceleration and PyTorch MPS fallback for local AI development:
 1. Set 'apiVersion' to 'v1' and 'kind' to 'Pod'.
 2. Set 'metadata.name' to 'apple-silicon-mlx-pod'.
@@ -16,6 +28,8 @@ import yaml
 
 from kubelings.validator import validate_manifest_text
 
+# TODO: Complete the Pod manifest to target ARM64 Apple Silicon nodes, request Apple GPU devices, and configure PyTorch MPS acceleration environment variables.
+# WHY: Leveraging Apple Silicon Metal Performance Shaders enables high-throughput local AI model testing and edge inference directly on ARM64 developer workstations and edge clusters with unified high-bandwidth memory.
 APPLE_GPU_MANIFEST = """
 apiVersion: ???
 kind: ???

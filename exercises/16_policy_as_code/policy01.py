@@ -2,8 +2,21 @@
 Chapter 16: Policy as Code with Kyverno & Gatekeeper
 Exercise 16.1: Kyverno ClusterPolicy for Required Labels
 
-Fix the Kyverno ClusterPolicy manifest to enforce that all Pods
-in the cluster have the 'app.kubernetes.io/name' and 'team' labels.
+Context & Why:
+In enterprise Kubernetes clusters, consistent resource labeling is essential for cost
+allocation, telemetry aggregation, security audit trails, and automated routing. Relying
+on manual code reviews or developer discipline inevitably leads to missing metadata and
+orphaned workloads.
+
+Kyverno provides a Kubernetes-native Policy-as-Code engine that validates resources
+using standard YAML patterns rather than proprietary programming languages. Setting
+`validationFailureAction: Enforce` instructs the dynamic admission webhook to synchronously
+block non-compliant Pod creation requests at the API boundary, returning a descriptive
+error message to the user.
+
+Task:
+Fix the Kyverno ClusterPolicy manifest function to return the parsed manifest dictionary
+enforcing that all Pods in the cluster have 'app.kubernetes.io/name' and 'team' labels.
 """
 
 from typing import Any, Dict
@@ -35,7 +48,9 @@ spec:
             app.kubernetes.io/name: "?*"
             team: "?*"
 """
-    # Fix the return dictionary
+    # TODO: Parse and return the Kyverno ClusterPolicy manifest dictionary (e.g., using yaml.safe_load).
+    # WHY: Declarative validation policies enforce organizational compliance and metadata standards
+    #      at admission time before non-compliant resources enter cluster state.
     return {}
 
 

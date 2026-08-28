@@ -2,6 +2,21 @@
 Exercise: crossplane03.py
 Topic: Crossplane - ProviderConfig and Resource Deletion Policies
 
+Context & Why:
+Crossplane providers (e.g. `provider-aws`, `provider-gcp`) require authenticated credentials to
+interact with cloud provider APIs and manage cloud resource lifecycles.
+
+Key architecture concepts:
+- `ProviderConfig`: Configures authentication context (e.g. AWS IAM credentials, GCP service account
+  keys) by referencing a Kubernetes Secret. Managed resources specify `providerConfigRef` to select
+  which credentials or accounts to target.
+- `deletionPolicy`: Dictates what happens to the underlying cloud resource when its Kubernetes custom
+  resource is deleted:
+  * `Delete`: The provider actively calls cloud APIs to delete the remote resource (e.g. terminating
+    the AWS S3 bucket), ensuring zero orphaned cloud resources and preventing cost leaks.
+  * `Orphan`: The Kubernetes resource is deleted while the remote cloud asset remains untouched in
+    the cloud provider (useful during migrations).
+
 Task:
 Define an AWS ProviderConfig manifest and configure managed resource deletion policy:
 1. 'apiVersion': 'aws.upbound.io/v1beta1', 'kind': 'ProviderConfig'
@@ -20,7 +35,9 @@ import yaml
 
 
 def build_provider_and_resource() -> list[dict]:
-    # TODO: Define and return list containing ProviderConfig and Bucket manifests
+    # TODO: Define and return the list of manifests containing the ProviderConfig and managed S3 Bucket with an explicit Delete policy.
+    # WHY: ProviderConfig secures cloud API credentials for Crossplane provider pods, while explicit deletion policies ensure complete
+    #      lifecycle synchronization between Kubernetes CRs and remote cloud infrastructure to prevent resource leaks and billing waste.
     return []
 
 

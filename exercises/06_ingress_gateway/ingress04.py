@@ -2,6 +2,16 @@
 Exercise: exercises/06_ingress_gateway/ingress04.py
 Topic: Gateway API Fundamentals
 
+Context & Why:
+While Ingress was designed as a single monolithic resource combining infrastructure and routing rules,
+the Kubernetes Gateway API (`gateway.networking.k8s.io/v1`) introduces modern, expressive, role-oriented
+traffic management with clean organizational boundaries:
+- `GatewayClass`: Defined by infrastructure/cloud providers (e.g. Envoy Gateway, Istio, Cilium).
+- `Gateway`: Managed by cluster operators to declare network endpoints, listening ports, and TLS secrets.
+- `HTTPRoute` / `GRPCRoute`: Authored by application developers to route traffic to backend services.
+HTTPRoutes natively support advanced Layer 7 capabilities like weighted canary rollouts (e.g. 90% v1 / 10% v2)
+and header-based routing without needing vendor-specific annotations.
+
 Instructions:
 The Kubernetes Gateway API (`gateway.networking.k8s.io/v1`) is the modern evolution
 of Ingress, featuring role-oriented resource separation:
@@ -37,6 +47,8 @@ kind: Gateway
 metadata:
   name: prod-edge-gw
 spec:
+  # TODO: Set gatewayClassName to 'envoy-gateway'
+  # WHY: GatewayClass selects the underlying data-plane implementation (e.g. Envoy Gateway controller).
   gatewayClassName: ???
   listeners:
   - name: http
@@ -44,6 +56,8 @@ spec:
     port: 80
     allowedRoutes:
       namespaces:
+        # TODO: Set allowedRoutes namespaces.from to 'Same'
+        # WHY: Restricts route attachment to HTTPRoutes residing in the same namespace as this Gateway.
         from: ???
 ---
 apiVersion: gateway.networking.k8s.io/v1
@@ -52,6 +66,8 @@ metadata:
   name: orders-traffic-route
 spec:
   parentRefs:
+  # TODO: Bind parentRefs to Gateway 'prod-edge-gw'
+  # WHY: Attaches this HTTP routing rule to the specified parent Gateway listener.
   - name: ???
   hostnames:
   - orders.production.com
@@ -72,7 +88,8 @@ spec:
 
 def calculate_canary_traffic_split(http_route: Dict[str, Any]) -> Dict[str, float]:
     """Calculate the percentage share of traffic directed to each backend service."""
-    # TODO: Implement traffic weight calculation
+    # TODO: Implement traffic weight calculation computing percentage ratios from backendRef weights
+    # WHY: Models how the Gateway data-plane splits incoming traffic across multiple weighted upstream services.
     return {}
 
 

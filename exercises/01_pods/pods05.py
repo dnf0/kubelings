@@ -2,6 +2,15 @@
 Exercise: exercises/01_pods/pods05.py
 Topic: Downward API & Environment Variables
 
+Context & Why:
+The Downward API allows containers to consume information about their own identity,
+placement, and cluster environment without directly coupling to the Kubernetes client
+libraries or requiring RBAC permissions to query the API server. By referencing
+`fieldRef.fieldPath`, a container can dynamically receive its own Pod name, namespace,
+assigned Pod IP, or the node name where it is currently executing. This is widely used
+in production to parameterize logging frameworks, distributed tracing agents, service
+mesh sidecars, and cluster-aware consensus applications.
+
 Instructions:
 The Kubernetes Downward API allows containers to consume information about themselves
 or the cluster without coupling to the Kubernetes client or apiserver.
@@ -27,18 +36,26 @@ spec:
   - name: client-app
     image: alpine:3.19
     env:
+    # TODO: Inject MY_POD_NAME referencing fieldPath 'metadata.name'
+    # WHY: Allows the container process to self-identify its pod name for distributed tracing and structured logging.
     - name: MY_POD_NAME
       valueFrom:
         fieldRef:
           fieldPath: ???
+    # TODO: Inject MY_POD_NAMESPACE referencing fieldPath 'metadata.namespace'
+    # WHY: Enables multi-tenant workloads to know their deployment namespace boundary dynamically.
     - name: MY_POD_NAMESPACE
       valueFrom:
         fieldRef:
           fieldPath: ???
+    # TODO: Inject MY_POD_IP referencing fieldPath 'status.podIP'
+    # WHY: Exposes the dynamically assigned pod network IP address to application processes for peer discovery.
     - name: MY_POD_IP
       valueFrom:
         fieldRef:
           fieldPath: ???
+    # TODO: Inject MY_NODE_NAME referencing fieldPath 'spec.nodeName'
+    # WHY: Informs the application container of the physical/virtual host node executing the workload for node-affinity telemetry.
     - name: MY_NODE_NAME
       valueFrom:
         fieldRef:

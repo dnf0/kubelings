@@ -2,6 +2,18 @@
 Exercise: exercises/07_scheduling/sched05.py
 Topic: Topology Spread Constraints
 
+Context & Why:
+While Pod Anti-Affinity provides a binary (yes/no) placement decision per host or zone,
+`topologySpreadConstraints` (TSC) provides fine-grained, quantitative control over how Pods are evenly
+distributed across multi-zone or multi-node failure domains.
+Key parameters:
+- `maxSkew`: Defines the maximum permissible difference in pod counts between any two topology domains.
+  Setting `maxSkew: 1` ensures near-perfect evenness (e.g. 2 pods in Zone A, 2 in Zone B, 2 in Zone C).
+- `topologyKey`: The label designating failure domains (e.g., `topology.kubernetes.io/zone` for AZs, `kubernetes.io/hostname` for nodes).
+- `whenUnsatisfiable`: `DoNotSchedule` acts as a hard filter (leaves pod pending if skew cannot be satisfied),
+  while `ScheduleAnyway` prioritizes nodes that minimize skew without blocking scheduling.
+TSC is crucial for high resilience and cloud SLA protection in multi-AZ clusters.
+
 Instructions:
 `topologySpreadConstraints` control how Pods are spread across failure domains
 (such as regions, zones, nodes, and other user-defined topology domains) to achieve
@@ -38,10 +50,14 @@ metadata:
     app: payment-processor
 spec:
   topologySpreadConstraints:
+  # TODO: Set maxSkew: 1, topologyKey: 'topology.kubernetes.io/zone', and whenUnsatisfiable: 'DoNotSchedule'
+  # WHY: Enforces strict even distribution across AWS availability zones with at most 1 replica delta.
   - maxSkew: 0
     topologyKey: ???
     whenUnsatisfiable: ???
     labelSelector:
+      # TODO: Match label app: 'payment-processor'
+      # WHY: Counts existing payment-processor pods across all zones to calculate current skew.
       matchLabels:
         app: ???
   containers:
@@ -56,7 +72,8 @@ def is_placement_skew_acceptable(
     max_skew: int = 1,
 ) -> bool:
     """Calculate if placing a new pod in candidate_zone satisfies the maxSkew constraint."""
-    # TODO: Implement topology skew validator
+    # TODO: Implement topology skew validator checking if (max_count - min_count) <= max_skew after placement
+    # WHY: Simulates the NodeTopologySpread scoring and filtering plugin in kube-scheduler.
     return False
 
 

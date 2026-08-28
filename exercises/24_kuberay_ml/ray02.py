@@ -2,7 +2,18 @@
 Exercise: exercises/24_kuberay_ml/ray02.py
 Topic: Heterogeneous Worker Pools & Autoscaling
 
-Instructions:
+Context & Why:
+Real-world machine learning and LLM fine-tuning pipelines require heterogeneous compute tiers:
+- CPU nodes for data ingestion, preprocessing, tokenization, and batching.
+- GPU nodes (e.g. NVIDIA A100/H100) for tensor computations and backward passes.
+
+Running preprocessing on expensive GPU nodes leads to massive cloud budget waste. KubeRay solves
+this via heterogeneous worker groups (`spec.workerGroupSpecs`):
+- `cpu-workers`: High `maxReplicas` (e.g. 10) to scale with dataset size during preprocessing.
+- `gpu-workers`: Dedicated accelerator limit (`nvidia.com/gpu: 1`), with `minReplicas: 0` so expensive
+  GPU nodes scale down to zero when no active training job requires GPU acceleration.
+
+Task:
 Configure a heterogeneous RayCluster named 'ray-cluster-heterogeneous':
 1. Set 'apiVersion' to 'ray.io/v1' and 'kind' to 'RayCluster'.
 2. In 'spec.headGroupSpec', configure container 'ray-head' with image 'rayproject/ray:2.35.0'.
@@ -17,6 +28,8 @@ import yaml
 
 from kubelings.validator import validate_manifest_text
 
+# TODO: Configure the RayCluster manifest with heterogeneous worker groups separating CPU worker pools from GPU-accelerated worker pools with autoscaling bounds.
+# WHY: Heterogeneous worker pools optimize cloud compute costs and performance by provisioning specialized hardware (CPUs vs GPUs) only for the specific pipeline stages that require them, preventing idle GPU waste during preprocessing.
 RAY_HETEROGENEOUS_MANIFEST = """
 apiVersion: ray.io/v1
 kind: RayCluster

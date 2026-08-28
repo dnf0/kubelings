@@ -1,8 +1,18 @@
 """
 Exercise: ArgoCD ApplicationSet Matrix Generator (gitops02)
 
-ArgoCD ApplicationSets allow templated multi-cluster and multi-environment
-application generation using generators such as Git directories, List, or Matrix.
+Context & Why:
+As Kubernetes platform fleets grow, managing hundreds of standalone ArgoCD
+Application manifests individually causes severe configuration duplication and
+operational overhead. The ArgoCD `ApplicationSet` controller solves this by
+introducing declarative automation to generate multiple `Application` resources
+from a single templated specification.
+
+ApplicationSet generators (such as Git directory generators, List generators,
+Cluster generators, or Matrix generators combining multiple sources) dynamically
+discover directories or clusters. The controller automatically creates, updates,
+and deletes child Application resources as directories in the repository change,
+enabling scalable multi-tenant and multi-cluster GitOps workflows.
 
 Task:
 Complete `get_applicationset_manifest()` to define an ApplicationSet that uses
@@ -41,7 +51,10 @@ import yaml
 
 
 def get_applicationset_manifest() -> Dict[str, Any]:
-    # TODO: Define and return the ArgoCD ApplicationSet manifest dictionary
+    # TODO: Construct and return the dictionary representation of an ArgoCD ApplicationSet CRD
+    #       with a Git directory generator scanning 'apps/*' and an Application template.
+    # WHY: ApplicationSet generators automate large-scale application provisioning by scanning repository paths
+    #      and generating corresponding child Application custom resources without manual intervention.
     return {}
 
 

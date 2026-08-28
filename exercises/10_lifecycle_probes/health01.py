@@ -2,11 +2,15 @@
 Exercise: exercises/10_lifecycle_probes/health01.py
 Topic: Liveness Probes
 
-Instructions:
-Liveness probes tell Kubernetes if an application is alive and healthy.
-If the liveness probe fails consecutively past `failureThreshold`, kubelet kills
-and restarts the container to recover from deadlocks or unhandled exceptions.
+Context & Why:
+In production environments, applications can experience fatal edge cases like unrecoverable deadlocks,
+corrupted heap memory, or infinite loops where the container process remains alive (PID exists) but is
+incapable of making forward progress. Kubelet liveness probes regularly query container health (via HTTP GET,
+TCP socket, or exec command). If the probe fails consecutively beyond `failureThreshold`, kubelet terminates
+the unhealthy container and triggers a restart according to its `restartPolicy`, restoring service availability
+without requiring human intervention.
 
+Instructions:
 1. Configure Pod 'web-liveness-pod' with container 'web':
    - image: 'nginx:1.25-alpine'
    - livenessProbe using httpGet:
@@ -34,11 +38,19 @@ spec:
     image: nginx:1.25-alpine
     livenessProbe:
       httpGet:
+        # TODO: Set the HTTP health check path to '/healthz'.
+        # WHY: Directs kubelet to query the internal health diagnostic route.
         path: ???
+        # TODO: Set the HTTP probe port to 8080.
+        # WHY: Targets the application listening port for health endpoint probing.
         port: ???
         httpHeaders:
+        # TODO: Configure custom HTTP header 'X-Custom-Header: Awesome'.
+        # WHY: Provides authentication or custom routing headers required by the internal health check handler.
         - name: ???
           value: ???
+      # TODO: Configure initial delay of 15 seconds.
+      # WHY: Gives the container runtime sufficient time to initialize before health checks begin.
       initialDelaySeconds: ???
       periodSeconds: 10
       timeoutSeconds: 2

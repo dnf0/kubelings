@@ -2,7 +2,20 @@
 Exercise: exercises/25_batch_kueue_volcano/volcano02.py
 Topic: Volcano Queue & Fair-Share Scheduling
 
-Instructions:
+Context & Why:
+Enterprise machine learning platforms share compute infrastructure among multiple research groups
+and projects. Without strict multi-tenant batch queueing, a single team submitting massive jobs can
+monopolize all GPUs in the cluster.
+
+Volcano implements multi-tenant fair-share scheduling through the `Queue` Custom Resource:
+- `spec.weight`: Defines proportional allocation weights (e.g. weight: 1). When the cluster is fully
+  saturated, resources are divided fairly according to each queue's relative weight.
+- `spec.capability`: Hard ceiling on the total compute (`cpu`, `memory`, `nvidia.com/gpu`) a queue can
+  simultaneously consume.
+- `spec.reclaimable: true`: Allows the Volcano scheduler to reclaim resources from low-priority or
+  over-capacity queues when higher-priority workloads arrive in starved queues.
+
+Task:
 Fix the Volcano Queue manifest below to establish fair-share multi-tenant queue limits:
 1. Set 'apiVersion' to 'scheduling.volcano.sh/v1beta1' and 'kind' to 'Queue'.
 2. Set 'metadata.name' to 'ai-research-queue'.
@@ -18,6 +31,8 @@ import yaml
 
 from kubelings.validator import validate_manifest_text
 
+# TODO: Complete the Volcano Queue manifest defining proportional weights, hard capability bounds for CPU/memory/GPU, and reclaimability settings.
+# WHY: Volcano Queues enable fair-share batch scheduling across multi-tenant organizations, balancing proportional capacity allocation with dynamic resource reclamation for high-priority AI workloads.
 VOLCANO_QUEUE_MANIFEST = """
 apiVersion: ???
 kind: ???

@@ -2,6 +2,18 @@
 Chapter 20: Declarative Customization with Kustomize
 Exercise 20.2: Kustomize ConfigMap & Secret Generators
 
+Context & Why:
+In vanilla Kubernetes, modifying a ConfigMap or Secret in-place does not trigger a rollout
+of referencing Deployments or DaemonSets. As a result, running Pods retain stale in-memory
+configurations, leading to confusing bugs and configuration drift across replicas.
+
+Kustomize solves this using `configMapGenerator` and `secretGenerator`. By default, Kustomize
+computes a cryptographic hash of the generated configuration contents and appends it as a suffix
+to the resource name (e.g. `app-config-g8h6m5f778`). It also updates all Deployment environment
+and volume references to point to the new suffixed name. When configuration changes, the name
+changes, guaranteeing an automatic rolling restart of dependent workloads. Ensuring
+`generatorOptions.disableNameSuffixHash: False` preserves this immutable release pattern.
+
 Task: Construct a kustomization.yaml manifest utilizing configMapGenerator and secretGenerator.
 Requirements:
 - apiVersion: 'kustomize.config.k8s.io/v1beta1'
@@ -29,6 +41,9 @@ def get_generator_kustomization() -> Dict[str, Any]:
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 """
+    # TODO: Update manifest_yaml with the configMapGenerator, secretGenerator, and generatorOptions, returning the parsed dictionary (e.g., via yaml.safe_load).
+    # WHY: Kustomize generators compute cryptographic content hash suffixes that force rolling restarts of referencing
+    #      workloads whenever configuration changes, eliminating silent configuration drift.
     return {}
 
 

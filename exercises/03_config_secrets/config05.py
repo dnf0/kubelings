@@ -2,6 +2,17 @@
 Exercise: exercises/03_config_secrets/config05.py
 Topic: Immutable ConfigMaps and Secrets
 
+Context & Why:
+By default, ConfigMaps and Secrets in Kubernetes are mutable. When data changes, the kubelet
+periodically polls and updates mounted files across all pods consuming that resource.
+However, for large-scale production deployments, setting `immutable: true` provides two major advantages:
+1. Protection against accidental configuration drift or unauthorized runtime mutations.
+2. Massive cluster scalability improvements: the kube-apiserver immediately terminates all watch
+   streams for immutable objects, drastically cutting down CPU, memory, and network load on the
+   control plane.
+Once an object is marked immutable, the API server rejects any attempts to modify its `data` payload;
+to update configuration, teams create a new versioned ConfigMap and update the Deployment's template.
+
 Instructions:
 Kubernetes supports marking ConfigMaps and Secrets as `immutable: true`.
 Benefits:
@@ -27,7 +38,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: app-feature-flags
-# TODO: set immutable: true
+# TODO: Set immutable: true
+# WHY: Prevents runtime configuration drift and reduces API server overhead by disabling kubelet watch streams.
 data:
   NEW_UI: "true"
   MAX_WORKERS: "8"
@@ -36,7 +48,8 @@ data:
 
 def check_immutability_guard(existing: Dict[str, Any], updated: Dict[str, Any]) -> bool:
     """Verify that updates to an immutable resource do not alter data contents."""
-    # TODO: Implement immutability validation guard
+    # TODO: Implement immutability validation guard raising ValueError on data mutations
+    # WHY: Replicates the Kubernetes API admission validation that rejects update requests modifying immutable resource contents.
     return True
 
 

@@ -2,6 +2,17 @@
 Exercise: exercises/05_services_networking/net05.py
 Topic: ExternalName Services & Manual Endpoints
 
+Context & Why:
+During cloud migrations or hybrid architecture setups, applications running inside Kubernetes
+frequently need to communicate with infrastructure outside the cluster (e.g. AWS RDS instances,
+legacy on-premise monoliths, or external SaaS APIs). Kubernetes supports two core patterns:
+1. `ExternalName`: An internal Service that returns a DNS CNAME record pointing to an external domain
+   (e.g. `db.production.aws.rds.com`), with zero proxying overhead in kube-proxy.
+2. `Selectorless Service + Manual Endpoints`: When integrating with external static IP addresses, creating
+   a Service without a `spec.selector` leaves endpoint management to the administrator. Creating a companion
+   `Endpoints` (or EndpointSlice) object with the exact same name binds those static external IPs to the Service's
+   internal ClusterIP, enabling transparent in-cluster DNS and port mapping.
+
 Instructions:
 Kubernetes allows routing to non-cluster resources using:
 1. `ExternalName`: An alias that CoreDNS resolves as a CNAME directly to an external hostname (no proxying).
@@ -33,6 +44,8 @@ kind: Service
 metadata:
   name: external-database
 spec:
+  # TODO: Set type: ExternalName and externalName: 'db.production.aws.rds.com'
+  # WHY: ExternalName configures CoreDNS to return a CNAME alias pointing directly to the external hostname without proxying traffic.
   type: ???
   externalName: ???
 ---
@@ -41,6 +54,7 @@ kind: Service
 metadata:
   name: legacy-crm
 spec:
+  # Note: Omit selector to prevent kube-controller-manager from overwriting manual endpoints
   ports:
   - name: http
     port: 80
@@ -49,6 +63,8 @@ spec:
 apiVersion: v1
 kind: Endpoints
 metadata:
+  # TODO: Set metadata.name to 'legacy-crm'
+  # WHY: In Kubernetes, an Endpoints object must share the exact same name as its parent selectorless Service to bind properly.
   name: ???
 subsets:
 - addresses:
@@ -56,13 +72,16 @@ subsets:
   - ip: 10.240.0.16
   ports:
   - name: http
+    # TODO: Set port to 8080
+    # WHY: Targets the destination port where the legacy external host processes receive incoming traffic.
     port: 0
 """
 
 
 def validate_endpoints_match_service(service: Dict[str, Any], endpoints: Dict[str, Any]) -> bool:
     """Verify that a manual Endpoints object matches its corresponding Service definition."""
-    # TODO: Implement validation
+    # TODO: Implement validation checking matching resource names and port alignment
+    # WHY: Ensures manual network routing configurations maintain structural contract integrity between Service and Endpoints.
     return False
 
 

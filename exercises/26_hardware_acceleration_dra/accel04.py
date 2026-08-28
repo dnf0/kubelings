@@ -2,7 +2,22 @@
 Exercise: exercises/26_hardware_acceleration_dra/accel04.py
 Topic: High-Throughput Production LLM Inference Server with vLLM
 
-Instructions:
+Context & Why:
+Serving large language models (such as Llama-3-8B) in production demands specialized, high-throughput
+inference runtimes that optimize memory utilization and latency.
+
+Key architecture considerations for deploying vLLM on Kubernetes:
+- High-Throughput Attention: vLLM uses PagedAttention to virtually eliminate KV-cache memory fragmentation,
+  allowing concurrency up to `--gpu-memory-utilization 0.90`.
+- GPU Acceleration: Dedicated device reservation via `resources.limits: {nvidia.com/gpu: 1}` ensures
+  uncontested access to physical accelerator hardware.
+- Health Probing: Large models require tens of seconds to deserialize multi-gigabyte weights from disk into
+  VRAM. Setting `initialDelaySeconds: 30` on the `/health` readiness probe prevents the endpoint from receiving
+  traffic before model initialization completes.
+- Persistent Model Caching: Mounting a persistent volume at `/root/.cache/huggingface` backed by a shared PVC
+  guarantees model weights are cached across pod restarts, preventing multi-gigabyte internet downloads every restart.
+
+Task:
 Fix the Deployment manifest below to deploy a production-grade vLLM inference server:
 1. Set 'apiVersion' to 'apps/v1', 'kind' to 'Deployment', and 'metadata.name' to 'vllm-openai-server'.
 2. Set 'spec.replicas' to 1 and configure 'spec.selector.matchLabels' and 'spec.template.metadata.labels' with 'app: vllm-server'.
@@ -21,6 +36,8 @@ import yaml
 
 from kubelings.validator import validate_manifest_text
 
+# TODO: Fix the vLLM Deployment manifest configuring model arguments, memory utilization flags, GPU limits, readiness probes, and model weight persistent volume caching.
+# WHY: Production LLM serving requires tight coordination of GPU memory management (PagedAttention), resilient health probing during heavy weight loading, and persistent caching to deliver high-throughput, low-latency AI inference at scale.
 VLLM_MANIFEST = """
 apiVersion: ???
 kind: ???

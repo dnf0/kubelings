@@ -2,12 +2,15 @@
 Exercise: exercises/10_lifecycle_probes/health04.py
 Topic: Lifecycle Hooks & Graceful Shutdown
 
-Instructions:
-Kubernetes provides container lifecycle hooks (`postStart` and `preStop`) to execute
-actions during container state transitions. The `preStop` hook executes synchronously
-before `SIGTERM` is sent, enabling graceful connection draining and state saving.
-The `terminationGracePeriodSeconds` defines the maximum window granted before `SIGKILL`.
+Context & Why:
+During rolling updates, node drains, or autoscaling scale-down events, Kubernetes pods are terminated.
+If an application process is immediately terminated via abrupt signals, active in-flight HTTP requests
+are dropped and database transactions may be left incomplete. The `preStop` lifecycle hook executes
+synchronously before the container receives `SIGTERM`, allowing the workload to notify service meshes,
+drain active connections, and persist state. Setting an appropriate `terminationGracePeriodSeconds` (e.g. 60s)
+ensures the container is given adequate time to complete graceful drainage before kubelet issues `SIGKILL`.
 
+Instructions:
 1. Configure Pod 'graceful-web-pod':
    - terminationGracePeriodSeconds: 60
    - Container 'web-server': image 'nginx:alpine'
@@ -25,6 +28,8 @@ kind: Pod
 metadata:
   name: graceful-web-pod
 spec:
+  # TODO: Configure termination grace period of 60 seconds.
+  # WHY: Grants sufficient time for in-flight requests to complete before kubelet sends SIGKILL.
   terminationGracePeriodSeconds: ???
   containers:
   - name: web-server
@@ -33,12 +38,18 @@ spec:
       postStart:
         exec:
           command:
+          # TODO: Specify the shell executable '/bin/sh'.
+          # WHY: Runs initialization command immediately after the container is created.
           - ???
           - "-c"
           - "echo Ready > /var/log/started.log"
       preStop:
         httpGet:
+          # TODO: Set preStop hook path to '/prepare-shutdown'.
+          # WHY: Signals the web server to stop accepting new requests and drain connections before SIGTERM.
           path: ???
+          # TODO: Set target HTTP port to 80.
+          # WHY: Routes the shutdown signal to the active web listener.
           port: ???
 """
 

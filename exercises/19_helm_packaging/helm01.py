@@ -2,6 +2,17 @@
 Chapter 19: Package Management with Helm
 Exercise 19.1: Helm Chart.yaml Metadata & Dependencies
 
+Context & Why:
+Helm is the de-facto package manager for Kubernetes, packaging collections of YAML templates
+and configuration values into distributable, versioned charts. In Helm v3, the `Chart.yaml`
+file uses `apiVersion: v2` to define chart metadata and dependency relationships.
+
+A well-structured `Chart.yaml` strictly separates the packaging version (`version`, following
+Semantic Versioning 2.0) from the deployed application workload version (`appVersion`).
+Declaring dependencies (such as Redis from a public Helm repository) alongside conditional flags
+(`condition: redis.enabled`) enables chart consumers to selectively enable or disable supporting
+infrastructure subcharts directly through their values file.
+
 Task: Construct a valid Helm v3 Chart.yaml metadata specification for 'webapp-chart'.
 Requirements:
 - apiVersion: 'v2' (Helm 3 standard)
@@ -27,6 +38,9 @@ apiVersion: v1
 name: ""
 version: ""
 """
+    # TODO: Update manifest_yaml with the specified Chart.yaml metadata & dependencies and return the parsed dictionary (e.g., via yaml.safe_load).
+    # WHY: Chart.yaml establishes the chart's SemVer package identity and dependency tree, allowing Helm to resolve
+    #      and package subchart dependencies reliably.
     return {}
 
 

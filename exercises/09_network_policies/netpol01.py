@@ -2,12 +2,15 @@
 Exercise: exercises/09_network_policies/netpol01.py
 Topic: Default Deny Network Policy
 
-Instructions:
-By default, Kubernetes pods accept network traffic from any source and can connect
-to any destination. To establish a secure zero-trust networking baseline, a Default Deny
-NetworkPolicy isolates all pods in a namespace, blocking all ingress and egress traffic
-until explicit allow rules are defined.
+Context & Why:
+Kubernetes implements a flat, open network model by default: any pod in any namespace can
+communicate with any other pod without restriction. To establish a defense-in-depth Zero Trust
+architecture, production clusters implement a "Default Deny" posture. A NetworkPolicy with an
+empty `podSelector: {}` targets all pods in the namespace, and declaring `policyTypes: [Ingress, Egress]`
+without specifying allow rules immediately blocks all non-whitelisted inbound and outbound traffic.
+This forces development teams to explicitly document and declare legitimate microservice traffic paths.
 
+Instructions:
 1. Define a NetworkPolicy 'default-deny-all' in namespace 'production':
    - apiVersion: 'networking.k8s.io/v1'
    - kind: 'NetworkPolicy'
@@ -27,7 +30,11 @@ metadata:
   name: default-deny-all
   namespace: production
 spec:
+  # TODO: Select all pods in the namespace using an empty mapping ({}).
+  # WHY: An empty podSelector matches 100% of the pods in the target namespace.
   podSelector: ???
+  # TODO: Declare both 'Ingress' and 'Egress' policy types.
+  # WHY: Instructs the CNI network plugin to enforce filtering in both directions, defaulting to drop unless allowed.
   policyTypes:
   - ???
   - ???

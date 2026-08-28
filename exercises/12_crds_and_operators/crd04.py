@@ -2,6 +2,14 @@
 Exercise: exercises/12_crds_and_operators/crd04.py
 Topic: Dynamic Admission Webhooks
 
+Context & Why:
+Dynamic Admission Control allows cluster administrators to intercept, validate, or mutate API requests
+before objects are persisted to etcd. While standard RBAC controls *who* can make a request, Admission
+Webhooks control *what* content is permissible within the request payload. `ValidatingWebhookConfiguration`
+registers HTTPS endpoints that receive `AdmissionReview` JSON payloads from the API server. In security-conscious
+enterprises, validating webhooks enforce strict organizational policies—such as rejecting any container requesting
+root execution (`runAsUser: 0`) or privileged capability overrides—returning descriptive 403 Forbidden responses.
+
 Instructions:
 Kubernetes Dynamic Admission Webhooks intercept API requests prior to persistence
 in etcd. Validating Webhooks evaluate custom policies and can accept or reject
@@ -50,6 +58,8 @@ webhooks:
 - name: validate-security.example.com
   admissionReviewVersions:
   - v1
+  # TODO: Declare sideEffects as 'None'.
+  # WHY: Asserts the webhook does not mutate out-of-band state, enabling safe dry-run calls.
   sideEffects: ???
   rules:
   - operations:
@@ -59,12 +69,16 @@ webhooks:
     - ""
     apiVersions:
     - v1
+    # TODO: Intercept 'pods' resources.
+    # WHY: Targets pod creation and mutation events for security validation.
     resources:
     - ???
   clientConfig:
     service:
       name: security-webhook-svc
       namespace: kube-system
+      # TODO: Set the webhook HTTPS service path to '/validate-pods'.
+      # WHY: Routes API server admission evaluation requests to the handler endpoint.
       path: ???
       port: 443
 """
@@ -74,7 +88,8 @@ def handle_admission_review(review: Dict[str, Any]) -> Dict[str, Any]:
     req = review.get("request", {})
     uid = req.get("uid", "")
 
-    # TODO: Implement admission review validation logic using review request object
+    # TODO: Implement admission review validation logic inspecting container securityContext (reject privileged or root containers with HTTP 403).
+    # WHY: Dynamic admission webhooks enforce runtime compliance invariants on raw manifests before admission into etcd.
     return {
         "apiVersion": "admission.k8s.io/v1",
         "kind": "AdmissionReview",

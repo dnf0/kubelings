@@ -2,6 +2,20 @@
 Exercise: gateway02.py
 Topic: Gateway API - HTTPRoute Path Matching and Backend Routing
 
+Context & Why:
+`HTTPRoute` decouples application layer-7 routing logic from gateway infrastructure, enabling
+service teams to independently declare how HTTP traffic routes to backend workloads without
+requiring cluster-wide administrator access.
+
+In microservice architectures, routing rules require sophisticated matching criteria, including:
+- Exact and prefix path matching to segment API endpoints (e.g., routing `/v1/users` to user services).
+- HTTP header matching to support canary deployments, beta user testing, and version pinning
+  (e.g., inspecting `X-Beta-Features: enabled` to route specific clients to experimental service backends).
+- Hostname binding (`hostnames: ['api.example.com']`) to ensure virtual host multi-tenancy.
+
+By referencing a parent `Gateway` via `spec.parentRefs`, developers bind their traffic policies to
+the cluster's load balancing entrypoints in a safe, multi-tenant manner.
+
 Task:
 Define an HTTPRoute resource attached to a Gateway:
 1. 'apiVersion': 'gateway.networking.k8s.io/v1', 'kind': 'HTTPRoute'
@@ -17,7 +31,10 @@ import yaml
 
 
 def build_http_route() -> dict:
-    # TODO: Define and return HTTPRoute manifest
+    # TODO: Define and return the HTTPRoute manifest attached to the parent Gateway with path prefix and header matching rules.
+    # WHY: HTTPRoute allows application teams to declare decoupled layer-7 routing logic (such as path prefixes and
+    #      header-based routing for beta traffic) independently from the underlying Gateway infrastructure, avoiding
+    #      monolithic ingress configuration collisions.
     return {}
 
 

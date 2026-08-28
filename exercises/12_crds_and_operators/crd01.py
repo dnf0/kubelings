@@ -2,11 +2,15 @@
 Exercise: exercises/12_crds_and_operators/crd01.py
 Topic: CustomResourceDefinition (CRD) Schema
 
-Instructions:
-CustomResourceDefinitions (CRDs) allow developers to extend the Kubernetes API
-with custom objects. The OpenAPI v3 schema validation ensures that any custom
-resource created complies with type and constraint specifications.
+Context & Why:
+CustomResourceDefinitions (CRDs) extend the Kubernetes API with domain-specific resources (such as
+databases, queues, or backup schedules) managed like native Kubernetes objects. In production, defining
+a strict OpenAPI v3 validation schema (`openAPIV3Schema`) is vital. Structural schemas allow the API server
+to validate field types, enforce required fields, validate enumerated strings, and reject out-of-bounds
+numerical values at admission time before persisting objects to etcd, preventing malformed CR manifests
+from causing controller runtime crashes.
 
+Instructions:
 1. Define a CustomResourceDefinition 'databases.database.example.com':
    - apiVersion: apiextensions.k8s.io/v1
    - kind: CustomResourceDefinition
@@ -55,7 +59,11 @@ kind: CustomResourceDefinition
 metadata:
   name: databases.database.example.com
 spec:
+  # TODO: Define the API group 'database.example.com'.
+  # WHY: Namespaces the custom API under your organization's domain to avoid collision with core APIs.
   group: ???
+  # TODO: Set the CRD scope to 'Namespaced'.
+  # WHY: Ensures instances of Database CRs are created and isolated within individual namespaces.
   scope: ???
   names:
     plural: databases
@@ -65,7 +73,11 @@ spec:
     - db
   versions:
   - name: v1alpha1
+    # TODO: Enable served flag (boolean true).
+    # WHY: Instructs the API server to expose this version endpoint to REST clients.
     served: ???
+    # TODO: Enable storage flag (boolean true).
+    # WHY: Designates v1alpha1 as the underlying schema version stored in etcd.
     storage: ???
     schema:
       openAPIV3Schema:
@@ -89,9 +101,13 @@ spec:
               replicas:
                 type: integer
                 minimum: 1
+                # TODO: Set maximum allowed replicas to 5.
+                # WHY: Validates replica counts at the API boundary, rejecting excessive resource requests.
                 maximum: ???
               storageGB:
                 type: integer
+                # TODO: Set minimum allowed storageGB to 10.
+                # WHY: Prevents creating databases with insufficient disk allocation.
                 minimum: ???
 """
 

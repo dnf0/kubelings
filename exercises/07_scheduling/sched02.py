@@ -2,6 +2,18 @@
 Exercise: exercises/07_scheduling/sched02.py
 Topic: Node Affinity & Constraints
 
+Context & Why:
+While `nodeSelector` only supports simple exact equality matches, `nodeAffinity` provides rich,
+expressive scheduling logic using set-based operators (`In`, `NotIn`, `Exists`, `DoesNotExist`, `Gt`, `Lt`).
+Kubernetes distinguishes between two affinity rule strengths:
+1. `requiredDuringSchedulingIgnoredDuringExecution` (Hard requirement): The scheduler MUST place the Pod
+   on a node satisfying the criteria (e.g., must be in zones `us-east-1a` or `us-east-1b`); otherwise the Pod
+   remains in `Pending` status.
+2. `preferredDuringSchedulingIgnoredDuringExecution` (Soft preference): Assigns weights (1–100) to prioritize
+   optimal nodes (e.g., preference for compute-optimized `c5.2xlarge` instances) without blocking scheduling
+   if preferred instances are unavailable.
+The suffix `IgnoredDuringExecution` indicates that if node labels change after scheduling, running pods are not evicted.
+
 Instructions:
 Node Affinity allows expressive pod scheduling constraints:
 1. `requiredDuringSchedulingIgnoredDuringExecution`: Hard constraint (must be satisfied for scheduling).
@@ -34,6 +46,8 @@ spec:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
+          # TODO: Set operator to 'In' and values to ['us-east-1a', 'us-east-1b']
+          # WHY: Enforces hard zone placement so the pod runs strictly in supported AWS Availability Zones.
           - key: topology.kubernetes.io/zone
             operator: ???
             values:
@@ -59,7 +73,8 @@ def evaluate_node_affinity_score(
     node_affinity: Dict[str, Any],
 ) -> Tuple[bool, int]:
     """Calculate whether a node is eligible and compute its preference affinity score."""
-    # TODO: Implement node affinity evaluation
+    # TODO: Implement node affinity evaluation checking hard required rules and summing preferred weights
+    # WHY: Models the NodeAffinity scoring plugin within the kube-scheduler scoring cycle.
     return (False, 0)
 
 

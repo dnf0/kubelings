@@ -2,8 +2,21 @@
 Chapter 17: Multi-Tenancy, Virtual Clusters & HNC
 Exercise 17.3: Virtual Cluster (vcluster) Control Plane Manifest
 
-Fix the vcluster virtual cluster specification to provision an isolated
-virtual control plane running k3s with isolated persistent storage in namespace 'team-c'.
+Context & Why:
+Traditional namespace-based multi-tenancy provides "soft" isolation. All tenants share the
+same Kubernetes API server, CRD registry, RBAC cluster roles, and admission webhooks. A tenant
+cannot install their own operators, test different Kubernetes API versions, or have `cluster-admin`
+privileges inside their sandbox without risking cluster-wide compromise.
+
+Virtual clusters (`vcluster`) deliver "hard" control-plane multi-tenancy. A `VirtualCluster`
+manifest provisions a dedicated, lightweight control plane (e.g. k3s or vanilla k8s) running inside
+a host namespace. The vcluster syncer controller synchronizes low-level execution primitives
+(Pods, Services, Ingresses) to the underlying host cluster while keeping CRDs, namespaces, and
+RBAC completely isolated within the tenant's private virtual control plane.
+
+Task:
+Fix the vcluster virtual cluster specification function to return the parsed manifest dictionary
+provisioning an isolated virtual control plane with resource syncing in namespace 'team-c'.
 """
 
 from typing import Any, Dict
@@ -32,7 +45,9 @@ spec:
       nodes:
         enabled: true
 """
-    # Fix the return dictionary
+    # TODO: Parse and return the vcluster VirtualCluster manifest dictionary (e.g., using yaml.safe_load).
+    # WHY: Virtual clusters decouple tenant control planes from host infrastructure, enabling safe multi-tenancy
+    #      with isolated CRD registration, separate API versions, and granular syncer mappings.
     return {}
 
 

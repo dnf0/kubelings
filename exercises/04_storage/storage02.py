@@ -2,6 +2,16 @@
 Exercise: exercises/04_storage/storage02.py
 Topic: PersistentVolumes & PersistentVolumeClaims
 
+Context & Why:
+Kubernetes decouples storage infrastructure administration from application storage consumption
+using two complementary API objects:
+1. `PersistentVolume` (PV): A piece of storage in the cluster provisioned by an administrator or
+   dynamically created using StorageClasses. It is a cluster-scoped resource with an independent lifecycle.
+2. `PersistentVolumeClaim` (PVC): A namespace-scoped request for storage by a user. PVCs specify
+   desired size, access modes (e.g. ReadWriteOnce), and optionally a storageClassName.
+The Kubernetes PersistentVolume controller continuously monitors for unassigned PVCs and binds them
+to available PVs that satisfy or exceed the requested capacity, matching access modes and storage class.
+
 Instructions:
 Kubernetes decouples storage infrastructure provisioning (PersistentVolume)
 from application storage requests (PersistentVolumeClaim).
@@ -33,8 +43,12 @@ metadata:
   name: task-pv
 spec:
   capacity:
+    # TODO: Set capacity storage to 10Gi
+    # WHY: Declares the physical storage capacity available on this provisioned volume.
     storage: ???
   accessModes:
+    # TODO: Add accessMode 'ReadWriteOnce'
+    # WHY: ReadWriteOnce allows the volume to be mounted as read-write by a single node at a time.
     - ???
   storageClassName: manual
   hostPath:
@@ -46,10 +60,14 @@ metadata:
   name: task-pvc
 spec:
   accessModes:
+    # TODO: Add accessMode 'ReadWriteOnce'
+    # WHY: Requests single-node read-write access to match the target PersistentVolume.
     - ???
   storageClassName: manual
   resources:
     requests:
+      # TODO: Request 5Gi storage
+      # WHY: The PVC requests a minimum of 5Gi, which will successfully bind to a 10Gi PV.
       storage: ???
 """
 
@@ -68,7 +86,8 @@ def _parse_storage_str(val: str) -> int:
 
 def check_pvc_matches_pv(pv: Dict[str, Any], pvc: Dict[str, Any]) -> bool:
     """Check whether a PersistentVolume satisfies a PersistentVolumeClaim request."""
-    # TODO: Implement matching logic
+    # TODO: Implement matching logic checking storage capacity, storageClassName, and accessModes
+    # WHY: Replicates the volume binder loop in kube-controller-manager that binds claims to suitable volumes.
     return False
 
 

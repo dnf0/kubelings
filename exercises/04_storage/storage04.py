@@ -2,6 +2,16 @@
 Exercise: exercises/04_storage/storage04.py
 Topic: StorageClasses & Dynamic Provisioning
 
+Context & Why:
+In cloud-native Kubernetes deployments, manually pre-provisioning individual PersistentVolumes
+is unmanageable. `StorageClass` objects define dynamic provisioning templates that invoke Container
+Storage Interface (CSI) drivers (e.g. AWS EBS, GCP Persistent Disk, Azure Disk) to allocate cloud disks
+on demand when a PVC is submitted.
+Crucially, setting `volumeBindingMode: WaitForFirstConsumer` delays disk provisioning until a Pod
+referencing the PVC is scheduled. This ensures the storage volume is provisioned in the exact Availability
+Zone (AZ) where the Pod's assigned node lives, avoiding multi-zone scheduling deadlocks. Enabling
+`allowVolumeExpansion: true` allows resizing PVC storage quotas online without downtime.
+
 Instructions:
 A StorageClass enables dynamic volume provisioning without pre-allocating PVs manually.
 The `volumeBindingMode: WaitForFirstConsumer` delays volume binding and provisioning until
@@ -30,8 +40,14 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: fast-ebs
+# TODO: Set provisioner to 'ebs.csi.aws.com'
+# WHY: Delegates disk creation to the AWS EBS Container Storage Interface (CSI) driver.
 provisioner: ???
+# TODO: Set volumeBindingMode to 'WaitForFirstConsumer'
+# WHY: Prevents AZ affinity deadlocks by delaying EBS disk provisioning until the consumer pod is placed on a specific worker node.
 volumeBindingMode: ???
+# TODO: Set reclaimPolicy to 'Delete' and allowVolumeExpansion to true
+# WHY: Delete automatically cleans up cloud disks when PVCs are deleted, and allowVolumeExpansion enables online volume resizing.
 reclaimPolicy: ???
 allowVolumeExpansion: false
 parameters:
@@ -44,6 +60,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: dynamic-db-pvc
 spec:
+  # TODO: Request storageClassName: 'fast-ebs', accessModes: ['ReadWriteOnce'], and storage: '20Gi'
+  # WHY: Triggers dynamic volume provisioning through the fast-ebs StorageClass upon first consumer scheduling.
   storageClassName: ???
   accessModes:
     - ???

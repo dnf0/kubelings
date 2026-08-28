@@ -1,8 +1,17 @@
 """
 Exercise: Hubble Observability & OpenTelemetry Tracing (mesh04)
 
-Cilium Hubble provides deep network, service, and security visibility for Kubernetes.
-Pod annotations allow Hubble and OpenTelemetry to collect distributed traces and metrics.
+Context & Why:
+Observability into complex distributed microservices traditionally required heavy
+sidecar proxy injection (e.g. Envoy in every Pod) and invasive code instrumentation.
+Sidecars consume significant CPU/memory resources and introduce latency overheads.
+
+Cilium Hubble delivers deep network flow, service graph, and security visibility
+directly from Linux kernel eBPF hooks without requiring per-pod sidecars. Standard
+Kubernetes annotations on workloads guide the observability pipeline: `sidecar.istio.io/inject: "false"`
+opts into sidecarless/ambient mesh architectures, `prometheus.io/scrape` coordinates metric
+harvesting on specific ports, and `telemetry.cilium.io/trace: "b3"` enables eBPF-driven
+distributed trace context propagation for OpenTelemetry collectors.
 
 Task:
 Complete `get_observable_pod_manifest()` returning a Pod manifest configured for mesh observability:
@@ -27,7 +36,10 @@ from typing import Any, Dict
 
 
 def get_observable_pod_manifest() -> Dict[str, Any]:
-    # TODO: Define and return the observable Pod manifest dictionary
+    # TODO: Construct and return the dictionary representation of a Pod manifest annotated
+    #       for Prometheus metric scraping and Cilium/OpenTelemetry distributed tracing.
+    # WHY: eBPF-based observability and telemetry annotations allow Hubble and OpenTelemetry to collect
+    #      rich metrics and trace contexts at kernel level without the resource overhead of sidecar proxies.
     return {}
 
 

@@ -2,6 +2,15 @@
 Exercise: exercises/12_crds_and_operators/crd03.py
 Topic: Python Kubernetes Operator Loop
 
+Context & Why:
+The Kubernetes Operator pattern automates complex application management by continuously executing
+a control loop (level-triggered reconciliation). Instead of imperative scripts, the operator observes
+the desired state in the Custom Resource `spec` and compares it with the actual state of underlying
+cluster resources (e.g., Deployments, StatefulSets, Services). When drift is detected (such as missing child
+deployments or mismatched replica counts), the controller issues mutation API requests to converge actual
+state to desired state, updating `.status.phase` (`Creating`, `Scaling`, `Progressing`, `Ready`) to give
+users real-time visibility into workload progression.
+
 Instructions:
 A Kubernetes Operator encodes domain-specific operational knowledge into software.
 The core of every operator is the reconciliation loop:
@@ -48,7 +57,8 @@ def reconcile_database(
     custom_resource: Dict[str, Any],
     existing_deployment: Optional[Dict[str, Any]],
 ) -> Dict[str, Any]:
-    # TODO: Implement operator reconciliation logic using custom_resource and existing_deployment
+    # TODO: Implement operator reconciliation logic comparing desired custom_resource spec against existing_deployment state.
+    # WHY: The controller reconciliation loop drives actual cluster state to match desired declarative state and reports status phases.
     return {
         "action": "TODO",
         "status_patch": {},

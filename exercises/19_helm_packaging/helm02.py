@@ -2,6 +2,17 @@
 Chapter 19: Package Management with Helm
 Exercise 19.2: Helm Go Templating & Named Helpers (_helpers.tpl)
 
+Context & Why:
+Helm uses the Go `text/template` engine enhanced with Sprig functions to render Kubernetes
+manifests dynamically. In production charts, standard named templates in `_helpers.tpl`
+(especially the `fullname` template) generate consistent resource names.
+
+According to RFC 1123, Kubernetes DNS subdomains and resource names must not exceed 63 characters.
+If a release name and chart name combined exceed 63 characters (e.g., in nested CI/CD pipelines
+with long branch names), `kubectl` rejects the resulting manifests. The standard `fullname` helper
+handles overrides, avoids repetitive names when the release name includes the chart name,
+and truncates output to 63 characters while stripping trailing hyphens (`trunc 63 | trimSuffix "-"`).
+
 Task: Implement the standard Helm fullname helper logic and render a Kubernetes Deployment.
 Requirements:
 - Function `chart_fullname(chart_name: str, release_name: str, fullname_override: str = "") -> str`:
@@ -19,10 +30,16 @@ from typing import Any, Dict
 
 
 def chart_fullname(chart_name: str, release_name: str, fullname_override: str = "") -> str:
+    # TODO: Implement the chart_fullname helper logic adhering to the 63-char truncation and override rules.
+    # WHY: Kubernetes RFC 1123 DNS naming rules enforce a 63-character limit; helper templates sanitize
+    #      and truncate resource names to guarantee valid manifest generation across long release names.
     return ""
 
 
 def render_deployment(values: Dict[str, Any]) -> Dict[str, Any]:
+    # TODO: Construct and return the Deployment manifest dictionary using values and the chart_fullname helper.
+    # WHY: Helm templates interpolate runtime values into Kubernetes manifests, binding parameterized configurations
+    #      (image, replicas, ports) to standard resource schemas.
     return {}
 
 

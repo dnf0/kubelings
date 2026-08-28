@@ -1,8 +1,18 @@
 """
 Exercise: Cilium L7 HTTP NetworkPolicy (mesh01)
 
-Cilium provides eBPF-powered Layer 7 Network Policies that can filter traffic
-based on HTTP methods, paths, and headers without needing sidecar proxies.
+Context & Why:
+Standard Kubernetes `NetworkPolicy` resources operate exclusively at Layer 3 (IP addresses)
+and Layer 4 (TCP/UDP port numbers). In microservice architectures, this coarse granularity
+is insufficient: it cannot distinguish between safe read endpoints (such as `GET /api/v1/public/.*`)
+and state-modifying or privileged endpoints (such as `POST /api/v1/orders`), nor can it enforce
+required HTTP authentication headers.
+
+Cilium leverages Linux kernel eBPF (extended Berkeley Packet Filter) and integrated Envoy
+data path proxies to enforce Layer 7 (L7) application-aware security policies. A `CiliumNetworkPolicy`
+allows platform engineers to specify HTTP verbs, URI regex paths, and header constraints.
+Because packet inspection happens at the kernel and local socket layers, fine-grained L7 zero-trust
+security is achieved without injecting intrusive sidecar containers into every application pod.
 
 Task:
 Complete `get_cilium_l7_policy()` to return a `CiliumNetworkPolicy` dictionary:
@@ -36,7 +46,10 @@ from typing import Any, Dict
 
 
 def get_cilium_l7_policy() -> Dict[str, Any]:
-    # TODO: Define and return the CiliumNetworkPolicy manifest dictionary
+    # TODO: Construct and return the dictionary representation of a CiliumNetworkPolicy CRD
+    #       specifying endpointSelector, ingress source endpoints, and L7 HTTP method/path/header rules.
+    # WHY: Layer 7 network policies extend security beyond L3/L4 port-level controls, enabling granular
+    #      HTTP route and header authorization enforced directly via eBPF without requiring sidecar containers.
     return {}
 
 

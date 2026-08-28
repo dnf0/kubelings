@@ -2,12 +2,16 @@
 Exercise: exercises/11_autoscaling/autoscale02.py
 Topic: HPA Custom Scaling Behavior
 
-Instructions:
-Kubernetes autoscaling/v2 allows fine-grained control over scaling velocity
-using `spec.behavior`. This prevents flapping (thrashing) by introducing
-stabilization windows and capping the rate of replica changes for scale-up
-and scale-down independently.
+Context & Why:
+Under bursty or oscillating workloads (such as flash sales or cron-driven webhook processing),
+standard autoscaling can suffer from "thrashing" or "flapping"—scaling pods up and down repeatedly,
+wasting container spin-up overhead and thrashing cluster nodes. `spec.behavior` provides asymmetric
+velocity controls: by adding a 300-second stabilization window on scale-down with restrictive step
+policies (`selectPolicy: Min`), the autoscaler waits out brief traffic dips before terminating pods.
+Conversely, setting `stabilizationWindowSeconds: 0` and `selectPolicy: Max` on scale-up ensures immediate,
+aggressive capacity expansion when traffic surges.
 
+Instructions:
 1. Define a HorizontalPodAutoscaler 'checkout-hpa' in namespace 'ecommerce':
    - apiVersion: autoscaling/v2
    - scaleTargetRef: Deployment 'checkout-service' (apiVersion: apps/v1)
@@ -52,12 +56,18 @@ spec:
       name: cpu
       target:
         type: Utilization
+        # TODO: Set target CPU averageUtilization to 70.
+        # WHY: Establishes the steady-state target CPU threshold across all checkout service pods.
         averageUtilization: ???
   behavior:
     scaleDown:
+      # TODO: Set scaleDown stabilization window to 300 seconds.
+      # WHY: Holds scale-down actions for 5 minutes to prevent premature pod termination during temporary traffic lulls.
       stabilizationWindowSeconds: ???
       selectPolicy: Min
       policies:
+      # TODO: Set scaleDown policy type to 'Percent' (value: 10, periodSeconds: 60).
+      # WHY: Restricts scale-down to at most 10% of existing replicas per 60-second window.
       - type: ???
         value: 10
         periodSeconds: 60
@@ -66,9 +76,13 @@ spec:
         periodSeconds: 60
     scaleUp:
       stabilizationWindowSeconds: 0
+      # TODO: Set scaleUp selectPolicy to 'Max'.
+      # WHY: Chooses whichever scaling policy yields the largest replica addition for rapid scale-out.
       selectPolicy: ???
       policies:
       - type: Percent
+        # TODO: Set scaleUp percentage value to 100.
+        # WHY: Allows doubling the pod count (100% increase) every 15 seconds during severe spikes.
         value: ???
         periodSeconds: 15
       - type: Pods

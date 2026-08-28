@@ -1,9 +1,18 @@
 """
 Exercise: GitOps with ArgoCD Application CRD (gitops01)
 
-ArgoCD is a declarative GitOps continuous delivery tool for Kubernetes.
-An ArgoCD `Application` Custom Resource defines the relationship between a source
-Git repository (or Helm chart) and a destination target Kubernetes cluster and namespace.
+Context & Why:
+GitOps establishes Git repositories as the single source of truth for declared
+system state in Kubernetes. ArgoCD implements this paradigm using an active
+controller loop that continuously compares desired state (manifests in Git) with
+the live cluster state.
+
+When divergence occurs (e.g., direct manual edits or config drift), ArgoCD detects
+the 'OutOfSync' condition. Enabling automated sync policies with `selfHeal: True`
+instructs the controller to automatically revert unauthorized live changes back to
+the Git baseline. Enabling `prune: True` ensures that when Kubernetes resources
+are deleted from the Git repository, ArgoCD automatically cleans them up from the
+cluster, preventing dangerous orphaned workloads and configuration clutter.
 
 Task:
 Complete `get_argocd_application_manifest()` to return a dictionary representing
@@ -34,7 +43,10 @@ import yaml
 
 
 def get_argocd_application_manifest() -> Dict[str, Any]:
-    # TODO: Define and return the ArgoCD Application manifest dictionary
+    # TODO: Construct and return the dictionary representation of an ArgoCD Application CRD
+    #       specifying source repo URL, revision, target cluster destination, and automated sync policies.
+    # WHY: ArgoCD continuously reconciles the live state in the cluster against the desired state defined
+    #      in Git, ensuring automated drift correction (selfHeal) and garbage-collecting orphaned resources (prune).
     return {}
 
 

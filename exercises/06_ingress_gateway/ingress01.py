@@ -2,6 +2,15 @@
 Exercise: exercises/06_ingress_gateway/ingress01.py
 Topic: Ingress Host & Path Routing
 
+Context & Why:
+While NodePort and LoadBalancer services operate primarily at Layer 4 (TCP/UDP transport layer),
+`Ingress` objects manage Layer 7 application routing (HTTP and HTTPS). An Ingress Controller
+(such as NGINX, Traefik, HAProxy, or AWS ALB Controller) inspects HTTP request headers, hostnames,
+and URI paths to multiplex traffic from a single public entrypoint to dozens of internal microservices.
+Specifying `ingressClassName: nginx` dictates which ingress controller implementation reconciles the rule.
+Path matching types (`Prefix` vs `Exact`) define how URI paths are evaluated, allowing path-based
+API versioning (`/v1` vs `/v2`) and multi-host virtual hosting (`api.example.com` vs `admin.example.com`).
+
 Instructions:
 Kubernetes Ingress manages external HTTP/HTTPS routing into internal Services.
 Paths can be matched using `pathType: Prefix` or `pathType: Exact`.
@@ -31,12 +40,16 @@ kind: Ingress
 metadata:
   name: api-gateway-ingress
 spec:
+  # TODO: Set ingressClassName to 'nginx'
+  # WHY: IngressClass specifies which in-cluster controller (e.g. ingress-nginx) is responsible for provisioning the routing table.
   ingressClassName: ???
   rules:
   - host: api.example.com
     http:
       paths:
       - path: /v1
+        # TODO: Set pathType to 'Prefix' and backend service to 'api-v1-service' on port 80
+        # WHY: Prefix matching routes all subpaths starting with /v1 to the v1 backend service.
         pathType: ???
         backend:
           service:
@@ -57,6 +70,8 @@ spec:
         pathType: Prefix
         backend:
           service:
+            # TODO: Route host admin.example.com to 'admin-portal-service' on port 8080
+            # WHY: Host-based routing separates traffic for administrative subdomains to internal management services.
             name: ???
             port:
               number: 0
@@ -65,7 +80,8 @@ spec:
 
 def route_ingress_request(ingress_manifest: Dict[str, Any], host: str, path: str) -> Optional[str]:
     """Find the destination backend service for a given incoming host and request path."""
-    # TODO: Implement ingress path routing
+    # TODO: Implement ingress path routing logic matching host and longest prefix path
+    # WHY: Simulates the Layer 7 reverse proxy routing evaluation performed by ingress controllers like NGINX.
     return None
 
 

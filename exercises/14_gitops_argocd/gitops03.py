@@ -1,8 +1,18 @@
 """
 Exercise: Sync Windows & Retry Strategies in ArgoCD (gitops03)
 
-ArgoCD supports advanced sync policies including exponential retry backoff,
-sync options (e.g. CreateNamespace, ServerSideApply), and sync windows for maintenance.
+Context & Why:
+In production Kubernetes environments, continuous delivery pipelines must withstand
+transient network glitches, webhook timeouts, and CRD registration race conditions.
+ArgoCD provides granular `syncPolicy` configurations to make automated reconciliation
+fault-tolerant.
+
+Using `retry` with exponential backoff (`factor: 2`, `duration: '5s'`, `maxDuration: '3m'`)
+prevents denial-of-service pressure on the Kubernetes API server while allowing temporary
+failures (e.g., waiting for an admission webhook pod to become ready) to self-resolve.
+Complementary `syncOptions` like `CreateNamespace=true` ensure prerequisites exist,
+while `ServerSideApply=true` offloads field management and 3-way merging to the API
+server for conflict-free resource updates.
 
 Task:
 Complete `get_sync_policy_manifest()` returning an ArgoCD Application spec with:
@@ -24,7 +34,10 @@ from typing import Any, Dict
 
 
 def get_sync_policy_manifest() -> Dict[str, Any]:
-    # TODO: Define and return the ArgoCD sync policy dictionary
+    # TODO: Construct and return the dictionary representation of an ArgoCD syncPolicy specification
+    #       configuring syncOptions (CreateNamespace, ServerSideApply), retry backoff, and automated sync.
+    # WHY: Exponential retry backoff protects the API server during transient failures, while Server-Side Apply
+    #      ensures reliable declarative field ownership and eliminates client-side merge conflicts.
     return {}
 
 

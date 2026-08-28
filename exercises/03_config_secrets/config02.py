@@ -2,6 +2,14 @@
 Exercise: exercises/03_config_secrets/config02.py
 Topic: ConfigMaps Mounted as Volumes & subPath
 
+Context & Why:
+Many standard applications and servers (such as NGINX, HAProxy, and Apache) read configuration
+directly from filesystem directories (e.g. `/etc/nginx/conf.d/`). When mounting an entire
+ConfigMap volume to a directory, Linux volume mount semantics overwrite and hide all other existing
+files in that target path. The Kubernetes `subPath` volumeMount property solves this problem:
+it extracts an individual file key from the mounted volume and overlays only that specific file into
+the target container directory, leaving surrounding default configuration files intact.
+
 Instructions:
 Mounting a full ConfigMap volume over a directory replaces all existing files in that directory.
 Using `subPath` allows mounting an individual file from a ConfigMap into a directory
@@ -33,12 +41,14 @@ metadata:
   name: nginx-configured
 spec:
   volumes:
-  # TODO: define configMap volume 'config-vol'
+  # TODO: Define a volume named 'config-vol' referencing configMap 'nginx-config'
+  # WHY: Exposes the ConfigMap data as a mounted filesystem directory within the pod.
   containers:
   - name: nginx-server
     image: nginx:alpine
     volumeMounts:
-    # TODO: mount config-vol with subPath: default.conf
+    # TODO: Mount 'config-vol' at '/etc/nginx/conf.d/default.conf' with subPath: default.conf
+    # WHY: subPath overlays the single configuration file into the directory without masking default files like ssl.conf.
 """
 
 

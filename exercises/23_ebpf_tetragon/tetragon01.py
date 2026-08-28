@@ -2,6 +2,19 @@
 Exercise: tetragon01.py
 Topic: eBPF Observability - Tetragon TracingPolicy Process Execution Auditing
 
+Context & Why:
+Cilium Tetragon is an eBPF-based security observability and runtime enforcement platform.
+Traditional Linux security auditing tools (like auditd) operate in user space with significant
+performance overhead, high CPU consumption, and vulnerability to event dropping under heavy load.
+
+Tetragon attaches eBPF kernel probes (kprobes) directly inside the Linux kernel:
+- Intercepts system calls (such as `sys_execve`) at the exact moment a process binary is executed.
+- Enriches low-level kernel events with rich Kubernetes context (namespace, pod name, container ID)
+  via eBPF maps before events leave the kernel.
+- In-kernel filtering with selectors (`matchNamespaces`, `matchArgs`) ensures only events matching
+  critical criteria (e.g., binaries executed under `/bin/` or `/usr/bin/` in production namespaces)
+  generate telemetry, drastically reducing noise and event processing overhead.
+
 Task:
 Define an eBPF TracingPolicy to monitor container process execution in real time:
 1. 'apiVersion': 'cilium.io/v1alpha1', 'kind': 'TracingPolicy'
@@ -19,7 +32,9 @@ import yaml
 
 
 def build_tracing_policy() -> dict:
-    # TODO: Define and return TracingPolicy manifest
+    # TODO: Define and return the Tetragon TracingPolicy manifest monitoring sys_execve kprobes across production namespaces.
+    # WHY: eBPF-based kernel tracing captures process execution at the syscall level before userland execution occurs,
+    #      providing high-fidelity runtime security auditing without the latency or vulnerability to evasion found in user-space agents.
     return {}
 
 

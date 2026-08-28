@@ -2,6 +2,18 @@
 Exercise: tetragon03.py
 Topic: eBPF Security - Real-Time Kernel Enforcement and Sigkill Actions
 
+Context & Why:
+Passive security auditing is insufficient against automated zero-day exploits and rapid lateral
+movement; by the time an alert reaches an operator, data may already be compromised.
+
+Tetragon bridges observability and active defense through synchronous in-kernel enforcement:
+- Evaluates policy rules directly inside the kernel execution path before the system call returns.
+- If a prohibited binary execution (such as `sudo`, `su`, or container breakout tools like `nsenter`)
+  matches the filter (`matchArgs: [{operator: 'Exact', values: [...]}]`), Tetragon immediately executes
+  a kernel-level enforcement action (`matchActions: [{action: 'Sigkill'}]`).
+- Sending `SIGKILL` directly from the eBPF hook terminates the offending process instantly before it can
+  execute a single instruction or spawn child processes, eliminating user-space race conditions.
+
 Task:
 Define a Tetragon TracingPolicy that actively blocks unauthorized privilege escalation binaries by sending Sigkill:
 1. 'apiVersion': 'cilium.io/v1alpha1', 'kind': 'TracingPolicy'
@@ -25,7 +37,9 @@ import yaml
 
 
 def build_enforcement_policy() -> dict:
-    # TODO: Define and return TracingPolicy manifest
+    # TODO: Define and return the Tetragon TracingPolicy manifest configured with in-kernel Sigkill enforcement for unauthorized binaries.
+    # WHY: Synchronous in-kernel enforcement with Sigkill terminates malicious processes instantly at the syscall boundary,
+    #      preventing unauthorized privilege escalation before any malicious instructions or exploit payloads can execute.
     return {}
 
 

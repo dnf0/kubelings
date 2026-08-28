@@ -2,6 +2,15 @@
 Exercise: exercises/13_troubleshooting/troubleshoot05.py
 Topic: Ephemeral Debug Containers & Event Triage
 
+Context & Why:
+Security best practices dictate running production applications in minimal, immutable container images
+(such as Google Distroless or Chainguard images) that omit package managers, interactive shells, and utilities.
+When production incidents strike, operators cannot `kubectl exec` into a shell that does not exist. Kubernetes
+Ephemeral Containers (`kubectl debug`) solve this challenge by dynamically attaching a diagnostic container
+(with busybox, curl, gdb, tcpdump) into the target Pod. When combined with `shareProcessNamespace: true`,
+the ephemeral container can inspect and signal processes across all containers in the pod. In addition,
+automated cluster event triage filters out high-frequency Warning events to rapidly isolate systemic incidents.
+
 Instructions:
 Production containers frequently use minimal or 'distroless' base images that
 lack shells, curl, or debugging utilities. Kubernetes Ephemeral Containers
@@ -37,6 +46,8 @@ metadata:
   name: distroless-app
   namespace: production
 spec:
+  # TODO: Enable shareProcessNamespace (set to true).
+  # WHY: Allows ephemeral debug containers to see and debug process trees running inside the distroless container.
   shareProcessNamespace: ???
   containers:
   - name: app
@@ -46,12 +57,14 @@ spec:
 DEBUG_EPHEMERAL_CONTAINER: Dict[str, Any] = {
     "name": "debugger",
     "image": "busybox:1.36",
-    # TODO: Complete ephemeral container spec
+    # TODO: Complete ephemeral container spec with command ["sh"], targetContainerName "app", stdin True, and tty True.
+    # WHY: Configures an interactive terminal session attached directly to the target application container.
 }
 
 
 def triage_events(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    # TODO: Implement event triage filtering and sorting
+    # TODO: Implement event triage filtering (type == 'Warning', count >= 3 or critical reasons) and sort by count descending.
+    # WHY: SRE triage prioritizes recurring and severe failure conditions over transient cluster noise.
     return []
 
 

@@ -2,8 +2,20 @@
 Chapter 16: Policy as Code with Kyverno & Gatekeeper
 Exercise 16.4: OPA Gatekeeper ConstraintTemplate & Constraint
 
-Fix the OPA Gatekeeper ConstraintTemplate manifest defining the Rego
-logic to verify mandatory labels and the associated constraint.
+Context & Why:
+Open Policy Agent (OPA) Gatekeeper is a widely adopted policy engine in Kubernetes that
+uses the declarative query language Rego. To avoid writing monolithic, hardcoded policies,
+Gatekeeper introduces a two-tier architecture: `ConstraintTemplate` and `Constraint`.
+
+A `ConstraintTemplate` defines both the CRD schema (specifying parameters like allowed labels
+via OpenAPI v3) and the underlying Rego evaluation logic (`package k8srequiredlabels`).
+Platform administrators can then instantiate multiple lightweight `Constraint` CRDs that pass
+different parameter configurations (e.g. requiring `owner` in development but requiring
+`owner`, `cost-center`, and `env` in production) without changing the core Rego rule logic.
+
+Task:
+Fix the OPA Gatekeeper ConstraintTemplate manifest function to return the parsed manifest dictionary
+containing the schema definition and Rego violation rules for required labels.
 """
 
 from typing import Any, Dict
@@ -42,7 +54,9 @@ spec:
           msg := sprintf("You must provide labels: %v", [missing])
         }
 """
-    # Fix the return dictionary
+    # TODO: Parse and return the OPA Gatekeeper ConstraintTemplate manifest dictionary (e.g., using yaml.safe_load).
+    # WHY: ConstraintTemplates decouple policy logic (written in Rego) from runtime configuration parameters,
+    #      enabling flexible, reusable admission guardrails across heterogeneous cluster fleets.
     return {}
 
 

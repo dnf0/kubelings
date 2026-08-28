@@ -2,8 +2,21 @@
 Chapter 17: Multi-Tenancy, Virtual Clusters & HNC
 Exercise 17.2: Tenant ResourceQuota and LimitRange Multi-Document Manifest
 
-Fix the multi-document manifest containing both a ResourceQuota and
-a LimitRange to enforce strict CPU, memory, and pod count ceilings for tenant-b.
+Context & Why:
+In shared multi-tenant clusters, an unconstrained workload can cause "noisy neighbor"
+problems by consuming all available node memory, leading to out-of-memory (OOM) kills of
+neighboring tenant pods. Kubernetes provides two complementary primitives to guarantee fair
+resource sharing and cluster stability: `ResourceQuota` and `LimitRange`.
+
+A `ResourceQuota` sets aggregate ceilings on the total CPU, memory, and Pod count that a tenant
+namespace can consume across all its workloads. A `LimitRange` complements this by enforcing
+per-container constraints—specifically injecting default requests/limits for containers that
+omit them. Without a LimitRange injecting default requests, a ResourceQuota that tracks requests
+would reject any pod manifest lacking explicit resource declarations.
+
+Task:
+Fix the function `get_tenant_isolation_manifests()` to parse and return the multi-document YAML
+manifest containing both the ResourceQuota and LimitRange dictionaries for namespace 'tenant-b'.
 """
 
 from typing import Any, Dict, List
@@ -41,7 +54,10 @@ spec:
       memory: 128Mi
     type: Container
 """
-    # Fix the return list of documents
+    # TODO: Parse and return the list of manifest dictionaries containing both ResourceQuota and LimitRange
+    #       (e.g., using list(yaml.safe_load_all(manifest_yaml))).
+    # WHY: ResourceQuotas and LimitRanges work in tandem to establish namespace-wide resource budgets and
+    #      container-level defaults, preventing noisy neighbors from starving shared node capacity.
     return []
 
 

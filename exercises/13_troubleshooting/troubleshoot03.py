@@ -2,6 +2,15 @@
 Exercise: exercises/13_troubleshooting/troubleshoot03.py
 Topic: Debugging Pending Pods & Scheduling Failures
 
+Context & Why:
+When a pod remains stuck in the `Pending` phase without assigned nodes (`spec.nodeName` is empty),
+the `kube-scheduler` scheduling cycle has evaluated all cluster nodes and filtered them out.
+Diagnosing pending pods via `kubectl describe pod` surfaces scheduler events such as:
+1. `Insufficient cpu/memory`: Requested resources exceed allocatable capacity on any node.
+2. `node(s) didn't match Pod's node selector`: Pod specifies constraints (`nodeSelector` / `nodeAffinity`) matching 0 nodes.
+3. `node(s) had untolerated taint`: Specialized nodes (such as GPU nodes) enforce taints (`NoSchedule`) requiring explicit pod `tolerations`.
+Resolving pending pods requires aligning resource requests to cluster sizing, updating node selectors, and adding tolerations.
+
 Instructions:
 When a pod remains in the `Pending` phase, the Kubernetes scheduler (`kube-scheduler`)
 cannot find an eligible node that satisfies all filtering predicates.
@@ -28,9 +37,13 @@ metadata:
   namespace: ml-workloads
 spec:
   nodeSelector:
+    # TODO: Correct nodeSelector from 'quantum-compute-node' to 'gpu-compute-node'.
+    # WHY: Targets available GPU nodes labeled 'node-type: gpu-compute-node'.
     node-type: quantum-compute-node
   tolerations:
   - key: sku
+    # TODO: Set toleration operator to 'Equal', value to 'gpu-worker', and effect to 'NoSchedule'.
+    # WHY: Allows the scheduler to place the pod onto nodes tainted with sku=gpu-worker:NoSchedule.
     operator: ???
     value: ???
     effect: ???
@@ -39,6 +52,8 @@ spec:
     image: nvidia/cuda:12.2.0-base-ubuntu22.04
     resources:
       requests:
+        # TODO: Reduce CPU request to '1' and memory request to '2Gi'.
+        # WHY: Fits within the allocatable capacity of GPU cluster nodes.
         cpu: "128"
         memory: "512Gi"
 """

@@ -2,6 +2,16 @@
 Exercise: exercises/06_ingress_gateway/ingress02.py
 Topic: Ingress TLS Termination
 
+Context & Why:
+Serving web applications over HTTPS requires terminating TLS encryption at the cluster boundary.
+Kubernetes uses standard `kubernetes.io/tls` Secrets containing base64-encoded `tls.crt` (certificate chain)
+and `tls.key` (private key). Ingress resources reference these secrets in `spec.tls`:
+1. The Ingress controller dynamically loads the certificates into memory without requiring container restarts.
+2. The controller performs TLS handshakes on incoming HTTPS port 443 connections for the listed `hosts`
+   and routes decrypted HTTP traffic to internal backend Services.
+Ensuring every hostname defined under `spec.rules` is explicitly covered under `spec.tls[].hosts` prevents
+accidental plain-text leakage or certificate domain mismatch warnings.
+
 Instructions:
 To terminate TLS/HTTPS at the Ingress controller:
 1. Define a Kubernetes Secret of type `kubernetes.io/tls` containing base64-encoded `tls.crt` and `tls.key`.
@@ -32,6 +42,8 @@ metadata:
   name: secure-ingress
 spec:
   tls:
+  # TODO: Configure TLS hosts ['secure.example.com', 'api.secure.example.com'] and secretName 'wildcard-tls-secret'
+  # WHY: Instructs the Ingress controller to terminate TLS for these SNI domains using the certificate in the secret.
   - hosts:
     - ???
     - ???
@@ -52,6 +64,8 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: wildcard-tls-secret
+# TODO: Set Secret type to 'kubernetes.io/tls'
+# WHY: Declares standard Kubernetes TLS secret format containing tls.crt and tls.key for TLS termination.
 type: ???
 data:
   tls.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCg==
@@ -61,7 +75,8 @@ data:
 
 def verify_ingress_tls_coverage(ingress: Dict[str, Any], secret: Dict[str, Any]) -> bool:
     """Verify that all Ingress hosts are securely covered by the TLS configuration."""
-    # TODO: Implement TLS coverage validation
+    # TODO: Implement TLS coverage validation verifying Secret type and that all rule hosts are covered in tls.hosts
+    # WHY: Enforces complete TLS termination coverage to prevent insecure plaintext HTTP exposure.
     return False
 
 

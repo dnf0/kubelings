@@ -2,6 +2,16 @@
 Exercise: exercises/02_controllers/ctrl04.py
 Topic: StatefulSets & Stable Network IDs
 
+Context & Why:
+Stateless applications can be scaled arbitrarily with Deployments, but stateful workloads
+(databases like Redis, PostgreSQL, Kafka, or Cassandra) require persistent network identities
+and dedicated storage. StatefulSets meet these requirements by assigning each pod a sticky,
+deterministic ordinal index (`name-0`, `name-1`). StatefulSets require a companion Headless
+Service (`spec.serviceName`) to generate stable DNS records for each replica, allowing peer-to-peer
+cluster consensus without virtual IP load-balancing. Furthermore, `volumeClaimTemplates`
+dynamically provision dedicated PersistentVolumeClaims bound to each ordinal pod, ensuring that
+if a pod is rescheduled, it automatically reattaches to its original storage volume.
+
 Instructions:
 StatefulSets provide unique ordinal identities (e.g. redis-cluster-0, redis-cluster-1)
 and dedicated persistent volume claims for each replica.
@@ -27,7 +37,11 @@ kind: StatefulSet
 metadata:
   name: redis-cluster
 spec:
+  # TODO: Set replicas to 3
+  # WHY: Establishes a 3-node stateful cluster with ordinal indices (redis-cluster-0 through redis-cluster-2).
   replicas: 0
+  # TODO: Link serviceName to 'redis-headless'
+  # WHY: The serviceName field binds the StatefulSet to a Headless Service, giving each ordinal pod a predictable DNS FQDN.
   serviceName: ???
   selector:
     matchLabels:
@@ -40,7 +54,8 @@ spec:
       containers:
       - name: redis
         image: redis:7.2-alpine
-  # TODO: define volumeClaimTemplates
+  # TODO: Define volumeClaimTemplates with name 'data', accessModes ['ReadWriteOnce'], and requests storage '1Gi'
+  # WHY: volumeClaimTemplates create dedicated, stable PersistentVolumeClaims for each ordinal replica that survive pod restarts.
 """
 
 

@@ -2,6 +2,15 @@
 Exercise: exercises/03_config_secrets/config04.py
 Topic: Secret Volume Mounts & Permissions (defaultMode)
 
+Context & Why:
+When a Secret is mounted into a Pod as a volume, Kubernetes mounts it using an in-memory
+`tmpfs` filesystem on the host node, guaranteeing that sensitive material is never written
+to physical disk. To implement defense-in-depth, permissions on the mounted secret files must
+be strictly restricted. The `defaultMode` setting specifies POSIX file permissions: setting
+`defaultMode: 256` (octal `0400`) ensures files are readable only by the process owner,
+preventing other non-root container users from inspecting secrets. Additionally, setting
+`readOnly: true` in the container `volumeMounts` enforces immutability at the Linux mount layer.
+
 Instructions:
 Secret volumes are backed by memory (tmpfs) rather than persistent node disk.
 To restrict access to sensitive keys (e.g. TLS private keys), you should specify:
@@ -28,14 +37,16 @@ spec:
   - name: tls-certs
     secret:
       secretName: tls-secret
-      # TODO: configure defaultMode to 256 (0400 octal)
+      # TODO: Configure defaultMode to 256 (0400 octal)
+      # WHY: Restricts POSIX file permissions to read-only for the container owner, preventing unauthorized processes from accessing private keys.
   containers:
   - name: secure-web
     image: nginx:alpine
     volumeMounts:
     - name: tls-certs
       mountPath: /etc/tls
-      # TODO: set readOnly: true
+      # TODO: Set readOnly: true
+      # WHY: Prevents the container process from modifying or writing over mounted secret files on the tmpfs filesystem.
 """
 
 

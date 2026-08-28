@@ -2,7 +2,21 @@
 Exercise: exercises/25_batch_kueue_volcano/kueue01.py
 Topic: Kueue ResourceFlavor & ClusterQueue Cohort Borrowing
 
-Instructions:
+Context & Why:
+Kueue is a Kubernetes-native job queueing controller designed to manage batch and AI/ML workloads
+without replacing the standard kube-scheduler. In high-demand GPU clusters, multiple teams compete
+for expensive accelerators, leading to cluster congestion if workloads are admitted indiscriminately.
+
+Kueue manages capacity using two core primitives:
+- `ResourceFlavor`: Abstracts homogeneous pools of resources (e.g. node labels/taints for on-demand
+  vs spot instances or specific GPU models).
+- `ClusterQueue`: Defines cluster-wide quotas (`nominalQuota`) for resource groups (covering `cpu`,
+  `memory`, and `nvidia.com/gpu`).
+- Cohorts & Borrowing: By joining a shared `cohort` (e.g. `ai-research-cohort`), queues can dynamically
+  borrow unused capacity up to a `borrowingLimit` from peer queues. When the lending team submits jobs,
+  Kueue guarantees fair-share reclamation, ensuring high aggregate cluster utilization without starvation.
+
+Task:
 Fix the Kueue manifest below to configure multi-tenant AI cluster queueing:
 1. Define a 'ResourceFlavor' named 'default-flavor' with 'apiVersion: kueue.x-k8s.io/v1beta1'.
 2. Define a 'ClusterQueue' named 'cluster-queue-ai' with 'apiVersion: kueue.x-k8s.io/v1beta1'.
@@ -18,6 +32,8 @@ import yaml
 
 from kubelings.validator import validate_manifest_text
 
+# TODO: Complete the Kueue manifest defining a ResourceFlavor and a ClusterQueue assigned to an AI research cohort with borrowing limits across CPU, memory, and GPU.
+# WHY: Kueue cohorts enable multi-tenant fair sharing and opportunistic borrowing of expensive GPU/CPU capacity across teams, driving cluster utilization toward 100% while guaranteeing strict baseline quotas.
 KUEUE_MANIFEST = """
 apiVersion: ???
 kind: ???

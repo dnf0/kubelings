@@ -2,11 +2,15 @@
 Exercise: exercises/09_network_policies/netpol04.py
 Topic: Named Ports & IPBlock CIDR Exceptions
 
-Instructions:
-NetworkPolicy rules can reference named ports (defined on container specs) rather than
-static numeric ports, and can use `ipBlock` to specify allowed IP CIDR ranges with
-specific subnet exceptions.
+Context & Why:
+Kubernetes NetworkPolicies can control traffic beyond the cluster perimeter by defining `ipBlock`
+CIDR ranges for external destinations (e.g., third-party payment APIs, legacy on-premises databases).
+The `except` block enables fine-grained network segmentation by carving out sensitive internal subnets
+from broader CIDR ranges. Furthermore, referencing `ports.port` as a named port string (e.g. 'http')
+rather than a numeric literal decouples the security policy from container port remapping, allowing
+developers to modify application container ports without modifying network security manifests.
 
+Instructions:
 1. Configure NetworkPolicy 'external-api-egress' in namespace 'default':
    - Targets pods with label `app: gateway`.
    - Egress rule: Allow TCP traffic to named port 'http' for IP range '192.168.0.0/16',
@@ -38,18 +42,25 @@ spec:
   egress:
   - to:
     - ipBlock:
+        # TODO: Set the target network CIDR '192.168.0.0/16'.
+        # WHY: Authorizes egress to the entire corporate external private network block.
         cidr: ???
         except:
+        # TODO: Carve out the restricted management subnet '192.168.1.0/24'.
+        # WHY: Blocks access to sensitive management and database subnets within the wider CIDR.
         - ???
     ports:
     - protocol: TCP
+      # TODO: Specify the named port 'http'.
+      # WHY: Allows port indirection so changes to container port numbers do not break network policy enforcement.
       port: ???
 """
 
 
 def is_ip_in_ipblock(ip_str: str, cidr_str: str, except_cidrs: List[str]) -> bool:
     """Check if an IP address is inside the cidr range and outside all except ranges."""
-    # TODO: Implement ipaddress checking logic
+    # TODO: Implement ipaddress checking logic to verify IP inclusion in cidr_str and exclusion from except_cidrs.
+    # WHY: Simulates the CNI packet filter matching algorithm for CIDR boundary evaluation.
     return False
 
 

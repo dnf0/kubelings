@@ -2,12 +2,15 @@
 Exercise: exercises/11_autoscaling/autoscale04.py
 Topic: Event-Driven Autoscaling (KEDA)
 
-Instructions:
-KEDA (Kubernetes Event-driven Autoscaling) allows workloads to scale dynamically
-based on external event sources (e.g. RabbitMQ queues, Kafka topics, AWS SQS,
-or Prometheus metrics). Crucially, KEDA can scale deployments down to 0 replicas
-when there are no events to process, and scale up from 0 when events arrive.
+Context & Why:
+Native Kubernetes HPA relies primarily on CPU and memory utilization, which are lagging indicators
+for message-queue consumers. A queue can accumulate thousands of backlog messages while CPU utilization
+remains low, causing critical processing delays. KEDA (Kubernetes Event-driven Autoscaling) bridges this gap
+by querying event brokers (RabbitMQ, Apache Kafka, AWS SQS) directly. Crucially, KEDA enables true "scale-to-zero"
+when queues are empty, saving significant compute costs, and immediately instantiates worker pods upon detecting
+new queue traffic.
 
+Instructions:
 1. Define a KEDA ScaledObject 'orders-queue-scaler' in namespace 'messaging':
    - apiVersion: keda.sh/v1alpha1
    - kind: ScaledObject
@@ -42,12 +45,22 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
+    # TODO: Target the consumer Deployment named 'order-consumer'.
+    # WHY: KEDA creates and manages an internal HPA that targets this Deployment.
     name: ???
+  # TODO: Set minReplicaCount to 0.
+  # WHY: Enables serverless scale-to-zero behavior when no messages remain in the queue.
   minReplicaCount: ???
+  # TODO: Set maxReplicaCount to 30.
+  # WHY: Limits consumer scale-out concurrency to prevent overloading downstream databases.
   maxReplicaCount: ???
+  # TODO: Set pollingInterval to 15 seconds.
+  # WHY: Controls how frequently KEDA polls RabbitMQ queue depth metrics.
   pollingInterval: ???
   cooldownPeriod: 300
   triggers:
+  # TODO: Set trigger type to 'rabbitmq'.
+  # WHY: Selects the RabbitMQ scaler plugin to query message queue length metrics.
   - type: ???
     metadata:
       queueName: orders-queue

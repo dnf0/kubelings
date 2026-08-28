@@ -2,6 +2,22 @@
 Exercise: crossplane02.py
 Topic: Crossplane - Composition and Field Path Transforms
 
+Context & Why:
+While an XRD defines the API interface contract, a `Composition` provides the concrete infrastructure
+implementation by assembling one or more Managed Resources (MRs).
+
+Compositions allow platform teams to:
+- Bind high-level composite resources (`compositeTypeRef`) to specific cloud provider implementations
+  (e.g., mapping `XPostgreSQLInstance` to an AWS RDS `Instance` or GCP `CloudSQLInstance`).
+- Enforce organizational compliance, baseline defaults, and security configurations
+  (e.g., setting `skipFinalSnapshot`, enforcing encryption, or configuring backup retention).
+- Patch values dynamically from composite fields to managed resource fields using `FromCompositeFieldPath`
+  (e.g., mapping `spec.parameters.storageGB` to `spec.forProvider.allocatedStorage` and
+  `spec.parameters.engineVersion` to `spec.forProvider.engineVersion`).
+
+This separation gives platform teams the power to refactor or switch underlying cloud primitives
+without impacting developer claims.
+
 Task:
 Define a Crossplane Composition that binds an XRD to an underlying AWS RDS managed database:
 1. 'apiVersion': 'apiextensions.crossplane.io/v1', 'kind': 'Composition'
@@ -21,7 +37,9 @@ import yaml
 
 
 def build_composition() -> dict:
-    # TODO: Define and return Composition manifest
+    # TODO: Define and return the Composition manifest linking the composite XRD to an AWS RDS Instance with field path patches.
+    # WHY: Compositions implement the platform engine that translates abstract developer requests into concrete cloud provider resources,
+    #      automatically propagating parameters via declarative patches while baking in enterprise baseline policies.
     return {}
 
 

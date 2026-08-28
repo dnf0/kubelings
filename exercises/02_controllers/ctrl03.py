@@ -2,6 +2,15 @@
 Exercise: exercises/02_controllers/ctrl03.py
 Topic: Deployment Rollbacks & Revision History
 
+Context & Why:
+Whenever a Deployment's pod template is modified, the Deployment controller provisions
+a new ReplicaSet representing that revision while scaling down the previous ReplicaSet.
+Kubernetes retains previous ReplicaSets in etcd up to the number specified by
+`revisionHistoryLimit`. This enables instant rollbacks (`kubectl rollout undo`) to any
+earlier stable revision. Setting an appropriate `revisionHistoryLimit` (e.g. 5 or 10)
+balances operational safety with etcd database cleanliness, preventing thousands of
+dormant ReplicaSets from accumulating over time.
+
 Instructions:
 Kubernetes retains rollout history as underlying ReplicaSets up to `revisionHistoryLimit`.
 This enables rolling back failed deployments (`kubectl rollout undo`).
@@ -27,7 +36,8 @@ metadata:
   name: versioned-app
 spec:
   replicas: 3
-  # TODO: configure revisionHistoryLimit to 5
+  # TODO: Configure revisionHistoryLimit to 5
+  # WHY: Retains the 5 most recent ReplicaSets for rollback recovery while pruning older ReplicaSets to prevent etcd bloat.
   selector:
     matchLabels:
       app: versioned-app
@@ -47,6 +57,7 @@ def simulate_rollout_history(
 ) -> List[Dict[str, Any]]:
     """Simulate deployment image rollouts and return pruned revision history list."""
     # TODO: Implement rollout history tracking and revision limit pruning
+    # WHY: Replicates the Deployment controller's internal ReplicaSet retention algorithm that garbage-collects old revisions beyond the revisionHistoryLimit.
     return []
 
 

@@ -2,7 +2,22 @@
 Exercise: exercises/26_hardware_acceleration_dra/accel03.py
 Topic: Kubernetes Dynamic Resource Allocation (DRA) Standard
 
-Instructions:
+Context & Why:
+Traditional Kubernetes device allocation models rely on static integer counters (such as `nvidia.com/gpu: 1`),
+which fail to represent complex modern accelerator topologies (such as NVLink interconnect meshes,
+PCIe switches, FPGA bitstreams, or multi-device shared memory pools).
+
+Kubernetes Dynamic Resource Allocation (DRA, `resource.k8s.io`) replaces static device counting with
+a flexible, claim-based architecture:
+- `ResourceClaimTemplate`: A declarative template defining device requirements (e.g. `deviceClassName: gpu.example.com`
+  and device count).
+- `ResourceClaim`: Generated per-pod to represent an allocated slice of hardware that matches the requested topology.
+- Pod Integration: Pods reference the claim in `spec.resourceClaims`, and containers consume the claim in
+  `spec.containers[*].resources.claims`.
+- The scheduler and device driver collaborate to co-allocate interconnected accelerators on the same node with
+  optimal interconnect topologies.
+
+Task:
 Fix the multi-document manifest below to provision dynamic device resources using Kubernetes DRA:
 1. Document 1: Define a 'ResourceClaimTemplate' named 'gpu-dra-claim-template' with 'apiVersion: resource.k8s.io/v1alpha3'.
    - In 'spec.spec.devices.requests', add a request named 'dedicated-gpu' targeting 'deviceClassName: gpu.example.com' with 'count: 1'.
@@ -15,6 +30,8 @@ import yaml
 
 from kubelings.validator import validate_manifest_text
 
+# TODO: Configure the multi-document DRA manifest with a ResourceClaimTemplate requesting dedicated GPU devices and a Pod binding the resource claim.
+# WHY: Dynamic Resource Allocation (DRA) provides an expressive, parameter-driven device scheduling framework that moves beyond simple integer counting to support topology-aware, dynamically configured hardware accelerators.
 DRA_MANIFEST = """
 apiVersion: resource.k8s.io/v1alpha3
 kind: ???

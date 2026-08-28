@@ -2,7 +2,20 @@
 Exercise: exercises/26_hardware_acceleration_dra/accel01.py
 Topic: NVIDIA Multi-Instance GPU (MIG) Slicing & Partitioning
 
-Instructions:
+Context & Why:
+High-end AI accelerators (such as NVIDIA A100-80GB and H100) are expensive, and running small
+inference models, feature extractors, or embedding services on a full physical GPU results in
+severe resource underutilization.
+
+NVIDIA Multi-Instance GPU (MIG) technology solves this at the hardware silicon level:
+- Partitions a single physical GPU into up to 7 separate, completely isolated GPU instances.
+- Each MIG slice has dedicated Streaming Multiprocessors (SMs), memory controllers, and DRAM bandwidth.
+- Provides guaranteed Quality of Service (QoS) and hardware-level fault isolation (a crashing container
+  on one slice cannot corrupt GPU memory or affect another slice).
+- In Kubernetes, the NVIDIA GPU Operator advertises MIG profiles as extended resources
+  (e.g. `nvidia.com/mig-3g.40gb: 1`), enabling fine-grained, cost-effective GPU scheduling.
+
+Task:
 Fix the Pod manifest below to schedule an inference workload on an NVIDIA A100 GPU sliced with Multi-Instance GPU (MIG):
 1. Set 'apiVersion' to 'v1' and 'kind' to 'Pod'.
 2. Set 'metadata.name' to 'mig-inference-pod'.
@@ -16,6 +29,8 @@ import yaml
 
 from kubelings.validator import validate_manifest_text
 
+# TODO: Fix the Pod manifest to schedule an inference container on an NVIDIA A100 node with a dedicated 3g.40gb MIG slice and GPU visibility flags.
+# WHY: MIG hardware slicing guarantees physical compute and memory isolation between co-located inference workloads on high-end GPUs, maximizing hardware density and cost efficiency without risk of noisy-neighbor cross-contamination.
 MIG_MANIFEST = """
 apiVersion: ???
 kind: ???
