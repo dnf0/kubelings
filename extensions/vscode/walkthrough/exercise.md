@@ -1,13 +1,13 @@
 # Solve Your First Exercise (`pods01`) 🚀
 
-Let's walk through solving the very first challenge: **`pods01.py`** in Chapter 1: Pods.
+Let's walk through solving the very first challenge: **`pods01.yaml`** in Chapter 1: Pods.
 
 ---
 
 ### 📝 Step-by-Step Exercise Walkthrough
 
 1. **Open the Exercise**:
-   Click **Open Next Exercise** below or navigate to `exercises/01_pods/pods01.py` in the File Explorer.
+   Click **Open Next Exercise** below or navigate to `exercises/01_pods/pods01.yaml` in the File Explorer.
 
 2. **Inspect the Broken Manifest**:
    Notice the placeholder values (`???`) in the YAML template:

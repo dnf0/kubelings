@@ -37,11 +37,11 @@ export class KubelingsDiagnosticsProvider implements vscode.Disposable {
     }
 
     const normalizedPath = document.fileName.replace(/\\/g, '/');
-    if (!normalizedPath.endsWith('.py')) {
+    if (!/\.(yaml|yml|py)$/i.test(normalizedPath)) {
       return undefined;
     }
 
-    const exerciseName = path.basename(normalizedPath, '.py');
+    const exerciseName = path.basename(normalizedPath).replace(/\.(yaml|yml|py)$/i, '');
     const isExerciseFile =
       normalizedPath.includes('/exercises/') ||
       this.treeDataProvider?.findExercise(exerciseName) !== undefined;
@@ -141,7 +141,7 @@ export class KubelingsCodeActionProvider implements vscode.CodeActionProvider {
     }
 
     const normalizedPath = document.fileName.replace(/\\/g, '/');
-    const exerciseName = path.basename(normalizedPath, '.py');
+    const exerciseName = path.basename(normalizedPath).replace(/\.(yaml|yml|py)$/i, '');
 
     const actions: vscode.CodeAction[] = [];
 

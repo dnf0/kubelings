@@ -61,11 +61,11 @@ describe('Kubelings Diagnostics - KubelingsDiagnosticsProvider', () => {
     const bridge = new MockBridgeSuccess();
     const provider = new KubelingsDiagnosticsProvider(bridge);
 
-    const uri = vscode.Uri.file('/workspace/exercises/01_pods/pods01.py');
+    const uri = vscode.Uri.file('/workspace/exercises/01_pods/pods01.yaml');
     const doc: any = {
       uri,
-      fileName: '/workspace/exercises/01_pods/pods01.py',
-      getText: () => 'def verify(): pass',
+      fileName: '/workspace/exercises/01_pods/pods01.yaml',
+      getText: () => 'apiVersion: v1\nkind: Pod',
     };
 
     // Pre-populate diagnostic
@@ -94,15 +94,15 @@ describe('Kubelings Diagnostics - KubelingsDiagnosticsProvider', () => {
     const bridge = new MockBridgeFailureMarker();
     const provider = new KubelingsDiagnosticsProvider(bridge);
 
-    const uri = vscode.Uri.file('/workspace/exercises/01_pods/pods01.py');
+    const uri = vscode.Uri.file('/workspace/exercises/01_pods/pods01.yaml');
     const docContent = [
       '# Exercise 1',
-      'manifest = {"kind": "Pod"}',
+      'kind: Pod',
     ].join('\n');
 
     const doc: any = {
       uri,
-      fileName: '/workspace/exercises/01_pods/pods01.py',
+      fileName: '/workspace/exercises/01_pods/pods01.yaml',
       getText: () => docContent,
     };
 
@@ -126,7 +126,7 @@ describe('Kubelings Diagnostics - KubelingsDiagnosticsProvider', () => {
     const bridge = new MockBridgeFailureErrorLine();
     const provider = new KubelingsDiagnosticsProvider(bridge);
 
-    const uri = vscode.Uri.file('/workspace/exercises/01_pods/pods01.py');
+    const uri = vscode.Uri.file('/workspace/exercises/01_pods/pods01.yaml');
     const docContent = [
       'line 1',
       'line 2',
@@ -138,7 +138,7 @@ describe('Kubelings Diagnostics - KubelingsDiagnosticsProvider', () => {
 
     const doc: any = {
       uri,
-      fileName: '/workspace/exercises/01_pods/pods01.py',
+      fileName: '/workspace/exercises/01_pods/pods01.yaml',
       getText: () => docContent,
     };
 
@@ -159,8 +159,8 @@ describe('Kubelings Code Actions - KubelingsCodeActionProvider', () => {
   it('returns empty actions if no kubelings diagnostics on document', () => {
     const provider = new KubelingsCodeActionProvider();
     const doc: any = {
-      uri: vscode.Uri.file('/workspace/exercises/01_pods/pods01.py'),
-      fileName: '/workspace/exercises/01_pods/pods01.py',
+      uri: vscode.Uri.file('/workspace/exercises/01_pods/pods01.yaml'),
+      fileName: '/workspace/exercises/01_pods/pods01.yaml',
     };
     const range = new vscode.Range(
       new vscode.Position(0, 0),
@@ -169,8 +169,8 @@ describe('Kubelings Code Actions - KubelingsCodeActionProvider', () => {
     const context: any = {
       diagnostics: [
         {
-          source: 'pylance',
-          message: 'unused variable',
+          source: 'yaml',
+          message: 'syntax error',
         },
       ],
     };
@@ -182,8 +182,8 @@ describe('Kubelings Code Actions - KubelingsCodeActionProvider', () => {
   it('provides Hint and Reference Solution code actions when kubelings diagnostics exist', () => {
     const provider = new KubelingsCodeActionProvider();
     const doc: any = {
-      uri: vscode.Uri.file('/workspace/exercises/01_pods/pods01.py'),
-      fileName: '/workspace/exercises/01_pods/pods01.py',
+      uri: vscode.Uri.file('/workspace/exercises/01_pods/pods01.yaml'),
+      fileName: '/workspace/exercises/01_pods/pods01.yaml',
     };
     const range = new vscode.Range(
       new vscode.Position(1, 0),

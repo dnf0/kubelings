@@ -283,5 +283,46 @@ export class KubelingsCliBridge {
       );
     });
   }
+
+  /**
+   * Resets a specific exercise to its initial starter state.
+   */
+  public async reset(
+    exerciseName: string,
+    cwd?: string
+  ): Promise<{ success: boolean; message: string }> {
+    const effectiveCwd = cwd || this.getEffectiveWorkspaceRoot();
+    const resolved = this.resolveCommand(effectiveCwd);
+    const args = [...resolved.argsPrefix, 'reset', exerciseName];
+
+    return new Promise<{ success: boolean; message: string }>((resolve, reject) => {
+      execFile(
+        resolved.command,
+        args,
+        {
+          cwd: effectiveCwd,
+          maxBuffer: 5 * 1024 * 1024,
+          timeout: 30000,
+          env: { ...process.env, PYTHONUNBUFFERED: '1' },
+        },
+        (error, stdout, stderr) => {
+          if (error && error.code !== 0) {
+            return reject(
+              new Error(
+                stderr?.trim() ||
+                  stdout?.trim() ||
+                  `Command failed with code ${error.code}`
+              )
+            );
+          }
+          resolve({
+            success: true,
+            message: stdout?.trim() || `Reset exercise ${exerciseName} successfully.`,
+          });
+        }
+      );
+    });
+  }
 }
+
 

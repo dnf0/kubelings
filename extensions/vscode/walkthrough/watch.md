@@ -7,7 +7,7 @@ Kubelings features a high-performance terminal watcher that monitors your exerci
 ### 🔄 The Inner Learning Loop
 
 1. **Launch Watch Mode**: Start `kubelings watch` in a terminal.
-2. **Open the Active Exercise**: The watcher points you to the current uncompleted exercise (e.g., `exercises/01_pods/pods01.py`).
+2. **Open the Active Exercise**: The watcher points you to the current uncompleted exercise (e.g., `exercises/01_pods/pods01.yaml`).
 3. **Edit & Save**: Fix the manifest syntax or schema requirements.
 4. **Instant Verification**: On save, Kubelings re-evaluates the tests in `<30ms`. When green, remove the `# I AM NOT DONE` comment to advance!
 

@@ -26,9 +26,13 @@ export function activate(context: vscode.ExtensionContext): void {
   );
   context.subscriptions.push(treeView);
 
-  // 2. Register Python Code Actions Provider
+  // 2. Register Code Actions Provider (YAML & Python)
   const codeActions = vscode.languages.registerCodeActionsProvider(
-    { language: 'python' },
+    [
+      { language: 'yaml' },
+      { language: 'python' },
+      { pattern: '**/exercises/**/*.{yaml,yml,py}' },
+    ],
     codeActionProvider,
     {
       providedCodeActionKinds:

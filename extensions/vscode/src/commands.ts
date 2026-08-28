@@ -22,7 +22,9 @@ export function resolveExerciseName(
   arg?: ExerciseTreeItem | string | vscode.Uri | unknown
 ): string | undefined {
   if (typeof arg === 'string' && arg.trim().length > 0) {
-    return arg.trim();
+    const trimmed = arg.trim();
+    const base = path.basename(trimmed).replace(/\.(yaml|yml|py)$/i, '');
+    return base || trimmed;
   }
 
   if (arg instanceof ExerciseTreeItem) {
@@ -38,7 +40,7 @@ export function resolveExerciseName(
 
   if (arg && typeof arg === 'object' && 'fsPath' in arg) {
     const uri = arg as vscode.Uri;
-    const base = path.basename(uri.fsPath, '.py');
+    const base = path.basename(uri.fsPath).replace(/\.(yaml|yml|py)$/i, '');
     if (base) {
       return base;
     }
@@ -47,8 +49,8 @@ export function resolveExerciseName(
   const activeEditor = vscode.window.activeTextEditor;
   if (activeEditor) {
     const activeFile = activeEditor.document.fileName;
-    if (activeFile.endsWith('.py')) {
-      return path.basename(activeFile, '.py');
+    if (/\.(yaml|yml|py)$/i.test(activeFile)) {
+      return path.basename(activeFile).replace(/\.(yaml|yml|py)$/i, '');
     }
   }
 
@@ -121,7 +123,7 @@ async function getOrSelectWorkspaceFolder(): Promise<string | undefined> {
 
       if (typeof relPathOrItem === 'string') {
         relPath = relPathOrItem;
-        exName = maybeName || path.basename(relPath, '.py');
+        exName = maybeName || path.basename(relPath).replace(/\.(yaml|yml|py)$/i, '');
       } else if (relPathOrItem instanceof ExerciseTreeItem) {
         relPath =
           relPathOrItem.fullPath && fs.existsSync(relPathOrItem.fullPath)
@@ -562,6 +564,119 @@ async function getOrSelectWorkspaceFolder(): Promise<string | undefined> {
     }
   );
   context.subscriptions.push(showSolutionDiffCmd);
+
+  // kubelings.openSolution
+  const openSolutionCmd = vscode.commands.registerCommand(
+    'kubelings.openSolution',
+    async (arg?: ExerciseTreeItem | string | vscode.Uri) => {
+      const exerciseName = resolveExerciseName(arg);
+      if (!exerciseName) {
+        vscode.window.showWarningMessage(
+          'No active Kubelings exercise found to open solution.'
+        );
+        return;
+      }
+      const workspaceRoot = cliBridge.getEffectiveWorkspaceRoot();
+      let solutionRelPath: string | undefined;
+
+      const cached = treeDataProvider.findExercise(exerciseName);
+      if (cached) {
+        solutionRelPath =
+          cached.solution_path ||
+          cached.path.replace(/^exercises[\\/]/, 'solutions/');
+      } else {
+        try {
+          const listRes = await cliBridge.list();
+          for (const ch of listRes.chapters) {
+            const found = ch.exercises.find((ex) => ex.name === exerciseName);
+            if (found) {
+              solutionRelPath =
+                found.solution_path ||
+                found.path.replace(/^exercises[\\/]/, 'solutions/');
+              break;
+            }
+          }
+        } catch {
+          // fallback search
+        }
+      }
+
+      if (!solutionRelPath) {
+        solutionRelPath = `solutions/${exerciseName}.yaml`;
+      }
+
+      const fullSolutionPath = resolveExercisePath(
+        solutionRelPath,
+        workspaceRoot
+      );
+
+      if (!fs.existsSync(fullSolutionPath)) {
+        vscode.window.showWarningMessage(
+          `Reference solution for '${exerciseName}' not found at: ${fullSolutionPath}`
+        );
+        return;
+      }
+
+      const doc = await vscode.workspace.openTextDocument(
+        vscode.Uri.file(fullSolutionPath)
+      );
+      await vscode.window.showTextDocument(doc);
+    }
+  );
+  context.subscriptions.push(openSolutionCmd);
+
+  // kubelings.resetExercise
+  const resetExerciseCmd = vscode.commands.registerCommand(
+    'kubelings.resetExercise',
+    async (arg?: ExerciseTreeItem | string | vscode.Uri) => {
+      const exerciseName = resolveExerciseName(arg);
+      if (!exerciseName) {
+        vscode.window.showWarningMessage(
+          'No active Kubelings exercise found to reset.'
+        );
+        return;
+      }
+
+      const choice = await vscode.window.showWarningMessage(
+        `Are you sure you want to reset '${exerciseName}' back to its starter template? Any unsaved progress will be lost.`,
+        'Reset Exercise',
+        'Cancel'
+      );
+
+      if (choice !== 'Reset Exercise') {
+        return;
+      }
+
+      try {
+        await cliBridge.reset(exerciseName);
+        vscode.window.showInformationMessage(
+          `Exercise '${exerciseName}' reset to starter template.`
+        );
+        treeDataProvider.refresh();
+        if (statusBar) {
+          statusBar.refresh().catch(() => {});
+        }
+
+        const cached = treeDataProvider.findExercise(exerciseName);
+        if (cached?.path) {
+          const workspaceRoot = cliBridge.getEffectiveWorkspaceRoot();
+          const fullPath = resolveExercisePath(cached.path, workspaceRoot);
+          if (fs.existsSync(fullPath)) {
+            const doc = await vscode.workspace.openTextDocument(
+              vscode.Uri.file(fullPath)
+            );
+            await vscode.window.showTextDocument(doc);
+          }
+        }
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
+        vscode.window.showErrorMessage(
+          `Failed to reset exercise '${exerciseName}': ${message}`
+        );
+      }
+    }
+  );
+  context.subscriptions.push(resetExerciseCmd);
 
   // 6. kubelings.startWatch
   const startWatchCmd = vscode.commands.registerCommand(

@@ -22,7 +22,7 @@
 - Click to jump directly to the current or next incomplete exercise.
 
 ### 3. ⚡ On-Save Diagnostics & Code Actions
-- Automatic background validation when saving any exercise file (`exercises/**/*.py`).
+- Automatic background validation when saving any exercise file (`exercises/**/*.{yaml,yml,py}`).
 - Inline error squiggles highlighting missing manifest fields, syntax errors, schema violations, or assertion failures.
 - Contextual **Quick Fix Code Actions**:
   - 💡 **Reveal Hint**: Fetch and display progressive hints in the editor without spoiling the full answer.

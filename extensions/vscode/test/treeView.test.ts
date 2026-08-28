@@ -15,9 +15,9 @@ import { CliChapter, CliExercise, CliListResponse } from '../src/types';
 
 describe('Kubelings Tree View - ChapterTreeItem', () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'kubelings-treeview-test-'));
-  const ex1Path = path.join(tmpDir, 'exercises', '01_pods', 'pods01.py');
-  const ex2Path = path.join(tmpDir, 'exercises', '01_pods', 'pods02.py');
-  const deploy1Path = path.join(tmpDir, 'exercises', '02_controllers', 'deploy01.py');
+  const ex1Path = path.join(tmpDir, 'exercises', '01_pods', 'pods01.yaml');
+  const ex2Path = path.join(tmpDir, 'exercises', '01_pods', 'pods02.yaml');
+  const deploy1Path = path.join(tmpDir, 'exercises', '02_controllers', 'deploy01.yaml');
 
   fs.mkdirSync(path.dirname(ex1Path), { recursive: true });
   fs.mkdirSync(path.dirname(deploy1Path), { recursive: true });
@@ -34,7 +34,7 @@ describe('Kubelings Tree View - ChapterTreeItem', () => {
       {
         name: 'pods01',
         title: 'First Pod Manifest',
-        path: 'exercises/01_pods/pods01.py',
+        path: 'exercises/01_pods/pods01.yaml',
         chapter_name: '01_pods',
         requires_cluster: false,
         has_not_done: false, // completed
@@ -42,7 +42,7 @@ describe('Kubelings Tree View - ChapterTreeItem', () => {
       {
         name: 'pods02',
         title: 'Multi Container Pod',
-        path: 'exercises/01_pods/pods02.py',
+        path: 'exercises/01_pods/pods02.yaml',
         chapter_name: '01_pods',
         requires_cluster: false,
         has_not_done: true, // in progress
@@ -59,7 +59,7 @@ describe('Kubelings Tree View - ChapterTreeItem', () => {
       {
         name: 'deploy01',
         title: 'Deployment Spec',
-        path: 'exercises/02_controllers/deploy01.py',
+        path: 'exercises/02_controllers/deploy01.yaml',
         chapter_name: '02_controllers',
         requires_cluster: false,
         has_not_done: false, // completed
@@ -107,9 +107,9 @@ describe('Kubelings Tree View - ChapterTreeItem', () => {
 
 describe('Kubelings Tree View - ExerciseTreeItem', () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'kubelings-ex-test-'));
-  const ex1Path = path.join(tmpDir, 'exercises', '01_pods', 'pods01.py');
-  const ex2Path = path.join(tmpDir, 'exercises', '01_pods', 'pods02.py');
-  const ex3Path = path.join(tmpDir, 'exercises', '01_pods', 'pods03.py');
+  const ex1Path = path.join(tmpDir, 'exercises', '01_pods', 'pods01.yaml');
+  const ex2Path = path.join(tmpDir, 'exercises', '01_pods', 'pods02.yaml');
+  const ex3Path = path.join(tmpDir, 'exercises', '01_pods', 'pods03.yaml');
 
   fs.mkdirSync(path.dirname(ex1Path), { recursive: true });
   fs.writeFileSync(ex1Path, '# pods01');
@@ -119,8 +119,8 @@ describe('Kubelings Tree View - ExerciseTreeItem', () => {
   const completedEx: CliExercise = {
     name: 'pods01',
     title: 'First Pod Manifest',
-    path: 'exercises/01_pods/pods01.py',
-    solution_path: 'solutions/01_pods/pods01.py',
+    path: 'exercises/01_pods/pods01.yaml',
+    solution_path: 'solutions/01_pods/pods01.yaml',
     chapter_name: '01_pods',
     requires_cluster: false,
     has_not_done: false,
@@ -129,7 +129,7 @@ describe('Kubelings Tree View - ExerciseTreeItem', () => {
   const inProgressEx: CliExercise = {
     name: 'pods02',
     title: 'Multi Container Pod',
-    path: 'exercises/01_pods/pods02.py',
+    path: 'exercises/01_pods/pods02.yaml',
     chapter_name: '01_pods',
     requires_cluster: false,
     has_not_done: true,
@@ -138,7 +138,7 @@ describe('Kubelings Tree View - ExerciseTreeItem', () => {
   const notStartedEx: CliExercise = {
     name: 'pods03',
     title: 'Init Containers',
-    path: 'exercises/01_pods/pods03.py',
+    path: 'exercises/01_pods/pods03.yaml',
     chapter_name: '01_pods',
     requires_cluster: false,
   };
@@ -154,7 +154,7 @@ describe('Kubelings Tree View - ExerciseTreeItem', () => {
     assert.ok(tooltip.includes('Status: Completed'));
     assert.strictEqual(item.command?.command, 'kubelings.openExercise');
     assert.deepStrictEqual(item.command?.arguments, [
-      'exercises/01_pods/pods01.py',
+      'exercises/01_pods/pods01.yaml',
       'pods01',
     ]);
   });
@@ -187,7 +187,7 @@ describe('Kubelings Tree View - ExerciseTreeItem', () => {
 
 describe('Kubelings Tree View - KubelingsTreeDataProvider', () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'kubelings-tdp-test-'));
-  const ex1Path = path.join(tmpDir, 'exercises', '01_pods', 'pods01.py');
+  const ex1Path = path.join(tmpDir, 'exercises', '01_pods', 'pods01.yaml');
   fs.mkdirSync(path.dirname(ex1Path), { recursive: true });
   fs.writeFileSync(ex1Path, '# pods01');
 
@@ -201,7 +201,7 @@ describe('Kubelings Tree View - KubelingsTreeDataProvider', () => {
         {
           name: 'pods01',
           title: 'First Pod',
-          path: 'exercises/01_pods/pods01.py',
+          path: 'exercises/01_pods/pods01.yaml',
           chapter_name: '01_pods',
           requires_cluster: false,
           has_not_done: false,

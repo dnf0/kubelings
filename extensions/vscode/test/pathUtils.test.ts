@@ -4,7 +4,11 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { describe, it } from 'node:test';
-import { getEffectiveWorkspaceRoot, resolveExercisePath } from '../src/pathUtils';
+import {
+  getCandidateFilePaths,
+  getEffectiveWorkspaceRoot,
+  resolveExercisePath,
+} from '../src/pathUtils';
 
 describe('Kubelings pathUtils - getEffectiveWorkspaceRoot', () => {
   it('returns explicit root if passed', () => {
@@ -27,13 +31,51 @@ describe('Kubelings pathUtils - getEffectiveWorkspaceRoot', () => {
   });
 });
 
+describe('Kubelings pathUtils - getCandidateFilePaths', () => {
+  it('prioritizes .yaml over .yml and .py', () => {
+    const candidates = getCandidateFilePaths('exercises/01_pods/pods01.yaml');
+    assert.strictEqual(candidates[0], 'exercises/01_pods/pods01.yaml');
+    assert.strictEqual(candidates[1], 'exercises/01_pods/pods01.yml');
+    assert.strictEqual(candidates[2], 'exercises/01_pods/pods01.py');
+  });
+
+  it('generates .yaml first even when given .py path', () => {
+    const candidates = getCandidateFilePaths('exercises/01_pods/pods01.py');
+    assert.strictEqual(candidates[0], 'exercises/01_pods/pods01.yaml');
+    assert.strictEqual(candidates[1], 'exercises/01_pods/pods01.yml');
+    assert.strictEqual(candidates[2], 'exercises/01_pods/pods01.py');
+  });
+
+  it('appends extensions when given extensionless path', () => {
+    const candidates = getCandidateFilePaths('exercises/01_pods/pods01');
+    assert.strictEqual(candidates[0], 'exercises/01_pods/pods01.yaml');
+    assert.strictEqual(candidates[1], 'exercises/01_pods/pods01.yml');
+    assert.strictEqual(candidates[2], 'exercises/01_pods/pods01.py');
+  });
+});
+
 describe('Kubelings pathUtils - resolveExercisePath', () => {
   it('resolves directly when file exists in root workspace', () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'kubelings-test-'));
     try {
       const exDir = path.join(tmpDir, 'exercises', '01_pods');
       fs.mkdirSync(exDir, { recursive: true });
-      const exFile = path.join(exDir, 'pods01.py');
+      const exFile = path.join(exDir, 'pods01.yaml');
+      fs.writeFileSync(exFile, '# test exercise');
+
+      const resolved = resolveExercisePath('exercises/01_pods/pods01.yaml', tmpDir);
+      assert.strictEqual(resolved, exFile);
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
+  });
+
+  it('resolves .yaml file when .py path is requested and .yaml exists on disk', () => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'kubelings-test-'));
+    try {
+      const exDir = path.join(tmpDir, 'exercises', '01_pods');
+      fs.mkdirSync(exDir, { recursive: true });
+      const exFile = path.join(exDir, 'pods01.yaml');
       fs.writeFileSync(exFile, '# test exercise');
 
       const resolved = resolveExercisePath('exercises/01_pods/pods01.py', tmpDir);
@@ -49,12 +91,12 @@ describe('Kubelings pathUtils - resolveExercisePath', () => {
       const exercisesDir = path.join(tmpDir, 'exercises');
       const exDir = path.join(exercisesDir, '01_pods');
       fs.mkdirSync(exDir, { recursive: true });
-      const exFile = path.join(exDir, 'pods01.py');
+      const exFile = path.join(exDir, 'pods01.yaml');
       fs.writeFileSync(exFile, '# test exercise');
 
       // Workspace root is /tmp/.../exercises
       const resolved = resolveExercisePath(
-        'exercises/01_pods/pods01.py',
+        'exercises/01_pods/pods01.yaml',
         exercisesDir
       );
       assert.strictEqual(resolved, exFile);
@@ -68,12 +110,12 @@ describe('Kubelings pathUtils - resolveExercisePath', () => {
     try {
       const chapterDir = path.join(tmpDir, 'exercises', '01_pods');
       fs.mkdirSync(chapterDir, { recursive: true });
-      const exFile = path.join(chapterDir, 'pods01.py');
+      const exFile = path.join(chapterDir, 'pods01.yaml');
       fs.writeFileSync(exFile, '# test exercise');
 
       // Workspace root is /tmp/.../exercises/01_pods
       const resolved = resolveExercisePath(
-        'exercises/01_pods/pods01.py',
+        'exercises/01_pods/pods01.yaml',
         chapterDir
       );
       assert.strictEqual(resolved, exFile);
@@ -91,12 +133,12 @@ describe('Kubelings pathUtils - resolveExercisePath', () => {
       fs.mkdirSync(exercisesDir, { recursive: true });
       fs.mkdirSync(subfolder, { recursive: true });
 
-      const exFile = path.join(exercisesDir, 'pods01.py');
+      const exFile = path.join(exercisesDir, 'pods01.yaml');
       fs.writeFileSync(exFile, '# test exercise');
 
       // Workspace root is extensions/vscode (2 levels down)
       const resolved = resolveExercisePath(
-        'exercises/01_pods/pods01.py',
+        'exercises/01_pods/pods01.yaml',
         subfolder
       );
       assert.strictEqual(resolved, exFile);
@@ -110,10 +152,10 @@ describe('Kubelings pathUtils - resolveExercisePath', () => {
     try {
       const solDir = path.join(tmpDir, 'solutions', '01_pods');
       fs.mkdirSync(solDir, { recursive: true });
-      const solFile = path.join(solDir, 'pods01.py');
+      const solFile = path.join(solDir, 'pods01.yaml');
       fs.writeFileSync(solFile, '# test solution');
 
-      const resolved = resolveExercisePath('solutions/01_pods/pods01.py', tmpDir);
+      const resolved = resolveExercisePath('solutions/01_pods/pods01.yaml', tmpDir);
       assert.strictEqual(resolved, solFile);
     } finally {
       fs.rmSync(tmpDir, { recursive: true, force: true });
@@ -121,15 +163,16 @@ describe('Kubelings pathUtils - resolveExercisePath', () => {
   });
 
   it('resolves exercise from standard directory when root is invalid', () => {
-    const resolved = resolveExercisePath('exercises/01_pods/pods01.py', '/');
+    const resolved = resolveExercisePath('exercises/01_pods/pods01.yaml', '/');
     assert.ok(fs.existsSync(resolved));
-    assert.ok(resolved.endsWith(path.join('01_pods', 'pods01.py')));
+    assert.ok(resolved.endsWith(path.join('01_pods', 'pods01.yaml')));
   });
 
   it('resolves exercise with leading slash correctly', () => {
-    const resolved = resolveExercisePath('/exercises/01_pods/pods01.py', '/');
+    const resolved = resolveExercisePath('/exercises/01_pods/pods01.yaml', '/');
     assert.ok(fs.existsSync(resolved));
-    assert.ok(resolved.endsWith(path.join('01_pods', 'pods01.py')));
-    assert.notStrictEqual(resolved, '/exercises/01_pods/pods01.py');
+    assert.ok(resolved.endsWith(path.join('01_pods', 'pods01.yaml')));
+    assert.notStrictEqual(resolved, '/exercises/01_pods/pods01.yaml');
   });
 });
+

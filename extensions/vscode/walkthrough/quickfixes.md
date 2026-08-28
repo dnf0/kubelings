@@ -7,7 +7,7 @@ The Kubelings VS Code extension integrates deeply into the editor to provide a s
 ### 🛠️ In-Editor Feedback & Diagnostics
 
 - **On-Save Inline Squiggles**:
-  Whenever you save an exercise file (`exercises/**/*.py`), Kubelings automatically evaluates the exercise and highlights errors right at the exact failing line.
+  Whenever you save an exercise file (`exercises/**/*.{yaml,yml,py}`), Kubelings automatically evaluates the exercise and highlights errors right at the exact failing line.
 
 - **Quick Fix Lightbulb Actions**:
   Hover over an error squiggle or click the lightbulb icon `💡` (`Cmd+.` / `Ctrl+.`) to reveal instant actions:

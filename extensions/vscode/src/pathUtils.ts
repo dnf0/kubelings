@@ -91,12 +91,65 @@ export function getEffectiveWorkspaceRoot(
 }
 
 /**
- * Robustly resolves an exercise relative path (e.g. "exercises/01_pods/pods01.py")
+ * Returns a list of candidate file paths for a given target path, prioritizing
+ * .yaml, then .yml, then .py extensions.
+ */
+export function getCandidateFilePaths(targetPath: string): string[] {
+  if (!targetPath || typeof targetPath !== 'string') {
+    return [];
+  }
+  const ext = path.extname(targetPath).toLowerCase();
+  const basePath =
+    ext === '.yaml' || ext === '.yml' || ext === '.py'
+      ? targetPath.slice(0, -ext.length)
+      : targetPath;
+
+  const extensions =
+    ext === '.yml'
+      ? ['.yml', '.yaml', '.py']
+      : ['.yaml', '.yml', '.py'];
+
+  const candidates: string[] = [];
+  for (const candidateExt of extensions) {
+    const candidate = basePath + candidateExt;
+    if (!candidates.includes(candidate)) {
+      candidates.push(candidate);
+    }
+  }
+
+  if (!candidates.includes(targetPath)) {
+    candidates.push(targetPath);
+  }
+  if (!candidates.includes(basePath)) {
+    candidates.push(basePath);
+  }
+
+  return candidates;
+}
+
+/**
+ * Searches for an existing candidate file path on disk, checking .yaml, .yml, and .py.
+ */
+export function findExistingCandidate(targetPath: string): string | undefined {
+  if (!targetPath || typeof targetPath !== 'string') {
+    return undefined;
+  }
+  const candidates = getCandidateFilePaths(targetPath);
+  for (const cand of candidates) {
+    if (fs.existsSync(cand)) {
+      return cand;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Robustly resolves an exercise relative path (e.g. "exercises/01_pods/pods01.yaml")
  * against the current workspace, checking:
- * 1. Absolute paths that exist on disk
- * 2. Direct resolution against workspace root (e.g. workspaceRoot/exercises/01_pods/pods01.py)
- * 3. Stripping 'exercises/' prefix if workspace is already inside exercises/ (e.g. workspaceRoot/01_pods/pods01.py)
- * 4. Checking if workspace is inside an individual chapter directory (e.g. workspaceRoot/pods01.py)
+ * 1. Absolute paths that exist on disk (and candidate extensions)
+ * 2. Direct resolution against workspace root (e.g. workspaceRoot/exercises/01_pods/pods01.yaml)
+ * 3. Stripping 'exercises/' prefix if workspace is already inside exercises/ (e.g. workspaceRoot/01_pods/pods01.yaml)
+ * 4. Checking if workspace is inside an individual chapter directory (e.g. workspaceRoot/pods01.yaml)
  * 5. Ascending parent directory traversal up to 8 levels (both full path and stripped path)
  * 6. Checking standard locations (~/kubelings, ~/repos/kubelings, etc.)
  * 7. Fallback to direct resolution against workspace root
@@ -110,8 +163,14 @@ export function resolveExercisePath(
   }
 
   // 1. If path is already an absolute path that exists on disk
-  if (path.isAbsolute(exPath) && fs.existsSync(exPath)) {
-    return exPath;
+  if (path.isAbsolute(exPath)) {
+    const existing = findExistingCandidate(exPath);
+    if (existing) {
+      return existing;
+    }
+    if (fs.existsSync(exPath)) {
+      return exPath;
+    }
   }
 
   // Normalize path: strip leading slashes so it is treated as a relative path
@@ -134,10 +193,11 @@ export function resolveExercisePath(
   const isExplicit = !isInvalidRoot(workspaceRoot);
   const root = getEffectiveWorkspaceRoot(workspaceRoot);
 
-  // 2. Direct resolve with workspaceRoot (e.g. workspaceRoot/exercises/01_pods/pods01.py)
+  // 2. Direct resolve with workspaceRoot (e.g. workspaceRoot/exercises/01_pods/pods01.yaml)
   const directPath = path.resolve(root, cleanPath);
-  if (fs.existsSync(directPath)) {
-    return directPath;
+  const directFound = findExistingCandidate(directPath);
+  if (directFound) {
+    return directFound;
   }
 
   // 3. If cleanPath starts with 'exercises/' or 'solutions/', try stripping the prefix
@@ -149,15 +209,17 @@ export function resolveExercisePath(
   if (isExercisesPrefix || isSolutionsPrefix) {
     const stripped = cleanPath.replace(/^(exercises|solutions)[/\\]/, '');
     const strippedPath = path.resolve(root, stripped);
-    if (fs.existsSync(strippedPath)) {
-      return strippedPath;
+    const strippedFound = findExistingCandidate(strippedPath);
+    if (strippedFound) {
+      return strippedFound;
     }
 
     // 4. If workspace is inside an individual chapter directory, check basename
     const filenameOnly = path.basename(cleanPath);
     const directFile = path.resolve(root, filenameOnly);
-    if (fs.existsSync(directFile)) {
-      return directFile;
+    const fileFound = findExistingCandidate(directFile);
+    if (fileFound) {
+      return fileFound;
     }
   }
 
@@ -165,15 +227,17 @@ export function resolveExercisePath(
   let cur = root;
   for (let i = 0; i < 8; i++) {
     const candidateFull = path.resolve(cur, cleanPath);
-    if (fs.existsSync(candidateFull)) {
-      return candidateFull;
+    const candidateFullFound = findExistingCandidate(candidateFull);
+    if (candidateFullFound) {
+      return candidateFullFound;
     }
 
     if (isExercisesPrefix || isSolutionsPrefix) {
       const stripped = cleanPath.replace(/^(exercises|solutions)[/\\]/, '');
       const candidateStripped = path.resolve(cur, stripped);
-      if (fs.existsSync(candidateStripped)) {
-        return candidateStripped;
+      const candidateStrippedFound = findExistingCandidate(candidateStripped);
+      if (candidateStrippedFound) {
+        return candidateStrippedFound;
       }
     }
 
@@ -196,19 +260,22 @@ export function resolveExercisePath(
     ];
     for (const standardDir of standardDirs) {
       const candidate = path.resolve(standardDir, cleanPath);
-      if (fs.existsSync(candidate)) {
-        return candidate;
+      const foundCandidate = findExistingCandidate(candidate);
+      if (foundCandidate) {
+        return foundCandidate;
       }
       if (isExercisesPrefix || isSolutionsPrefix) {
         const stripped = cleanPath.replace(/^(exercises|solutions)[/\\]/, '');
         const strippedCand = path.resolve(standardDir, stripped);
-        if (fs.existsSync(strippedCand)) {
-          return strippedCand;
+        const foundStripped = findExistingCandidate(strippedCand);
+        if (foundStripped) {
+          return foundStripped;
         }
       }
       const candBase = path.resolve(standardDir, path.basename(cleanPath));
-      if (fs.existsSync(candBase)) {
-        return candBase;
+      const foundBase = findExistingCandidate(candBase);
+      if (foundBase) {
+        return foundBase;
       }
     }
   }

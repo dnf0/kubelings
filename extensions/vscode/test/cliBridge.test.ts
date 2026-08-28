@@ -173,5 +173,11 @@ describe('KubelingsCliBridge - Integration with Kubelings CLI', () => {
     assert.ok('passed' in runRes);
     assert.ok('has_not_done_marker' in runRes);
   });
+
+  it('provides reset method on KubelingsCliBridge', async () => {
+    const bridge = new KubelingsCliBridge({ workspaceRoot: repoRoot });
+    assert.strictEqual(typeof bridge.reset, 'function');
+  });
 });
+
 

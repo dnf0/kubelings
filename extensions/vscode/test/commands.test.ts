@@ -31,7 +31,7 @@ describe('Kubelings Commands - resolveExerciseName', () => {
       {
         name: 'pods02',
         title: 'Pod 2',
-        path: 'exercises/01_pods/pods02.py',
+        path: 'exercises/01_pods/pods02.yaml',
         chapter_name: '01_pods',
         requires_cluster: false,
       },
@@ -40,7 +40,12 @@ describe('Kubelings Commands - resolveExerciseName', () => {
     assert.strictEqual(resolveExerciseName(item), 'pods02');
   });
 
-  it('resolves name from Uri', () => {
+  it('resolves name from Uri with .yaml extension', () => {
+    const uri = vscode.Uri.file('/workspace/exercises/01_pods/pods03.yaml');
+    assert.strictEqual(resolveExerciseName(uri), 'pods03');
+  });
+
+  it('resolves name from Uri with .py extension', () => {
     const uri = vscode.Uri.file('/workspace/exercises/01_pods/pods03.py');
     assert.strictEqual(resolveExerciseName(uri), 'pods03');
   });
@@ -62,8 +67,8 @@ describe('Kubelings Commands - Command Registration and Execution', () => {
               {
                 name: 'pods01',
                 title: 'First Pod',
-                path: 'exercises/01_pods/pods01.py',
-                solution_path: 'solutions/01_pods/pods01.py',
+                path: 'exercises/01_pods/pods01.yaml',
+                solution_path: 'solutions/01_pods/pods01.yaml',
                 chapter_name: '01_pods',
                 requires_cluster: false,
                 has_not_done: true,
@@ -94,7 +99,7 @@ describe('Kubelings Commands - Command Registration and Execution', () => {
           {
             name: 'pods01',
             title: 'First Pod',
-            path: 'exercises/01_pods/pods01.py',
+            path: 'exercises/01_pods/pods01.yaml',
             chapter: '01_pods',
             status: 'in_progress',
             passed: false,
@@ -124,7 +129,7 @@ describe('Kubelings Commands - Command Registration and Execution', () => {
     }
   }
 
-  it('registers all 11 expected extension commands', () => {
+  it('registers all 13 expected extension commands', () => {
     const bridge = new MockFullBridge({ workspaceRoot: '/workspace' });
     const treeDataProvider = new KubelingsTreeDataProvider(bridge);
     const statusBar = new KubelingsStatusBar(bridge);
@@ -145,6 +150,8 @@ describe('Kubelings Commands - Command Registration and Execution', () => {
     const expectedCommands = [
       'kubelings.refresh',
       'kubelings.openExercise',
+      'kubelings.openSolution',
+      'kubelings.resetExercise',
       'kubelings.initExercises',
       'kubelings.runExercise',
       'kubelings.nextExercise',
@@ -350,7 +357,7 @@ describe('Kubelings Commands - Command Registration and Execution', () => {
 
     await vscode.commands.executeCommand(
       'kubelings.openExercise',
-      'exercises/01_pods/pods01.py',
+      'exercises/01_pods/pods01.yaml',
       'pods01'
     );
     assert.ok(initCalled);
