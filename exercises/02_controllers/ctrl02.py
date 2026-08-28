@@ -2,6 +2,15 @@
 Exercise: exercises/02_controllers/ctrl02.py
 Topic: Deployments & Rolling Updates
 
+Context & Why:
+Deployments provide declarative updates for Pods and ReplicaSets. While the `Recreate`
+strategy terminates all existing pods simultaneously before starting new ones (introducing
+service downtime), the `RollingUpdate` strategy incrementally replaces old pods with new
+ones to achieve zero-downtime deployments. Two key parameters tune this behavior:
+- `maxSurge`: The maximum number or percentage of pods that can be created above the desired replica count.
+- `maxUnavailable`: The maximum number or percentage of pods that can be unavailable during the update.
+Setting `maxUnavailable: 0` ensures 100% service capacity is maintained at all times during rollouts.
+
 Instructions:
 Deployments support zero-downtime rolling updates.
 Configure the Deployment manifest below:
@@ -23,8 +32,12 @@ kind: Deployment
 metadata:
   name: api-deployment
 spec:
+  # TODO: Set replicas to 4
+  # WHY: Maintains high availability across multiple pod instances for load balancing and fault tolerance.
   replicas: 0
   strategy:
+    # TODO: Configure strategy type to RollingUpdate with maxSurge: "25%" and maxUnavailable: 0
+    # WHY: Setting maxUnavailable: 0 ensures no capacity degradation occurs while the Deployment progressively updates replicas.
     type: Recreate
   selector:
     matchLabels:
@@ -36,6 +49,8 @@ spec:
     spec:
       containers:
       - name: api
+        # TODO: Set container image to 'python:3.12-slim'
+        # WHY: Deploys a minimal, standard Python runtime environment for the API service.
         image: ???
 """
 

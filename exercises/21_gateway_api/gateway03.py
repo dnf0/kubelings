@@ -2,6 +2,21 @@
 Exercise: gateway03.py
 Topic: Gateway API - Weighted Canary Traffic Splitting and URL Rewrite Filters
 
+Context & Why:
+Progressive delivery strategies (such as canary rollouts and blue/green deployments) require
+fine-grained control over traffic distribution and request modification before requests hit
+backend pods.
+
+Traditional Ingress controllers required vendor-specific annotations (e.g. `nginx.ingress.kubernetes.io/canary-weight`)
+which led to fragmented configurations across cloud environments. The Gateway API elevates these
+capabilities into native, standardized API primitives:
+- `backendRefs[*].weight`: Enables declarative weighted traffic shifting across multiple backend
+  services (e.g., 80% to stable `frontend-v1` and 20% to canary `frontend-v2`).
+- `filters`: Provides standard request/response mutations directly in the data plane:
+  * `URLRewrite`: Modifies incoming URI paths (e.g. rewriting `/app` prefix to `/`) before passing to upstream services.
+  * `RequestHeaderModifier`: Injects, mutates, or removes HTTP headers (e.g., adding `X-Forwarded-By: GatewayAPI`)
+    to maintain traceability across service boundaries.
+
 Task:
 Define an HTTPRoute configured for advanced canary traffic management:
 1. 'apiVersion': 'gateway.networking.k8s.io/v1', 'kind': 'HTTPRoute'
@@ -19,7 +34,9 @@ import yaml
 
 
 def build_canary_route() -> dict:
-    # TODO: Define and return canary HTTPRoute manifest
+    # TODO: Define and return the HTTPRoute manifest configured with URL rewrite filters, request header modifiers, and weighted backend canary traffic splitting.
+    # WHY: Gateway API standardizes advanced traffic manipulation (URL rewriting and header mutation) and weighted multi-backend routing
+    #      as first-class core primitives, enabling reliable canary rollouts without proprietary ingress controller annotations.
     return {}
 
 

@@ -2,6 +2,15 @@
 Exercise: exercises/03_config_secrets/config03.py
 Topic: Secrets: Base64 Encoding & stringData
 
+Context & Why:
+Kubernetes Secrets store sensitive configuration assets such as database credentials, API tokens,
+and private encryption keys. In declarative Secret manifests, values in the `data` field must be
+base64-encoded strings (allowing arbitrary binary payloads). To simplify manual authoring without
+requiring manual base64 pipelines, Kubernetes supports the write-only `stringData` field: the API
+server automatically base64-encodes plaintext values in `stringData` and writes them into `data`
+before persisting them to etcd. The default Secret type `Opaque` denotes arbitrary user-defined
+key-value secret payloads.
+
 Instructions:
 Kubernetes Secrets store sensitive configuration (passwords, tokens, keys).
 Values in the `data` field must be base64-encoded strings, while values in `stringData`
@@ -30,8 +39,12 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: db-credentials
+# TODO: Set type to 'Opaque'
+# WHY: 'Opaque' is the standard Kubernetes secret type for unstructured sensitive key-value data.
 type: ???
 data:
+  # TODO: Populate base64-encoded strings for 'username' ('admin') and 'password' ('supersecret')
+  # WHY: The Kubernetes Secret data field requires base64-encoded values to support arbitrary binary and textual data over the wire.
   username: ???
   password: ???
 stringData:
@@ -41,7 +54,8 @@ stringData:
 
 def decode_secret_data(secret_dict: Dict[str, Any]) -> Dict[str, str]:
     """Decode base64 encoded strings in secret['data'] to utf-8 strings."""
-    # TODO: Implement base64 decoding logic
+    # TODO: Implement base64 decoding logic for all entries in secret['data']
+    # WHY: Models how the kubelet decodes secret data payloads before mounting them into container filesystems or env vars.
     return {}
 
 

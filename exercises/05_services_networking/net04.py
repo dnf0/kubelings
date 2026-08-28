@@ -2,6 +2,15 @@
 Exercise: exercises/05_services_networking/net04.py
 Topic: CoreDNS Internal Service Resolution
 
+Context & Why:
+CoreDNS powers in-cluster service discovery by serving authoritative DNS zones for Kubernetes resources.
+Pod DNS resolution behavior is governed by `dnsPolicy` and `dnsConfig`:
+- `dnsPolicy: ClusterFirst`: Routes DNS queries through CoreDNS before forwarding non-cluster domains to upstream resolvers.
+- `dnsConfig.searches`: Defines search domains appended to short hostname lookups (e.g. `service-name -> service-name.default.svc.cluster.local`).
+- `dnsConfig.options`: Fine-tunes resolver parameters such as `ndots: 2` (reducing excessive fallback search queries).
+CoreDNS also answers SRV queries for named service ports:
+`_<port-name>._<protocol>.<service-name>.<namespace>.svc.<cluster-domain>`, enabling dynamic port discovery for protocols like gRPC.
+
 Instructions:
 CoreDNS provides internal service discovery.
 1. Standard Service A-record format:
@@ -31,8 +40,12 @@ kind: Pod
 metadata:
   name: dns-client-pod
 spec:
+  # TODO: Set dnsPolicy to 'ClusterFirst'
+  # WHY: Instructs kubelet to configure /etc/resolv.conf using the in-cluster CoreDNS nameserver.
   dnsPolicy: ???
   dnsConfig:
+    # TODO: Add search paths 'custom.corp.local' and 'default.svc.cluster.local'
+    # WHY: Allows resolving corporate intranet domains as well as local Kubernetes services by short names.
     searches:
       - ???
       - ???
@@ -54,7 +67,8 @@ def build_kubernetes_dns_query(
     cluster_domain: str = "cluster.local",
 ) -> str:
     """Build the expected CoreDNS query hostname for a service or SRV endpoint."""
-    # TODO: Implement DNS query builder
+    # TODO: Implement DNS query builder handling standard A-records and named-port SRV-records
+    # WHY: Replicates the CoreDNS query structure for service and port discovery.
     return ""
 
 

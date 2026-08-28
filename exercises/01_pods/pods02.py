@@ -2,6 +2,16 @@
 Exercise: exercises/01_pods/pods02.py
 Topic: Multi-Container Pods & Sidecar Pattern
 
+Context & Why:
+Multi-container pods allow co-locating tightly coupled processes that must share
+resources. Containers within the same Pod share the network namespace (accessing
+each other over localhost) and can mount shared filesystem volumes. The sidecar
+pattern offloads secondary responsibilities (such as log shipping, metrics collection,
+or proxying) from the primary application container. Using an `emptyDir` volume
+allows the main container to produce logs to a directory while the sidecar tails and
+transmits them, adhering to separation of concerns without requiring modifications
+to the core application container.
+
 Instructions:
 Construct a multi-container pod manifest named 'web-logger'.
 1. Define an emptyDir volume named 'shared-logs' in spec.volumes.
@@ -20,14 +30,18 @@ metadata:
   name: web-logger
 spec:
   volumes:
-  # TODO: define emptyDir volume 'shared-logs'
+  # TODO: Define an emptyDir volume named 'shared-logs'
+  # WHY: emptyDir creates an ephemeral shared filesystem directory on the host node, allowing co-located containers in the pod to exchange files.
   containers:
   - name: app
     image: alpine:3.19
     volumeMounts:
+    # TODO: Mount the 'shared-logs' volume at '/var/log/app'
+    # WHY: The primary application container writes its output logs to this directory for consumption by the sidecar.
     - name: ???
       mountPath: /var/log/app
-  # TODO: add sidecar-logger container
+  # TODO: Add the 'sidecar-logger' container using image 'busybox:1.36' mounting 'shared-logs' at '/var/log/shared' with readOnly: true
+  # WHY: Mounting the shared volume as read-only in the sidecar enforces least privilege and prevents the log aggregator from corrupting application log files.
 """
 
 

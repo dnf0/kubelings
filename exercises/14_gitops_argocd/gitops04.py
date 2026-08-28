@@ -1,8 +1,17 @@
 """
 Exercise: Progressive Delivery with Argo Rollouts (gitops04)
 
-Argo Rollouts replaces the standard Kubernetes Deployment controller to enable
-advanced deployment strategies like Canary and Blue-Green with metric analysis.
+Context & Why:
+Native Kubernetes Deployments only provide rolling updates or complete recreations,
+offering little control over traffic shaping or automated verification during release.
+If a newly deployed image has a latent bug or memory leak, a standard rolling update
+will replace all healthy pods without giving engineers or automated monitors time to detect it.
+
+Argo Rollouts replaces or augments the standard Deployment controller with advanced
+progressive delivery patterns. A `Rollout` CRD allows defining granular `canary` steps
+with traffic weighting (`setWeight: 20`) and observational pause durations (`pause: {"duration": "10m"}`).
+This isolates potential regressions to a small percentage of incoming requests and allows
+automated metrics analysis or manual health validation before promoting the release to the entire cluster.
 
 Task:
 Complete `get_rollout_manifest()` to define an Argo Rollout resource:
@@ -35,7 +44,10 @@ from typing import Any, Dict
 
 
 def get_rollout_manifest() -> Dict[str, Any]:
-    # TODO: Define and return the Argo Rollout manifest dictionary
+    # TODO: Construct and return the dictionary representation of an Argo Rollout CRD
+    #       defining canary strategy steps (weights and pause durations) and pod template spec.
+    # WHY: Progressive delivery via Canary rollouts limits blast radius by routing a small fraction of live
+    #      traffic to new versions and pausing for observability verification before full cluster promotion.
     return {}
 
 

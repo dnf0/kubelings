@@ -2,6 +2,16 @@
 Exercise: exercises/05_services_networking/net03.py
 Topic: NodePort & LoadBalancer Service Types
 
+Context & Why:
+Exposing Kubernetes services to external traffic outside the cluster network is accomplished via:
+1. `NodePort`: Extends ClusterIP by opening a dedicated high port (default range: 30000–32767) on
+   every node's external interface. `kube-proxy` forwards traffic received on any node's NodePort
+   to the service endpoints.
+2. `LoadBalancer`: The standard mechanism for exposing cloud services. It requests the cloud provider's
+   load balancer controller (AWS NLB/ALB, GCP Cloud Load Balancing) to provision an external IP and
+   route internet traffic to the cluster's NodePorts. Security can be tightened using
+   `loadBalancerSourceRanges` to restrict client CIDRs that can reach the public VIP.
+
 Instructions:
 Kubernetes provides external connectivity using:
 - NodePort: Allocates a dedicated high port (default range 30000-32767) on every node in the cluster.
@@ -30,6 +40,8 @@ kind: Service
 metadata:
   name: frontend-np
 spec:
+  # TODO: Set type to 'NodePort' and nodePort to 30080
+  # WHY: Opens static port 30080 across all cluster nodes to route directly to frontend pods.
   type: ???
   selector:
     app: frontend
@@ -45,6 +57,8 @@ kind: Service
 metadata:
   name: frontend-lb
 spec:
+  # TODO: Set type to 'LoadBalancer'
+  # WHY: Integrates with the cloud cloud-controller-manager to automatically provision an external cloud load balancer.
   type: ???
   selector:
     app: frontend
@@ -61,7 +75,8 @@ spec:
 
 def validate_node_port_range(port: int) -> bool:
     """Validate whether port falls within standard Kubernetes NodePort range (30000-32767)."""
-    # TODO: Implement range check
+    # TODO: Implement range check ensuring port is within [30000, 32767]
+    # WHY: Replicates the Kubernetes API server port allocator validation range for NodePort services.
     return False
 
 

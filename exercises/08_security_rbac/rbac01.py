@@ -2,12 +2,17 @@
 Exercise: exercises/08_security_rbac/rbac01.py
 Topic: ServiceAccounts & Token Management
 
-Instructions:
-By default, Kubernetes pods automatically mount an API token from their assigned
-ServiceAccount at /var/run/secrets/kubernetes.io/serviceaccount. Following the principle
-of least privilege, pods that do not interact with the Kubernetes API should disable
-automatic token mounting.
+Context & Why:
+In production Kubernetes clusters, workload identity is established via ServiceAccounts.
+By default, every pod without an explicit service account inherits the namespace's 'default'
+ServiceAccount and automatically mounts a projected API token credential at
+`/var/run/secrets/kubernetes.io/serviceaccount/token`. If a workload is compromised (e.g. via RCE),
+an attacker can leverage this mounted token to query or manipulate cluster resources. Following
+the principle of least privilege, disabling `automountServiceAccountToken: false` at both the
+ServiceAccount and Pod levels guarantees that non-control-plane workloads (such as CI runners,
+batch jobs, and frontend services) do not needlessly expose API access tokens to container runtimes.
 
+Instructions:
 1. Define a ServiceAccount 'build-robot-sa' in namespace 'ci-runners':
    - automountServiceAccountToken: false
 2. Define a Pod 'build-worker-pod' in namespace 'ci-runners':
@@ -26,6 +31,8 @@ kind: ServiceAccount
 metadata:
   name: build-robot-sa
   namespace: ci-runners
+# TODO: Disable automatic token mounting for this ServiceAccount (boolean false).
+# WHY: Prevents pods using this ServiceAccount from automatically mounting API credentials.
 automountServiceAccountToken: ???
 ---
 apiVersion: v1
@@ -34,7 +41,11 @@ metadata:
   name: build-worker-pod
   namespace: ci-runners
 spec:
+  # TODO: Assign the custom ServiceAccount name 'build-robot-sa'.
+  # WHY: Decouples the workload from the default namespace ServiceAccount identity.
   serviceAccountName: ???
+  # TODO: Disable token mounting at the Pod spec level (boolean false).
+  # WHY: Provides defense-in-depth even if the underlying ServiceAccount configuration changes.
   automountServiceAccountToken: ???
   containers:
   - name: runner

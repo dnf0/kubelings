@@ -2,12 +2,16 @@
 Exercise: exercises/10_lifecycle_probes/health03.py
 Topic: Startup Probes
 
-Instructions:
-Legacy applications or services with lengthy initialization processes (e.g. database migrations,
-JVM startup, model loading) risk being prematurely terminated by liveness probes before
-becoming ready. Startup probes disable liveness and readiness checks until the startup probe
-succeeds once, granting a startup grace budget.
+Context & Why:
+Complex enterprise workloads (such as JVM applications, large machine learning models, or services
+running schema migrations on boot) often require several minutes to complete initial boot sequence.
+If configured solely with standard liveness probes, the kubelet may fail the probe during boot and
+enter a crash loop, killing the container before it ever completes startup. Startup probes solve this
+by establishing an initial boot grace period: all liveness and readiness probes are completely disabled
+until the startup probe succeeds once. This decouples slow cold-start handling from sensitive fast-failing
+runtime liveness checks.
 
+Instructions:
 1. Configure Pod 'legacy-app-pod' with container 'legacy-app':
    - image: 'openjdk:21-slim'
    - startupProbe using tcpSocket:
@@ -42,12 +46,18 @@ spec:
     image: openjdk:21-slim
     startupProbe:
       tcpSocket:
+        # TODO: Set the TCP socket check port to 8080.
+        # WHY: Kubelet will probe whether the TCP socket opens when the JVM finishes binding its listener.
         port: ???
       initialDelaySeconds: 10
       periodSeconds: 10
+      # TODO: Set failureThreshold to 30.
+      # WHY: Grants 30 attempts of 10s periods (300s) + 10s initial delay = 310s maximum startup window.
       failureThreshold: ???
     livenessProbe:
       httpGet:
+        # TODO: Set liveness HTTP check path to '/alive'.
+        # WHY: Once startup succeeds, regular runtime liveness polling verifies application responsiveness on /alive.
         path: ???
         port: 8080
       periodSeconds: 10
@@ -57,7 +67,8 @@ spec:
 
 def calculate_max_startup_budget(startup_probe: Dict[str, Any]) -> int:
     """Calculate the maximum startup budget duration in seconds before liveness checks kick in."""
-    # TODO: Calculate startup budget in seconds
+    # TODO: Calculate the total startup time budget: initialDelaySeconds + (periodSeconds * failureThreshold).
+    # WHY: Identifies the maximum time budget kubelet allows the container to initialize before marking it dead.
     return 0
 
 

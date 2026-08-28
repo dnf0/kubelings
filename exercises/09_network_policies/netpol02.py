@@ -2,11 +2,15 @@
 Exercise: exercises/09_network_policies/netpol02.py
 Topic: Ingress Traffic Filtering
 
-Instructions:
-NetworkPolicy Ingress rules filter inbound connections to selected pods.
-Rules can select traffic by podSelector (within the same namespace) or namespaceSelector
-(cross-namespace), restricted to specific protocols and ports.
+Context & Why:
+In multi-tier Kubernetes architectures, stateful components like relational databases should never
+be directly reachable from all pods in a cluster. NetworkPolicy Ingress rules define explicit ingress
+filters for selected workloads. Traffic sources can be scoped to specific pods within the same namespace
+via `podSelector`, across namespaces via `namespaceSelector`, or both. Restricting ingress by label,
+transport protocol (TCP/UDP), and destination port ensures only verified backend API servers and authorized
+monitoring agents can establish network connections to sensitive database ports.
 
+Instructions:
 1. Configure NetworkPolicy 'allow-database-ingress' in namespace 'production':
    - Targets pods with label `role: database`.
    - Ingress Rule 1: Allow TCP port 5432 from pods with label `role: backend-api` (same namespace).
@@ -37,16 +41,24 @@ spec:
   - from:
     - podSelector:
         matchLabels:
+          # TODO: Match source pods with role 'backend-api'.
+          # WHY: Restricts application traffic exclusively to verified backend tier services.
           role: ???
     ports:
     - protocol: TCP
+      # TODO: Specify target PostgreSQL port 5432.
+      # WHY: Prevents source pods from connecting to unintended management or debug ports.
       port: ???
   - from:
     - namespaceSelector:
         matchLabels:
+          # TODO: Match source namespaces with name 'monitoring'.
+          # WHY: Allows Prometheus or monitoring scrapers in the monitoring namespace to connect across namespace boundaries.
           kubernetes.io/metadata.name: ???
     ports:
     - protocol: TCP
+      # TODO: Specify target Postgres metrics exporter port 9187.
+      # WHY: Isolates monitoring telemetry scraping to its dedicated metrics endpoint.
       port: ???
 """
 
@@ -59,7 +71,8 @@ def check_ingress_allowed(
     protocol: str = "TCP",
 ) -> bool:
     """Determine whether an ingress rule in the policy allows traffic from the source."""
-    # TODO: Implement ingress rule evaluation logic
+    # TODO: Implement ingress rule evaluation that checks if any rule matches the source pod/namespace labels and port/protocol.
+    # WHY: CNI packet filtering engines evaluate ingress rules in sequential disjunction (OR) to allow matching traffic streams.
     return False
 
 

@@ -2,6 +2,16 @@
 Exercise: exercises/07_scheduling/sched03.py
 Topic: Pod Affinity & Pod Anti-Affinity
 
+Context & Why:
+Inter-pod affinity and anti-affinity allow scheduling decisions to depend on the labels of *other pods*
+already running in the cluster rather than node labels alone:
+1. `Pod Anti-Affinity`: Essential for High Availability (HA). By specifying hard anti-affinity against
+   pods with the same application label on `topologyKey: kubernetes.io/hostname`, the scheduler guarantees
+   that no two replicas run on the same physical worker node. If a node fails, only a single replica is lost.
+2. `Pod Affinity`: Optimizes performance for latency-sensitive microservices. By specifying affinity towards
+   companion pods (e.g., placing web frontend pods in the same Availability Zone `topologyKey: topology.kubernetes.io/zone`
+   as their Redis cache), inter-service network latency is minimized and cross-AZ data egress fees are eliminated.
+
 Instructions:
 Pod Affinity and Anti-Affinity schedule pods based on labels of *other pods*
 already running on nodes within a specific topology domain (e.g. hostname or zone).
@@ -35,6 +45,8 @@ spec:
   affinity:
     podAntiAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
+      # TODO: Configure anti-affinity matching app: 'web-frontend' with topologyKey: 'kubernetes.io/hostname'
+      # WHY: Guarantees that multiple web-frontend pods are never scheduled on the same host node, ensuring HA.
       - labelSelector:
           matchLabels:
             app: ???
@@ -46,6 +58,8 @@ spec:
           labelSelector:
             matchLabels:
               app: redis-cache
+          # TODO: Set topologyKey to 'topology.kubernetes.io/zone'
+          # WHY: Encourages placing web pods in the same availability zone as the redis-cache to minimize network latency.
           topologyKey: ???
   containers:
   - name: web
@@ -58,7 +72,8 @@ def can_coexist_on_host(
     pod_manifest: Dict[str, Any],
 ) -> bool:
     """Check if placing the candidate pod violates host-level podAntiAffinity."""
-    # TODO: Implement anti-affinity checker
+    # TODO: Implement anti-affinity checker inspecting running pods on node for conflicting labels
+    # WHY: Models the InterPodAffinity filter plugin in kube-scheduler enforcing podAntiAffinity rules.
     return True
 
 

@@ -2,7 +2,23 @@
 Exercise: exercises/25_batch_kueue_volcano/volcano01.py
 Topic: Volcano Gang Scheduling & Deadlock Prevention
 
-Instructions:
+Context & Why:
+Distributed AI training workloads (such as PyTorch DistributedDataParallel or Horovod) require all
+participating nodes (parameter server/master and all worker ranks) to be active simultaneously to
+initialize collective communication (e.g. NCCL all-reduce).
+
+Under the standard Kubernetes `default-scheduler`:
+- Pods are scheduled individually. If a 4-pod job arrives when only 2 GPUs are free, the scheduler
+  binds 2 pods and leaves 2 pods pending.
+- The 2 running pods block those GPUs indefinitely while waiting for synchronization with the 2 pending pods.
+- If another job similarly holds remaining resources, a distributed resource deadlock occurs.
+
+Volcano Gang Scheduling solves this:
+- Custom scheduler (`spec.schedulerName: volcano`) with all-or-nothing scheduling semantics.
+- `spec.minAvailable: 4` enforces that all 4 pods (1 master + 3 workers) must be schedulable simultaneously
+  before any pod is bound to a node, eliminating distributed deadlocks completely.
+
+Task:
 Fix the Volcano Job manifest below to perform all-or-nothing gang scheduling for distributed training:
 1. Set 'apiVersion' to 'batch.volcano.sh/v1alpha1' and 'kind' to 'Job'.
 2. Set 'metadata.name' to 'distributed-training-gang'.
@@ -19,6 +35,8 @@ import yaml
 
 from kubelings.validator import validate_manifest_text
 
+# TODO: Configure the Volcano Job manifest with gang scheduling minAvailable constraints and distributed master/worker task groups.
+# WHY: Gang scheduling eliminates distributed training deadlocks by requiring all cooperating distributed pods to be scheduled simultaneously before any single pod consumes cluster resources.
 VOLCANO_JOB_MANIFEST = """
 apiVersion: ???
 kind: ???

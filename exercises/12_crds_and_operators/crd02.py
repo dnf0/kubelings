@@ -2,14 +2,16 @@
 Exercise: exercises/12_crds_and_operators/crd02.py
 Topic: CRD Subresources & Printer Columns
 
-Instructions:
-Kubernetes CustomResourceDefinitions can enable subresources and custom printer
-columns:
-1. `subresources.status: {}` enables the `/status` subresource, preventing spec
-   mutations when updating status and enabling granular RBAC.
-2. `subresources.scale` integrates the custom resource with `kubectl scale` and HPA.
-3. `additionalPrinterColumns` customizes the fields displayed by `kubectl get`.
+Context & Why:
+CustomResourceDefinitions become first-class cluster primitives when equipped with subresources
+and printer column definitions. Enabling `subresources.status: {}` creates an isolated `/status`
+endpoint, ensuring controller status updates cannot inadvertently mutate user-managed `spec` fields
+and allowing fine-grained RBAC for operator service accounts. Enabling `subresources.scale` exposes
+JSONPath mappings (`specReplicasPath`, `statusReplicasPath`) to core autoscaling systems (HPA and
+`kubectl scale`). Furthermore, `additionalPrinterColumns` renders domain-specific metadata (such as
+backup schedule and phase) directly in standard `kubectl get` commands, dramatically improving operator UX.
 
+Instructions:
 Define a CustomResourceDefinition 'backups.backup.example.com':
 - apiVersion: apiextensions.k8s.io/v1
 - kind: CustomResourceDefinition
@@ -73,14 +75,22 @@ spec:
     subresources:
       status: {}
       scale:
+        # TODO: Set specReplicasPath to '.spec.replicas'.
+        # WHY: Maps the desired replica count field in the custom resource to HPA and kubectl scale.
         specReplicasPath: ???
+        # TODO: Set statusReplicasPath to '.status.replicas'.
+        # WHY: Maps the observed replica count field in status for controller reconciliation.
         statusReplicasPath: ???
     additionalPrinterColumns:
     - name: Schedule
       type: string
+      # TODO: Set jsonPath for Schedule column to '.spec.schedule'.
+      # WHY: Extracts the cron schedule expression from spec to display in kubectl get output.
       jsonPath: ???
     - name: Status
       type: string
+      # TODO: Set jsonPath for Status column to '.status.phase'.
+      # WHY: Surfaces the high-level operational status (e.g. Running, Completed, Failed) to cluster operators.
       jsonPath: ???
     - name: Age
       type: date

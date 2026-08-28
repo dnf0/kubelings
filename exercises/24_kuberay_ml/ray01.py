@@ -2,7 +2,19 @@
 Exercise: exercises/24_kuberay_ml/ray01.py
 Topic: RayCluster Core Architecture & Head Node
 
-Instructions:
+Context & Why:
+KubeRay is the Kubernetes operator for Ray, the open-source unified compute framework used for
+scaling AI, machine learning, and data processing workloads.
+
+A Ray cluster follows a distributed architecture orchestrated by the `RayCluster` Custom Resource:
+- Head Node: Runs the Global Control Store (GCS) metadata server on port 6379, the Ray Dashboard
+  web UI on port 8265, the API server, and cluster scheduling coordinator. Configuring
+  `rayStartParams` (`dashboard-host: '0.0.0.0'`, `block: 'true'`) ensures external accessibility
+  and keeps the main head process running.
+- Worker Nodes: Execute Ray tasks and actors. Organized into `workerGroupSpecs`, workers connect
+  to the head node's GCS server and scale dynamically between `minReplicas` and `maxReplicas`.
+
+Task:
 Fix the RayCluster YAML manifest below to define a distributed Ray cluster:
 1. Set 'apiVersion' to 'ray.io/v1' and 'kind' to 'RayCluster'.
 2. Set 'metadata.name' to 'ray-cluster-ml'.
@@ -18,6 +30,8 @@ import yaml
 
 from kubelings.validator import validate_manifest_text
 
+# TODO: Fix the RayCluster YAML manifest by specifying the RayCluster kind, head group start parameters, GCS/dashboard ports, and worker resource limits.
+# WHY: The RayCluster CRD automates the orchestration of Ray's distributed architecture on Kubernetes, coordinating the GCS metadata store and web dashboard on the head node while establishing a scalable worker group for parallel compute.
 RAY_CLUSTER_MANIFEST = """
 apiVersion: ???
 kind: ???

@@ -1,8 +1,17 @@
 """
 Exercise: Strict Mutual TLS & PeerAuthentication (mesh02)
 
-Service meshes enforce end-to-end cryptographic identity and encryption via mTLS.
-In Istio and Cilium Service Mesh, `PeerAuthentication` defines the mTLS enforcement mode.
+Context & Why:
+By default, inter-pod communication across a Kubernetes cluster overlay network is
+unencrypted and unauthenticated at the transport layer, exposing workloads to packet
+sniffing and spoofing within shared multi-tenant clusters. Service mesh architectures
+solve this by establishing zero-trust cryptographic identities (using SPIFFE IDs embedded
+in x509 certificates) and enforcing Mutual TLS (mTLS) for all pod-to-pod traffic.
+
+In service mesh control planes (such as Istio or Cilium Service Mesh), the `PeerAuthentication`
+CRD defines the policy for incoming mTLS connections. Setting `mode: STRICT` mandates that
+all workloads in the designated namespace reject any non-TLS or unauthenticated plaintext
+connections, establishing verifiable workload identity and encryption in transit.
 
 Task:
 Complete `get_peer_authentication_manifest()` to enforce STRICT mTLS for the `production` namespace:
@@ -20,7 +29,10 @@ from typing import Any, Dict
 
 
 def get_peer_authentication_manifest() -> Dict[str, Any]:
-    # TODO: Define and return the PeerAuthentication manifest dictionary
+    # TODO: Construct and return the dictionary representation of a PeerAuthentication CRD
+    #       enforcing STRICT mutual TLS mode in the 'production' namespace.
+    # WHY: Strict mTLS guarantees transport layer encryption and cryptographically verifies workload identities
+    #      (SPIFFE/x509), completely preventing unauthenticated or eavesdropped plaintext traffic.
     return {}
 
 

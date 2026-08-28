@@ -2,10 +2,15 @@
 Exercise: exercises/08_security_rbac/rbac05.py
 Topic: Pod Security Standards (PSS/PSA)
 
-Instructions:
-Kubernetes Pod Security Admission (PSA) enforces Pod Security Standards (Privileged, Baseline,
-Restricted) through namespace labels across three modes: `enforce`, `audit`, and `warn`.
+Context & Why:
+Kubernetes Pod Security Admission (PSA) replaces deprecated PodSecurityPolicies (PSP) with built-in,
+declarative namespace policy enforcement based on three Pod Security Standards: `Privileged` (unrestricted),
+`Baseline` (prevents known privilege escalations), and `Restricted` (heavily hardened). Namespaces configure
+PSA across three operational modes via labels: `enforce` (rejects non-compliant pods), `audit` (records
+audit log annotations without blocking), and `warn` (returns user-facing CLI warnings). This tripartite model
+allows platform teams to safely test and audit workload compliance before switching to strict enforcement.
 
+Instructions:
 1. Define a Namespace manifest for 'secure-production':
    - enforce: 'restricted' (version: 'latest')
    - audit: 'restricted' (version: 'latest')
@@ -31,10 +36,16 @@ kind: Namespace
 metadata:
   name: secure-production
   labels:
+    # TODO: Set the Pod Security Admission enforcement level to 'restricted'.
+    # WHY: Causes the API server admission plugin to strictly reject any pod that fails restricted PSS checks.
     pod-security.kubernetes.io/enforce: ???
     pod-security.kubernetes.io/enforce-version: latest
+    # TODO: Set the Pod Security Admission audit level to 'restricted'.
+    # WHY: Adds audit log annotations for any non-compliant pods admitted under exemption or grandfathered in.
     pod-security.kubernetes.io/audit: ???
     pod-security.kubernetes.io/audit-version: latest
+    # TODO: Set the Pod Security Admission warning level to 'restricted'.
+    # WHY: Emits helpful warning messages back to kubectl clients when applying non-compliant resources.
     pod-security.kubernetes.io/warn: ???
     pod-security.kubernetes.io/warn-version: latest
 """
@@ -42,7 +53,8 @@ metadata:
 
 def evaluate_pss_compliance(pod_manifest: Dict[str, Any], level: str) -> bool:
     """Evaluate whether a Pod manifest satisfies the given Pod Security Standard level."""
-    # TODO: Implement PSS compliance checks for privileged, baseline, and restricted
+    # TODO: Implement PSS compliance checks for privileged (allow all), baseline (no host namespaces or privileged containers), and restricted (baseline + non-root + no privilege escalation + drop ALL capabilities).
+    # WHY: Programmatic admission controllers evaluate pod specs against standard compliance criteria to enforce workload isolation.
     return False
 
 

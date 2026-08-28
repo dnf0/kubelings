@@ -1,8 +1,18 @@
 """
 Exercise: CiliumClusterwideNetworkPolicy with DNS Inspection (mesh03)
 
-Cilium cluster-wide network policies protect the entire cluster across all namespaces
-and can enforce egress rules by domain names (FQDNs) via live DNS proxy inspection.
+Context & Why:
+Standard Kubernetes NetworkPolicies are namespace-scoped and rely on static IP or CIDR
+blocks. In modern cloud environments, egress destinations (such as GitHub, AWS S3, or third-party
+APIs) use dynamic, rotating IP pools behind CDNs and load balancers. Attempting to manage
+egress using static CIDRs leads to frequent outages or overly permissive CIDR rules (e.g. `0.0.0.0/0`).
+
+Cilium solves this with `CiliumClusterwideNetworkPolicy` and live DNS proxy inspection.
+When a pod performs a DNS query (e.g. for `api.github.com` or `*.amazonaws.com`), the eBPF datapath
+intercepts the response, maps the resolved IPs dynamically to the authorized FQDN (Fully Qualified
+Domain Name), and opens temporary egress on designated ports (like port 443 TCP). Because the policy
+is cluster-scoped (`CiliumClusterwideNetworkPolicy`), baseline egress security guards every node
+and namespace uniformly.
 
 Task:
 Complete `get_clusterwide_egress_policy()` returning a `CiliumClusterwideNetworkPolicy`:
@@ -30,7 +40,10 @@ from typing import Any, Dict
 
 
 def get_clusterwide_egress_policy() -> Dict[str, Any]:
-    # TODO: Define and return the CiliumClusterwideNetworkPolicy manifest dictionary
+    # TODO: Construct and return the dictionary representation of a CiliumClusterwideNetworkPolicy CRD
+    #       defining clusterwide FQDN egress rules (matchName and matchPattern) with DNS proxy inspection.
+    # WHY: Cluster-wide FQDN egress policies protect nodes from data exfiltration and C2 attacks by dynamically
+    #      resolving allowed external domains through DNS proxy inspection instead of brittle, hardcoded IP blocks.
     return {}
 
 

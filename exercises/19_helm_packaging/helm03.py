@@ -2,6 +2,18 @@
 Chapter 19: Package Management with Helm
 Exercise 19.3: Helm values.schema.json Validation Schema
 
+Context & Why:
+In Helm chart distribution, user-provided values in `values.yaml` or via `--set` flags
+can easily include invalid types, negative replica counts, illegal port numbers, or missing
+mandatory fields. Without schema validation, these errors are only caught during cluster
+reconciliation or container runtime crashes, wasting developer time.
+
+Helm addresses this by natively supporting `values.schema.json` following the JSON Schema
+Draft-7 standard. When users run `helm lint`, `helm template`, or `helm install`, Helm
+automatically validates the input values against the schema before rendering. Restricting
+properties with `type`, `minimum`/`maximum`, and `enum` bounds provides clear, immediate feedback
+on invalid inputs at the CLI client stage.
+
 Task: Construct a strict JSON Schema (Draft-7) specification for Helm chart values validation.
 Requirements:
 - $schema: 'http://json-schema.org/draft-07/schema#'
@@ -23,6 +35,9 @@ import jsonschema
 
 
 def get_values_schema() -> Dict[str, Any]:
+    # TODO: Construct and return the dictionary representation of a JSON Schema Draft-7 schema for Helm values.
+    # WHY: Helm values schemas catch configuration typos, missing mandatory keys, and out-of-range parameters
+    #      locally before template rendering or API server submission.
     return {}
 
 

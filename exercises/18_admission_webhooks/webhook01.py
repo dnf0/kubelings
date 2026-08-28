@@ -2,8 +2,21 @@
 Chapter 18: Advanced Admission Webhooks & Dynamic Interception
 Exercise 18.1: MutatingWebhookConfiguration Manifest
 
-Fix the MutatingWebhookConfiguration manifest to route pod creation requests
-to the admission controller service 'mutator-svc' in 'webhook-system'.
+Context & Why:
+Kubernetes admission processing occurs in two sequential phases: mutating admission
+followed by validating admission. Mutating webhooks allow platform operators to intercept
+API requests before object schema validation and persistence to etcd, dynamically modifying
+or injecting configurations (such as sidecar containers, environment variables, or security contexts).
+
+A `MutatingWebhookConfiguration` instructs the kube-apiserver to send an `AdmissionReview`
+payload over TLS to an internal Service (`mutator-svc` in `webhook-system`). Setting `failurePolicy: Fail`
+enforces fail-closed security semantics: if the webhook endpoint is unreachable or fails to respond
+within `timeoutSeconds: 5`, the pod creation request is blocked, preventing un-mutated workloads from
+bypassing organizational standards.
+
+Task:
+Fix the MutatingWebhookConfiguration manifest function to return the parsed manifest dictionary
+routing namespaced pod CREATE operations to the admission controller service 'mutator-svc'.
 """
 
 from typing import Any, Dict
@@ -37,7 +50,9 @@ webhooks:
     timeoutSeconds: 5
     failurePolicy: Fail
 """
-    # Fix the return dictionary
+    # TODO: Parse and return the MutatingWebhookConfiguration manifest dictionary (e.g., using yaml.safe_load).
+    # WHY: MutatingWebhookConfigurations register dynamic admission controllers with the API server, enabling
+    #      transparent workload mutation and policy enforcement prior to resource validation and storage.
     return {}
 
 

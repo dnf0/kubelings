@@ -2,6 +2,16 @@
 Exercise: exercises/04_storage/storage05.py
 Topic: Volume Snapshots & Volume Expansion
 
+Context & Why:
+Enterprise storage architectures require disaster recovery, point-in-time backups, and capacity scaling.
+The Kubernetes CSI snapshotting framework provides three standardized Custom Resource Definitions (CRDs):
+1. `VolumeSnapshotClass`: Defines the CSI driver and storage lifecycle parameters (e.g. deletionPolicy).
+2. `VolumeSnapshot`: A user request to capture a point-in-time block snapshot of an active PersistentVolumeClaim.
+3. Restoring Snapshots: Creating a new PVC with `spec.dataSource` pointing to a VolumeSnapshot pre-populates
+   the newly provisioned PV with the snapshot's block data.
+In addition, Kubernetes supports volume expansion (resizing PVC storage requests upward on storage classes with
+`allowVolumeExpansion: true`), but strictly forbids shrinking volumes due to filesystem corruption risks.
+
 Instructions:
 Kubernetes supports Volume Snapshots (via the CSI external-snapshotter) and
 online/offline PVC Volume Expansion.
@@ -33,6 +43,8 @@ apiVersion: snapshot.storage.k8s.io/v1
 kind: VolumeSnapshotClass
 metadata:
   name: csi-aws-vsc
+# TODO: Set driver to 'ebs.csi.aws.com' and deletionPolicy to 'Delete'
+# WHY: Directs snapshot lifecycle management to the AWS EBS CSI driver and ensures snapshots are deleted when the object is deleted.
 driver: ???
 deletionPolicy: ???
 ---
@@ -41,6 +53,8 @@ kind: VolumeSnapshot
 metadata:
   name: prod-db-snap-01
 spec:
+  # TODO: Link volumeSnapshotClassName to 'csi-aws-vsc' and source persistentVolumeClaimName to 'dynamic-db-pvc'
+  # WHY: Creates a point-in-time copy of the source PVC using the specified VolumeSnapshotClass driver.
   volumeSnapshotClassName: ???
   source:
     persistentVolumeClaimName: ???
@@ -57,6 +71,8 @@ spec:
     requests:
       storage: 20Gi
   dataSource:
+    # TODO: Set dataSource name: 'prod-db-snap-01', kind: VolumeSnapshot, and apiGroup: 'snapshot.storage.k8s.io'
+    # WHY: Instructs the CSI driver to clone data from the specified snapshot into a new persistent volume.
     name: ???
     kind: VolumeSnapshot
     apiGroup: ???
@@ -69,6 +85,8 @@ def _parse_storage_str(val: str) -> int:
         return int(val[:-2]) * 1024 * 1024 * 1024
     if val.endswith("Mi"):
         return int(val[:-2]) * 1024 * 1024
+    if val.endswith("Ki"):
+        return int(val[:-2]) * 1024
     return int(val)
 
 
@@ -76,7 +94,8 @@ def validate_expansion_request(
     initial_size_str: str, new_size_str: str, allow_expansion: bool
 ) -> bool:
     """Determine if a PVC resize request is permissible."""
-    # TODO: Implement expansion validation
+    # TODO: Implement expansion validation logic checking allow_expansion flag and strictly increasing size
+    # WHY: Enforces Kubernetes storage rules that disallow volume shrinking and require StorageClass expansion opt-in.
     return False
 
 

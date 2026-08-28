@@ -2,6 +2,15 @@
 Exercise: exercises/13_troubleshooting/troubleshoot04.py
 Topic: ResourceQuotas & LimitRanges
 
+Context & Why:
+In multi-tenant Kubernetes clusters, resource governance prevents any single team or faulty workload
+from monopolizing cluster compute capacity. `ResourceQuota` establishes hard namespace-wide ceilings
+for aggregate CPU, Memory, and Pod object counts, causing the API server to reject (HTTP 403) pods that
+would exceed the namespace quota. However, if a namespace has a ResourceQuota, every created container
+MUST specify explicit CPU and memory requests and limits. `LimitRange` complements quotas by enforcing
+minimum/maximum container bounds and automatically injecting sensible `default` limits and `defaultRequest`
+values into pods that omit them, preventing unconstrained resource consumption.
+
 Instructions:
 Kubernetes multi-tenancy relies on two complementary resource governance primitives:
 1. `ResourceQuota`: Sets aggregate resource limits (CPU, Memory, Pod count) across
@@ -36,9 +45,13 @@ metadata:
   namespace: team-billing
 spec:
   hard:
+    # TODO: Set requests.cpu quota to "4".
+    # WHY: Caps total reserved CPU cores across all active pods in team-billing.
     requests.cpu: ???
     requests.memory: "8Gi"
     limits.cpu: "8"
+    # TODO: Set limits.memory quota to "16Gi".
+    # WHY: Caps total peak memory allowance across all pods in the namespace.
     limits.memory: ???
     pods: "10"
 ---
@@ -51,10 +64,14 @@ spec:
   limits:
   - type: Container
     default:
+      # TODO: Set default container limit CPU to "500m".
+      # WHY: Automatically injects a 0.5 CPU limit for containers created without limits.
       cpu: ???
       memory: "512Mi"
     defaultRequest:
       cpu: "200m"
+      # TODO: Set default container request memory to "256Mi".
+      # WHY: Guarantees baseline memory reservation for unconfigured containers.
       memory: ???
     max:
       cpu: "2"

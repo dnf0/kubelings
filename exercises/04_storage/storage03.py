@@ -2,6 +2,16 @@
 Exercise: exercises/04_storage/storage03.py
 Topic: Access Modes & Reclaim Policies
 
+Context & Why:
+Storage requirements vary depending on how applications access data:
+- `ReadWriteOnce` (RWO): The volume can be mounted as read-write by a single cluster node. Suitable for block storage (AWS EBS, GCP Persistent Disk).
+- `ReadOnlyMany` (ROX): The volume can be mounted read-only by many nodes simultaneously. Suitable for shared static assets.
+- `ReadWriteMany` (RWX): The volume can be mounted as read-write by many nodes concurrently. Suitable for network file systems (NFS, AWS EFS, CephFS).
+Equally critical is the `persistentVolumeReclaimPolicy`:
+- `Retain`: Preserves the underlying storage and data when a PVC is deleted, transitioning the PV to `Released` status for manual inspection or backup.
+- `Delete`: Automatically deallocates both the PV object and the backend cloud storage asset upon PVC deletion (standard for ephemeral/cloud disks).
+- `Recycle`: Performs basic file scrubbing (`rm -rf`) to make the volume re-bindable (deprecated).
+
 Instructions:
 Kubernetes supports three primary PersistentVolume Access Modes:
 - ReadWriteOnce (RWO): mounted as read-write by a single node.
@@ -40,10 +50,16 @@ metadata:
   name: shared-nfs-pv
 spec:
   capacity:
+    # TODO: Set capacity storage to 50Gi
+    # WHY: Declares the total quota allocated on the remote NFS storage share.
     storage: ???
   accessModes:
+    # TODO: Add accessModes 'ReadWriteMany' and 'ReadOnlyMany'
+    # WHY: NFS storage natively supports concurrent multi-node read/write and read-only mounts.
     - ???
     - ???
+  # TODO: Set persistentVolumeReclaimPolicy to 'Retain'
+  # WHY: Retain ensures critical multi-tenant NFS data is preserved and not purged if a PVC is accidentally deleted.
   persistentVolumeReclaimPolicy: ???
   storageClassName: nfs-storage
   nfs:
@@ -54,7 +70,8 @@ spec:
 
 def evaluate_reclaim_lifecycle(reclaim_policy: str, pvc_deleted: bool) -> str:
     """Determine the PV status outcome when its bound PVC is deleted."""
-    # TODO: Implement lifecycle evaluation
+    # TODO: Implement lifecycle evaluation based on reclaim policy and PVC deletion state
+    # WHY: Simulates the PersistentVolume controller state machine during volume deprovisioning.
     return ""
 
 

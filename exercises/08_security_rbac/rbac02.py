@@ -2,10 +2,16 @@
 Exercise: exercises/08_security_rbac/rbac02.py
 Topic: Roles & RoleBindings
 
-Instructions:
-Role-Based Access Control (RBAC) uses Roles to declare namespace-scoped permissions
-and RoleBindings to attach those permissions to subjects (users, groups, or ServiceAccounts).
+Context & Why:
+Kubernetes Role-Based Access Control (RBAC) enforces namespace-scoped authorization for users,
+groups, and ServiceAccounts. A `Role` defines granular access policies through API groups,
+resource types, and authorized HTTP verbs (`get`, `list`, `watch`, `create`, `delete`, etc.).
+A `RoleBinding` binds those declared permissions to specific subjects within the same namespace.
+In multi-tenant clusters, crafting precise, minimal Roles prevents lateral movement and privilege
+escalation, ensuring deployer automation and microservice agents only manipulate their designated
+workload resources.
 
+Instructions:
 1. Define a Role 'pod-manager-role' in namespace 'staging':
    - apiVersion: 'rbac.authorization.k8s.io/v1'
    - rule 1: apiGroups [""], resources ["pods", "pods/log"], verbs ["get", "list", "watch", "create", "delete"]
@@ -44,10 +50,14 @@ metadata:
   namespace: staging
 subjects:
 - kind: ServiceAccount
+  # TODO: Specify the subject ServiceAccount name 'staging-deployer'.
+  # WHY: Identifies the workload identity that is granted the role's permissions.
   name: ???
   namespace: staging
 roleRef:
   kind: Role
+  # TODO: Reference the target Role name 'pod-manager-role'.
+  # WHY: Binds the declared rules in pod-manager-role to the staging-deployer subject.
   name: ???
   apiGroup: rbac.authorization.k8s.io
 """
@@ -60,7 +70,8 @@ def can_perform_action(
     verb: str,
 ) -> bool:
     """Determine whether the RBAC rules permit the specified action."""
-    # TODO: Implement rule checking with wildcard support ('*')
+    # TODO: Implement RBAC permission evaluation supporting wildcard ('*') matching for apiGroups, resources, and verbs.
+    # WHY: The Kubernetes API server authorization engine evaluates incoming requests by matching against rule list patterns where '*' grants universal access across that dimension.
     return False
 
 

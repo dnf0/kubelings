@@ -2,6 +2,16 @@
 Exercise: exercises/07_scheduling/sched04.py
 Topic: Taints and Tolerations
 
+Context & Why:
+While Node Affinity attracts Pods to certain nodes, `Taints` allow a Node to repel a set of Pods.
+Taints and Tolerations work together to dedicate nodes to specific workloads (e.g., reserving expensive
+NVIDIA H100 GPU nodes exclusively for ML training) or handle node lifecycle states (e.g. `node.kubernetes.io/unreachable`).
+Taint Effects:
+- `NoSchedule`: The scheduler will not place the pod on the node unless the pod has a matching toleration.
+- `PreferNoSchedule`: The scheduler attempts to avoid the node, but will place the pod there if no other node is available.
+- `NoExecute`: Immediately evicts running pods from the node unless they tolerate the taint. Specifying
+  `tolerationSeconds` (e.g. 120s) grants a grace period before eviction, preventing immediate cascading failovers during transient network blips.
+
 Instructions:
 Taints allow a node to repel a set of pods. Tolerations are applied to pods to allow
 (but not require) the pods to schedule onto nodes with matching taints.
@@ -33,10 +43,14 @@ metadata:
   name: ml-trainer
 spec:
   tolerations:
+  # TODO: Configure toleration with key: 'gpu-type', operator: 'Equal', value: 'h100', effect: 'NoSchedule'
+  # WHY: Permits this ML workload to schedule on dedicated GPU nodes tainted with gpu-type=h100:NoSchedule.
   - key: gpu-type
     operator: ???
     value: ???
     effect: NoSchedule
+  # TODO: Configure toleration for key: 'node.kubernetes.io/unreachable', operator: 'Exists', effect: 'NoExecute'
+  # WHY: Allows a 120-second grace window before evicting the pod if the host node enters an unreachable network state.
   - key: node.kubernetes.io/unreachable
     operator: ???
     effect: ???
@@ -52,7 +66,8 @@ def can_schedule_on_tainted_node(
     node_taints: List[Dict[str, Any]],
 ) -> bool:
     """Check whether a pod tolerates all blocking taints (NoSchedule/NoExecute) on a node."""
-    # TODO: Implement taint/toleration matching logic
+    # TODO: Implement taint/toleration matching logic comparing key, value, operator, and effect
+    # WHY: Replicates the TaintToleration plugin in kube-scheduler that filters out nodes with un-tolerated taints.
     return False
 
 

@@ -2,6 +2,19 @@
 Exercise: tetragon02.py
 Topic: eBPF Observability - Tetragon File and Token Access Monitoring
 
+Context & Why:
+Container credential exfiltration and unauthorized file tampering are among the most common
+attack vectors in Kubernetes clusters. Attackers often target:
+- `/etc/shadow` and `/etc/passwd` to discover user credentials and hashes.
+- `/var/run/secrets/kubernetes.io/serviceaccount/token` to steal ServiceAccount JWT tokens and
+  escalate privileges against the Kubernetes API server.
+
+Using Tetragon `TracingPolicy`, operators hook the kernel's `sys_openat` system call:
+- Captures the filepath argument (`args[1]`) at the kernel layer before file access occurs.
+- Evaluates prefix matchers (`matchArgs: [{operator: 'Prefix', values: [...]}]`) directly in eBPF.
+- Immediately exposes unauthorized read attempts to security operations without modifying application
+  container images or injecting intrusive filesystem hooks.
+
 Task:
 Define a TracingPolicy to monitor access to sensitive files and service account tokens:
 1. 'apiVersion': 'cilium.io/v1alpha1', 'kind': 'TracingPolicy'
@@ -27,7 +40,9 @@ import yaml
 
 
 def build_file_monitor_policy() -> dict:
-    # TODO: Define and return TracingPolicy manifest
+    # TODO: Define and return the Tetragon TracingPolicy manifest intercepting sys_openat calls targeting sensitive file paths.
+    # WHY: Monitoring file open syscalls in the kernel enables detection of credential theft and token exfiltration attempts in real time,
+    #      alerting operators whenever an unauthorized process accesses service account secrets or credential files.
     return {}
 
 

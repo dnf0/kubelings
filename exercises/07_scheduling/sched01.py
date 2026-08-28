@@ -2,6 +2,15 @@
 Exercise: exercises/07_scheduling/sched01.py
 Topic: Node Placement (nodeName & nodeSelector)
 
+Context & Why:
+Kubernetes provides several tiers of node placement control to map workloads to specialized hardware:
+1. `nodeName`: The most direct (and rigid) placement mechanism. Setting `spec.nodeName` assigns the Pod
+   directly to a named node, completely bypassing the `kube-scheduler` scheduling loop and filter plugins.
+   This is primarily used by internal system components or custom schedulers.
+2. `nodeSelector`: The simplest declarative constraint mechanism. It specifies a map of key-value pairs
+   that candidate worker nodes must possess in their `metadata.labels` (e.g. `accelerator: nvidia-tesla-v100`)
+   for the `kube-scheduler` to consider them eligible during the filtering phase.
+
 Instructions:
 Kubernetes provides basic node assignment mechanisms:
 1. `nodeName`: Hardcodes the exact node where the pod runs, completely bypassing the kube-scheduler.
@@ -28,6 +37,8 @@ kind: Pod
 metadata:
   name: pinned-pod
 spec:
+  # TODO: Set nodeName to 'worker-node-03'
+  # WHY: Directly assigns the pod to worker-node-03, bypassing the scheduler algorithm entirely.
   nodeName: ???
   containers:
   - name: app
@@ -39,6 +50,8 @@ metadata:
   name: gpu-pod
 spec:
   nodeSelector:
+    # TODO: Require node labels accelerator: 'nvidia-tesla-v100' and disktype: 'nvme'
+    # WHY: Ensures the GPU training pod is scheduled only on worker nodes equipped with specialized hardware.
     accelerator: ???
     disktype: ???
   containers:
@@ -53,7 +66,8 @@ def match_node_selector(
     node_labels: Dict[str, str],
 ) -> bool:
     """Evaluate whether a candidate node satisfies the pod placement constraints."""
-    # TODO: Implement placement evaluator
+    # TODO: Implement placement evaluator checking nodeName equality or subset matching for nodeSelector
+    # WHY: Replicates the NodeName and NodeSelector filter plugins inside kube-scheduler.
     return False
 
 

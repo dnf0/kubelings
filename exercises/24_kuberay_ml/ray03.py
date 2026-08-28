@@ -2,7 +2,20 @@
 Exercise: exercises/24_kuberay_ml/ray03.py
 Topic: RayJob for Distributed Batch Fine-Tuning
 
-Instructions:
+Context & Why:
+Batch machine learning jobs (such as periodic model retraining, offline batch scoring, or fine-tuning)
+require automated lifecycle management. Provisioning persistent clusters for one-off batch runs
+wastes expensive GPU resources when jobs complete.
+
+The `RayJob` Custom Resource manages the complete batch execution lifecycle:
+- Automatically provisions an ephemeral `RayCluster` based on `spec.rayClusterSpec`.
+- Submits the workload entrypoint command (`spec.entrypoint: python fine_tune.py --epochs 3`).
+- Monitors execution and streams job status back to Kubernetes.
+- Automatically tears down the underlying compute cluster when complete (`spec.shutdownAfterJobFinishes: true`).
+- Cleans up the finished job metadata after a configurable retention period (`spec.ttlSecondsAfterFinished: 300`),
+  freeing cluster resources without manual operator intervention.
+
+Task:
 Author a RayJob manifest named 'ray-finetune-job' for model fine-tuning:
 1. Set 'apiVersion' to 'ray.io/v1' and 'kind' to 'RayJob'.
 2. Set 'spec.entrypoint' to 'python fine_tune.py --epochs 3'.
@@ -16,6 +29,8 @@ import yaml
 
 from kubelings.validator import validate_manifest_text
 
+# TODO: Complete the RayJob manifest configuring the batch entrypoint command, automatic post-completion shutdown, TTL cleanup, and embedded cluster spec.
+# WHY: RayJob provides fully automated ephemeral cluster lifecycle management for distributed ML training, ensuring expensive GPU compute clusters are automatically cleaned up immediately after job completion to prevent cloud cost leaks.
 RAY_JOB_MANIFEST = """
 apiVersion: ray.io/v1
 kind: RayJob

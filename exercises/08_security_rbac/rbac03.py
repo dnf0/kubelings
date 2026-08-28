@@ -2,11 +2,16 @@
 Exercise: exercises/08_security_rbac/rbac03.py
 Topic: ClusterRoles & ClusterRoleBindings
 
-Instructions:
-ClusterRoles define permissions across the entire cluster, covering cluster-scoped
-resources (such as nodes and namespaces), resources across all namespaces, or
-non-resource URL endpoints (such as /healthz and /metrics).
+Context & Why:
+Unlike namespace-scoped Roles, `ClusterRoles` define permissions that apply cluster-wide.
+They are essential for cluster-scoped resources (such as `Node`, `Namespace`, `PersistentVolume`),
+resources accessed across all namespaces (such as multi-tenant log aggregators), and non-resource
+URL endpoints (such as `/healthz`, `/livez`, and `/metrics`). `ClusterRoleBindings` grant these
+cluster-wide permissions to subjects (Users, Groups, or ServiceAccounts). Platform engineering
+and SRE teams rely on ClusterRoles to grant read-only monitoring and node diagnostics access
+without assigning sweeping cluster-admin write privileges.
 
+Instructions:
 1. Define a ClusterRole 'cluster-node-viewer':
    - apiVersion: 'rbac.authorization.k8s.io/v1'
    - rule 1: apiGroups [""], resources ["nodes", "nodes/status", "namespaces"], verbs ["get", "list", "watch"]
@@ -38,10 +43,14 @@ metadata:
   name: bind-node-viewer
 subjects:
 - kind: Group
+  # TODO: Specify the subject Group name 'sre-monitoring-team'.
+  # WHY: Identifies the external identity provider or authentication group to receive cluster privileges.
   name: ???
   apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: ClusterRole
+  # TODO: Reference the target ClusterRole name 'cluster-node-viewer'.
+  # WHY: Links the global permissions defined in cluster-node-viewer to the SRE monitoring team.
   name: ???
   apiGroup: rbac.authorization.k8s.io
 """

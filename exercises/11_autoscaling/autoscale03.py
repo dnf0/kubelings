@@ -2,12 +2,16 @@
 Exercise: exercises/11_autoscaling/autoscale03.py
 Topic: Vertical Pod Autoscaler (VPA)
 
-Instructions:
-The Vertical Pod Autoscaler (VPA) automatically adjusts the CPU and memory
-resource requests and limits for pods based on real-time historical usage.
-This frees developers from guessing resource requirements and improves cluster
-efficiency.
+Context & Why:
+Setting container CPU and memory requests and limits is notoriously error-prone: over-provisioning
+leads to low cluster utilization and astronomical cloud bills, while under-provisioning leads to
+CPU throttling and container OOMKills. The Vertical Pod Autoscaler (VPA) analyzes historical resource
+utilization and automatically right-sizes container requests and limits. In `Auto` update mode, the VPA
+admission controller mutates pod specifications at creation and evicts running pods if their resource
+allocations diverge significantly from recommended profiles, keeping allocations within bounded `minAllowed`
+and `maxAllowed` safeguards.
 
+Instructions:
 1. Define a VerticalPodAutoscaler 'analytics-vpa' in namespace 'data-platform':
    - apiVersion: autoscaling.k8s.io/v1
    - targetRef:
@@ -41,18 +45,26 @@ metadata:
 spec:
   targetRef:
     apiVersion: apps/v1
+    # TODO: Specify target workload kind 'Deployment' and name 'analytics-worker'.
+    # WHY: Targets the analytics Deployment for vertical resource recommendation and mutation.
     kind: ???
     name: ???
   updatePolicy:
+    # TODO: Set updateMode to "Auto".
+    # WHY: Allows VPA to automatically assign resource requests on pod creation and evict running pods to apply new recommendations.
     updateMode: ???
   resourcePolicy:
     containerPolicies:
     - containerName: "worker"
       minAllowed:
+        # TODO: Set minimum allowed CPU to '100m'.
+        # WHY: Guarantees the container receives at least 0.1 CPU core even under low utilization.
         cpu: ???
         memory: "128Mi"
       maxAllowed:
         cpu: "2"
+        # TODO: Set maximum allowed Memory to '4Gi'.
+        # WHY: Caps memory allocation to prevent a single worker from consuming entire node capacity.
         memory: ???
       controlledResources:
       - "cpu"

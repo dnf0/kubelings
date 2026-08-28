@@ -2,6 +2,14 @@
 Exercise: exercises/13_troubleshooting/troubleshoot02.py
 Topic: Debugging ImagePullBackOff
 
+Context & Why:
+When a pod is scheduled to a node, kubelet delegates container image pulling to the container runtime
+interface (CRI). If image retrieval fails, the pod enters `ImagePullBackOff` / `ErrImagePull`. In production,
+this failure typically stems from either a typo in the image repository/tag or authentication rejection
+from a private image registry (such as AWS ECR, GCP Artifact Registry, or private Harbor). Resolving
+authentication requires creating a `kubernetes.io/dockerconfigjson` Secret containing authenticated registry
+credentials and mounting it into the Pod's `spec.imagePullSecrets` or the namespace ServiceAccount.
+
 Instructions:
 `ImagePullBackOff` (or `ErrImagePull`) occurs when the kubelet fails to retrieve
 a container image. The two most common causes in production are:
@@ -28,6 +36,8 @@ kind: Secret
 metadata:
   name: regcred
   namespace: finance
+# TODO: Set Secret type to 'kubernetes.io/dockerconfigjson'.
+# WHY: Informs Kubernetes that this secret contains serialized Docker CLI registry authentication credentials.
 type: ???
 stringData:
   .dockerconfigjson: '{"auths":{"privateregistry.io":{"username":"finance-bot","password":"secrettoken"}}}'
@@ -39,9 +49,13 @@ metadata:
   namespace: finance
 spec:
   imagePullSecrets:
+  # TODO: Reference the secret name 'regcred'.
+  # WHY: Instructs kubelet to use these credentials when authenticating with privateregistry.io.
   - name: ???
   containers:
   - name: app
+    # TODO: Fix the image name typo from 'paymnet-app:v1.0.0-typo' to 'payment-app:v1.0.0'.
+    # WHY: Ensures kubelet requests a valid, existing image tag from the repository.
     image: privateregistry.io/paymnet-app:v1.0.0-typo
 """
 
