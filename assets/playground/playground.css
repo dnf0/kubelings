@@ -835,3 +835,32 @@
 .term-inline-btn:hover {
   opacity: 0.9;
 }
+
+/* ==========================================================================
+   Fullscreen Mode & Full-Bleed Container Overrides
+   ========================================================================== */
+
+.kubelings-playground.is-fullscreen {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  z-index: 999999 !important;
+  box-shadow: none !important;
+}
+
+.kubelings-playground.is-fullscreen .playground-split-layout {
+  height: 100vh !important;
+  max-height: 100vh !important;
+  border-radius: 0 !important;
+}
+
+/* Full bleed width inside MkDocs Material container */
+.md-content:has(#kubelings-playground),
+.md-typeset:has(#kubelings-playground) {
+  max-width: 100% !important;
+}
+
