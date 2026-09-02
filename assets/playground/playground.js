@@ -1,30 +1,200 @@
 /**
- * Kubelings WebAssembly Playground UI Controller
+ * Kubelings WebAssembly Playground UI Controller & State Engine
  *
- * Manages Monaco Editor lifecycle, Web Worker Pyodide execution,
- * exercise navigation, progressive hints, diff inspection, and
- * MkDocs Material dark/light theme synchronization.
+ * Full 114-exercise browser learning environment powered by Pyodide WebAssembly.
+ * Features client-side localStorage persistence, interactive split-pane syllabus sidebar,
+ * real-time search & filters, progressive hints, side-by-side solution diffs, and progress backup.
  */
 
 (function () {
   "use strict";
 
-  // Tier classification for showcase exercises
-  const TIER_MAPPINGS = {
-    pods01: { tier: "Tier 1: Core Workloads", badge: "01_pods" },
-    ctrl01: { tier: "Tier 1: Core Workloads", badge: "02_controllers" },
-    config01: { tier: "Tier 1: Core Workloads", badge: "03_config_secrets" },
-    storage01: { tier: "Tier 1: Core Workloads", badge: "04_storage" },
-    sched01: { tier: "Tier 2: Scheduling & NetPol", badge: "07_scheduling" },
-    netpol01: { tier: "Tier 2: Scheduling & NetPol", badge: "09_netpol" },
-    autoscale01: { tier: "Tier 3: Operations & Scale", badge: "11_autoscaling" },
-    gitops01: { tier: "Tier 4: GitOps & CRDs", badge: "14_gitops" },
-    gateway01: { tier: "Tier 5: Cloud Native Ingress", badge: "21_gateway_api" },
-    ray01: { tier: "Tier 6: AI & GPU Acceleration", badge: "24_kuberay" },
-    accel02: { tier: "Tier 6: AI & GPU Acceleration", badge: "26_hardware" },
+  const STORAGE_KEY = "kubelings_learning_state_v1";
+
+  /**
+   * ==========================================================================
+   * KubelingsStorage: Client-Side Progress & Working Code Persistence
+   * ==========================================================================
+   */
+  const KubelingsStorage = {
+    state: null,
+    saveTimeout: null,
+
+    init(bundle) {
+      let saved = null;
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          saved = JSON.parse(raw);
+        }
+      } catch (e) {
+        console.warn("Failed to read Kubelings state from localStorage:", e);
+      }
+
+      const totalExercises = bundle && bundle.exercises ? Object.keys(bundle.exercises).length : 114;
+
+      if (!saved || saved.version !== 1 || !saved.exercises) {
+        saved = {
+          version: 1,
+          lastActiveExerciseId: "pods01",
+          exercises: {},
+          stats: {
+            completedCount: 0,
+            totalCount: totalExercises,
+            completionPercentage: 0,
+          },
+        };
+      }
+
+      // Ensure all bundle exercises are represented in storage
+      if (bundle && bundle.exercises) {
+        for (const [id, ex] of Object.entries(bundle.exercises)) {
+          if (!saved.exercises[id]) {
+            saved.exercises[id] = {
+              status: "not_started",
+              userCode: ex.starter_code || "",
+              hintsRevealed: 0,
+            };
+          }
+        }
+      }
+
+      this.state = saved;
+      this.recalculateStats(bundle);
+      this.persist();
+      return this.state;
+    },
+
+    recalculateStats(bundle) {
+      if (!this.state || !this.state.exercises) return;
+      let completed = 0;
+      const total = bundle && bundle.exercises ? Object.keys(bundle.exercises).length : Object.keys(this.state.exercises).length;
+
+      for (const exState of Object.values(this.state.exercises)) {
+        if (exState.status === "completed") {
+          completed++;
+        }
+      }
+
+      this.state.stats = {
+        completedCount: completed,
+        totalCount: total || 1,
+        completionPercentage: total > 0 ? Math.round((completed / total) * 100) : 0,
+      };
+    },
+
+    persist() {
+      if (!this.state) return;
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+      } catch (e) {
+        console.warn("Failed to write Kubelings state to localStorage:", e);
+      }
+    },
+
+    getExerciseState(exerciseId, defaultStarterCode = "") {
+      if (!this.state) return { status: "not_started", userCode: defaultStarterCode, hintsRevealed: 0 };
+      if (!this.state.exercises[exerciseId]) {
+        this.state.exercises[exerciseId] = {
+          status: "not_started",
+          userCode: defaultStarterCode,
+          hintsRevealed: 0,
+        };
+        this.persist();
+      }
+      return this.state.exercises[exerciseId];
+    },
+
+    saveExerciseCode(exerciseId, code) {
+      if (!this.state) return;
+      const exState = this.getExerciseState(exerciseId, code);
+      exState.userCode = code;
+      if (exState.status === "not_started") {
+        exState.status = "in_progress";
+      }
+      exState.lastEvaluatedAt = new Date().toISOString();
+
+      clearTimeout(this.saveTimeout);
+      this.saveTimeout = setTimeout(() => {
+        this.persist();
+      }, 300);
+    },
+
+    markCompleted(exerciseId, bundle) {
+      if (!this.state) return;
+      const exState = this.getExerciseState(exerciseId);
+      exState.status = "completed";
+      exState.passedAt = new Date().toISOString();
+      this.recalculateStats(bundle);
+      this.persist();
+    },
+
+    setHintsRevealed(exerciseId, count) {
+      if (!this.state) return;
+      const exState = this.getExerciseState(exerciseId);
+      exState.hintsRevealed = count;
+      this.persist();
+    },
+
+    resetExercise(exerciseId, starterCode) {
+      if (!this.state) return;
+      this.state.exercises[exerciseId] = {
+        status: "not_started",
+        userCode: starterCode || "",
+        hintsRevealed: 0,
+      };
+      this.persist();
+    },
+
+    resetAll(bundle) {
+      this.state = {
+        version: 1,
+        lastActiveExerciseId: "pods01",
+        exercises: {},
+        stats: {
+          completedCount: 0,
+          totalCount: bundle && bundle.exercises ? Object.keys(bundle.exercises).length : 114,
+          completionPercentage: 0,
+        },
+      };
+      if (bundle && bundle.exercises) {
+        for (const [id, ex] of Object.entries(bundle.exercises)) {
+          this.state.exercises[id] = {
+            status: "not_started",
+            userCode: ex.starter_code || "",
+            hintsRevealed: 0,
+          };
+        }
+      }
+      this.persist();
+    },
+
+    exportJSON() {
+      return JSON.stringify(this.state, null, 2);
+    },
+
+    importJSON(jsonString, bundle) {
+      try {
+        const parsed = JSON.parse(jsonString);
+        if (!parsed || parsed.version !== 1 || !parsed.exercises) {
+          throw new Error("Invalid Kubelings progress backup format.");
+        }
+        this.state = parsed;
+        this.recalculateStats(bundle);
+        this.persist();
+        return true;
+      } catch (err) {
+        console.error("Import failed:", err);
+        return false;
+      }
+    },
   };
 
-  // State
+  /**
+   * ==========================================================================
+   * Application State & UI Controller
+   * ==========================================================================
+   */
   const state = {
     bundle: null,
     worker: null,
@@ -38,14 +208,15 @@
     revealedHints: 0,
     isDiffMode: false,
     isRunning: false,
+    sidebarFilter: "all", // 'all', 'incomplete', 'completed'
+    searchQuery: "",
+    expandedChapters: new Set(),
     container: null,
     elements: {},
   };
 
   /**
    * Resolve an asset URL relative to playground.js or known locations.
-   * @param {string} filename
-   * @returns {string}
    */
   function resolveAssetUrl(filename) {
     if (document.currentScript && document.currentScript.src) {
@@ -56,18 +227,12 @@
       const src = scripts[scripts.length - 1].src;
       return new URL(filename, src).href;
     }
-    // Fallback relative to site root / current path
     return "assets/playground/" + filename;
   }
 
-  /**
-   * Escape HTML special characters for safe output.
-   * @param {string} str
-   * @returns {string}
-   */
   function escapeHtml(str) {
     if (!str) return "";
-    return str
+    return String(str)
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
@@ -75,16 +240,9 @@
       .replace(/'/g, "&#039;");
   }
 
-  /**
-   * Convert ANSI escape sequences to styled HTML spans.
-   * @param {string} text
-   * @returns {string}
-   */
   function ansiToHtml(text) {
     if (!text) return "";
     let escaped = escapeHtml(text);
-
-    // Color codes
     escaped = escaped
       .replace(/\x1b\[32m/g, '<span class="term-pass">')
       .replace(/\x1b\[31m/g, '<span class="term-fail">')
@@ -94,23 +252,14 @@
       .replace(/\x1b\[1m/g, '<span class="term-bold">')
       .replace(/\x1b\[2m/g, '<span class="term-dim">')
       .replace(/\x1b\[0m/g, "</span>")
-      .replace(/\x1b\[\d+m/g, ""); // strip unknown codes
-
+      .replace(/\x1b\[\d+m/g, "");
     return escaped;
   }
 
-  /**
-   * Get current Monaco theme based on MkDocs Material palette or system dark mode.
-   * @returns {string} 'vs-dark' or 'vs'
-   */
   function getMonacoTheme() {
     const scheme = document.body.getAttribute("data-md-color-scheme");
-    if (scheme === "slate") {
-      return "vs-dark";
-    }
-    if (scheme === "default") {
-      return "vs";
-    }
+    if (scheme === "slate") return "vs-dark";
+    if (scheme === "default") return "vs";
     if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
       return "vs-dark";
     }
@@ -118,90 +267,161 @@
   }
 
   /**
-   * Render the playground DOM structure if the container is empty.
-   * @param {HTMLElement} container
+   * Render the complete split-pane layout skeleton.
    */
   function renderPlaygroundSkeleton(container) {
-    if (container.querySelector(".playground-workspace")) {
-      return; // Already has markup
+    if (container.querySelector(".playground-split-layout")) {
+      return;
     }
 
     container.innerHTML = `
-      <div class="playground-header">
-        <div class="playground-header-left">
-          <div class="playground-select-wrapper">
-            <select id="playground-exercise-select" class="playground-exercise-select" aria-label="Select Kubelings Exercise">
-              <option value="loading">Loading exercises...</option>
-            </select>
-            <span class="playground-select-arrow">▼</span>
-          </div>
-          <span id="playground-topic" class="playground-topic-badge">Initializing...</span>
-        </div>
-        <div class="playground-header-right">
-          <div id="playground-status" class="playground-status-pill status-loading" title="WebAssembly Engine Status">
-            <span class="status-dot"></span>
-            <span class="status-text">⚡ Starting Python Wasm...</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="playground-toolbar">
-        <button id="playground-run-btn" class="playground-btn playground-btn-primary" title="Execute validation (Ctrl+Enter)">
-          <span class="btn-icon">▶</span>
-          <span>Run Solution</span>
-          <span class="playground-btn-kbd">Ctrl+Enter</span>
-        </button>
-        <button id="playground-reset-btn" class="playground-btn" title="Reset editor to starter code">
-          <span class="btn-icon">↺</span>
-          <span>Reset Code</span>
-        </button>
-        <button id="playground-hint-btn" class="playground-btn" title="Reveal hints step-by-step">
-          <span class="btn-icon">💡</span>
-          <span class="hint-label">Reveal Hint</span>
-        </button>
-        <button id="playground-diff-btn" class="playground-btn" title="Compare code side-by-side with reference solution">
-          <span class="btn-icon">🔍</span>
-          <span class="diff-label">Compare Solution</span>
-        </button>
-      </div>
-
-      <div id="playground-hints" class="playground-hints-card" aria-live="polite"></div>
-
-      <div class="playground-workspace">
-        <div class="playground-editor-pane">
-          <div id="playground-editor"></div>
-          <div id="playground-diff-editor"></div>
-        </div>
-        <div class="playground-output-pane">
-          <div class="playground-output-header">
-            <div class="playground-output-title">
-              <span class="playground-output-title-dot"></span>
-              <span>Diagnostic Output</span>
+      <div class="playground-split-layout">
+        <!-- Sidebar: Curriculum & Progress Explorer -->
+        <aside class="playground-sidebar" aria-label="Kubelings Curriculum Sidebar">
+          <div class="sidebar-header">
+            <div class="sidebar-title-row">
+              <span class="sidebar-title">☸ Curriculum</span>
+              <div class="sidebar-actions">
+                <button id="pg-btn-export" class="sidebar-icon-btn" title="Export Progress (JSON)">📥</button>
+                <button id="pg-btn-import" class="sidebar-icon-btn" title="Import Progress (JSON)">📤</button>
+                <button id="pg-btn-reset-all" class="sidebar-icon-btn sidebar-icon-danger" title="Reset All Progress">🗑️</button>
+                <input type="file" id="pg-file-import" accept=".json" style="display:none;" />
+              </div>
             </div>
-            <div id="playground-output-meta" class="playground-output-meta">Pyodide Wasm Engine</div>
+
+            <!-- Global Progress Bar -->
+            <div class="sidebar-progress-container">
+              <div class="sidebar-progress-labels">
+                <span id="pg-progress-text" class="sidebar-progress-text">0 / 114 Completed</span>
+                <span id="pg-progress-pct" class="sidebar-progress-pct">0%</span>
+              </div>
+              <div class="sidebar-progress-track">
+                <div id="pg-progress-fill" class="sidebar-progress-fill" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <!-- Search & Filters -->
+            <div class="sidebar-search-row">
+              <input type="text" id="pg-search-input" class="sidebar-search-input" placeholder="Search exercises, concepts..." />
+            </div>
+            <div class="sidebar-filter-tabs">
+              <button class="filter-tab active" data-filter="all">All</button>
+              <button class="filter-tab" data-filter="incomplete">To Do</button>
+              <button class="filter-tab" data-filter="completed">Done</button>
+            </div>
           </div>
-          <pre id="playground-output">⚡ Initializing Python 3.12 WebAssembly Runtime and Monaco Editor...</pre>
-        </div>
+
+          <!-- Syllabus Chapters Tree -->
+          <div id="pg-syllabus-tree" class="sidebar-syllabus-tree">
+            <div class="sidebar-loading-placeholder">⚡ Loading curriculum syllabus...</div>
+          </div>
+        </aside>
+
+        <!-- Main Workspace: Editor, Controls & Diagnostics -->
+        <main class="playground-main-workspace">
+          <!-- Exercise Breadcrumb & Top Bar -->
+          <div class="workspace-top-bar">
+            <div class="workspace-meta-left">
+              <span id="pg-chapter-badge" class="chapter-badge">Chapter 01</span>
+              <h2 id="pg-exercise-title" class="exercise-title">Loading exercise...</h2>
+              <span id="pg-cluster-tag" class="cluster-tag" style="display:none;">Live Cluster</span>
+            </div>
+            <div class="workspace-meta-right">
+              <div class="nav-stepper">
+                <button id="pg-prev-btn" class="nav-btn" title="Previous Exercise (Alt+Left)">← Prev</button>
+                <button id="pg-next-btn" class="nav-btn" title="Next Exercise (Alt+Right)">Next →</button>
+              </div>
+              <div id="playground-status" class="playground-status-pill status-loading" title="WebAssembly Engine Status">
+                <span class="status-dot"></span>
+                <span class="status-text">⚡ Starting Python Wasm...</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Toolbar -->
+          <div class="playground-toolbar">
+            <button id="playground-run-btn" class="playground-btn playground-btn-primary" title="Execute validation in Pyodide Wasm (Ctrl+Enter)">
+              <span class="btn-icon">▶</span>
+              <span>Run Solution</span>
+              <span class="playground-btn-kbd">Ctrl+Enter</span>
+            </button>
+            <button id="playground-hint-btn" class="playground-btn" title="Reveal hints step-by-step (H)">
+              <span class="btn-icon">💡</span>
+              <span class="hint-label">Reveal Hint</span>
+            </button>
+            <button id="playground-reset-btn" class="playground-btn" title="Reset current file to starter template">
+              <span class="btn-icon">↺</span>
+              <span>Reset Code</span>
+            </button>
+            <button id="playground-diff-btn" class="playground-btn" title="Compare side-by-side with reference solution">
+              <span class="btn-icon">🔍</span>
+              <span class="diff-label">Compare Solution</span>
+            </button>
+          </div>
+
+          <!-- Live Cluster Notification Banner -->
+          <div id="pg-cluster-banner" class="playground-cluster-banner" style="display:none;">
+            <span class="banner-icon">ℹ️</span>
+            <div class="banner-content">
+              <strong>Offline AST & Schema Validation:</strong> This exercise spec is evaluated in-browser. To test live cluster reconciliation against <code>kind</code> or <code>minikube</code>, run <code>kubelings run <span id="pg-cluster-banner-ex"></span></code> in your CLI.
+            </div>
+          </div>
+
+          <!-- Progressive Hints Card -->
+          <div id="playground-hints" class="playground-hints-card" aria-live="polite"></div>
+
+          <!-- Editor & Terminal Panes -->
+          <div class="playground-workspace">
+            <div class="playground-editor-pane">
+              <div id="playground-editor"></div>
+              <div id="playground-diff-editor"></div>
+            </div>
+            <div class="playground-output-pane">
+              <div class="playground-output-header">
+                <div class="playground-output-title">
+                  <span class="playground-output-title-dot"></span>
+                  <span>Terminal Diagnostics</span>
+                </div>
+                <div id="playground-output-meta" class="playground-output-meta">Pyodide Wasm Sandbox</div>
+              </div>
+              <pre id="playground-output">⚡ Initializing Python 3.12 WebAssembly Runtime and Monaco Editor...</pre>
+            </div>
+          </div>
+        </main>
       </div>
     `;
   }
 
   /**
-   * Cache references to key DOM elements.
-   * @param {HTMLElement} container
+   * Bind cached DOM references.
    */
   function bindElements(container) {
     state.elements = {
-      select: container.querySelector("#playground-exercise-select"),
-      topic: container.querySelector("#playground-topic"),
+      sidebarTree: container.querySelector("#pg-syllabus-tree"),
+      progressText: container.querySelector("#pg-progress-text"),
+      progressPct: container.querySelector("#pg-progress-pct"),
+      progressFill: container.querySelector("#pg-progress-fill"),
+      searchInput: container.querySelector("#pg-search-input"),
+      filterTabs: container.querySelectorAll(".filter-tab"),
+      exportBtn: container.querySelector("#pg-btn-export"),
+      importBtn: container.querySelector("#pg-btn-import"),
+      importFile: container.querySelector("#pg-file-import"),
+      resetAllBtn: container.querySelector("#pg-btn-reset-all"),
+      chapterBadge: container.querySelector("#pg-chapter-badge"),
+      exerciseTitle: container.querySelector("#pg-exercise-title"),
+      clusterTag: container.querySelector("#pg-cluster-tag"),
+      clusterBanner: container.querySelector("#pg-cluster-banner"),
+      clusterBannerEx: container.querySelector("#pg-cluster-banner-ex"),
+      prevBtn: container.querySelector("#pg-prev-btn"),
+      nextBtn: container.querySelector("#pg-next-btn"),
       status: container.querySelector("#playground-status"),
       statusText: container.querySelector("#playground-status .status-text"),
       runBtn: container.querySelector("#playground-run-btn"),
       resetBtn: container.querySelector("#playground-reset-btn"),
       hintBtn: container.querySelector("#playground-hint-btn"),
-      hintLabel: container.querySelector("#playground-hint-btn .hint-label") || container.querySelector("#playground-hint-btn"),
+      hintLabel: container.querySelector("#playground-hint-btn .hint-label"),
       diffBtn: container.querySelector("#playground-diff-btn"),
-      diffLabel: container.querySelector("#playground-diff-btn .diff-label") || container.querySelector("#playground-diff-btn"),
+      diffLabel: container.querySelector("#playground-diff-btn .diff-label"),
       hintsCard: container.querySelector("#playground-hints"),
       workspace: container.querySelector(".playground-workspace"),
       editorContainer: container.querySelector("#playground-editor"),
@@ -211,11 +431,6 @@
     };
   }
 
-  /**
-   * Update status pill UI.
-   * @param {string} stage - 'loading', 'ready', 'running', 'error'
-   * @param {string} message
-   */
   function updateStatus(stage, message) {
     const el = state.elements.status;
     const txt = state.elements.statusText;
@@ -236,72 +451,204 @@
   }
 
   /**
-   * Populate exercise dropdown grouped by Tier.
+   * Update the global progress bar and counter.
    */
-  function populateExercises() {
-    const select = state.elements.select;
-    if (!select || !state.bundle || !state.bundle.exercises) return;
+  function updateProgressUI() {
+    if (!state.bundle || !KubelingsStorage.state) return;
+    const stats = KubelingsStorage.state.stats;
+    const completed = stats.completedCount;
+    const total = stats.totalCount || Object.keys(state.bundle.exercises).length || 114;
+    const pct = stats.completionPercentage;
 
-    select.innerHTML = "";
-    const exercises = state.bundle.exercises;
-    const tierGroups = {};
+    if (state.elements.progressText) {
+      state.elements.progressText.textContent = `${completed} / ${total} Completed`;
+    }
+    if (state.elements.progressPct) {
+      state.elements.progressPct.textContent = `${pct}%`;
+    }
+    if (state.elements.progressFill) {
+      state.elements.progressFill.style.width = `${pct}%`;
+    }
+  }
 
-    // Group exercises by tier
-    for (const [id, ex] of Object.entries(exercises)) {
-      const tierInfo = TIER_MAPPINGS[id] || {
-        tier: "Other Exercises",
-        badge: ex.chapter || "general",
-      };
-      if (!tierGroups[tierInfo.tier]) {
-        tierGroups[tierInfo.tier] = [];
-      }
-      tierGroups[tierInfo.tier].push({ id, ...ex });
+  /**
+   * Render the 26-chapter collapsible accordion tree in the sidebar.
+   */
+  function renderSyllabusTree() {
+    const treeEl = state.elements.sidebarTree;
+    if (!treeEl || !state.bundle || !state.bundle.chapters) return;
+
+    const query = state.searchQuery.toLowerCase().trim();
+    const filter = state.sidebarFilter;
+    let html = "";
+
+    const activeExercise = state.bundle.exercises[state.currentExerciseId];
+    const activeChapterNumber = activeExercise ? activeExercise.chapter_number : 1;
+
+    // Ensure the active chapter is expanded by default
+    if (state.expandedChapters.size === 0) {
+      state.expandedChapters.add(activeChapterNumber);
     }
 
-    for (const [tierName, exList] of Object.entries(tierGroups)) {
-      const optgroup = document.createElement("optgroup");
-      optgroup.label = tierName;
+    let matchingExerciseCount = 0;
 
-      for (const ex of exList) {
-        const option = document.createElement("option");
-        option.value = ex.id;
-        option.textContent = `${ex.id}: ${ex.title}`;
-        optgroup.appendChild(option);
+    for (const chapter of state.bundle.chapters) {
+      const chapterExercises = (chapter.exercise_ids || [])
+        .map((id) => state.bundle.exercises[id])
+        .filter(Boolean);
+
+      // Calculate chapter progress
+      let chCompleted = 0;
+      for (const ex of chapterExercises) {
+        const exState = KubelingsStorage.getExerciseState(ex.id, ex.starter_code);
+        if (exState.status === "completed") chCompleted++;
       }
-      select.appendChild(optgroup);
+
+      // Filter exercises by search query and completion filter
+      const visibleExercises = chapterExercises.filter((ex) => {
+        const exState = KubelingsStorage.getExerciseState(ex.id, ex.starter_code);
+        if (filter === "completed" && exState.status !== "completed") return false;
+        if (filter === "incomplete" && exState.status === "completed") return false;
+
+        if (query) {
+          const matchTitle = ex.title.toLowerCase().includes(query);
+          const matchId = ex.id.toLowerCase().includes(query);
+          const matchChapter = chapter.title.toLowerCase().includes(query);
+          return matchTitle || matchId || matchChapter;
+        }
+        return true;
+      });
+
+      if (query && visibleExercises.length === 0) {
+        continue;
+      }
+
+      matchingExerciseCount += visibleExercises.length;
+      const isExpanded = query ? true : state.expandedChapters.has(chapter.number);
+      const isChapterComplete = chCompleted === chapterExercises.length && chapterExercises.length > 0;
+
+      html += `
+        <div class="chapter-group ${isExpanded ? "expanded" : ""}" data-chapter-num="${chapter.number}">
+          <div class="chapter-header" data-toggle-chapter="${chapter.number}">
+            <div class="chapter-header-title">
+              <span class="chapter-chevron">▸</span>
+              <span class="chapter-num">${String(chapter.number).padStart(2, "0")}.</span>
+              <span class="chapter-name" title="${escapeHtml(chapter.title)}">${escapeHtml(chapter.title)}</span>
+            </div>
+            <span class="chapter-badge-count ${isChapterComplete ? "complete" : ""}">
+              ${chCompleted}/${chapterExercises.length} ${isChapterComplete ? "✓" : ""}
+            </span>
+          </div>
+          <div class="chapter-exercise-list">
+      `;
+
+      for (const ex of visibleExercises) {
+        const exState = KubelingsStorage.getExerciseState(ex.id, ex.starter_code);
+        const isActive = ex.id === state.currentExerciseId;
+        const status = exState.status;
+
+        let statusIcon = "○";
+        let statusClass = "status-unstarted";
+        if (status === "completed") {
+          statusIcon = "✓";
+          statusClass = "status-done";
+        } else if (status === "in_progress") {
+          statusIcon = "⏳";
+          statusClass = "status-progress";
+        }
+
+        html += `
+          <div class="exercise-item ${isActive ? "active" : ""} ${statusClass}" data-exercise-id="${ex.id}">
+            <span class="exercise-status-icon">${statusIcon}</span>
+            <div class="exercise-item-content">
+              <div class="exercise-item-title">
+                <span class="exercise-item-id">${escapeHtml(ex.id)}:</span> ${escapeHtml(ex.title)}
+              </div>
+            </div>
+            ${ex.requires_cluster ? '<span class="exercise-cluster-badge" title="Live Cluster Exercise">☸</span>' : ""}
+          </div>
+        `;
+      }
+
+      html += `
+          </div>
+        </div>
+      `;
     }
 
-    select.value = state.currentExerciseId;
-    select.addEventListener("change", (e) => {
-      selectExercise(e.target.value);
+    if (matchingExerciseCount === 0) {
+      html = `<div class="sidebar-empty">No exercises found matching "${escapeHtml(query)}"</div>`;
+    }
+
+    treeEl.innerHTML = html;
+
+    // Attach chapter toggle handlers
+    treeEl.querySelectorAll("[data-toggle-chapter]").forEach((el) => {
+      el.addEventListener("click", () => {
+        const num = parseInt(el.getAttribute("data-toggle-chapter"), 10);
+        if (state.expandedChapters.has(num)) {
+          state.expandedChapters.delete(num);
+        } else {
+          state.expandedChapters.add(num);
+        }
+        renderSyllabusTree();
+      });
+    });
+
+    // Attach exercise select handlers
+    treeEl.querySelectorAll(".exercise-item").forEach((el) => {
+      el.addEventListener("click", () => {
+        const exId = el.getAttribute("data-exercise-id");
+        if (exId) {
+          selectExercise(exId);
+        }
+      });
     });
   }
 
   /**
-   * Switch the active exercise and update editor & hints.
-   * @param {string} exerciseId
+   * Select and load an exercise into workspace.
    */
   function selectExercise(exerciseId) {
     if (!state.bundle || !state.bundle.exercises[exerciseId]) return;
 
     state.currentExerciseId = exerciseId;
     const ex = state.bundle.exercises[exerciseId];
+    KubelingsStorage.state.lastActiveExerciseId = exerciseId;
+    KubelingsStorage.persist();
 
-    // Update topic badge
-    if (state.elements.topic) {
-      const tierInfo = TIER_MAPPINGS[exerciseId];
-      state.elements.topic.textContent = tierInfo
-        ? `${tierInfo.badge} • ${ex.title}`
-        : `${ex.chapter || "exercise"} • ${ex.title}`;
+    // Auto-expand current chapter
+    if (ex.chapter_number) {
+      state.expandedChapters.add(ex.chapter_number);
     }
 
-    // Reset hints
-    state.revealedHints = 0;
+    // Update Header
+    if (state.elements.chapterBadge) {
+      state.elements.chapterBadge.textContent = `Chapter ${String(ex.chapter_number || 1).padStart(2, "0")}: ${ex.chapter_title || ex.chapter}`;
+    }
+    if (state.elements.exerciseTitle) {
+      state.elements.exerciseTitle.textContent = `${ex.id} — ${ex.title}`;
+    }
+
+    // Live cluster banners
+    if (state.elements.clusterTag) {
+      state.elements.clusterTag.style.display = ex.requires_cluster ? "inline-flex" : "none";
+    }
+    if (state.elements.clusterBanner) {
+      state.elements.clusterBanner.style.display = ex.requires_cluster ? "flex" : "none";
+      if (state.elements.clusterBannerEx) {
+        state.elements.clusterBannerEx.textContent = ex.id;
+      }
+    }
+
+    // Load saved user code from localStorage
+    const savedState = KubelingsStorage.getExerciseState(exerciseId, ex.starter_code);
+    state.revealedHints = savedState.hintsRevealed || 0;
     renderHints();
 
     // Update Monaco editor code
     if (state.editor) {
-      state.editor.setValue(ex.starter_code || "");
+      state.editor.setValue(savedState.userCode || ex.starter_code || "");
     }
 
     // If diff editor is active, update diff models
@@ -309,17 +656,62 @@
       updateDiffModels();
     }
 
-    // Output welcoming line
+    // Update Next/Prev buttons
+    updateStepperButtons();
+
+    // Refresh syllabus tree highlight
+    renderSyllabusTree();
+
+    // Welcome terminal message
     if (state.elements.output) {
       state.elements.output.innerHTML = `
 <span class="term-banner-info">📚 Loaded exercise: <strong>${escapeHtml(ex.id)}</strong> — ${escapeHtml(ex.title)}</span>
-<span class="term-dim">Fix the manifest issues in the Python code on the left, then click </span><span class="term-pass">▶ Run Solution</span><span class="term-dim"> (or press Ctrl+Enter).</span>
+<span class="term-dim">Fix the manifest issues in the editor, then click </span><span class="term-pass">▶ Run Solution</span><span class="term-dim"> (Ctrl+Enter).</span>
 `;
     }
   }
 
+  function getOrderedExerciseList() {
+    if (!state.bundle || !state.bundle.chapters) return [];
+    const list = [];
+    for (const ch of state.bundle.chapters) {
+      if (ch.exercise_ids) {
+        list.push(...ch.exercise_ids);
+      }
+    }
+    return list;
+  }
+
+  function updateStepperButtons() {
+    const list = getOrderedExerciseList();
+    const idx = list.indexOf(state.currentExerciseId);
+
+    if (state.elements.prevBtn) {
+      state.elements.prevBtn.disabled = idx <= 0;
+    }
+    if (state.elements.nextBtn) {
+      state.elements.nextBtn.disabled = idx < 0 || idx >= list.length - 1;
+    }
+  }
+
+  function goToPreviousExercise() {
+    const list = getOrderedExerciseList();
+    const idx = list.indexOf(state.currentExerciseId);
+    if (idx > 0) {
+      selectExercise(list[idx - 1]);
+    }
+  }
+
+  function goToNextExercise() {
+    const list = getOrderedExerciseList();
+    const idx = list.indexOf(state.currentExerciseId);
+    if (idx >= 0 && idx < list.length - 1) {
+      selectExercise(list[idx + 1]);
+    }
+  }
+
   /**
-   * Render hint cards up to the currently revealed hint index.
+   * Render hint drawer cards.
    */
   function renderHints() {
     const card = state.elements.hintsCard;
@@ -357,9 +749,6 @@
     }
   }
 
-  /**
-   * Toggle progressive hints.
-   */
   function toggleHint() {
     const ex = state.bundle && state.bundle.exercises[state.currentExerciseId];
     const hints = (ex && ex.hints) || [];
@@ -370,12 +759,10 @@
     } else {
       state.revealedHints++;
     }
+    KubelingsStorage.setHintsRevealed(state.currentExerciseId, state.revealedHints);
     renderHints();
   }
 
-  /**
-   * Update diff editor original and modified models.
-   */
   function updateDiffModels() {
     if (!window.monaco || !state.diffEditor) return;
 
@@ -397,9 +784,6 @@
     });
   }
 
-  /**
-   * Toggle side-by-side solution diff comparison.
-   */
   function toggleDiffView() {
     if (!state.diffEditor || !state.editor) return;
 
@@ -422,14 +806,17 @@
     }
   }
 
-  /**
-   * Reset editor code to current exercise's starter code.
-   */
   function resetEditorCode() {
     const ex = state.bundle && state.bundle.exercises[state.currentExerciseId];
     if (!ex || !state.editor) return;
 
     state.editor.setValue(ex.starter_code || "");
+    KubelingsStorage.resetExercise(state.currentExerciseId, ex.starter_code);
+    state.revealedHints = 0;
+    renderHints();
+    renderSyllabusTree();
+    updateProgressUI();
+
     if (state.isDiffMode) {
       updateDiffModels();
     }
@@ -442,9 +829,6 @@
     }
   }
 
-  /**
-   * Execute the active exercise code in Pyodide Web Worker.
-   */
   function runCurrentExercise() {
     if (state.isRunning) return;
 
@@ -461,7 +845,6 @@
     const code = state.editor ? state.editor.getValue() : ex.starter_code;
     state.isRunning = true;
 
-    // UI running feedback
     updateStatus("running", "⚡ Running validation in WebAssembly...");
     if (state.elements.runBtn) {
       state.elements.runBtn.disabled = true;
@@ -479,14 +862,9 @@
     });
   }
 
-  /**
-   * Handle result from Pyodide Web Worker.
-   * @param {Object} result
-   */
   function handleRunResult(result) {
     state.isRunning = false;
 
-    // Restore run button
     if (state.elements.runBtn) {
       state.elements.runBtn.disabled = false;
       state.elements.runBtn.querySelector(".btn-icon").textContent = "▶";
@@ -503,14 +881,38 @@
     if (!outEl) return;
 
     if (result.passed) {
+      KubelingsStorage.markCompleted(result.exerciseId, state.bundle);
+      updateProgressUI();
+      renderSyllabusTree();
+
+      const list = getOrderedExerciseList();
+      const currentIdx = list.indexOf(result.exerciseId);
+      const hasNext = currentIdx >= 0 && currentIdx < list.length - 1;
+      const nextId = hasNext ? list[currentIdx + 1] : null;
+
       let outputHtml = `
 <span class="term-banner-pass">✓ PASSED (${duration} ms) — Exercise '${escapeHtml(result.exerciseId)}' validated successfully!</span>
 `;
       if (result.output) {
         outputHtml += `<span class="term-pass">${ansiToHtml(result.output)}</span>\n`;
       }
-      outputHtml += `<span class="term-dim">✨ All schema constraints and assertions passed in client-side WebAssembly!</span>`;
+      outputHtml += `
+<span class="term-dim">✨ All schema constraints and assertions passed in client-side WebAssembly!</span>
+`;
+      if (hasNext && nextId) {
+        outputHtml += `
+\n<span class="term-bold term-info">👉 Ready for next challenge?</span> <button id="pg-inline-next-btn" class="term-inline-btn">Advance to ${escapeHtml(nextId)} →</button>
+`;
+      } else {
+        outputHtml += `\n<span class="term-bold term-pass">🎉 CONGRATULATIONS! You have completed all 114 exercises in the curriculum!</span>`;
+      }
+
       outEl.innerHTML = outputHtml;
+
+      const inlineNext = outEl.querySelector("#pg-inline-next-btn");
+      if (inlineNext) {
+        inlineNext.addEventListener("click", goToNextExercise);
+      }
     } else {
       let outputHtml = `
 <span class="term-banner-fail">✗ VALIDATION FAILED (${duration} ms) — Exercise '${escapeHtml(result.exerciseId)}'</span>
@@ -531,7 +933,7 @@
   }
 
   /**
-   * Setup Web Worker with Pyodide and mount bundle.
+   * Setup Web Worker with Pyodide.
    */
   async function initWorker() {
     const workerUrl = resolveAssetUrl("playground-worker.js");
@@ -540,7 +942,6 @@
     try {
       worker = new Worker(workerUrl);
     } catch (e) {
-      // Cross-origin fallback via fetch + Blob
       try {
         const resp = await fetch(workerUrl);
         const code = await resp.text();
@@ -564,7 +965,7 @@
           const ex = state.bundle && state.bundle.exercises[state.currentExerciseId];
           if (state.elements.output && ex) {
             state.elements.output.innerHTML = `
-<span class="term-banner-info">🚀 Kubelings WebAssembly Playground Ready (Python 3.12 + PyYAML)</span>
+<span class="term-banner-info">🚀 Kubelings WebAssembly Learning Platform Ready (Python 3.12 + PyYAML)</span>
 <span class="term-dim">Active Exercise: </span><span class="term-bold">${escapeHtml(ex.id)}</span> — ${escapeHtml(ex.title)}
 <span class="term-dim">Click </span><span class="term-pass">▶ Run Solution</span><span class="term-dim"> (Ctrl+Enter) to validate your manifest.</span>
 `;
@@ -579,16 +980,12 @@
       updateStatus("error", "Worker error: " + (err.message || "Unknown error"));
     };
 
-    // Send bundle to worker for initialization
     worker.postMessage({
       type: "INIT",
       bundle: state.bundle,
     });
   }
 
-  /**
-   * Load Playground Bundle JSON.
-   */
   async function loadBundle() {
     const candidateUrls = [
       resolveAssetUrl("playground-bundle.json"),
@@ -598,40 +995,89 @@
       "docs/assets/playground/playground-bundle.json",
     ];
 
-    let bundleData = null;
     for (const url of candidateUrls) {
       try {
-        const res = await fetch(url);
-        if (res.ok) {
-          bundleData = await res.json();
-          break;
+        const resp = await fetch(url);
+        if (resp.ok) {
+          const bundle = await resp.json();
+          if (bundle && bundle.exercises) {
+            return bundle;
+          }
         }
-      } catch (_) {
-        // Try next candidate
+      } catch (e) {
+        // Continue trying fallback paths
       }
     }
-
-    if (!bundleData) {
-      throw new Error("Unable to load playground-bundle.json from candidate paths.");
-    }
-
-    state.bundle = bundleData;
+    throw new Error("Could not load playground-bundle.json from any known path.");
   }
 
-  /**
-   * Load Monaco Editor AMD loader from CDN and initialize editor instances.
-   */
-  function loadMonacoEditor(onLoaded) {
+  function initMonaco() {
+    if (state.monacoLoaded || !window.monaco) return;
+    state.monacoLoaded = true;
+
+    const editorEl = state.elements.editorContainer;
+    const diffEl = state.elements.diffContainer;
+    if (!editorEl || !diffEl) return;
+
+    const theme = getMonacoTheme();
+    const ex = state.bundle && state.bundle.exercises[state.currentExerciseId];
+    const initialCode = KubelingsStorage.getExerciseState(state.currentExerciseId, ex ? ex.starter_code : "").userCode;
+
+    state.editor = window.monaco.editor.create(editorEl, {
+      value: initialCode,
+      language: "python",
+      theme: theme,
+      automaticLayout: true,
+      fontSize: 13,
+      lineNumbers: "on",
+      minimap: { enabled: false },
+      scrollBeyondLastLine: false,
+      tabSize: 4,
+      insertSpaces: true,
+      renderWhitespace: "selection",
+      folding: true,
+    });
+
+    state.editor.onDidChangeModelContent(() => {
+      const code = state.editor.getValue();
+      KubelingsStorage.saveExerciseCode(state.currentExerciseId, code);
+      renderSyllabusTree();
+      if (state.isDiffMode) {
+        updateDiffModels();
+      }
+    });
+
+    state.editor.addCommand(
+      window.monaco.KeyMod.CtrlCmd | window.monaco.KeyCode.Enter,
+      runCurrentExercise
+    );
+
+    state.diffEditor = window.monaco.editor.createDiffEditor(diffEl, {
+      theme: theme,
+      automaticLayout: true,
+      fontSize: 13,
+      readOnly: true,
+      renderSideBySide: true,
+      minimap: { enabled: false },
+      scrollBeyondLastLine: false,
+    });
+  }
+
+  function loadMonacoScript() {
     if (window.monaco) {
-      onLoaded();
+      initMonaco();
       return;
     }
 
-    if (window.require && window.require.config) {
+    if (window.require && typeof window.require === "function") {
       window.require.config({
-        paths: { vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs" },
+        paths: {
+          vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs",
+        },
       });
-      window.require(["vs/editor/editor.main"], onLoaded);
+      window.require(["vs/editor/editor.main"], function () {
+        initMonaco();
+      });
       return;
     }
 
@@ -639,111 +1085,18 @@
     loaderScript.src = "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js";
     loaderScript.onload = function () {
       window.require.config({
-        paths: { vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs" },
+        paths: {
+          vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs",
+        },
       });
-      window.require(["vs/editor/editor.main"], onLoaded);
-    };
-    loaderScript.onerror = function () {
-      updateStatus("error", "Failed to load Monaco Editor from CDN.");
+      window.require(["vs/editor/editor.main"], function () {
+        initMonaco();
+      });
     };
     document.head.appendChild(loaderScript);
   }
 
-  /**
-   * Initialize Monaco Editor and Monaco Diff Editor.
-   */
-  function setupMonaco() {
-    const editorEl = state.elements.editorContainer;
-    const diffEl = state.elements.diffContainer;
-    if (!editorEl || !window.monaco) return;
-
-    const currentTheme = getMonacoTheme();
-    const ex = state.bundle && state.bundle.exercises[state.currentExerciseId];
-    const initialCode = (ex && ex.starter_code) || "";
-
-    // Main Code Editor
-    state.editor = window.monaco.editor.create(editorEl, {
-      value: initialCode,
-      language: "python",
-      theme: currentTheme,
-      automaticLayout: true,
-      fontSize: 13.5,
-      lineHeight: 20,
-      tabSize: 4,
-      insertSpaces: true,
-      minimap: { enabled: false },
-      scrollBeyondLastLine: false,
-      roundedSelection: true,
-      renderLineHighlight: "all",
-      padding: { top: 12, bottom: 12 },
-    });
-
-    // Keyboard shortcut: Ctrl+Enter or Cmd+Enter to run
-    state.editor.addCommand(
-      window.monaco.KeyMod.CtrlCmd | window.monaco.KeyCode.Enter,
-      runCurrentExercise
-    );
-
-    // Diff Editor (Side-by-Side)
-    if (diffEl) {
-      state.diffEditor = window.monaco.editor.createDiffEditor(diffEl, {
-        automaticLayout: true,
-        readOnly: true,
-        renderSideBySide: true,
-        theme: currentTheme,
-        minimap: { enabled: false },
-        fontSize: 13,
-        lineHeight: 19,
-        scrollBeyondLastLine: false,
-        padding: { top: 12, bottom: 12 },
-      });
-    }
-
-    // Set up theme synchronization observer
-    setupThemeObserver();
-  }
-
-  let activeThemeObserver = null;
-
-  /**
-   * Observe MkDocs Material theme changes to dynamically sync Monaco editor theme.
-   */
-  function setupThemeObserver() {
-    if (activeThemeObserver) {
-      activeThemeObserver.disconnect();
-      activeThemeObserver = null;
-    }
-
-    activeThemeObserver = new MutationObserver((mutations) => {
-      for (const m of mutations) {
-        if (m.type === "attributes" && m.attributeName === "data-md-color-scheme") {
-          const theme = getMonacoTheme();
-          if (window.monaco) {
-            window.monaco.editor.setTheme(theme);
-          }
-        }
-      }
-    });
-
-    activeThemeObserver.observe(document.body, {
-      attributes: true,
-      attributeFilter: ["data-md-color-scheme"],
-    });
-
-    // Also listen to system dark mode preference change
-    if (window.matchMedia) {
-      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
-        if (window.monaco) {
-          window.monaco.editor.setTheme(getMonacoTheme());
-        }
-      });
-    }
-  }
-
-  /**
-   * Bind event listeners for UI buttons.
-   */
-  function bindActionButtons() {
+  function attachEventHandlers() {
     if (state.elements.runBtn) {
       state.elements.runBtn.addEventListener("click", runCurrentExercise);
     }
@@ -756,81 +1109,152 @@
     if (state.elements.diffBtn) {
       state.elements.diffBtn.addEventListener("click", toggleDiffView);
     }
+    if (state.elements.prevBtn) {
+      state.elements.prevBtn.addEventListener("click", goToPreviousExercise);
+    }
+    if (state.elements.nextBtn) {
+      state.elements.nextBtn.addEventListener("click", goToNextExercise);
+    }
+
+    // Search filter input
+    if (state.elements.searchInput) {
+      state.elements.searchInput.addEventListener("input", (e) => {
+        state.searchQuery = e.target.value;
+        renderSyllabusTree();
+      });
+    }
+
+    // Filter tabs (All, To Do, Done)
+    if (state.elements.filterTabs) {
+      state.elements.filterTabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          state.elements.filterTabs.forEach((t) => t.classList.remove("active"));
+          tab.classList.add("active");
+          state.sidebarFilter = tab.getAttribute("data-filter") || "all";
+          renderSyllabusTree();
+        });
+      });
+    }
+
+    // Export progress JSON
+    if (state.elements.exportBtn) {
+      state.elements.exportBtn.addEventListener("click", () => {
+        const json = KubelingsStorage.exportJSON();
+        const blob = new Blob([json], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        const date = new Date().toISOString().slice(0, 10);
+        a.href = url;
+        a.download = `kubelings-progress-${date}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    }
+
+    // Import progress JSON
+    if (state.elements.importBtn && state.elements.importFile) {
+      state.elements.importBtn.addEventListener("click", () => {
+        state.elements.importFile.click();
+      });
+      state.elements.importFile.addEventListener("change", (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          const content = evt.target.result;
+          if (KubelingsStorage.importJSON(content, state.bundle)) {
+            updateProgressUI();
+            selectExercise(KubelingsStorage.state.lastActiveExerciseId || "pods01");
+            alert("✓ Progress backup successfully restored!");
+          } else {
+            alert("❌ Failed to restore progress: invalid backup file.");
+          }
+        };
+        reader.readAsText(file);
+        e.target.value = "";
+      });
+    }
+
+    // Reset All Progress
+    if (state.elements.resetAllBtn) {
+      state.elements.resetAllBtn.addEventListener("click", () => {
+        if (confirm("⚠️ Are you sure you want to reset ALL progress across all 114 exercises? This cannot be undone.")) {
+          KubelingsStorage.resetAll(state.bundle);
+          updateProgressUI();
+          selectExercise("pods01");
+        }
+      });
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        runCurrentExercise();
+      } else if (e.altKey && e.key === "ArrowLeft") {
+        e.preventDefault();
+        goToPreviousExercise();
+      } else if (e.altKey && e.key === "ArrowRight") {
+        e.preventDefault();
+        goToNextExercise();
+      }
+    });
+
+    // Theme synchronization with MkDocs Material
+    const observer = new MutationObserver(() => {
+      const theme = getMonacoTheme();
+      if (window.monaco && state.editor) {
+        window.monaco.editor.setTheme(theme);
+      }
+      if (window.monaco && state.diffEditor) {
+        window.monaco.editor.setTheme(theme);
+      }
+    });
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["data-md-color-scheme"],
+    });
   }
 
   /**
-   * Main Initialization Entry Point.
+   * Main entry point.
    */
-  async function initKubelingsPlayground() {
-    const container = document.querySelector("#kubelings-playground, .kubelings-playground");
+  async function initPlayground() {
+    const container = document.getElementById("kubelings-playground");
     if (!container) return;
-
-    if (container.dataset.playgroundInitialized === "true") {
-      return; // Prevent duplicate initialization
-    }
-
-    // Clean up any stale instances before re-initializing
-    if (state.editor) {
-      try {
-        state.editor.dispose();
-      } catch (_) {}
-      state.editor = null;
-    }
-    if (state.diffEditor) {
-      try {
-        state.diffEditor.dispose();
-      } catch (_) {}
-      state.diffEditor = null;
-    }
-    if (state.worker) {
-      try {
-        state.worker.terminate();
-      } catch (_) {}
-      state.worker = null;
-    }
-
-    container.dataset.playgroundInitialized = "true";
     state.container = container;
 
-    // Render skeleton if container is empty
     renderPlaygroundSkeleton(container);
     bindElements(container);
-    bindActionButtons();
+    attachEventHandlers();
 
     try {
-      updateStatus("loading", "⚡ Loading showcase bundle...");
-      await loadBundle();
+      updateStatus("loading", "⚡ Loading 114-exercise curriculum bundle...");
+      state.bundle = await loadBundle();
+      KubelingsStorage.init(state.bundle);
 
-      populateExercises();
+      const startExId = KubelingsStorage.state.lastActiveExerciseId || "pods01";
+      state.currentExerciseId = state.bundle.exercises[startExId] ? startExId : "pods01";
+
+      updateProgressUI();
+      renderSyllabusTree();
       selectExercise(state.currentExerciseId);
 
-      updateStatus("loading", "⚡ Loading Monaco Editor & Web Worker...");
-      loadMonacoEditor(() => {
-        state.monacoLoaded = true;
-        setupMonaco();
-      });
-
+      loadMonacoScript();
       await initWorker();
     } catch (err) {
-      updateStatus("error", "Error: " + err.message);
+      updateStatus("error", "Initialization failed: " + err.message);
       if (state.elements.output) {
-        state.elements.output.innerHTML = `<span class="term-banner-fail">Initialization Error: ${escapeHtml(err.message)}</span>`;
+        state.elements.output.innerHTML = `<span class="term-banner-fail">❌ Failed to initialize playground: ${escapeHtml(err.message)}</span>`;
       }
     }
   }
 
-  // Expose globally
-  window.initKubelingsPlayground = initKubelingsPlayground;
-
-  // Auto-mount when DOM is ready
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initKubelingsPlayground);
+    document.addEventListener("DOMContentLoaded", initPlayground);
   } else {
-    initKubelingsPlayground();
-  }
-
-  // MkDocs Material navigation.instant support
-  if (typeof window.document$ !== "undefined") {
-    window.document$.subscribe(initKubelingsPlayground);
+    initPlayground();
   }
 })();
