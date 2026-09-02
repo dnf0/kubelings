@@ -19,7 +19,7 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Scheduling, Affinity & Advanced Placement** is reconciled through declarative state loops managed by the control plane:
+In Kubernetes, **Scheduling, Affinity & Advanced Placement** is reconciled through declarative state loops managed by the control plane and node daemons:
 
 ```mermaid
 flowchart TD
@@ -50,7 +50,39 @@ flowchart TD
     end
 ```
 
-When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
+### 1.1 Architectural Flow & Lifecycle Walkthrough
+
+1. **Pod Enqueueing into Scheduling Queue**: When a Pod with `spec.nodeName == ""` is created, `kube-scheduler` places the Pod into its internal three-tiered scheduling queue: `ActiveQ` (ready for evaluation), `BackoffQ` (backoff timer after unschedulable attempt), or `UnschedulablePods` pool.
+2. **Phase 1: Filter (Predicates)**: The scheduler evaluates all candidate nodes in parallel across active filter plugins:
+   - `NodeResourcesFit`: Verifies that node allocatable CPU, memory, and ephemeral storage satisfy `spec.containers[*].resources.requests`.
+   - `NodeName` & `NodePorts`: Verifies explicit node pinning and host port availability.
+   - `NodeAffinity`: Evaluates `requiredDuringSchedulingIgnoredDuringExecution` label selectors.
+   - `TaintToleration`: Verifies that the Pod possesses tolerations for all node taints with `NoSchedule` or `NoExecute` effects.
+3. **Phase 2: Score (Priorities)**: Surviving nodes are ranked from 0 to 100 across scoring plugins:
+   - `NodeResourcesBalancedAllocation`: Scores nodes higher when CPU and memory allocations maintain proportional balance.
+   - `ImageLocality`: Awards bonus points to nodes that have already pulled the container image layers to minimize startup latency.
+   - `PodTopologySpread`: Penalizes nodes that would violate failure domain distribution rules across availability zones.
+4. **Phase 3: Reserve & Permit**: The scheduler selects the highest-scoring node and calls the `Reserve` plugin, locking memory/CPU allocations in local scheduler memory to prevent race conditions with concurrent scheduling threads. `Permit` plugins can pause binding (e.g. for gang scheduling).
+5. **Phase 4: PreBind & Bind**: The scheduler executes `PreBind` (e.g., dynamic network/storage claim attachment) and issues an asynchronous HTTP POST `Binding` request to `kube-apiserver`, setting `spec.nodeName` on the target Pod in `etcd`.
+
+### 1.2 Serialization, Protocols & Communication Pathways
+
+- **Scheduling Framework Go Plugin Interfaces**: Internal scheduler extensions execute in-process via Go interface function calls (`Filter()`, `Score()`, `Reserve()`, `Bind()`) with zero network serialization overhead.
+- **HTTP REST / JSON Binding Subresource**: The scheduler posts a `v1.Binding` object (`{ "target": { "name": "node-2" } }`) to `/api/v1/namespaces/{ns}/pods/{name}/binding` over TLS HTTP/2.
+- **Leader Election Lease Protocol**: Multiple scheduler replicas coordinate active leadership using `coordination.k8s.io/v1 Lease` objects with atomic renewal heartbeats.
+
+### 1.3 Deep-Dive Component Breakdown
+
+- **kube-scheduler**: Centralized, multi-threaded control plane binary responsible for optimal placement of unscheduled workloads across cluster nodes.
+- **Scheduling Queue (ActiveQ & BackoffQ)**: Priority queue data structure sorting Pods by priority (`spec.priority`) and creation timestamp.
+- **Scheduling Framework**: Extensible architecture defining extension points (QueueSort, PreFilter, Filter, PostFilter, PreScore, Score, Reserve, Permit, PreBind, Bind, PostBind).
+- **Node Allocatable Subsystem**: Node capacity model subtracting system reservations (`kube-reserved`, `system-reserved`, `eviction-threshold`) from raw physical hardware capacity.
+
+### 1.4 Under-The-Hood Mechanics & Failure Modes
+
+- **Deadlock via Unbounded Preemption**: When a high-priority Pod preempts lower-priority Pods to free capacity, frequent preemption churn can cause lower-priority workloads to thrash in infinite restart loops if cluster capacity remains structurally deficient.
+- **Scheduler Cache Desynchronization**: If the scheduler's local in-memory snapshot of node resource allocations falls out of sync with `kube-apiserver` events, it may attempt to bind Pods to nodes with insufficient capacity, triggering `UnexpectedAdmissionError` on the worker kubelet.
+- **Affinity Topology Calculation Bottlenecks**: Heavy utilization of `podAffinity` and `podAntiAffinity` requires $O(N 	imes M)$ cross-pod topology comparisons across every node, causing scheduling throughput to degrade significantly on large clusters (>1,000 nodes).
 
 ---
 

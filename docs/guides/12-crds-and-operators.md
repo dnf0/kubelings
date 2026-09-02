@@ -18,7 +18,7 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Custom Resources, CRDs & Operators** is reconciled through declarative state loops managed by the control plane:
+In Kubernetes, **Custom Resources, CRDs & Operators** is reconciled through declarative state loops managed by the control plane and node daemons:
 
 ```mermaid
 flowchart TD
@@ -50,7 +50,35 @@ flowchart TD
     end
 ```
 
-When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
+### 1.1 Architectural Flow & Lifecycle Walkthrough
+
+1. **CRD Registration & OpenAPI Schema Ingestion**: An administrator submits a `CustomResourceDefinition` (CRD) object (e.g. `postgresqlclusters.database.example.com`). `kube-apiserver` registers the new REST endpoints (`/apis/database.example.com/v1/...`), validates the embedded OpenAPI v3 structural schema, and establishes storage mappings in `etcd`.
+2. **Custom Resource (CR) Ingestion**: A developer submits a Custom Resource instance (e.g., `kind: PostgreSQLCluster`, `spec: { replicas: 3, storageGB: 50 }`). The API server validates the CR against the CRD's OpenAPI schema, rejects any malformed types, and stores the object.
+3. **Operator Informer Watch & Queueing**: The Operator process (written in Go with `controller-runtime`, Python with `Kopf`, or Rust with `kube-rs`) runs inside the cluster. Its `SharedIndexInformer` receives an `ADDED` or `MODIFIED` watch event from `kube-apiserver` and enqueues the resource key into a `RateLimitingWorkQueue`.
+4. **Reconciliation Loop Execution**: The operator reconciles desired vs actual state:
+   - Queries the cluster for child resources owned by the CR (StatefulSets, Services, ConfigMaps, Secrets).
+   - If child resources are missing or drift from the CR spec, the operator issues API calls to create or update them.
+   - Executes out-of-band operational tasks (e.g., running `pg_basebackup` or initializing database replication).
+5. **Status & Condition Reporting**: The operator issues an HTTP `PATCH` to the CR's `/status` subresource, updating `.status.conditions` (e.g., `Type: Ready, Status: True, Message: "Primary and 2 standbys active"`) and increments `.status.observedGeneration`.
+
+### 1.2 Serialization, Protocols & Communication Pathways
+
+- **OpenAPI v3 JSON Schema Validation**: The API server enforces schema contracts defined in the CRD spec (`openAPIV3Schema`) before persisting custom resources.
+- **Server-Side Apply (SSA) YAML/JSON Protocol**: Modern operators use Server-Side Apply (`PATCH` with `Content-Type: application/apply-patch+yaml`), specifying `fieldManager: postgres-operator` to declare explicit field ownership and detect conflicting mutations.
+- **Dynamic Watch JSON Streams**: Custom resources are streamed over HTTP/2 chunked streams to client-go informers using JSON or Protobuf (for CRDs supporting Protobuf serialization).
+
+### 1.3 Deep-Dive Component Breakdown
+
+- **CustomResourceDefinition (CRD)**: Kubernetes extension mechanism defining new resource types, versions, validation schemas, and subresources (`/status`, `/scale`).
+- **Operator / Custom Controller**: Domain-specific software agent packaging operational knowledge (backup, failover, upgrades, scaling) for complex stateful applications.
+- **OwnerReferences & Garbage Collection**: Child resources are stamped with `metadata.ownerReferences` pointing to the parent CR. When the parent CR is deleted, the Kubernetes Garbage Collector automatically deletes all child resources via cascading deletion.
+- **Finalizers (`metadata.finalizers`)**: Asynchronous pre-deletion hooks (e.g., `database.example.com/clean-cloud-disks`) that prevent immediate object deletion in `etcd` until the operator completes external teardown tasks and removes the finalizer string.
+
+### 1.4 Under-The-Hood Mechanics & Failure Modes
+
+- **Deadlock on Stuck Finalizers**: If an operator crashes or is uninstalled while custom resources remain with active `metadata.finalizers`, attempts to delete the custom resources hang indefinitely in `Terminating` state until finalizers are manually patched out.
+- **Infinite Reconciliation Loops**: If an operator modifies a field in `.spec` during reconciliation (instead of `.status`), the modification triggers a new `MODIFIED` watch event, causing the operator to endlessly re-reconcile itself and saturate API server resources.
+- **CRD Version Conversion Webhook Timeouts**: When supporting multiple CRD API versions (`v1alpha1`, `v1`), version conversion webhooks must deserialize and translate schemas. If the conversion webhook service is unreachable, all API operations across older versions fail with `ConversionWebhookFailed`.
 
 ---
 

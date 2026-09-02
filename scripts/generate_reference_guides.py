@@ -1,11 +1,18 @@
-"""Generate 26 in-depth Kubernetes Reference Guides for MkDocs with full manifests, diagrams, and bidirectional links."""
-
+import sys
 import textwrap
 from pathlib import Path
 
+REPO_ROOT = Path(__file__).resolve().parent.parent
+SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
+if str(REPO_ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT / "src"))
+
+from reference_guide_explanations import CHAPTER_EXPLANATIONS
+
 from kubelings.manifest import build_manifest
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
 GUIDES_DIR = REPO_ROOT / "docs" / "guides"
 GUIDES_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -4089,6 +4096,13 @@ for chapter in manifest.chapters:
 """)
     troubleshoot_md = "\n".join(troubleshoot_md_list)
 
+    # Retrieve deep under-the-hood systems explanations
+    explanation = CHAPTER_EXPLANATIONS.get(chapter.number, {})
+    flow_md = explanation.get("flow", "").strip()
+    protocols_md = explanation.get("serialization_protocols", "").strip()
+    components_md = explanation.get("components", "").strip()
+    mechanics_md = explanation.get("mechanics_failures", "").strip()
+
     md_content = f"""# Chapter {chapter.number:02d}: {chapter.title}
 
 <div class="grid cards" markdown>
@@ -4106,13 +4120,27 @@ for chapter in manifest.chapters:
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **{chapter.title}** is reconciled through declarative state loops managed by the control plane:
+In Kubernetes, **{chapter.title}** is reconciled through declarative state loops managed by the control plane and node daemons:
 
 ```mermaid
 {textwrap.dedent(data["diagram"]).strip()}
 ```
 
-When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
+### 1.1 Architectural Flow & Lifecycle Walkthrough
+
+{flow_md}
+
+### 1.2 Serialization, Protocols & Communication Pathways
+
+{protocols_md}
+
+### 1.3 Deep-Dive Component Breakdown
+
+{components_md}
+
+### 1.4 Under-The-Hood Mechanics & Failure Modes
+
+{mechanics_md}
 
 ---
 

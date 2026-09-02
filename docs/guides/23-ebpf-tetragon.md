@@ -18,7 +18,7 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Kernel-Level Security & Observability with eBPF Tetragon** is reconciled through declarative state loops managed by the control plane:
+In Kubernetes, **Kernel-Level Security & Observability with eBPF Tetragon** is reconciled through declarative state loops managed by the control plane and node daemons:
 
 ```mermaid
 flowchart TD
@@ -47,7 +47,37 @@ flowchart TD
     end
 ```
 
-When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
+### 1.1 Architectural Flow & Lifecycle Walkthrough
+
+1. **Tetragon Daemon Initialization**: The `tetragon` DaemonSet starts on every worker node, mounts the BPF virtual filesystem (`/sys/fs/bpf`), and loads its core eBPF sensor programs into the Linux kernel.
+2. **TracingPolicy CRD Ingestion**: Security engineers apply a `TracingPolicy` Custom Resource defining security invariants (e.g., monitoring file access to `/etc/shadow` or blocking raw socket creation in container namespaces).
+3. **In-Kernel eBPF Hook Attachment**: The Tetragon agent compiles the policy rules and attaches eBPF programs to targeted Linux kernel hook points:
+   - **Kprobes / Kretprobes**: Dynamic kernel function entry and exit tracing (e.g., `sys_execve`, `sys_read`).
+   - **Tracepoints**: Static, stable kernel execution points (e.g., `sys_enter_connect`).
+   - **BPF LSM (Linux Security Modules)**: Kernel security hooks (`security_file_open`, `security_socket_create`) that possess native authority to block system calls before execution.
+4. **Real-Time In-Kernel Enforcement (Synchronous SIGKILL)**: When a compromised process inside a container attempts an unauthorized action (e.g., reading `/etc/shadow`):
+   - The BPF LSM hook intercepts the system call in kernel space before the file read executes.
+   - If the policy specifies `action: Sigkill`, the eBPF program dispatches a kernel `SIGKILL` directly to the offending process PID, terminating it instantaneously with zero user-space latency.
+5. **High-Throughput Security Telemetry Streaming**: Tetragon streams structured JSON security audit events (containing PID, binary path, container ID, namespace, and user ID) from in-kernel lockless ring buffers directly to `/var/log/tetragon/events.json` and SIEM forwarders.
+
+### 1.2 Serialization, Protocols & Communication Pathways
+
+- **eBPF Ring Buffer (`BPF_MAP_TYPE_RINGBUF`)**: Lockless, high-speed memory-mapped circular buffers streaming kernel events to user-space Go agents with sub-microsecond latency.
+- **gRPC Event Stream (`tetragon.v1.FineGuidanceSensors`)**: Tetragon daemon streams real-time JSON/Protobuf security events to external SIEMs and `tetra` CLI clients over local Unix domain sockets.
+- **ELF (Executable and Linkable Format) Bytecode**: eBPF programs compiled via LLVM into ELF binaries and validated by the Linux in-kernel eBPF verifier.
+
+### 1.3 Deep-Dive Component Breakdown
+
+- **Tetragon Agent**: User-space Go daemon managing BPF program lifecycles, compiling TracingPolicies, and streaming event telemetry.
+- **BPF LSM Subsystem**: Linux Security Module framework integrated with eBPF in Linux kernels $\ge 5.7$, providing kernel-enforced preventive access control.
+- **In-Kernel Verifier**: Linux kernel safety checker verifying that eBPF programs terminate, avoid out-of-bounds memory access, and do not cause kernel panics.
+- **TracingPolicy CRD**: Declarative Kubernetes resource defining syscall hooks, filters, and enforcement actions.
+
+### 1.4 Under-The-Hood Mechanics & Failure Modes
+
+- **Kernel Version Dependency for BPF LSM**: Preventive enforcement (`action: Sigkill` via LSM hooks) requires Linux kernel 5.10+ with `CONFIG_BPF_LSM=y` enabled in kernel boot parameters. On older kernels, Tetragon operates in observation-only mode without kill capabilities.
+- **High Syscall Volume Overhead**: Attaching tracing policies to extremely high-frequency syscalls (like `sys_read` or `sys_write` on busy database containers) without restrictive namespace filters can saturate CPU resources and fill kernel ring buffers.
+- **Ring Buffer Event Drops**: If user-space log consumers cannot process security events as fast as the kernel emits them, the ring buffer overflows, resulting in dropped event logs indicated by `events_lost` counters.
 
 ---
 

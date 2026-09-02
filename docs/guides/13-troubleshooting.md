@@ -19,7 +19,7 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Observability, Debugging & Production Troubleshooting** is reconciled through declarative state loops managed by the control plane:
+In Kubernetes, **Observability, Debugging & Production Troubleshooting** is reconciled through declarative state loops managed by the control plane and node daemons:
 
 ```mermaid
 flowchart TD
@@ -39,7 +39,48 @@ flowchart TD
     READY -->|Ready: True| NET["Verify Service Selector matches Pod Labels & EndpointSlice"]
 ```
 
-When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
+### 1.1 Architectural Flow & Lifecycle Walkthrough
+
+1. **Failure Signal Detection**: An alert fires or a Pod fails to enter `Running` state. The engineer initiates diagnostic triage by querying `kubectl get pod -o wide` and inspecting the Pod phase and status conditions.
+2. **Phase 1: Pending Phase Diagnostics**:
+   - The Pod has not been assigned a node (`spec.nodeName` is empty).
+   - Check scheduler events via `kubectl describe pod <name>`.
+   - If `0/10 nodes available: Insufficient cpu/memory`: Cluster is out of allocatable capacity &rarr; Scale worker nodes or decrease container resource requests.
+   - If `0/10 nodes available: node(s) had untolerated taint`: Add matching toleration to `spec.tolerations` or fix node taints.
+3. **Phase 2: CrashLoopBackOff Diagnostics**:
+   - The container starts but exits repeatedly with a non-zero exit code. Kubelet applies exponential restart backoff (10s, 20s, 40s, up to 300s).
+   - Inspect previous container logs: `kubectl logs <pod> --previous`.
+   - Analyze container termination exit code in `kubectl describe pod <name>`:
+     - **Exit 137 (Fatal error signal 9 `SIGKILL`)**: The Linux kernel Out-Of-Memory (OOM) killer killed the container (`OOMKilled: true`). Increase `resources.limits.memory` or fix application memory leaks.
+     - **Exit 1 / 2**: Application runtime crash, uncaught exception, or missing configuration file.
+     - **Exit 127 / 128**: Container entrypoint binary not found or library dependency missing in image.
+4. **Phase 3: ImagePullBackOff Diagnostics**:
+   - Kubelet fails to download the container image.
+   - Verify image tag existence in the remote container registry.
+   - Verify registry authentication Secret (`imagePullSecrets`) and IAM repository permissions.
+5. **Phase 4: Running but No Traffic (Readiness Failure)**:
+   - The Pod is `Running` but receives zero HTTP traffic from its Service.
+   - Inspect `.status.conditions[Type=Ready]`. If `Ready: False`, the `readinessProbe` is failing &rarr; Inspect health check endpoint.
+   - If `Ready: True`, verify that `Service.spec.selector` labels match `Pod.metadata.labels` exactly, and confirm `kubectl get endpointslices` contains the Pod IP.
+
+### 1.2 Serialization, Protocols & Communication Pathways
+
+- **Linux Kernel Process Exit Codes**: Standard Unix exit status codes ($128 + \text{Signal Number}$) returned via `waitpid()` system call to the container runtime and passed to kubelet over CRI gRPC.
+- **Kubelet `/logs` Streaming API**: Kubelet streams stdout/stderr log files directly from `/var/log/pods/` to the API server and `kubectl` over WebSocket or chunked HTTP/2 streams.
+- **Kubernetes Events API**: Transient warning and error events (`v1.Event`) are emitted by controllers and kubelet to `kube-apiserver` as structured JSON/Protobuf messages.
+
+### 1.3 Deep-Dive Component Breakdown
+
+- **Kubelet PLEG (Pod Lifecycle Event Generator)**: Subsystem monitoring container lifecycle state changes via runtime relisting and Linux inotify events.
+- **Linux Kernel OOM Killer**: Low-memory subsystem terminating processes when physical RAM + swap is exhausted, prioritizing processes with highest `/proc/[pid]/oom_score`.
+- **ImagePullBackOff State Machine**: Kubelet backoff algorithm doubling pull retry intervals from 10s up to a maximum of 300s upon failed registry pulls.
+- **EndpointSlice Sync Loop**: Network control loop removing unready Pod IPs from service routing tables within milliseconds of readiness probe failure.
+
+### 1.4 Under-The-Hood Mechanics & Failure Modes
+
+- **Silent OOMKilled without Logs**: When a process exceeds `limits.memory`, the Linux kernel dispatches an uncatchable `SIGKILL` (signal 9). The application cannot execute shutdown hooks or flush log buffers, leaving the container log file empty. Always verify `kubectl describe pod` for `OOMKilled: true` and `Exit Code: 137`.
+- **Ephemeral Storage Eviction**: If an application writes unbounded log files or temporary data to the root container filesystem or `emptyDir` volumes exceeding `limits.ephemeral-storage`, kubelet evicts the Pod with `Evicted: Pod ephemeral local storage usage exceeds limit`.
+- **Zombie / Stale DNS Caching**: Applications that resolve backend service DNS once at boot and cache the IP indefinitely will fail to connect when backend Pods are replaced during rolling updates. Ensure JVM/Node/Go DNS TTLs are configured to low values (e.g., 5-10s).
 
 ---
 

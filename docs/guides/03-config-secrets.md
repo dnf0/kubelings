@@ -19,7 +19,7 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Configuration & Secret Management** is reconciled through declarative state loops managed by the control plane:
+In Kubernetes, **Configuration & Secret Management** is reconciled through declarative state loops managed by the control plane and node daemons:
 
 ```mermaid
 flowchart LR
@@ -50,7 +50,34 @@ flowchart LR
     ENV_VARS -->|Process Env| APP_PROC
 ```
 
-When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
+### 1.1 Architectural Flow & Lifecycle Walkthrough
+
+1. **Secret & Config Creation**: Operators submit `v1/ConfigMap` and `v1/Secret` manifests containing key-value configurations and base64-encoded credentials.
+2. **KMS Envelope Encryption at Rest**: `kube-apiserver` receives the Secret payload. If configured with a Key Management Service (KMS v2 provider), it generates a local Data Encryption Key (DEK), encrypts the secret data using AES-GCM-256, encrypts the DEK with the remote KMS Key Encryption Key (KEK) via gRPC, and stores the envelope ciphertext in `etcd`.
+3. **Kubelet Volume Manager Mounting**: When a Pod referencing the ConfigMap/Secret is scheduled to a node, the local `kubelet` Volume Manager detects the dependency and fetches the plain object via API watch.
+4. **Atomic Symlink Projection**: `kubelet` writes the keys as individual files inside a timestamped directory on the host (e.g., `/var/lib/kubelet/pods/<UID>/volumes/kubernetes.io~secret/my-secret/..2026_09_02_12_00_00.123456789`). It atomically swaps a symlink named `..data` to point to the new directory.
+5. **Dynamic Updates vs Static Env Injection**:
+   - **Mounted Files**: Application containers reading from the mount path automatically see updated file contents whenever the `..data` symlink is swapped, without container restarts.
+   - **Environment Variables (`envFrom`)**: Injected into Linux process memory table (`/proc/1/environ`) during `clone()` at container boot; values remain static until the container process is restarted.
+
+### 1.2 Serialization, Protocols & Communication Pathways
+
+- **KMS v2 gRPC Protocol**: `kube-apiserver` communicates with KMS plugins over local Unix domain sockets using `k8s.io/kms/apis/v2` gRPC definitions for `Encrypt` and `Decrypt` remote procedure calls.
+- **Base64 RFC 4648 Encoding**: Secrets in YAML/JSON are Base64 encoded for binary data representation across text transports, but this provides zero cryptographic confidentiality without TLS and encryption-at-rest.
+- **Protobuf Storage Compression**: `etcd` stores ConfigMaps and Secrets as serialized Protocol Buffer messages under the `/registry/configmaps` and `/registry/secrets` keyspace.
+
+### 1.3 Deep-Dive Component Breakdown
+
+- **kubelet VolumeManager**: Internal loop within kubelet responsible for orchestrating `MountVolume`, `UnmountVolume`, and syncing projected volume payloads against API server state.
+- **KMS Plugin Daemon**: Out-of-tree gRPC daemon (supporting AWS KMS, HashiCorp Vault, GCP Cloud KMS, or Azure Key Vault) that handles hardware security module (HSM) cryptographic operations.
+- **Atomic Symlink Tree**: File system layout utilizing Linux `symlink()` and `rename()` system calls to prevent race conditions during multi-file configuration updates.
+- **Linux `/proc/[pid]/environ`**: Kernel table storing initial process environment variables created during `execve`, isolated per process namespace.
+
+### 1.4 Under-The-Hood Mechanics & Failure Modes
+
+- **Stale Memory Footprints with SubPath Mounts**: Using `volumeMounts.subPath` bypasses the atomic `..data` symlink tree by bind-mounting a single file directly. Consequently, subPath mounted files will **never** receive automatic live updates when ConfigMaps change.
+- **KMS Plugin Unavailability**: If the KMS gRPC daemon crashes or network connectivity to the cloud KMS endpoint drops, `kube-apiserver` cannot decrypt Secrets, causing Pod scheduling on new nodes to fail with `CreateContainerConfigError`.
+- **Secret Size Limits**: Individual `etcd` key-value pairs are hard-capped at 1.5MB by default, restricting individual ConfigMaps and Secrets to a maximum aggregate payload size of 1MB to prevent etcd transaction log saturation.
 
 ---
 

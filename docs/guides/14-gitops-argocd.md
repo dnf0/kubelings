@@ -18,7 +18,7 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **GitOps Continuous Delivery with ArgoCD** is reconciled through declarative state loops managed by the control plane:
+In Kubernetes, **GitOps Continuous Delivery with ArgoCD** is reconciled through declarative state loops managed by the control plane and node daemons:
 
 ```mermaid
 flowchart LR
@@ -46,7 +46,33 @@ flowchart LR
     end
 ```
 
-When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
+### 1.1 Architectural Flow & Lifecycle Walkthrough
+
+1. **Git Commit as Single Source of Truth**: A developer pushes a Git commit updating declarative manifests (Helm, Kustomize, or raw YAML) in the repository's `main` branch.
+2. **GitOps Ingestion & Webhook Trigger**: The `argocd-repo-server` detects the commit via an immediate Git webhook (GitHub/GitLab) or during its standard 3-minute polling loop.
+3. **Manifest Rendering**: The `argocd-repo-server` executes `kustomize build` or `helm template` in a sandboxed environment to render complete, concrete Kubernetes YAML manifests representing the **Desired State**.
+4. **Live Cluster State Comparison**: The `argocd-application-controller` queries `kube-apiserver` for the **Live State** of resources in the target cluster, using local `SharedIndexInformer` caches.
+5. **Diff Evaluation & Sync Status**: The controller computes a three-way structural diff between the Desired State (Git), the Live State (Cluster), and the previously applied state. If drift is detected, the Application transitions to `OutOfSync`.
+6. **Reconciliation & Self-Healing (Auto-Sync)**: If `automated: { prune: true, selfHeal: true }` is enabled, the controller issues Server-Side Apply `PATCH` requests to `kube-apiserver` to reconcile drift. If unauthorized manual edits were made directly via `kubectl`, ArgoCD automatically overwrites them to enforce Git state.
+
+### 1.2 Serialization, Protocols & Communication Pathways
+
+- **Git Smart HTTP / SSH Protocol**: `argocd-repo-server` clones and fetches Git repositories over TLS-encrypted Git Smart HTTP or SSH public-key authentication.
+- **gRPC Inter-Service Communication**: ArgoCD microservices (`argocd-server`, `argocd-repo-server`, `argocd-application-controller`) communicate internally via high-throughput gRPC connections.
+- **Server-Side Apply (SSA) Patch Format**: Manifest synchronization utilizes YAML/JSON SSA requests (`application/apply-patch+yaml`) to manage fine-grained field ownership.
+
+### 1.3 Deep-Dive Component Breakdown
+
+- **argocd-repo-server**: Stateless worker that clones Git repositories, generates manifests via Helm/Kustomize, and returns rendered YAML streams over gRPC.
+- **argocd-application-controller**: Core reconciliation daemon comparing desired vs live state, ordering resource sync waves, and enforcing self-healing policies.
+- **argocd-server**: API and UI server exposing REST and gRPC endpoints for web dashboard access, CLI commands, and RBAC enforcement.
+- **Sync Waves & Hooks**: Annotations (`argocd.argoproj.io/sync-wave: "1"`) dictating exact execution ordering (e.g. run database migration Job in Wave 0, deploy API in Wave 1).
+
+### 1.4 Under-The-Hood Mechanics & Failure Modes
+
+- **CRD / Manifest Prune Destructive Deletion**: If a manifest is removed from Git and `prune: true` is enabled, ArgoCD deletes the resource from the live cluster. If a StatefulSet or CRD is pruned without orphan finalizers, underlying data stores may be permanently deleted.
+- **Repository Server OOM on Large Helm Charts**: Rendering large Helm charts or recursive Kustomize overlays in parallel can exhaust `argocd-repo-server` memory limits, causing sync timeouts and `rpc error: code = ResourceExhausted`.
+- **Live State Mutation Loops (Mutating Webhooks Conflict)**: If an in-cluster mutating webhook alters default fields (e.g. injecting sidecars or modifying replica counts) that are not declared in Git, ArgoCD marks the application perpetually `OutOfSync` unless `ignoreDifferences` rules are explicitly configured.
 
 ---
 
