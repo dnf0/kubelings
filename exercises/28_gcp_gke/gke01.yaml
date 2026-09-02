@@ -1,0 +1,43 @@
+# Exercise: exercises/28_gcp_gke/gke01.yaml
+# Topic: GKE Workload Identity Federation
+# Reference Guide: https://dnf0.github.io/kubelings/guides/28-gcp-gke/
+#
+# Context & Why:
+# In Google Kubernetes Engine (GKE), Workload Identity Federation is the recommended,
+# production-grade mechanism for Pods to authenticate securely to Google Cloud APIs
+# (BigQuery, Cloud Storage, Secret Manager) without using downloadable JSON service account keys.
+#
+# Workload Identity maps a Kubernetes ServiceAccount (KSA) to a Google IAM ServiceAccount (GSA).
+# The GKE Metadata Server intercepts requests to metadata.google.internal and transparently
+# exchanges the projected Kubernetes OIDC token for short-lived Google Cloud IAM OAuth tokens.
+#
+# Task:
+# Configure the ServiceAccount and Pod below to establish Workload Identity with Google Cloud:
+# 1. In the ServiceAccount 'bigquery-sa', set 'apiVersion' to 'v1' and 'kind' to 'ServiceAccount'.
+# 2. Add annotation 'iam.gke.io/gcp-service-account: bq-sync@my-gcp-project.iam.gserviceaccount.com'.
+# 3. In the Pod 'bq-loader-pod', set 'apiVersion' to 'v1' and 'kind' to 'Pod'.
+# 4. Set 'spec.serviceAccountName' to 'bigquery-sa'.
+# 5. In 'spec.nodeSelector', require 'iam.gke.io/gke-metadata-server-enabled: "true"'.
+# 6. Define container 'loader' using image 'google/cloud-sdk:slim' with command '["bq", "ls"]'.
+
+apiVersion: ???
+kind: ???
+metadata:
+  name: bigquery-sa
+  namespace: default
+  annotations:
+    iam.gke.io/gcp-service-account: ???
+---
+apiVersion: ???
+kind: ???
+metadata:
+  name: bq-loader-pod
+  namespace: default
+spec:
+  serviceAccountName: ???
+  nodeSelector:
+    iam.gke.io/gke-metadata-server-enabled: ???
+  containers:
+    - name: ???
+      image: ???
+      command: ???

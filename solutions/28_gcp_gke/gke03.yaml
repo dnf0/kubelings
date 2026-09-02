@@ -1,0 +1,15 @@
+apiVersion: networking.gke.io/v1
+kind: GCPBackendPolicy
+metadata:
+  name: cloud-armor-backend-policy
+  namespace: default
+spec:
+  targetRef:
+    group: ""
+    kind: Service
+    name: web-frontend-svc
+  default:
+    securityPolicy: edge-ddos-protection-policy
+    logging:
+      enable: true
+      sampleRate: 1.0

@@ -1,0 +1,34 @@
+# Exercise: exercises/28_gcp_gke/gke03.yaml
+# Topic: GKE Gateway API & Cloud Armor Edge Security Policies
+# Reference Guide: https://dnf0.github.io/kubelings/guides/28-gcp-gke/
+#
+# Context & Why:
+# The GKE Gateway Controller implements the Kubernetes Gateway API by programming Google Cloud
+# Application Load Balancers.
+#
+# To attach Google Cloud-specific features (such as Cloud Armor DDoS protection, WAF rules,
+# SSL policies, and CDN caching) to Gateway API backends, GKE provides the `GCPBackendPolicy` CRD.
+#
+# Task:
+# Author a `GCPBackendPolicy` CRD to attach Cloud Armor DDoS protection to a web frontend service:
+# 1. Set 'apiVersion' to 'networking.gke.io/v1' and 'kind' to 'GCPBackendPolicy'.
+# 2. Set 'metadata.name' to 'cloud-armor-backend-policy' in namespace 'default'.
+# 3. Under 'spec.targetRef', reference group '' (core), kind 'Service', and name 'web-frontend-svc'.
+# 4. Under 'spec.default.securityPolicy', set 'edge-ddos-protection-policy'.
+# 5. Under 'spec.default.logging', set 'enable: true' and 'sampleRate: 1.0'.
+
+apiVersion: ???
+kind: ???
+metadata:
+  name: ???
+  namespace: default
+spec:
+  targetRef:
+    group: ""
+    kind: ???
+    name: ???
+  default:
+    securityPolicy: ???
+    logging:
+      enable: ???
+      sampleRate: 0.0

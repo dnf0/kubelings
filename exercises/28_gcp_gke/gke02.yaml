@@ -1,0 +1,48 @@
+# Exercise: exercises/28_gcp_gke/gke02.yaml
+# Topic: GKE Autopilot Workload Sizing & Compute Classes
+# Reference Guide: https://dnf0.github.io/kubelings/guides/28-gcp-gke/
+#
+# Context & Why:
+# In GKE Autopilot, Google provisions, scales, and manages all underlying node infrastructure.
+# Autopilot enforces specific resource allocation models:
+# - Billing is strictly per Pod request (CPU, memory, storage).
+# - Resource requests must meet valid increments and ratios (e.g. 1 CPU to 1-8 GiB RAM).
+# - Compute classes (such as `Performance` for high compute throughput or `Scale-Out`)
+#   can be requested via pod template annotations (`autopilot.gke.io/compute-class`).
+#
+# Task:
+# Configure the Deployment manifest below for a high-performance GKE Autopilot workload:
+# 1. Set 'apiVersion' to 'apps/v1' and 'kind' to 'Deployment'.
+# 2. Set 'metadata.name' to 'analytics-worker' and 'spec.replicas' to 3.
+# 3. Match labels 'app: analytics-worker'.
+# 4. Under 'spec.template.metadata.annotations', add 'autopilot.gke.io/compute-class: Performance'.
+# 5. Under container 'processor', use image 'python:3.12-slim'.
+# 6. Set requests and limits for 'cpu: "2"' and 'memory: 8Gi'.
+
+apiVersion: ???
+kind: ???
+metadata:
+  name: ???
+  namespace: default
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: ???
+  template:
+    metadata:
+      labels:
+        app: ???
+      annotations:
+        autopilot.gke.io/compute-class: ???
+    spec:
+      containers:
+        - name: ???
+          image: ???
+          resources:
+            requests:
+              cpu: ???
+              memory: ???
+            limits:
+              cpu: ???
+              memory: ???

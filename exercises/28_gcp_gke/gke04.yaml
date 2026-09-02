@@ -1,0 +1,32 @@
+# Exercise: exercises/28_gcp_gke/gke04.yaml
+# Topic: Google Config Connector Declarative GCP Resources
+# Reference Guide: https://dnf0.github.io/kubelings/guides/28-gcp-gke/
+#
+# Context & Why:
+# Google Config Connector (KCC) is a Kubernetes addon that lets you manage Google Cloud resources
+# (such as Cloud Storage buckets, Cloud SQL instances, Spanner databases, IAM roles) declaratively
+# through native Kubernetes manifests and CRDs.
+#
+# Task:
+# Author a `StorageBucket` CRD to declaratively provision a Google Cloud Storage bucket:
+# 1. Set 'apiVersion' to 'storage.cnrm.cloud.google.com/v1beta1' and 'kind' to 'StorageBucket'.
+# 2. Set 'metadata.name' to 'prod-analytics-archive-bucket' in namespace 'default'.
+# 3. Add annotation 'cnrm.cloud.google.com/deletion-policy: abandon'.
+# 4. Under 'spec.location', set 'US-CENTRAL1'.
+# 5. Set 'spec.storageClass' to 'STANDARD'.
+# 6. Set 'spec.uniformBucketLevelAccess' to true.
+# 7. Set 'spec.versioning.enabled' to true.
+
+apiVersion: ???
+kind: ???
+metadata:
+  name: ???
+  namespace: default
+  annotations:
+    cnrm.cloud.google.com/deletion-policy: ???
+spec:
+  location: ???
+  storageClass: ???
+  uniformBucketLevelAccess: ???
+  versioning:
+    enabled: ???

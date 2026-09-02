@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: bigquery-sa
+  namespace: default
+  annotations:
+    iam.gke.io/gcp-service-account: bq-sync@my-gcp-project.iam.gserviceaccount.com
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bq-loader-pod
+  namespace: default
+spec:
+  serviceAccountName: bigquery-sa
+  nodeSelector:
+    iam.gke.io/gke-metadata-server-enabled: "true"
+  containers:
+    - name: loader
+      image: google/cloud-sdk:slim
+      command: ["bq", "ls"]
