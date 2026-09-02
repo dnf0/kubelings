@@ -1,105 +1,121 @@
 # Kubelings ☸️
 
-**An interactive, hands-on CLI learning environment for Kubernetes.**
+**An interactive, client-side WebAssembly learning platform and comprehensive reference manual for Kubernetes.**
 
-[![Playground](https://img.shields.io/badge/Playground-⚡%20Try%20in%20Browser-blueviolet)](https://dnf0.github.io/kubelings/playground/)
-[![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/dnf0.kubelings-vscode?logo=visual-studio-code&label=VS%20Code%20Extension)](https://marketplace.visualstudio.com/items?itemName=dnf0.kubelings-vscode)
-
-Inspired by [rustlings](https://github.com/rust-lang/rustlings) and [ziglings](https://codeberg.org/ziglings/exercises), **Kubelings** guides engineers through self-paced micro-exercises directly in the terminal.
-
-> ⚡ **Try it now in your browser!** No installation required: [**Interactive WebAssembly Playground**](playground/index.html) ([⚡ Try in Browser](https://dnf0.github.io/kubelings/playground/)).
-
-<p align="center">
-  <img src="assets/demo.svg" alt="Kubelings Terminal Tour & Watch TUI" width="840">
-</p>
+[![Playground](https://img.shields.io/badge/Playground-⚡%20Launch%20Interactive%20IDE-blueviolet)](playground/index.html)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Curriculum](https://img.shields.io/badge/Curriculum-26%20Chapters%20%7C%20114%20Exercises-brightgreen)](syllabus.md)
 
 ---
 
-## Why Kubelings?
+## ⚡ The Modern Way to Master Kubernetes
 
-Learning Kubernetes from static documentation or copy-pasted manifests often leads to frustration because error feedback is slow and cryptic. Kubelings provides:
+Kubelings combines a **zero-install, 100% client-side WebAssembly interactive playground** with **26 comprehensive architectural reference guides** spanning the entire cloud-native ecosystem.
 
-- ⚡ **Sub-30ms Instant Feedback**: In-memory schema and spec validation without waiting on slow API servers.
-- 🔁 **Active Problem Solving**: 114 real-world exercises across 26 chapters starting in a broken state that you fix and verify.
-- ☸ **Dual-Mode Engine**: Practice 100% offline or connect to a real cluster (`kind`, `minikube`, `k3d`, or cloud).
-- 💡 **Progressive Hinting**: Multi-tier clues when you get stuck without spoiling the answer.
-- 🌐 **Interactive WebAssembly Playground**: [⚡ Try in Browser](https://dnf0.github.io/kubelings/playground/) with zero installation via client-side Pyodide & Monaco Editor.
-- 🚀 **Zero-Install Run**: Start practicing immediately with `uvx kubelings tour`, `uvx kubelings init`, and `uvx kubelings watch`.
-- 📖 **Complete Onboarding Guide**: Visual step-by-step tutorial available in the [**Learner's Onboarding Guide**](onboarding-guide.md).
+<div class="grid cards" markdown>
+
+-   :material-play-circle-outline: **Zero-Install Web IDE**
+    ---
+    Run Monaco Editor, Pyodide WebAssembly, and real-time schema validation 100% in your browser. No Docker, no minikube, and no cluster setup required.
+    
+    [**Launch Playground →**](playground/index.html){ .md-button .md-button--primary }
+
+-   :material-book-open-page-variant-outline: **26-Chapter Reference Manual**
+    ---
+    Deep architectural documentation, annotated YAML specs, production best practices, and diagnostic workflows for modern Kubernetes.
+
+    [**Explore Reference Guides →**](#-comprehensive-26-chapter-reference-guides){ .md-button }
+
+</div>
 
 ---
 
-## Quick Example
+## 📚 Comprehensive 26-Chapter Reference Guides
 
-```yaml
-# exercises/01_pods/pods01.yaml
-# Topic: First Pod Manifest & Spec
-#
-# Instructions:
-# Fix the YAML manifest below to define a valid Pod named 'nginx-web'
-# running nginx:alpine on container port 80 with label 'app: web'.
+Explore in-depth architectural guides and launch linked practice exercises directly into the playground:
 
-apiVersion: v1
-kind: Pod
-metadata:
-  name: nginx-web
-  labels:
-    app: web
-spec:
-  containers:
-  - name: nginx
-    image: nginx:alpine
-    ports:
-    - containerPort: 80
+<div class="grid cards" markdown>
+
+-   ### Core Workloads & Storage
+    ---
+    - [**01. Pods & Core Workloads**](guides/01-pods.md) &bull; Pod specs, multi-container pods, initContainers, ports
+    - [**02. Controllers & Replication**](guides/02-controllers.md) &bull; Deployments, ReplicaSets, StatefulSets, DaemonSets, Jobs, CronJobs
+    - [**03. Configuration & Secrets**](guides/03-config-secrets.md) &bull; ConfigMaps, Secrets, projected volumes, envFrom
+    - [**04. Storage & Persistent Volumes**](guides/04-storage.md) &bull; PVs, PVCs, StorageClasses, access modes, volumeMounts
+
+-   ### Networking & Traffic Routing
+    ---
+    - [**05. Services & Networking**](guides/05-services-networking.md) &bull; ClusterIP, NodePort, LoadBalancer, Headless services, Endpoints
+    - [**06. Ingress & Gateway API**](guides/06-ingress-gateway.md) &bull; Ingress controllers, path rules, TLS termination, annotations
+    - [**21. Gateway API Deep Dive**](guides/21-gateway-api.md) &bull; GatewayClass, Gateways, HTTPRoute, canary splits, ReferenceGrant
+    - [**09. Network Policies**](guides/09-network-policies.md) &bull; Default deny, ingress/egress CIDR blocks, port rules
+
+-   ### Scheduling, Security & Scaling
+    ---
+    - [**07. Scheduling & Advanced Placement**](guides/07-scheduling.md) &bull; nodeSelector, node/pod affinity, taints, tolerations, topology spread
+    - [**08. Security, RBAC & ServiceAccounts**](guides/08-security-rbac.md) &bull; Roles, ClusterRoles, RoleBindings, SecurityContext, PSS/PSA
+    - [**10. Health Probes & Lifecycle**](guides/10-lifecycle-probes.md) &bull; Liveness, readiness, startup probes, termination grace periods
+    - [**11. Autoscaling (HPA, VPA, KEDA)**](guides/11-autoscaling.md) &bull; Horizontal Pod Autoscaler v2, VPA, event-driven KEDA
+    - [**18. Admission Webhooks**](guides/18-admission-webhooks.md) &bull; Mutating, validating webhooks, sidecar injection, CRD conversion
+
+-   ### CRDs, Troubleshooting & Packaging
+    ---
+    - [**12. Custom Resources & Operators**](guides/12-crds-and-operators.md) &bull; OpenAPI v3 schemas, subresources, reconciliation loops
+    - [**13. Production Troubleshooting**](guides/13-troubleshooting.md) &bull; CrashLoopBackOff, ImagePullBackOff, Pending pods, ephemeral debug
+    - [**19. Package Management with Helm**](guides/19-helm-packaging.md) &bull; Chart.yaml, Go templates, _helpers.tpl, values schemas, subcharts
+    - [**20. Declarative Customization with Kustomize**](guides/20-kustomize-overlays.md) &bull; Bases, overlays, generators, strategic merge patches
+
+-   ### Modern Cloud Native Ecosystem
+    ---
+    - [**14. GitOps with ArgoCD**](guides/14-gitops-argocd.md) &bull; Applications, ApplicationSets, sync policies, Argo Rollouts
+    - [**15. Service Mesh & Cilium eBPF**](guides/15-service-mesh-cilium.md) &bull; L7 routing, mTLS, FQDN egress, Hubble observability
+    - [**16. Policy as Code (Kyverno & OPA)**](guides/16-policy-as-code.md) &bull; ClusterPolicies, mutating/generating rules, Gatekeeper constraints
+    - [**17. Multi-Tenancy & Virtual Clusters**](guides/17-multitenancy-vcluster.md) &bull; HNC anchors, tenant quotas, vcluster control planes
+    - [**22. Infrastructure as Data with Crossplane**](guides/22-crossplane-iac.md) &bull; XRDs, Compositions, Managed Resources, claims
+    - [**23. Kernel Security with eBPF Tetragon**](guides/23-ebpf-tetragon.md) &bull; sys_execve tracing, credential monitoring, kernel Sigkill
+    - [**24. Distributed AI Orchestration with KubeRay**](guides/24-kuberay-ml.md) &bull; RayCluster, RayJob batch tuning, RayService serving
+    - [**25. Batch AI Scheduling (Kueue & Volcano)**](guides/25-batch-kueue-volcano.md) &bull; ClusterQueue cohorts, gang scheduling, fair-share
+    - [**26. Hardware Acceleration & DRA**](guides/26-hardware-acceleration-dra.md) &bull; NVIDIA MIG, Apple Silicon GPU, DRA, vLLM serving
+
+</div>
+
+---
+
+## 💡 How the Playground Works
+
+The Kubelings web playground runs entirely on client-side WebAssembly technology:
+
+```text
+┌────────────────────────────────────────────────────────────────────────┐
+│                          Web Browser Tab                               │
+│  ┌───────────────────────┐             ┌─────────────────────────────┐ │
+│  │     Monaco Editor     │  YAML Edit  │  Web Worker (Pyodide Wasm)  │ │
+│  │  (VS Code in Browser) ├────────────►│  • PyYAML Manifest Parser   │ │
+│  └───────────────────────┘             │  • 26 Schema Validators     │ │
+│                                        │  • Progressive Hint Engine  │ │
+│  ┌───────────────────────┐             └──────────────┬──────────────┘ │
+│  │   Interactive xterm   │◄───────────────────────────┘                │
+│  │    Terminal Output    │         Instant Test & Validation Result    │
+│  └───────────────────────┘         (< 1ms in WebAssembly)              │
+└────────────────────────────────────────────────────────────────────────┘
 ```
 
-Save the file and watch the terminal UI immediately validate your solution. Press `n` or `Enter` to advance to the next exercise!
-
----
-
-## VS Code & Cursor Extension 💻
-
-Kubelings offers an official extension for **Visual Studio Code** and **Cursor** that transforms your editor into an interactive Kubernetes learning IDE.
-
-### ✨ Extension Features
-
-- 🗺️ **Interactive Welcome Walkthrough**: Built-in editor walkthrough (`Kubelings: Open Welcome Walkthrough`) guiding you through curriculum navigation, live cluster verification, and first exercise resolution.
-- 📚 **Activity Bar Curriculum Tree View**: Browse all 26 chapters and 114 exercises directly from the sidebar with real-time pass/fail status and chapter completion counters.
-- 📊 **Status Bar Progress Indicator**: Persistent status bar item showing your total completion percentage, current progress, and next active exercise. Click to jump straight to the exercise.
-- ⚡ **On-Save Diagnostics**: Automatic in-editor validation whenever you save an exercise manifest (`exercises/**/*.py`), surfacing schema errors, missing attributes, or assertion failures.
-- 💡 **Code Actions & Quick Fixes**: Lightbulb quick fixes directly on errors:
-  - **Reveal Hint**: Display progressive hints in the editor without spoiling the answer.
-  - **Compare with Reference Solution**: Instantly open a side-by-side diff comparing your exercise code against the official reference solution.
-- 🔍 **Solution Diffing**: Interactive diff viewer (`kubelings.showSolutionDiff`) for visual code comparison.
-- 💻 **Integrated Terminal Watch Mode**: Launch `kubelings watch` into a dedicated integrated terminal with a single click.
-
-### 📦 Installation Instructions
-
-#### Command Line (VSIX)
-
-```bash
-# For VS Code
-code --install-extension dist/kubelings-vscode.vsix
-
-# For Cursor
-cursor --install-extension dist/kubelings-vscode.vsix
-```
-
-#### Editor UI (VSIX)
-
-1. Open the Extensions view (`Ctrl+Shift+X` / `Cmd+Shift+X`).
-2. Click the **`...`** (Views and More Actions) menu in the top-right corner of the Extensions pane.
-3. Select **Install from VSIX...** and choose `dist/kubelings-vscode.vsix`.
+1. **Monaco Code Editor**: Full syntax highlighting, error diagnostics, and side-by-side solution diffing.
+2. **Pyodide WebAssembly Engine**: Executes the exact Python schema validation engine in an isolated Web Worker thread.
+3. **Local Progress Persistence**: Tracks completed exercises and user edits in `localStorage` with JSON export/import support.
 
 ---
 
 ## 🌐 The *lings Ecosystem
 
-If you enjoy the hands-on, terminal-driven learning loop of **Kubelings**, explore the other interactive platforms in our `*lings` suite:
+If you enjoy the hands-on learning model of **Kubelings**, check out the other interactive projects in the suite:
 
 - 🏗️ [**Terralings**](https://github.com/dnf0/terralings) – Master Terraform and OpenTofu through interactive infrastructure-as-code exercises.
-- 🇪🇸 [**Spanglings**](https://github.com/dnf0/spanglings) – Developer-grade CLI & interactive TUI for learning intermediate-to-advanced Spanish (B1–C1).
+- 🇪🇸 [**Spanglings**](https://github.com/dnf0/spanglings) – Developer-grade interactive TUI for learning Spanish (B1–C1).
 - ⚡ [**Raylings**](https://github.com/dnf0/raylings) – Learn distributed AI, Ray Core actors, and scalable clusters through hands-on Python exercises.
 
-> *All projects in the `*lings` suite are deeply inspired by the pioneering terminal-based pedagogy of [Rustlings](https://github.com/rust-lang/rustlings) and [Ziglings](https://codeberg.org/ziglings/exercises).*
+---
 
+## 📄 License
+
+Kubelings is open-source software licensed under the [Apache License 2.0](https://github.com/dnf0/kubelings/blob/main/LICENSE).

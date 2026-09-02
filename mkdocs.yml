@@ -1,7 +1,7 @@
 site_name: Kubelings
-site_description: An interactive, hands-on CLI learning environment for Kubernetes.
+site_description: An interactive, client-side WebAssembly learning platform and comprehensive reference manual for Kubernetes.
 site_url: https://dnf0.github.io/kubelings/
-site_author: Kubelings Contributors
+site_author: Daniel Fisher
 repo_name: dnf0/kubelings
 repo_url: https://github.com/dnf0/kubelings
 
@@ -48,13 +48,45 @@ markdown_extensions:
 
 nav:
   - Overview: index.md
-  - Getting Started: getting-started.md
-  - Onboarding Guide: onboarding-guide.md
-  - Curriculum Syllabus: syllabus.md
   - Interactive Playground: playground/index.html
-  - CLI Reference: cli-reference.md
+  - Syllabus & Curriculum: syllabus.md
+  - Core Workloads & Storage:
+      - 01. Pods & Core Workloads: guides/01-pods.md
+      - 02. Controllers & Replication: guides/02-controllers.md
+      - 03. Config & Secrets: guides/03-config-secrets.md
+      - 04. Storage & Volumes: guides/04-storage.md
+  - Networking & Traffic Routing:
+      - 05. Services & Networking: guides/05-services-networking.md
+      - 06. Ingress & Gateway API: guides/06-ingress-gateway.md
+      - 21. Gateway API Deep Dive: guides/21-gateway-api.md
+      - 09. Network Policies: guides/09-network-policies.md
+  - Scheduling, Security & Scaling:
+      - 07. Scheduling & Affinity: guides/07-scheduling.md
+      - 08. Security & RBAC: guides/08-security-rbac.md
+      - 10. Health Probes & Lifecycle: guides/10-lifecycle-probes.md
+      - 11. Autoscaling (HPA/VPA/KEDA): guides/11-autoscaling.md
+      - 18. Admission Webhooks: guides/18-admission-webhooks.md
+  - CRDs, Troubleshooting & Packaging:
+      - 12. CRDs & Operator Pattern: guides/12-crds-and-operators.md
+      - 13. Production Troubleshooting: guides/13-troubleshooting.md
+      - 19. Helm Packaging: guides/19-helm-packaging.md
+      - 20. Kustomize Overlays: guides/20-kustomize-overlays.md
+  - Modern Cloud Native Ecosystem:
+      - 14. GitOps with ArgoCD: guides/14-gitops-argocd.md
+      - 15. Service Mesh & Cilium: guides/15-service-mesh-cilium.md
+      - 16. Policy as Code (Kyverno/OPA): guides/16-policy-as-code.md
+      - 17. Multi-Tenancy & vCluster: guides/17-multitenancy-vcluster.md
+      - 22. Crossplane IaC: guides/22-crossplane-iac.md
+      - 23. eBPF Tetragon Security: guides/23-ebpf-tetragon.md
+      - 24. KubeRay Distributed AI: guides/24-kuberay-ml.md
+      - 25. Batch AI (Kueue & Volcano): guides/25-batch-kueue-volcano.md
+      - 26. Hardware Acceleration (DRA): guides/26-hardware-acceleration-dra.md
   - Contributing: contributing.md
 
 not_in_nav: |
   superpowers/**
   playground/**
+  getting-started.md
+  onboarding-guide.md
+  cli-reference.md
+
