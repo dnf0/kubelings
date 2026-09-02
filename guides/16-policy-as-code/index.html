@@ -1235,6 +1235,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1726,6 +1776,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1868,7 +1968,7 @@
 </div>
 <hr />
 <h2 id="1-architectural-overview-control-plane-mechanics">1. Architectural Overview &amp; Control Plane Mechanics</h2>
-<p>In Kubernetes, <strong>Policy as Code (Kyverno &amp; Gatekeeper)</strong> is reconciled through declarative state loops managed by the control plane:</p>
+<p>In Kubernetes, <strong>Policy as Code (Kyverno &amp; Gatekeeper)</strong> is reconciled through declarative state loops managed by the control plane and node daemons:</p>
 <pre class="mermaid"><code>flowchart TD
     subgraph APIPipeline["API Admission Request Pipeline"]
         REQ["Admission Request (e.g. Create Pod)"]
@@ -1895,7 +1995,39 @@
         VERIFY --&gt;|Passes All Checks| ALLOW
         VALIDATE --&gt;|Rule Violation (Enforce Mode)| DENY
     end</code></pre>
-<p>When resources in this chapter are submitted, the <code>kube-apiserver</code> validates the OpenAPI v3 schema, stores state in <code>etcd</code>, and triggers the responsible controllers or node daemons to reconcile actual cluster state.</p>
+<h3 id="11-architectural-flow-lifecycle-walkthrough">1.1 Architectural Flow &amp; Lifecycle Walkthrough</h3>
+<ol>
+<li><strong>API Admission Interception</strong>: A user submits a workload creation request (<code>kubectl create -f pod.yaml</code>). <code>kube-apiserver</code> authenticates and authorizes the request, then directs the JSON representation of the resource to the Admission Control pipeline.</li>
+<li><strong>Phase 1: Mutate Phase (Kyverno / OPA Gatekeeper)</strong>:</li>
+<li>The API server sends an <code>AdmissionReview</code> POST request over HTTPS to the policy engine webhook service.</li>
+<li>The policy engine evaluates mutation rules (e.g., automatically injecting <code>securityContext.runAsNonRoot = true</code> or adding cost-center labels).</li>
+<li>The engine returns a <code>JSONPatch</code> (RFC 6902) array back to the API server, which applies the mutations to the in-memory object.</li>
+<li><strong>Phase 2: Generate Phase</strong>: The policy engine generates dependent resources (e.g., creating default <code>NetworkPolicy</code> and <code>ResourceQuota</code> objects whenever a new <code>Namespace</code> is created).</li>
+<li><strong>Phase 3: Validate Phase</strong>:</li>
+<li>The API server submits the mutated object to the Validating Admission Webhook.</li>
+<li>The policy engine evaluates declarative validation rules (written in Kyverno YAML, OPA Rego, or Kubernetes CEL).</li>
+<li>If the object violates a policy set to <code>validationFailureAction: Enforce</code> (e.g., requesting <code>privileged: true</code>), the policy engine returns <code>allowed: false</code> with a descriptive error message. The API server terminates the request with <code>403 Forbidden</code>.</li>
+<li><strong>Phase 4: Cryptographic Image Verification</strong>: Kyverno/Gatekeeper verifies that container image digests are cryptographically signed using Sigstore Cosign keys or keyless Rekor transparency logs before permitting execution.</li>
+</ol>
+<h3 id="12-serialization-protocols-communication-pathways">1.2 Serialization, Protocols &amp; Communication Pathways</h3>
+<ul>
+<li><strong>AdmissionReview JSON Wire Protocol (v1)</strong>: <code>kube-apiserver</code> exchanges structured JSON payloads containing <code>request</code> metadata (UserInfo, Kind, Operation, Object, OldObject) and evaluates returned <code>response</code> objects (<code>allowed</code>, <code>status</code>, <code>patch</code>).</li>
+<li><strong>JSONPatch RFC 6902 Serialization</strong>: Mutation patches are serialized as base64-encoded JSON arrays containing discrete patch operations (<code>{"op": "add", "path": "/spec/securityContext/runAsNonRoot", "value": true}</code>).</li>
+<li><strong>Common Expression Language (CEL)</strong>: High-speed, non-Turing complete expression evaluation executed in-process inside <code>kube-apiserver</code> with sub-millisecond evaluation latency.</li>
+</ul>
+<h3 id="13-deep-dive-component-breakdown">1.3 Deep-Dive Component Breakdown</h3>
+<ul>
+<li><strong>ValidatingAdmissionPolicy</strong>: Built-in Kubernetes native CEL-based admission engine executing in-process inside <code>kube-apiserver</code> without external webhook network hops.</li>
+<li><strong>Kyverno / OPA Gatekeeper Webhook Servers</strong>: High-availability pods running mTLS webhook servers that evaluate complex cluster-wide policies.</li>
+<li><strong>Sigstore Cosign &amp; Rekor</strong>: Cryptographic signing framework and public transparency log verifying software supply chain provenance for container artifacts.</li>
+<li><strong>Policy Mutation Engine</strong>: JSON transformation pipeline applying sequential RFC 6902 patch sets to object representations before persistence.</li>
+</ul>
+<h3 id="14-under-the-hood-mechanics-failure-modes">1.4 Under-The-Hood Mechanics &amp; Failure Modes</h3>
+<ul>
+<li><strong>Webhook Deadlock on API Server Startup</strong>: If policy engine webhook pods are down and <code>failurePolicy: Fail</code> is configured on a webhook targeting core resources, <code>kube-apiserver</code> rejects all Pod creations—including the policy engine's own pods—causing a fatal cluster deadlock. Webhooks must use <code>namespaceSelector</code> to exempt <code>kube-system</code> and the policy engine's namespace.</li>
+<li><strong>CEL Evaluation Resource Exhaustion</strong>: Highly recursive or deeply nested CEL expressions evaluated across high-frequency API calls can exceed the API server's per-request CEL budget (100,000 cost units), causing admission to fail with <code>CostLimitExceeded</code>.</li>
+<li><strong>Drift between Audit and Enforce Modes</strong>: Running policies in <code>Audit</code> mode flags violations in logs but allows non-compliant resources to be deployed. Transitioning directly to <code>Enforce</code> mode without remediation will block operational updates to existing non-compliant workloads.</li>
+</ul>
 <hr />
 <h2 id="2-annotated-production-yaml-anatomy-field-reference">2. Annotated Production YAML Anatomy &amp; Field Reference</h2>
 <p>Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:</p>

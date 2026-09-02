@@ -1347,6 +1347,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1726,6 +1776,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1868,7 +1968,7 @@
 </div>
 <hr />
 <h2 id="1-architectural-overview-control-plane-mechanics">1. Architectural Overview &amp; Control Plane Mechanics</h2>
-<p>In Kubernetes, <strong>Distributed AI &amp; ML Orchestration with KubeRay</strong> is reconciled through declarative state loops managed by the control plane:</p>
+<p>In Kubernetes, <strong>Distributed AI &amp; ML Orchestration with KubeRay</strong> is reconciled through declarative state loops managed by the control plane and node daemons:</p>
 <pre class="mermaid"><code>flowchart TD
     subgraph OperatorLayer["KubeRay Operator"]
         RAY_CR["RayCluster CRD&lt;br/&gt;&lt;i&gt;rayVersion: 2.35.0, workers: 8, gpus: 1&lt;/i&gt;"]
@@ -1891,7 +1991,40 @@
         RAY_HEAD &lt;--&gt;|gRPC Heartbeat &amp; Task Scheduling| W2
         W1 &lt;--&gt;|NCCL Direct GPU-to-GPU Tensor Exchange| W2
     end</code></pre>
-<p>When resources in this chapter are submitted, the <code>kube-apiserver</code> validates the OpenAPI v3 schema, stores state in <code>etcd</code>, and triggers the responsible controllers or node daemons to reconcile actual cluster state.</p>
+<h3 id="11-architectural-flow-lifecycle-walkthrough">1.1 Architectural Flow &amp; Lifecycle Walkthrough</h3>
+<ol>
+<li><strong>RayCluster CR Submission</strong>: An ML platform engineer submits a <code>RayCluster</code> CR declaring head node configurations and dynamic worker node groups with GPU/TPU resource allocations.</li>
+<li><strong>KubeRay Controller Reconciliation</strong>: The <code>kuberay-operator</code> detects the CR:</li>
+<li>Creates the <strong>Ray Head Pod</strong> hosting the Global Control Store (GCS), Ray API Server, Dashboard (port 8265), and Cluster Autoscaler.</li>
+<li>Creates a Kubernetes <code>Service</code> providing stable DNS endpoints to the Ray Head.</li>
+<li>Spawns the desired count of <strong>Ray Worker Pods</strong> across GPU-accelerated worker nodes.</li>
+<li><strong>Raylet Daemon &amp; Plasma Store Startup</strong>: Inside each Worker Pod:</li>
+<li>The <code>raylet</code> daemon starts and registers with the Ray Head's GCS via gRPC heartbeats over port 6379.</li>
+<li>Allocates a dedicated Linux shared memory segment (<code>/dev/shm</code>) backing the <strong>Plasma Object Store</strong> for ultra-fast, zero-copy deserialization of distributed NumPy/PyTorch arrays.</li>
+<li><strong>Distributed Task Scheduling &amp; Execution</strong>: A distributed training script connects to the Ray Head:</li>
+<li>Ray Head schedules tasks and actors across available Worker Pods based on GPU availability and data locality.</li>
+<li>Ray workers exchange intermediate tensor gradients directly using <strong>NCCL (NVIDIA Collective Communications Library)</strong> over high-speed RoCE/InfiniBand or VPC networks.</li>
+<li><strong>Dynamic Ray Cluster Autoscaling</strong>: The embedded Ray Autoscaler monitors queue length and pending actor requests, issuing API calls to <code>kuberay-operator</code> to dynamically scale worker replica counts up or down.</li>
+</ol>
+<h3 id="12-serialization-protocols-communication-pathways">1.2 Serialization, Protocols &amp; Communication Pathways</h3>
+<ul>
+<li><strong>Apache Arrow Plasma Shared Memory</strong>: Zero-copy in-memory object store utilizing Apache Arrow binary IPC format for direct tensor memory sharing between co-located worker processes.</li>
+<li><strong>gRPC over TCP / HTTP/2</strong>: Inter-node control messaging between <code>raylet</code> daemons and Ray Head Global Control Store (GCS).</li>
+<li><strong>NCCL Direct Peer-to-Peer Protocol</strong>: Low-latency GPU-to-GPU memory exchange bypassing host CPU and OS networking stack via NVIDIA NVLink or GPUDirect RDMA.</li>
+</ul>
+<h3 id="13-deep-dive-component-breakdown">1.3 Deep-Dive Component Breakdown</h3>
+<ul>
+<li><strong>kuberay-operator</strong>: Kubernetes controller managing the complete lifecycle of Ray clusters, RayJobs, and RayServices.</li>
+<li><strong>Ray Head Pod</strong>: Central coordinator running the Global Control Store (GCS metadata), task scheduler, autoscaler, and monitoring dashboard.</li>
+<li><strong>Ray Worker Pods</strong>: Scalable execution fleet running user ML code, Python workers, and local Plasma shared memory stores.</li>
+<li><strong>NCCL / NVLink Mesh</strong>: High-bandwidth inter-GPU interconnect topology enabling multi-node distributed training (PyTorch DDP, DeepSpeed, Megatron-LM).</li>
+</ul>
+<h3 id="14-under-the-hood-mechanics-failure-modes">1.4 Under-The-Hood Mechanics &amp; Failure Modes</h3>
+<ul>
+<li><strong><code>/dev/shm</code> Size Starvation</strong>: Docker and Kubernetes default <code>/dev/shm</code> to 64MB unless an <code>emptyDir</code> with <code>medium: Memory</code> is explicitly mounted. Plasma Object Store startup will crash with <code>Out of memory: Plasma store failed to allocate memory</code>.</li>
+<li><strong>NCCL Ring Communication Timeout</strong>: If firewall rules or NetworkPolicies block high-port TCP/RDMA traffic between worker pods, distributed training hangs indefinitely during tensor synchronization before failing with <code>NCCL WARN: Call to connect returned Connection timed out</code>.</li>
+<li><strong>GCS Redis Heartbeat Loss</strong>: Heavy CPU contention on the Ray Head node can delay heartbeat processing, prompting the head to falsely declare healthy worker nodes dead and terminating in-flight training jobs.</li>
+</ul>
 <hr />
 <h2 id="2-annotated-production-yaml-anatomy-field-reference">2. Annotated Production YAML Anatomy &amp; Field Reference</h2>
 <p>Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:</p>

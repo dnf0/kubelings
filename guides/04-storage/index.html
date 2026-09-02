@@ -551,6 +551,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1726,6 +1776,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1869,7 +1969,7 @@
 </div>
 <hr />
 <h2 id="1-architectural-overview-control-plane-mechanics">1. Architectural Overview &amp; Control Plane Mechanics</h2>
-<p>In Kubernetes, <strong>Storage &amp; Persistent Volumes</strong> is reconciled through declarative state loops managed by the control plane:</p>
+<p>In Kubernetes, <strong>Storage &amp; Persistent Volumes</strong> is reconciled through declarative state loops managed by the control plane and node daemons:</p>
 <pre class="mermaid"><code>flowchart TD
     subgraph StorageControlPlane["Dynamic CSI Provisioning Loop"]
         PVC["PersistentVolumeClaim&lt;br/&gt;&lt;i&gt;(User Storage Request)&lt;/i&gt;"]
@@ -1893,7 +1993,35 @@
     KUBELET --&gt;|NodePublishVolume gRPC| CSI_NODE
     CSI_NODE --&gt;|Mounts Block Storage| TARGET_DIR
     TARGET_DIR --&gt;|Bind Mount| CONTAINER</code></pre>
-<p>When resources in this chapter are submitted, the <code>kube-apiserver</code> validates the OpenAPI v3 schema, stores state in <code>etcd</code>, and triggers the responsible controllers or node daemons to reconcile actual cluster state.</p>
+<h3 id="11-architectural-flow-lifecycle-walkthrough">1.1 Architectural Flow &amp; Lifecycle Walkthrough</h3>
+<ol>
+<li><strong>PVC Creation &amp; StorageClass Matching</strong>: A developer declares a <code>PersistentVolumeClaim</code> (PVC) specifying storage requests (e.g., <code>100Gi</code>) and <code>storageClassName: ebs-gp3-sc</code>.</li>
+<li><strong>External Provisioner Detection</strong>: The <code>csi-provisioner</code> sidecar watching PVCs detects an unbound claim. If <code>volumeBindingMode: WaitForFirstConsumer</code> is set, dynamic provisioning waits until <code>kube-scheduler</code> selects an eligible node to ensure volume placement matches compute topology.</li>
+<li><strong>Dynamic Volume Provisioning via CSI gRPC</strong>: <code>csi-provisioner</code> issues a <code>CreateVolume</code> gRPC call to the cloud storage provider plugin (e.g., AWS EBS CSI Controller). The plugin communicates with cloud APIs to allocate the underlying physical EBS volume or SAN LUN.</li>
+<li><strong>PV Creation &amp; Two-Way Binding</strong>: <code>csi-provisioner</code> writes a corresponding <code>PersistentVolume</code> (PV) object to <code>kube-apiserver</code>. The <code>PersistentVolumeController</code> binds the PVC and PV bidirectionally (<code>spec.volumeName</code> and <code>spec.claimRef</code>).</li>
+<li><strong>Node Attachment (<code>AttachVolume</code>)</strong>: The <code>csi-attacher</code> controller calls <code>ControllerPublishVolume</code> over gRPC, prompting the cloud API to attach the EBS volume block device to the target EC2 worker instance.</li>
+<li><strong>Node Formatting &amp; Mount (<code>NodePublishVolume</code>)</strong>: The worker node's <code>kubelet</code> detects the attached block device (e.g., <code>/dev/nvme1n1</code>). It calls the local <code>csi-node</code> daemon via gRPC <code>NodeStageVolume</code> (formats with <code>ext4</code>/<code>xfs</code> if unformatted) and <code>NodePublishVolume</code> (bind-mounts the filesystem to <code>/var/lib/kubelet/pods/&lt;UID&gt;/volumes/kubernetes.io~csi/&lt;vol-name&gt;/mount</code>).</li>
+<li><strong>Container Bind-Mount</strong>: The container runtime launches the application container with an explicit Linux bind-mount mapping the host target path to the container's designated mount path (e.g., <code>/var/lib/data</code>).</li>
+</ol>
+<h3 id="12-serialization-protocols-communication-pathways">1.2 Serialization, Protocols &amp; Communication Pathways</h3>
+<ul>
+<li><strong>Container Storage Interface (CSI v1.x) gRPC</strong>: All storage controller and node communications execute over standard gRPC interfaces defined by <code>container-storage-interface/spec</code>.</li>
+<li><strong>Unix Domain Socket RPC</strong>: Node-level CSI plugins listen on host sockets (such as <code>/var/lib/kubelet/plugins/ebs.csi.aws.com/csi.sock</code>) registered with kubelet via the CSI Plugin Registration mechanism.</li>
+<li><strong>Protobuf Wire Payloads</strong>: Volume capabilities, mount flags, access modes (<code>ReadWriteOnce</code>, <code>ReadWriteMany</code>), and cloud volume IDs are passed as structured protobuf messages across controller boundaries.</li>
+</ul>
+<h3 id="13-deep-dive-component-breakdown">1.3 Deep-Dive Component Breakdown</h3>
+<ul>
+<li><strong>csi-provisioner</strong>: Kubernetes SIG sidecar container that watches PVCs and calls CSI <code>CreateVolume</code> and <code>DeleteVolume</code>.</li>
+<li><strong>csi-attacher</strong>: Sidecar container that watches <code>VolumeAttachment</code> API objects and calls CSI <code>ControllerPublishVolume</code> and <code>ControllerUnpublishVolume</code>.</li>
+<li><strong>csi-node Plugin</strong>: DaemonSet running on every node that executes privileged OS operations (formatting filesystems via <code>mkfs</code>, creating Linux mount namespaces).</li>
+<li><strong>kubelet Volume Manager</strong>: Reconciler inside kubelet that verifies volume attachments, invokes local CSI node RPCs, and maintains desired-state mount maps.</li>
+</ul>
+<h3 id="14-under-the-hood-mechanics-failure-modes">1.4 Under-The-Hood Mechanics &amp; Failure Modes</h3>
+<ul>
+<li><strong>Multi-Attach Error (<code>VolumeAttachmentConflict</code>)</strong>: Cloud block volumes (like AWS EBS or GCP Persistent Disk) with <code>ReadWriteOnce</code> (RWO) cannot be attached to multiple physical nodes simultaneously. If a Pod is rescheduled while the old node has not detached the volume, the Pod hangs in <code>ContainerCreating</code> with <code>Multi-Attach error for volume</code>.</li>
+<li><strong>Filesystem Corruption on Unclean Unmount</strong>: Sudden node termination without graceful CSI <code>NodeUnpublishVolume</code> execution can leave orphan block attachments and stale lock files, requiring manual cloud console detaches or node reboots.</li>
+<li><strong>Capacity Exhaustion &amp; Inode Depletion</strong>: If an ext4/xfs volume fills to 100% capacity or exhausts available inodes, the application container encounters <code>No space left on device</code> (ENOSPC), causing database write stalls and container crashes.</li>
+</ul>
 <hr />
 <h2 id="2-annotated-production-yaml-anatomy-field-reference">2. Annotated Production YAML Anatomy &amp; Field Reference</h2>
 <p>Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:</p>

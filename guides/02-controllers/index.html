@@ -495,6 +495,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1726,6 +1776,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1870,7 +1970,7 @@
 </div>
 <hr />
 <h2 id="1-architectural-overview-control-plane-mechanics">1. Architectural Overview &amp; Control Plane Mechanics</h2>
-<p>In Kubernetes, <strong>Controllers &amp; Replication</strong> is reconciled through declarative state loops managed by the control plane:</p>
+<p>In Kubernetes, <strong>Controllers &amp; Replication</strong> is reconciled through declarative state loops managed by the control plane and node daemons:</p>
 <pre class="mermaid"><code>flowchart TD
     subgraph ControlLoop["kube-controller-manager"]
         DC["Deployment Controller&lt;br/&gt;&lt;i&gt;Watches Deployments&lt;/i&gt;"]
@@ -1903,7 +2003,34 @@
     RS2 --&gt;|Spawns| P1
     RS2 --&gt;|Spawns| P2
     RS2 --&gt;|Spawns| P3</code></pre>
-<p>When resources in this chapter are submitted, the <code>kube-apiserver</code> validates the OpenAPI v3 schema, stores state in <code>etcd</code>, and triggers the responsible controllers or node daemons to reconcile actual cluster state.</p>
+<h3 id="11-architectural-flow-lifecycle-walkthrough">1.1 Architectural Flow &amp; Lifecycle Walkthrough</h3>
+<ol>
+<li><strong>Declarative State Declaration</strong>: A platform operator submits a <code>Deployment</code> manifest declaring <code>spec.replicas: 3</code> and <code>spec.strategy.type: RollingUpdate</code>.</li>
+<li><strong>Informer Reflector List-Watch</strong>: The <code>DeploymentController</code> inside <code>kube-controller-manager</code> runs a <code>SharedIndexInformer</code>. The informer's <code>Reflector</code> establishes an HTTP/2 chunked List-Watch connection to <code>kube-apiserver</code>, streaming delta changes into a thread-safe local <code>Indexer</code> FIFO queue.</li>
+<li><strong>Reconciliation Loop &amp; WorkQueue</strong>: The controller pops the Deployment key from the <code>RateLimitingWorkQueue</code>. It queries the local cache for matching ReplicaSets via label selectors (<code>matchLabels</code>).</li>
+<li><strong>RollingUpdate Rollout Math</strong>: When <code>spec.template.spec</code> changes, the controller creates a new Revision ReplicaSet (<code>v2</code>). It calculates <code>maxSurge</code> (temporary extra pods allowed above desired count) and <code>maxUnavailable</code> (maximum pods allowed in non-ready state), progressively incrementing <code>spec.replicas</code> on <code>v2</code> while decrementing <code>v1</code>.</li>
+<li><strong>ReplicaSet Controller Action</strong>: The <code>ReplicaSetController</code> observes the updated replica counts, compares desired vs actual live Pod counts, and executes batch HTTP POST requests to <code>kube-apiserver</code> to spawn or terminate individual <code>v1.Pod</code> objects.</li>
+<li><strong>Self-Healing &amp; Drift Convergence</strong>: If a node crashes or a worker process is terminated, the informer receives a <code>Delete</code> event, immediately re-enqueuing the Deployment key to recreate replacement Pods until the observed state equals the desired state.</li>
+</ol>
+<h3 id="12-serialization-protocols-communication-pathways">1.2 Serialization, Protocols &amp; Communication Pathways</h3>
+<ul>
+<li><strong>HTTP/2 Chunked Streaming (Watch API)</strong>: The API server streams resource change events (<code>ADDED</code>, <code>MODIFIED</code>, <code>DELETED</code>) encoded as JSON or binary Protobuf over long-lived HTTP/2 streams.</li>
+<li><strong>Optimistic Concurrency Control (OCC)</strong>: State updates use HTTP <code>PUT</code> with <code>metadata.resourceVersion</code>. If another controller modified the object in <code>etcd</code> concurrently, the API server rejects the write with <code>409 Conflict</code>, prompting the controller to re-fetch the latest state and retry.</li>
+<li><strong>Protobuf Internal Wire Protocol</strong>: Inter-component communication between <code>kube-controller-manager</code> and <code>kube-apiserver</code> utilizes Protobuf encoding to support high-throughput event processing across large clusters.</li>
+</ul>
+<h3 id="13-deep-dive-component-breakdown">1.3 Deep-Dive Component Breakdown</h3>
+<ul>
+<li><strong>kube-controller-manager</strong>: Monolithic Go binary running a collection of distinct control loops (Deployment, ReplicaSet, StatefulSet, Job, Node) managed by a leader-election lock in <code>coordination.k8s.io/leases</code>.</li>
+<li><strong>SharedIndexInformer &amp; DeltaFIFO</strong>: Caching and event distribution layer that reduces <code>kube-apiserver</code> query loads by maintaining an in-memory thread-safe copy of cluster resources indexed by namespace and labels.</li>
+<li><strong>RateLimitingWorkQueue</strong>: Go workqueue implementation providing exponential backoff, token-bucket rate limiting, and deduplication of concurrent reconciliation keys.</li>
+<li><strong>ReplicaSet Reconciler</strong>: Dedicated controller responsible exclusively for maintaining the exact number of active, ready Pods matching a given Pod template and selector.</li>
+</ul>
+<h3 id="14-under-the-hood-mechanics-failure-modes">1.4 Under-The-Hood Mechanics &amp; Failure Modes</h3>
+<ul>
+<li><strong>Cascading Rollout Stall (<code>ProgressDeadlineSeconds</code>)</strong>: If new revision Pods fail startup or readiness checks, the rollout stalls. If the condition persists beyond <code>progressDeadlineSeconds</code> (default: 600s), the Deployment controller transitions <code>.status.conditions[Type=Progressing].status = "False"</code> with reason <code>ProgressDeadlineExceeded</code>.</li>
+<li><strong>Label Selector Mutability Invariants</strong>: <code>spec.selector</code> is immutable after creation. Attempting to modify <code>matchLabels</code> requires recreating the Deployment, as selector collisions can lead to orphaned ReplicaSets or split-brain ownership loops.</li>
+<li><strong>Split-Brain Prevention via Leases</strong>: Only the active leader instance of <code>kube-controller-manager</code> executes reconciliation routines. Non-leader instances maintain active informer caches and continuously renew heartbeat leases to take over within 15 seconds upon leader termination.</li>
+</ul>
 <hr />
 <h2 id="2-annotated-production-yaml-anatomy-field-reference">2. Annotated Production YAML Anatomy &amp; Field Reference</h2>
 <p>Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:</p>

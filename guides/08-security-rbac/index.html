@@ -837,6 +837,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1726,6 +1776,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1869,7 +1969,7 @@
 </div>
 <hr />
 <h2 id="1-architectural-overview-control-plane-mechanics">1. Architectural Overview &amp; Control Plane Mechanics</h2>
-<p>In Kubernetes, <strong>Security, RBAC &amp; Service Accounts</strong> is reconciled through declarative state loops managed by the control plane:</p>
+<p>In Kubernetes, <strong>Security, RBAC &amp; Service Accounts</strong> is reconciled through declarative state loops managed by the control plane and node daemons:</p>
 <pre class="mermaid"><code>flowchart LR
     subgraph ClientAuth["1. Authentication (AuthN)"]
         REQ["API Request (curl/kubectl)"]
@@ -1895,7 +1995,38 @@
         ETCD[("etcd Storage")]
         ADM --&gt;|Allowed| ETCD
     end</code></pre>
-<p>When resources in this chapter are submitted, the <code>kube-apiserver</code> validates the OpenAPI v3 schema, stores state in <code>etcd</code>, and triggers the responsible controllers or node daemons to reconcile actual cluster state.</p>
+<h3 id="11-architectural-flow-lifecycle-walkthrough">1.1 Architectural Flow &amp; Lifecycle Walkthrough</h3>
+<ol>
+<li><strong>Authentication (AuthN)</strong>: A client initiates an HTTPS request to <code>kube-apiserver</code>. The server passes the request through configured authentication handlers in sequence:</li>
+<li><strong>X.509 Client Certificates</strong>: Validates client certificate signatures against the cluster CA; extracts the Common Name (<code>CN</code>) as the Username and Organizational Units (<code>O</code>) as Groups.</li>
+<li><strong>OIDC Bearer Tokens</strong>: Validates JSON Web Tokens (JWT) signed by an external identity provider (Okta, Keycloak, Dex) via public JWKS keys.</li>
+<li><strong>ServiceAccount Tokens</strong>: Validates signed JWT service account tokens (<code>sub: system:serviceaccount:namespace:sa-name</code>) using RSA/ECDSA public keys.</li>
+<li><strong>Authorization (AuthZ)</strong>: The authenticated subject (<code>User</code>, <code>Group</code>, or <code>ServiceAccount</code>) is evaluated by the RBAC Authorization Engine. The engine performs an in-memory lookup across:</li>
+<li><code>Roles</code> &amp; <code>RoleBindings</code> (scoped to specific namespaces).</li>
+<li><code>ClusterRoles</code> &amp; <code>ClusterRoleBindings</code> (cluster-wide or across all namespaces).
+   The engine matches the request API Group, Resource, Subresource, and Verb (<code>get</code>, <code>list</code>, <code>watch</code>, <code>create</code>, <code>delete</code>). If any rule matches, authorization is granted; if no rules match, the request is rejected with <code>403 Forbidden</code>.</li>
+<li><strong>Admission Control &amp; Security Standards</strong>: Authorized requests pass through Mutating and Validating Admission Webhooks and built-in Admission Controllers, including the <strong>Pod Security Standards</strong> engine (Privileged, Baseline, Restricted).</li>
+<li><strong>etcd Transaction</strong>: If all validation and policy checks pass, the API server commits the state change to <code>etcd</code>.</li>
+</ol>
+<h3 id="12-serialization-protocols-communication-pathways">1.2 Serialization, Protocols &amp; Communication Pathways</h3>
+<ul>
+<li><strong>JWT (JSON Web Signature RFC 7515)</strong>: Projected ServiceAccount tokens and OIDC tokens are base64url-encoded signed JSON payloads containing standard claims (<code>iss</code>, <code>sub</code>, <code>aud</code>, <code>exp</code>, <code>nbf</code>).</li>
+<li><strong>SubjectAccessReview JSON/Protobuf API</strong>: Kubernetes API enabling external proxies to delegate authorization decisions by posting <code>authorization.k8s.io/v1 SubjectAccessReview</code> payloads to the API server.</li>
+<li><strong>X.509 ASN.1 DER Encoding</strong>: TLS transport client certificates encoded in standard ASN.1 Distinguished Encoding Rules format.</li>
+</ul>
+<h3 id="13-deep-dive-component-breakdown">1.3 Deep-Dive Component Breakdown</h3>
+<ul>
+<li><strong>AuthN Authenticator Pipeline</strong>: Chain of pluggable Go authenticators (x509, Webhook, OIDC, TokenFile, ServiceAccountToken).</li>
+<li><strong>RBAC Authorizer</strong>: In-memory rule index indexing role rules by verb and resource group for sub-microsecond permission checks.</li>
+<li><strong>Pod Security Admission (PSA)</strong>: Built-in admission controller replacing legacy PSPs, evaluating Pod specifications against <code>privileged</code>, <code>baseline</code>, and <code>restricted</code> security profiles enforced via namespace labels.</li>
+<li><strong>Projected Token Volume Driver</strong>: Kubelet driver responsible for refreshing and rotating signed ServiceAccount JWT tokens mounted into <code>/var/run/secrets/kubernetes.io/serviceaccount/token</code> before expiration.</li>
+</ul>
+<h3 id="14-under-the-hood-mechanics-failure-modes">1.4 Under-The-Hood Mechanics &amp; Failure Modes</h3>
+<ul>
+<li><strong>Silent Token Expiration in Long-Running Daemons</strong>: Legacy applications that cache the ServiceAccount token in memory on startup will encounter <code>401 Unauthorized</code> errors after the projected token rotates on disk (default 1-hour expiration) unless they re-read <code>/var/run/secrets/kubernetes.io/serviceaccount/token</code> dynamically.</li>
+<li><strong>Privilege Escalation Prevention</strong>: The RBAC engine blocks users from creating or updating Roles with permissions they do not personally possess, preventing unauthorized privilege escalation unless the user holds the explicit <code>escalate</code> verb.</li>
+<li><strong>Over-Permissioned Wildcard Roles (<code>*</code>)</strong>: Granting <code>apiGroups: ["*"]</code> and <code>resources: ["*"]</code> with <code>verbs: ["*"]</code> violates least privilege and exposes the entire cluster control plane to compromise if a single workload service account is leaked.</li>
+</ul>
 <hr />
 <h2 id="2-annotated-production-yaml-anatomy-field-reference">2. Annotated Production YAML Anatomy &amp; Field Reference</h2>
 <p>Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:</p>

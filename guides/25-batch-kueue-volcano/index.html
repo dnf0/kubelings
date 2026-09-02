@@ -1375,6 +1375,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1726,6 +1776,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1868,7 +1968,7 @@
 </div>
 <hr />
 <h2 id="1-architectural-overview-control-plane-mechanics">1. Architectural Overview &amp; Control Plane Mechanics</h2>
-<p>In Kubernetes, <strong>AI Batch Scheduling &amp; Queuing with Kueue and Volcano</strong> is reconciled through declarative state loops managed by the control plane:</p>
+<p>In Kubernetes, <strong>AI Batch Scheduling &amp; Queuing with Kueue and Volcano</strong> is reconciled through declarative state loops managed by the control plane and node daemons:</p>
 <pre class="mermaid"><code>flowchart TD
     subgraph BatchSubmissions["Batch Job Submissions"]
         JOB1["Batch Job A (16 Pods - Gang All-or-Nothing)"]
@@ -1900,7 +2000,40 @@
         PLUGINS --&gt; N1
         PLUGINS --&gt; N2
     end</code></pre>
-<p>When resources in this chapter are submitted, the <code>kube-apiserver</code> validates the OpenAPI v3 schema, stores state in <code>etcd</code>, and triggers the responsible controllers or node daemons to reconcile actual cluster state.</p>
+<h3 id="11-architectural-flow-lifecycle-walkthrough">1.1 Architectural Flow &amp; Lifecycle Walkthrough</h3>
+<ol>
+<li><strong>Batch Job Submission</strong>: An ML engineer submits multi-pod batch workloads (e.g. PyTorch distributed jobs requiring 16 pods concurrently) referencing a <code>kueue.x-k8s.io/queue-name: ml-team-queue</code>.</li>
+<li><strong>Kueue Admission &amp; Quota Evaluation</strong>: The <code>kueue-controller-manager</code> intercepts the Job:</li>
+<li>Matches the job against the target <code>ClusterQueue</code> and its associated <code>ResourceFlavors</code> (e.g., <code>nvidia-a100-gpu</code>).</li>
+<li>Evaluates real-time quota usage across multi-tenant cohorts, calculating nominal quotas and borrowing limits from idle shared quotas.</li>
+<li>If quota is available, Kueue <strong>admits</strong> the workload, transitioning <code>Workload.status.conditions[Admitted] = True</code>. If quota is exhausted, the workload is queued in priority order without creating pending pods.</li>
+<li><strong>Volcano Gang Scheduler Activation</strong>: The admitted workload creates a <code>PodGroup</code> resource managed by the <code>volcano-scheduler</code>:</li>
+<li>Declares <code>minMember: 16</code> (the minimum number of pods required for the job to function).</li>
+<li><strong>Gang All-or-Nothing Scheduling Pipeline</strong>:</li>
+<li>Volcano evaluates cluster nodes in a single atomic scheduling transaction.</li>
+<li>If all 16 pods can be placed simultaneously across eligible GPU nodes, Volcano binds all 16 pods in unison.</li>
+<li>If only 12 nodes are available, Volcano places <strong>zero</strong> pods, preventing resource deadlock where two competing jobs hold partial allocations and neither can proceed.</li>
+<li><strong>Node Placement &amp; Plugin Execution</strong>: Volcano executes scheduling plugins (Dominant Resource Fairness <code>drf</code>, <code>binpack</code>, and <code>gang</code>), packing pods densely onto worker nodes to minimize node fragmentation.</li>
+</ol>
+<h3 id="12-serialization-protocols-communication-pathways">1.2 Serialization, Protocols &amp; Communication Pathways</h3>
+<ul>
+<li><strong>Kueue Workload CRD API</strong>: Workload specifications, resource flavors, and cohort quota reservations serialized as JSON/Protobuf across Kubernetes API endpoints.</li>
+<li><strong>Volcano PodGroup Protocol</strong>: Gang scheduling synchronization protocol tracking <code>minMember</code> admission barriers in-memory within the custom scheduler binary.</li>
+<li><strong>Prometheus Metric Telemetry</strong>: Real-time export of queue depths, waiting times, and quota borrowing metrics.</li>
+</ul>
+<h3 id="13-deep-dive-component-breakdown">1.3 Deep-Dive Component Breakdown</h3>
+<ul>
+<li><strong>Kueue Controller</strong>: Job-level admission controller managing multi-tenant queues, cohort resource borrowing, and preemption policies.</li>
+<li><strong>Volcano Custom Scheduler</strong>: High-performance batch scheduler replacing <code>kube-scheduler</code> for gang scheduling, task topology awareness, and fair-share scheduling.</li>
+<li><strong>ClusterQueue &amp; LocalQueue</strong>: Hierarchical queue abstractions separating cluster-wide administrative quota allocations from namespace-scoped developer queues.</li>
+<li><strong>PodGroup CRD</strong>: Logical grouping of co-dependent pods requiring all-or-nothing scheduling and coordinated failure handling.</li>
+</ul>
+<h3 id="14-under-the-hood-mechanics-failure-modes">1.4 Under-The-Hood Mechanics &amp; Failure Modes</h3>
+<ul>
+<li><strong>Deadlock from Non-Gang Schedulers</strong>: Using standard <code>kube-scheduler</code> on multi-node distributed training jobs can lead to deadlocks where Job A claims 8 GPUs on Node 1 and Job B claims 8 GPUs on Node 2, leaving both jobs stuck in pending states indefinitely.</li>
+<li><strong>Kueue Workload Unmanaged Job Leaks</strong>: If a batch job is deleted manually without deleting its corresponding Kueue <code>Workload</code> object, quota reservations may remain locked in the <code>ClusterQueue</code>, blocking subsequent jobs from admission.</li>
+<li><strong>Cohort Borrowing Preemption Storms</strong>: When an idle cohort reclaims borrowed quota, aggressive preemption can abruptly terminate dozens of running batch jobs. Setting <code>reclaimWithinCohort: LowerPriority</code> ensures only lower-priority borrowed workloads are preempted.</li>
+</ul>
 <hr />
 <h2 id="2-annotated-production-yaml-anatomy-field-reference">2. Annotated Production YAML Anatomy &amp; Field Reference</h2>
 <p>Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:</p>

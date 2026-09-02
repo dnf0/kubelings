@@ -1036,6 +1036,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1726,6 +1776,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1869,7 +1969,7 @@
 </div>
 <hr />
 <h2 id="1-architectural-overview-control-plane-mechanics">1. Architectural Overview &amp; Control Plane Mechanics</h2>
-<p>In Kubernetes, <strong>Observability, Debugging &amp; Production Troubleshooting</strong> is reconciled through declarative state loops managed by the control plane:</p>
+<p>In Kubernetes, <strong>Observability, Debugging &amp; Production Troubleshooting</strong> is reconciled through declarative state loops managed by the control plane and node daemons:</p>
 <pre class="mermaid"><code>flowchart TD
     START(["🚨 Pod Failure Detected"]) --&gt; STATUS{"Check Pod Phase"}
 
@@ -1885,7 +1985,51 @@
     STATUS --&gt;|Running but No Traffic| READY{"Readiness Check"}
     READY --&gt;|Ready: False| PROBE["Fix failing Readiness Probe / Backend Health endpoint"]
     READY --&gt;|Ready: True| NET["Verify Service Selector matches Pod Labels &amp; EndpointSlice"]</code></pre>
-<p>When resources in this chapter are submitted, the <code>kube-apiserver</code> validates the OpenAPI v3 schema, stores state in <code>etcd</code>, and triggers the responsible controllers or node daemons to reconcile actual cluster state.</p>
+<h3 id="11-architectural-flow-lifecycle-walkthrough">1.1 Architectural Flow &amp; Lifecycle Walkthrough</h3>
+<ol>
+<li><strong>Failure Signal Detection</strong>: An alert fires or a Pod fails to enter <code>Running</code> state. The engineer initiates diagnostic triage by querying <code>kubectl get pod -o wide</code> and inspecting the Pod phase and status conditions.</li>
+<li><strong>Phase 1: Pending Phase Diagnostics</strong>:</li>
+<li>The Pod has not been assigned a node (<code>spec.nodeName</code> is empty).</li>
+<li>Check scheduler events via <code>kubectl describe pod &lt;name&gt;</code>.</li>
+<li>If <code>0/10 nodes available: Insufficient cpu/memory</code>: Cluster is out of allocatable capacity &rarr; Scale worker nodes or decrease container resource requests.</li>
+<li>If <code>0/10 nodes available: node(s) had untolerated taint</code>: Add matching toleration to <code>spec.tolerations</code> or fix node taints.</li>
+<li><strong>Phase 2: CrashLoopBackOff Diagnostics</strong>:</li>
+<li>The container starts but exits repeatedly with a non-zero exit code. Kubelet applies exponential restart backoff (10s, 20s, 40s, up to 300s).</li>
+<li>Inspect previous container logs: <code>kubectl logs &lt;pod&gt; --previous</code>.</li>
+<li>Analyze container termination exit code in <code>kubectl describe pod &lt;name&gt;</code>:<ul>
+<li><strong>Exit 137 (Fatal error signal 9 <code>SIGKILL</code>)</strong>: The Linux kernel Out-Of-Memory (OOM) killer killed the container (<code>OOMKilled: true</code>). Increase <code>resources.limits.memory</code> or fix application memory leaks.</li>
+<li><strong>Exit 1 / 2</strong>: Application runtime crash, uncaught exception, or missing configuration file.</li>
+<li><strong>Exit 127 / 128</strong>: Container entrypoint binary not found or library dependency missing in image.</li>
+</ul>
+</li>
+<li><strong>Phase 3: ImagePullBackOff Diagnostics</strong>:</li>
+<li>Kubelet fails to download the container image.</li>
+<li>Verify image tag existence in the remote container registry.</li>
+<li>Verify registry authentication Secret (<code>imagePullSecrets</code>) and IAM repository permissions.</li>
+<li><strong>Phase 4: Running but No Traffic (Readiness Failure)</strong>:</li>
+<li>The Pod is <code>Running</code> but receives zero HTTP traffic from its Service.</li>
+<li>Inspect <code>.status.conditions[Type=Ready]</code>. If <code>Ready: False</code>, the <code>readinessProbe</code> is failing &rarr; Inspect health check endpoint.</li>
+<li>If <code>Ready: True</code>, verify that <code>Service.spec.selector</code> labels match <code>Pod.metadata.labels</code> exactly, and confirm <code>kubectl get endpointslices</code> contains the Pod IP.</li>
+</ol>
+<h3 id="12-serialization-protocols-communication-pathways">1.2 Serialization, Protocols &amp; Communication Pathways</h3>
+<ul>
+<li><strong>Linux Kernel Process Exit Codes</strong>: Standard Unix exit status codes ($128 + \text{Signal Number}$) returned via <code>waitpid()</code> system call to the container runtime and passed to kubelet over CRI gRPC.</li>
+<li><strong>Kubelet <code>/logs</code> Streaming API</strong>: Kubelet streams stdout/stderr log files directly from <code>/var/log/pods/</code> to the API server and <code>kubectl</code> over WebSocket or chunked HTTP/2 streams.</li>
+<li><strong>Kubernetes Events API</strong>: Transient warning and error events (<code>v1.Event</code>) are emitted by controllers and kubelet to <code>kube-apiserver</code> as structured JSON/Protobuf messages.</li>
+</ul>
+<h3 id="13-deep-dive-component-breakdown">1.3 Deep-Dive Component Breakdown</h3>
+<ul>
+<li><strong>Kubelet PLEG (Pod Lifecycle Event Generator)</strong>: Subsystem monitoring container lifecycle state changes via runtime relisting and Linux inotify events.</li>
+<li><strong>Linux Kernel OOM Killer</strong>: Low-memory subsystem terminating processes when physical RAM + swap is exhausted, prioritizing processes with highest <code>/proc/[pid]/oom_score</code>.</li>
+<li><strong>ImagePullBackOff State Machine</strong>: Kubelet backoff algorithm doubling pull retry intervals from 10s up to a maximum of 300s upon failed registry pulls.</li>
+<li><strong>EndpointSlice Sync Loop</strong>: Network control loop removing unready Pod IPs from service routing tables within milliseconds of readiness probe failure.</li>
+</ul>
+<h3 id="14-under-the-hood-mechanics-failure-modes">1.4 Under-The-Hood Mechanics &amp; Failure Modes</h3>
+<ul>
+<li><strong>Silent OOMKilled without Logs</strong>: When a process exceeds <code>limits.memory</code>, the Linux kernel dispatches an uncatchable <code>SIGKILL</code> (signal 9). The application cannot execute shutdown hooks or flush log buffers, leaving the container log file empty. Always verify <code>kubectl describe pod</code> for <code>OOMKilled: true</code> and <code>Exit Code: 137</code>.</li>
+<li><strong>Ephemeral Storage Eviction</strong>: If an application writes unbounded log files or temporary data to the root container filesystem or <code>emptyDir</code> volumes exceeding <code>limits.ephemeral-storage</code>, kubelet evicts the Pod with <code>Evicted: Pod ephemeral local storage usage exceeds limit</code>.</li>
+<li><strong>Zombie / Stale DNS Caching</strong>: Applications that resolve backend service DNS once at boot and cache the IP indefinitely will fail to connect when backend Pods are replaced during rolling updates. Ensure JVM/Node/Go DNS TTLs are configured to low values (e.g., 5-10s).</li>
+</ul>
 <hr />
 <h2 id="2-annotated-production-yaml-anatomy-field-reference">2. Annotated Production YAML Anatomy &amp; Field Reference</h2>
 <p>Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:</p>

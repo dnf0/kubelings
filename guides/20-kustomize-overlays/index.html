@@ -1092,6 +1092,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1726,6 +1776,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1868,7 +1968,7 @@
 </div>
 <hr />
 <h2 id="1-architectural-overview-control-plane-mechanics">1. Architectural Overview &amp; Control Plane Mechanics</h2>
-<p>In Kubernetes, <strong>Declarative Customization with Kustomize</strong> is reconciled through declarative state loops managed by the control plane:</p>
+<p>In Kubernetes, <strong>Declarative Customization with Kustomize</strong> is reconciled through declarative state loops managed by the control plane and node daemons:</p>
 <pre class="mermaid"><code>flowchart LR
     subgraph BaseLayer["Base Configuration (Dry, Reusable)"]
         BASE_K["base/kustomization.yaml"]
@@ -1893,7 +1993,38 @@
         FINAL_YAML["Production Declarative Manifests&lt;br/&gt;&lt;i&gt;(Prefixes, Patches, Hash-suffixed ConfigMaps)&lt;/i&gt;"]
         ENGINE --&gt; FINAL_YAML
     end</code></pre>
-<p>When resources in this chapter are submitted, the <code>kube-apiserver</code> validates the OpenAPI v3 schema, stores state in <code>etcd</code>, and triggers the responsible controllers or node daemons to reconcile actual cluster state.</p>
+<h3 id="11-architectural-flow-lifecycle-walkthrough">1.1 Architectural Flow &amp; Lifecycle Walkthrough</h3>
+<ol>
+<li><strong>Base Configuration Parsing</strong>: Kustomize reads <code>base/kustomization.yaml</code> and loads the declarative source manifests (<code>deployment.yaml</code>, <code>service.yaml</code>). The base represents DRY, reusable, environment-agnostic infrastructure definitions.</li>
+<li><strong>Overlay Target Selection</strong>: The developer or CI pipeline targets a specific environment overlay directory (e.g. <code>kustomize build overlays/production</code>).</li>
+<li><strong>Strategic Merge &amp; JSON 6902 Patch Evaluation</strong>: Kustomize evaluates the overlay's <code>kustomization.yaml</code>:</li>
+<li><strong>Strategic Merge Patches</strong>: Merges partial YAML snippets based on Kubernetes struct tags (e.g., updating <code>spec.replicas: 10</code> or modifying container memory limits while preserving all other base fields).</li>
+<li><strong>JSON 6902 Patches</strong>: Applies precise RFC 6902 JSON mutation operations (<code>add</code>, <code>replace</code>, <code>remove</code>) targeting specific array indices or nested keys.</li>
+<li><strong>Cross-Cutting Transformer Execution</strong>:</li>
+<li><code>namePrefix</code> &amp; <code>nameSuffix</code>: Prepends/appends environment identifiers (e.g., <code>prod-web-service</code>).</li>
+<li><code>commonLabels</code> &amp; <code>commonAnnotations</code>: Injects standardized telemetry, ownership, and Git commit metadata across all output resources and selectors.</li>
+<li><code>namespace</code>: Overrides target namespaces across all resources.</li>
+<li><strong>ConfigMap &amp; Secret Hash Generation</strong>: For resources declared under <code>configMapGenerator</code> or <code>secretGenerator</code>, Kustomize appends a deterministic content-hash suffix to the resource name (e.g. <code>app-config-8f9h2k4m5b</code>). It automatically updates all <code>Pod.spec.volumes[*].configMap.name</code> references to match, triggering zero-downtime rolling updates whenever configuration changes.</li>
+</ol>
+<h3 id="12-serialization-protocols-communication-pathways">1.2 Serialization, Protocols &amp; Communication Pathways</h3>
+<ul>
+<li><strong>Strategic Merge Patch (SMP) Algorithm</strong>: Kubernetes-aware YAML patching engine that utilizes Go struct tags (<code>patchStrategy: merge</code>, <code>patchMergeKey: name</code>) to intelligently merge slices of objects (like container lists) by key instead of replacing the entire array.</li>
+<li><strong>JSON 6902 Patch Protocol</strong>: Standardized JSON patch specifications executed in-memory against YAML node trees.</li>
+<li><strong>SHA-256 Content Hashing</strong>: Cryptographic hash calculation executed on serialized ConfigMap/Secret key-value pairs to generate immutable 10-character resource suffixes.</li>
+</ul>
+<h3 id="13-deep-dive-component-breakdown">1.3 Deep-Dive Component Breakdown</h3>
+<ul>
+<li><strong>Kustomize Engine</strong>: Pure declarative configuration engine built into <code>kubectl</code> (<code>kubectl apply -k .</code>) and available as a standalone CLI.</li>
+<li><strong>Resource Accumulator</strong>: In-memory tree structure tracking all loaded resources, overlays, components, and transformers.</li>
+<li><strong>ConfigMapGenerator / SecretGenerator</strong>: Built-in generators creating versioned, immutable configuration objects with automatic reference rewriting.</li>
+<li><strong>Kustomize Transformers</strong>: Pipeline plugins executing cross-cutting modifications (Labels, Annotations, Namespaces, NamePrefix, Images).</li>
+</ul>
+<h3 id="14-under-the-hood-mechanics-failure-modes">1.4 Under-The-Hood Mechanics &amp; Failure Modes</h3>
+<ul>
+<li><strong>Strategic Merge vs JSON Patch Collisions</strong>: Custom Resource Definitions (CRDs) lack native Kubernetes Go struct merge tags; applying a Strategic Merge Patch to a CRD array replaces the entire array instead of merging items. CRD modifications must use explicit JSON 6902 patches.</li>
+<li><strong>Stale ConfigMap Garbage Accumulation</strong>: Generating hash-suffixed ConfigMaps on every commit creates new ConfigMap objects on the cluster. Unless automated pruning (via ArgoCD or <code>kubectl apply --prune</code>) is configured, obsolete ConfigMaps accumulate indefinitely in <code>etcd</code>.</li>
+<li><strong>Selector Immutability Violations with <code>commonLabels</code></strong>: Changing <code>commonLabels</code> in an overlay modifies <code>spec.selector.matchLabels</code> on Deployments. Because Kubernetes Deployment selectors are immutable after creation, applying the modified overlay fails with <code>field is immutable</code> until the Deployment is deleted and recreated.</li>
+</ul>
 <hr />
 <h2 id="2-annotated-production-yaml-anatomy-field-reference">2. Annotated Production YAML Anatomy &amp; Field Reference</h2>
 <p>Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:</p>

@@ -467,6 +467,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1726,6 +1776,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1870,7 +1970,7 @@
 </div>
 <hr />
 <h2 id="1-architectural-overview-control-plane-mechanics">1. Architectural Overview &amp; Control Plane Mechanics</h2>
-<p>In Kubernetes, <strong>Kubernetes Core Workloads &amp; Pods</strong> is reconciled through declarative state loops managed by the control plane:</p>
+<p>In Kubernetes, <strong>Kubernetes Core Workloads &amp; Pods</strong> is reconciled through declarative state loops managed by the control plane and node daemons:</p>
 <pre class="mermaid"><code>flowchart TD
     subgraph ControlPlane["Control Plane (API &amp; Scheduling)"]
         API["kube-apiserver&lt;br/&gt;&lt;code&gt;v1/pods&lt;/code&gt;"]
@@ -1899,7 +1999,35 @@
     INIT -.-&gt;|Exit 0 Success| SIDECAR
     MAIN &lt;--&gt;|Mount| VOL
     SIDECAR &lt;--&gt;|Mount| VOL</code></pre>
-<p>When resources in this chapter are submitted, the <code>kube-apiserver</code> validates the OpenAPI v3 schema, stores state in <code>etcd</code>, and triggers the responsible controllers or node daemons to reconcile actual cluster state.</p>
+<h3 id="11-architectural-flow-lifecycle-walkthrough">1.1 Architectural Flow &amp; Lifecycle Walkthrough</h3>
+<ol>
+<li><strong>Manifest Ingestion &amp; OpenAPI Deserialization</strong>: The user or CI client submits a YAML Pod manifest via <code>kubectl apply</code>. The <code>kube-apiserver</code> deserializes the YAML into native Go structs (<code>v1.Pod</code>), validates the fields against OpenAPI v3 schemas, and applies admission checks.</li>
+<li><strong>Persistence in etcd</strong>: Upon passing validation, <code>kube-apiserver</code> encodes the Go struct into a compact <strong>Protobuf binary payload</strong> and executes an atomic MVCC transaction to persist the record at key <code>/registry/pods/{namespace}/{name}</code> in <code>etcd3</code>.</li>
+<li><strong>Scheduling Watch &amp; Node Binding</strong>: <code>kube-scheduler</code> maintains an HTTP/2 streaming watch on unassigned Pods (<code>spec.nodeName == ""</code>). It filters and scores candidate nodes, selecting the optimal worker node, and writes an asynchronous <code>Binding</code> subresource back to the API server.</li>
+<li><strong>Kubelet Sync Loop &amp; PLEG</strong>: The target worker node's <code>kubelet</code> detects the scheduled Pod via its <code>PodConfig</code> channel. The Pod Lifecycle Event Generator (PLEG) detects state divergence and initiates container reconciliation.</li>
+<li><strong>CRI gRPC Sandbox Creation</strong>: <code>kubelet</code> connects to the Container Runtime Interface (CRI) engine (<code>containerd</code> or <code>CRI-O</code>) via a local Unix Domain Socket (<code>/run/containerd/containerd.sock</code>) over <strong>gRPC</strong>. It issues a <code>RunPodSandbox</code> gRPC request, prompting <code>containerd</code> to spawn the Linux <strong>pause container</strong> (<code>CLONE_NEWNET</code>, <code>CLONE_NEWUTS</code>, <code>CLONE_NEWIPC</code>).</li>
+<li><strong>Sequential Init Container Execution</strong>: <code>kubelet</code> invokes <code>CreateContainer</code> and <code>StartContainer</code> over CRI gRPC for each init container in strict sequential order. Each init container must terminate with exit code 0 before subsequent containers are scheduled.</li>
+<li><strong>Main &amp; Sidecar Container Startup</strong>: <code>kubelet</code> initiates the application and sidecar containers concurrently within the shared network and IPC namespaces, attaching mounted storage volumes (<code>emptyDir</code>, <code>ConfigMap</code>, or persistent block mounts).</li>
+</ol>
+<h3 id="12-serialization-protocols-communication-pathways">1.2 Serialization, Protocols &amp; Communication Pathways</h3>
+<ul>
+<li><strong>gRPC over Unix Domain Sockets (UDS)</strong>: <code>kubelet</code> communicates with <code>containerd</code> via <code>/run/containerd/containerd.sock</code> using the <code>runtime.v1.RuntimeService</code> gRPC interface.</li>
+<li><strong>Protobuf Serialization</strong>: Data exchanged over CRI gRPC and stored within <code>etcd3</code> is serialized using Protocol Buffers (proto3) to eliminate JSON parsing overhead and minimize CPU/memory serialization latency.</li>
+<li><strong>JSON/YAML Deserialization &amp; Scheme Conversion</strong>: <code>kubectl</code> transmits JSON payloads over HTTP/2 with TLS 1.3 to <code>kube-apiserver</code>. The API server uses <code>k8s.io/apimachinery</code> codec schemes to convert external versions (<code>v1</code>) into internal unstructured objects before validation.</li>
+</ul>
+<h3 id="13-deep-dive-component-breakdown">1.3 Deep-Dive Component Breakdown</h3>
+<ul>
+<li><strong>kube-apiserver</strong>: Stateless HTTP REST gateway providing OpenAPI v3 schema validation, authentication (AuthN), authorization (AuthZ), admission mutation/validation, and <code>etcd</code> persistence.</li>
+<li><strong>kubelet &amp; PLEG</strong>: Node management agent running as a systemd service. PLEG (Pod Lifecycle Event Generator) polls runtime relists and container events to maintain internal active pod caches.</li>
+<li><strong>Pause Container</strong>: A minimal C program (<code>pause.c</code>) that sleeps indefinitely (<code>pause()</code>), holding the Linux network (<code>CLONE_NEWNET</code>), IPC (<code>CLONE_NEWIPC</code>), and UTS namespaces open for all co-located containers in the Pod.</li>
+<li><strong>Shared Volume Subsystem</strong>: Linux VFS bind-mounts configured by kubelet's Volume Manager, enabling atomic inter-container data exchange via memory-backed <code>tmpfs</code> or host filesystem mounts.</li>
+</ul>
+<h3 id="14-under-the-hood-mechanics-failure-modes">1.4 Under-The-Hood Mechanics &amp; Failure Modes</h3>
+<ul>
+<li><strong>cgroups v2 Enforcement</strong>: Resource limits translate directly to Linux control group v2 files: <code>spec.containers[*].resources.limits.cpu</code> sets <code>cpu.max</code> (quota and period in microseconds), while <code>limits.memory</code> sets <code>memory.max</code> (hard memory ceiling).</li>
+<li><strong>OOM Killer &amp; <code>oom_score_adj</code></strong>: The Linux kernel Out-Of-Memory (OOM) killer uses <code>/proc/[pid]/oom_score_adj</code>. Kubelet assigns <code>-997</code> to Guaranteed QoS Pods, while BestEffort Pods receive <code>1000</code>, making BestEffort workloads the first candidates for termination under memory exhaustion.</li>
+<li><strong>Init Container Failure Modes</strong>: If any init container exits with non-zero status and <code>restartPolicy: Always</code>, kubelet restarts the failed init container using exponential backoff (10s, 20s, up to 5 minutes), blocking application startup indefinitely.</li>
+</ul>
 <hr />
 <h2 id="2-annotated-production-yaml-anatomy-field-reference">2. Annotated Production YAML Anatomy &amp; Field Reference</h2>
 <p>Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:</p>

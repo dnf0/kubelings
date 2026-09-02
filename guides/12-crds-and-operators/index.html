@@ -1008,6 +1008,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1726,6 +1776,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1868,7 +1968,7 @@
 </div>
 <hr />
 <h2 id="1-architectural-overview-control-plane-mechanics">1. Architectural Overview &amp; Control Plane Mechanics</h2>
-<p>In Kubernetes, <strong>Custom Resources, CRDs &amp; Operators</strong> is reconciled through declarative state loops managed by the control plane:</p>
+<p>In Kubernetes, <strong>Custom Resources, CRDs &amp; Operators</strong> is reconciled through declarative state loops managed by the control plane and node daemons:</p>
 <pre class="mermaid"><code>flowchart TD
     subgraph OpenAPIValidation["1. Schema Registration"]
         CRD["CustomResourceDefinition (CRD)&lt;br/&gt;&lt;code&gt;group: database.example.com&lt;/code&gt;&lt;br/&gt;&lt;code&gt;kind: PostgreSQLCluster&lt;/code&gt;"]
@@ -1896,7 +1996,36 @@
         RECONCILER --&gt;|Reports State| STATUS
         STATUS --&gt; APISERVER
     end</code></pre>
-<p>When resources in this chapter are submitted, the <code>kube-apiserver</code> validates the OpenAPI v3 schema, stores state in <code>etcd</code>, and triggers the responsible controllers or node daemons to reconcile actual cluster state.</p>
+<h3 id="11-architectural-flow-lifecycle-walkthrough">1.1 Architectural Flow &amp; Lifecycle Walkthrough</h3>
+<ol>
+<li><strong>CRD Registration &amp; OpenAPI Schema Ingestion</strong>: An administrator submits a <code>CustomResourceDefinition</code> (CRD) object (e.g. <code>postgresqlclusters.database.example.com</code>). <code>kube-apiserver</code> registers the new REST endpoints (<code>/apis/database.example.com/v1/...</code>), validates the embedded OpenAPI v3 structural schema, and establishes storage mappings in <code>etcd</code>.</li>
+<li><strong>Custom Resource (CR) Ingestion</strong>: A developer submits a Custom Resource instance (e.g., <code>kind: PostgreSQLCluster</code>, <code>spec: { replicas: 3, storageGB: 50 }</code>). The API server validates the CR against the CRD's OpenAPI schema, rejects any malformed types, and stores the object.</li>
+<li><strong>Operator Informer Watch &amp; Queueing</strong>: The Operator process (written in Go with <code>controller-runtime</code>, Python with <code>Kopf</code>, or Rust with <code>kube-rs</code>) runs inside the cluster. Its <code>SharedIndexInformer</code> receives an <code>ADDED</code> or <code>MODIFIED</code> watch event from <code>kube-apiserver</code> and enqueues the resource key into a <code>RateLimitingWorkQueue</code>.</li>
+<li><strong>Reconciliation Loop Execution</strong>: The operator reconciles desired vs actual state:</li>
+<li>Queries the cluster for child resources owned by the CR (StatefulSets, Services, ConfigMaps, Secrets).</li>
+<li>If child resources are missing or drift from the CR spec, the operator issues API calls to create or update them.</li>
+<li>Executes out-of-band operational tasks (e.g., running <code>pg_basebackup</code> or initializing database replication).</li>
+<li><strong>Status &amp; Condition Reporting</strong>: The operator issues an HTTP <code>PATCH</code> to the CR's <code>/status</code> subresource, updating <code>.status.conditions</code> (e.g., <code>Type: Ready, Status: True, Message: "Primary and 2 standbys active"</code>) and increments <code>.status.observedGeneration</code>.</li>
+</ol>
+<h3 id="12-serialization-protocols-communication-pathways">1.2 Serialization, Protocols &amp; Communication Pathways</h3>
+<ul>
+<li><strong>OpenAPI v3 JSON Schema Validation</strong>: The API server enforces schema contracts defined in the CRD spec (<code>openAPIV3Schema</code>) before persisting custom resources.</li>
+<li><strong>Server-Side Apply (SSA) YAML/JSON Protocol</strong>: Modern operators use Server-Side Apply (<code>PATCH</code> with <code>Content-Type: application/apply-patch+yaml</code>), specifying <code>fieldManager: postgres-operator</code> to declare explicit field ownership and detect conflicting mutations.</li>
+<li><strong>Dynamic Watch JSON Streams</strong>: Custom resources are streamed over HTTP/2 chunked streams to client-go informers using JSON or Protobuf (for CRDs supporting Protobuf serialization).</li>
+</ul>
+<h3 id="13-deep-dive-component-breakdown">1.3 Deep-Dive Component Breakdown</h3>
+<ul>
+<li><strong>CustomResourceDefinition (CRD)</strong>: Kubernetes extension mechanism defining new resource types, versions, validation schemas, and subresources (<code>/status</code>, <code>/scale</code>).</li>
+<li><strong>Operator / Custom Controller</strong>: Domain-specific software agent packaging operational knowledge (backup, failover, upgrades, scaling) for complex stateful applications.</li>
+<li><strong>OwnerReferences &amp; Garbage Collection</strong>: Child resources are stamped with <code>metadata.ownerReferences</code> pointing to the parent CR. When the parent CR is deleted, the Kubernetes Garbage Collector automatically deletes all child resources via cascading deletion.</li>
+<li><strong>Finalizers (<code>metadata.finalizers</code>)</strong>: Asynchronous pre-deletion hooks (e.g., <code>database.example.com/clean-cloud-disks</code>) that prevent immediate object deletion in <code>etcd</code> until the operator completes external teardown tasks and removes the finalizer string.</li>
+</ul>
+<h3 id="14-under-the-hood-mechanics-failure-modes">1.4 Under-The-Hood Mechanics &amp; Failure Modes</h3>
+<ul>
+<li><strong>Deadlock on Stuck Finalizers</strong>: If an operator crashes or is uninstalled while custom resources remain with active <code>metadata.finalizers</code>, attempts to delete the custom resources hang indefinitely in <code>Terminating</code> state until finalizers are manually patched out.</li>
+<li><strong>Infinite Reconciliation Loops</strong>: If an operator modifies a field in <code>.spec</code> during reconciliation (instead of <code>.status</code>), the modification triggers a new <code>MODIFIED</code> watch event, causing the operator to endlessly re-reconcile itself and saturate API server resources.</li>
+<li><strong>CRD Version Conversion Webhook Timeouts</strong>: When supporting multiple CRD API versions (<code>v1alpha1</code>, <code>v1</code>), version conversion webhooks must deserialize and translate schemas. If the conversion webhook service is unreachable, all API operations across older versions fail with <code>ConversionWebhookFailed</code>.</li>
+</ul>
 <hr />
 <h2 id="2-annotated-production-yaml-anatomy-field-reference">2. Annotated Production YAML Anatomy &amp; Field Reference</h2>
 <p>Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:</p>

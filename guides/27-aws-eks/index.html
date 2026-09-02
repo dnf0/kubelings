@@ -1490,6 +1490,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1726,6 +1776,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1868,7 +1968,7 @@
 </div>
 <hr />
 <h2 id="1-architectural-overview-control-plane-mechanics">1. Architectural Overview &amp; Control Plane Mechanics</h2>
-<p>In Kubernetes, <strong>AWS EKS &amp; Cloud Architecture</strong> is reconciled through declarative state loops managed by the control plane:</p>
+<p>In Kubernetes, <strong>AWS EKS &amp; Cloud Architecture</strong> is reconciled through declarative state loops managed by the control plane and node daemons:</p>
 <pre class="mermaid"><code>flowchart TD
     subgraph IAM_ControlPlane["AWS IAM &amp; STS Control Plane"]
         OIDC["EKS OIDC Provider"]
@@ -1898,7 +1998,43 @@
 
     POD &lt;--&gt;|Assumes Role via Token| STS
     POD &lt;--&gt;|Authorized API Calls| S3[("Amazon S3 / DynamoDB")]</code></pre>
-<p>When resources in this chapter are submitted, the <code>kube-apiserver</code> validates the OpenAPI v3 schema, stores state in <code>etcd</code>, and triggers the responsible controllers or node daemons to reconcile actual cluster state.</p>
+<h3 id="11-architectural-flow-lifecycle-walkthrough">1.1 Architectural Flow &amp; Lifecycle Walkthrough</h3>
+<ol>
+<li><strong>EKS OIDC Provider &amp; IAM Trust Establishment</strong>: An AWS administrator creates an IAM OpenID Connect (OIDC) identity provider for the EKS cluster. An IAM Role is provisioned with a Trust Policy granting <code>sts:AssumeRoleWithWebIdentity</code> restricted to a specific Kubernetes ServiceAccount (<code>system:serviceaccount:default:my-app-sa</code>).</li>
+<li><strong>Projected Token Volume Injection (IRSA / EKS Pod Identity)</strong>:</li>
+<li>When a Pod referencing <code>my-app-sa</code> is submitted, the <strong>EKS Pod Mutating Webhook</strong> intercepts the Pod creation.</li>
+<li>Injects an ephemeral, cryptographically signed OIDC JWT token into <code>/var/run/secrets/eks.amazonaws.com/serviceaccount/token</code>.</li>
+<li>Injects environment variables: <code>AWS_ROLE_ARN</code> and <code>AWS_WEB_IDENTITY_TOKEN_FILE</code>.</li>
+<li><strong>AWS STS Token Exchange</strong>:</li>
+<li>The application AWS SDK inside the container reads the projected JWT token file.</li>
+<li>Calls the AWS Security Token Service (STS) API: <code>sts:AssumeRoleWithWebIdentity</code>.</li>
+<li>AWS STS verifies the token signature against the EKS OIDC discovery endpoint (<code>https://oidc.eks.amazonaws.com/id/...</code>).</li>
+<li>STS issues temporary AWS credentials (AccessKeyId, SecretAccessKey, SessionToken) with 1-hour validity directly to the SDK in memory.</li>
+<li><strong>AWS Load Balancer Controller IP-Mode Ingress Routing</strong>:</li>
+<li>The AWS Load Balancer Controller watches <code>Ingress</code> resources annotated with <code>alb.ingress.kubernetes.io/target-type: ip</code>.</li>
+<li>Directly configures AWS Application Load Balancer (ALB) Target Groups with individual Pod private IP addresses allocated by the <strong>AWS VPC CNI</strong>, completely bypassing NodePort hops.</li>
+<li><strong>Node Autoscaling via Karpenter</strong>:</li>
+<li>When pending pods emerge, Karpenter queries EC2 Fleet APIs, calculates the most cost-effective instance types (Graviton, Spot, x86), launches the EC2 instances, and registers them directly with the EKS cluster in under 45 seconds.</li>
+</ol>
+<h3 id="12-serialization-protocols-communication-pathways">1.2 Serialization, Protocols &amp; Communication Pathways</h3>
+<ul>
+<li><strong>AWS Signature Version 4 (SigV4) Protocol</strong>: Application SDKs and controllers sign all HTTPS REST requests to AWS APIs using HMAC-SHA256 cryptographic signatures.</li>
+<li><strong>OIDC Discovery JSON &amp; JWKS Keys</strong>: EKS exposes public JSON Web Key Sets (JWKS) over HTTPS enabling AWS STS to verify cluster-signed JWT tokens.</li>
+<li><strong>AWS VPC CNI IPAM IPC</strong>: Local IP Address Management daemon (<code>aws-k8s-cni</code>) uses Unix domain socket IPC to communicate with kubelet and assign ENI secondary IP addresses directly to Pod network namespaces.</li>
+</ul>
+<h3 id="13-deep-dive-component-breakdown">1.3 Deep-Dive Component Breakdown</h3>
+<ul>
+<li><strong>IAM Roles for Service Accounts (IRSA)</strong>: Cryptographic identity federation mapping Kubernetes ServiceAccounts directly to AWS IAM Roles without static long-lived credentials.</li>
+<li><strong>AWS Load Balancer Controller</strong>: Out-of-tree controller managing AWS ALBs, NLBs, and Target Groups in response to Kubernetes Ingress and Service objects.</li>
+<li><strong>AWS VPC CNI (<code>amazon-vpc-cni-k8s</code>)</strong>: High-performance networking plugin allocating native AWS VPC IP addresses and Elastic Network Interfaces (ENIs) directly to Pods.</li>
+<li><strong>Karpenter</strong>: High-velocity node autoscaler communicating directly with AWS EC2 Fleet and Pricing APIs to provision optimal compute capacity.</li>
+</ul>
+<h3 id="14-under-the-hood-mechanics-failure-modes">1.4 Under-The-Hood Mechanics &amp; Failure Modes</h3>
+<ul>
+<li><strong>OIDC Audience Mismatch (<code>sts:AssumeRoleWithWebIdentity</code> Fails)</strong>: If the IAM Role Trust Policy specifies <code>aud: sts.amazonaws.com</code> but the projected token uses a custom audience, STS rejects the token exchange with <code>AccessDenied: An error occurred (InvalidIdentityToken)</code>.</li>
+<li><strong>VPC Subnet IP Address Exhaustion</strong>: In high-density clusters, the AWS VPC CNI assigns secondary IP addresses from the node's subnet. If the VPC subnet CIDR block runs out of available IPs, new Pods fail to launch with <code>FailedCreatePodSandBox: no IP addresses available in subnet</code>.</li>
+<li><strong>Target Group Registration Lag</strong>: If Pods become ready before the AWS Load Balancer Controller finishes registering their IPs in the ALB Target Group, early traffic receives HTTP 502 Bad Gateway errors. Configure a <code>readinessGate</code> (<code>target-health.alb.ingress.kubernetes.io</code>) on the Pod to prevent traffic routing until target registration health checks pass.</li>
+</ul>
 <hr />
 <h2 id="2-annotated-production-yaml-anatomy-field-reference">2. Annotated Production YAML Anatomy &amp; Field Reference</h2>
 <p>Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:</p>

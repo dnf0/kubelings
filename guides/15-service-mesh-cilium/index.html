@@ -1207,6 +1207,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1726,6 +1776,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1868,7 +1968,7 @@
 </div>
 <hr />
 <h2 id="1-architectural-overview-control-plane-mechanics">1. Architectural Overview &amp; Control Plane Mechanics</h2>
-<p>In Kubernetes, <strong>Service Mesh, eBPF &amp; Cilium</strong> is reconciled through declarative state loops managed by the control plane:</p>
+<p>In Kubernetes, <strong>Service Mesh, eBPF &amp; Cilium</strong> is reconciled through declarative state loops managed by the control plane and node daemons:</p>
 <pre class="mermaid"><code>flowchart TD
     subgraph LinuxKernel["Linux Kernel Datapath (eBPF Socket Layer)"]
         SOCKOPS["BPF sockops (Socket-level bypass)"]
@@ -1897,7 +1997,36 @@
     SOCKOPS --&gt;|WireGuard / IPsec Encryption| TC_BPF
     TC_BPF --&gt;|Direct Socket Read| APP_B
     SOCKOPS -.-&gt;|L7 Policy / Trace| HUBBLE</code></pre>
-<p>When resources in this chapter are submitted, the <code>kube-apiserver</code> validates the OpenAPI v3 schema, stores state in <code>etcd</code>, and triggers the responsible controllers or node daemons to reconcile actual cluster state.</p>
+<h3 id="11-architectural-flow-lifecycle-walkthrough">1.1 Architectural Flow &amp; Lifecycle Walkthrough</h3>
+<ol>
+<li><strong>Cilium Agent Initialization &amp; eBPF Program Loading</strong>: The <code>cilium-agent</code> DaemonSet boots on every worker node, mounts the BPF virtual filesystem (<code>/sys/fs/bpf</code>), and compiles modular C programs into eBPF bytecode using LLVM/Clang.</li>
+<li><strong>Socket Layer Attachment (<code>sockops</code>)</strong>: Cilium attaches eBPF programs to the Linux socket layer (<code>BPF_PROG_TYPE_SOCK_OPS</code>) and socket message filtering (<code>BPF_PROG_TYPE_SK_MSG</code>).</li>
+<li><strong>Short-Circuit Socket-to-Socket Datapath</strong>: When Pod A initiates an HTTP request to Pod B on the same node:</li>
+<li>Cilium's <code>sockops</code> eBPF program intercepts the <code>tcp_connect</code> system call.</li>
+<li>It records the socket tuple in an in-kernel BPF map (<code>cilium_sock_ops</code>).</li>
+<li>The outbound packet payload is redirected <strong>directly</strong> from Pod A's socket buffer (<code>sk_buff</code>) to Pod B's socket buffer in kernel memory, completely bypassing the TCP/IP stack, iptables, and virtual ethernet device (<code>veth</code>) packet processing overhead.</li>
+<li><strong>Cross-Node Encryption (WireGuard / IPsec)</strong>: If Pod B resides on a remote worker node, the kernel encapsulates the packet using in-kernel WireGuard or IPsec, encrypting the payload before transmission across the physical network.</li>
+<li><strong>Sidecarless L7 Proxying &amp; Hubble Observability</strong>: For Layer 7 policy enforcement (HTTP method/path filtering) or mTLS, Cilium redirects selected flows to an embedded, high-performance Envoy instance via eBPF. Hubble captures flow telemetry directly from kernel eBPF ring buffers without injecting sidecar containers.</li>
+</ol>
+<h3 id="12-serialization-protocols-communication-pathways">1.2 Serialization, Protocols &amp; Communication Pathways</h3>
+<ul>
+<li><strong>eBPF Kernel Ring Buffers (<code>BPF_MAP_TYPE_RINGBUF</code>)</strong>: Lockless, high-throughput memory-mapped ring buffers streaming network flow events from Linux kernel space to user-space Hubble daemons with zero memory copying.</li>
+<li><strong>WireGuard Protocol (Noise Protocol Framework)</strong>: Cryptographic UDP encapsulation operating over port 51871 utilizing Curve25519, ChaCha20-Poly1305, and BLAKE2s.</li>
+<li><strong>Envoy Go Extension APIs</strong>: High-speed IPC between Cilium C Go runtime and embedded Envoy proxies for L7 filtering.</li>
+</ul>
+<h3 id="13-deep-dive-component-breakdown">1.3 Deep-Dive Component Breakdown</h3>
+<ul>
+<li><strong>cilium-agent</strong>: Per-node daemon responsible for watching Kubernetes resources, compiling BPF programs, managing BPF maps, and driving local datapath routing.</li>
+<li><strong>cilium-operator</strong>: Cluster-wide controller managing IPAM (IP Address Management), CRD synchronization, and garbage collecting stale node allocations.</li>
+<li><strong>Hubble</strong>: Distributed networking and security observability platform providing L3/L4 and L7 real-time traffic flow visualization and metrics.</li>
+<li><strong>eBPF Maps (<code>/sys/fs/bpf/tc/globals/</code>)</strong>: In-kernel key-value data structures storing policy rules, connection tracking state, and endpoint routing tables.</li>
+</ul>
+<h3 id="14-under-the-hood-mechanics-failure-modes">1.4 Under-The-Hood Mechanics &amp; Failure Modes</h3>
+<ul>
+<li><strong>Kernel Version Incompatibility</strong>: Advanced eBPF features (like socket layer redirection and BPF LSM hooks) require Linux kernel 5.10+ or 6.1+. Running on older enterprise kernels (e.g. RHEL 7 / Linux 4.x) forces Cilium into fallback modes with reduced performance.</li>
+<li><strong>BPF Map Size Exhaustion</strong>: High-scale clusters with millions of concurrent TCP flows can exceed default <code>bpf-ct-global-any-max</code> limits, causing new connections to fail with <code>BPF map full</code>.</li>
+<li><strong>MTU Misconfiguration in Encapsulated Overlays</strong>: When using VXLAN/Geneve overlay tunneling without jumbo frames, failing to reduce the interface MTU by the encapsulation header size (50 bytes for VXLAN) leads to packet fragmentation and silent TCP timeouts for large HTTP payloads.</li>
+</ul>
 <hr />
 <h2 id="2-annotated-production-yaml-anatomy-field-reference">2. Annotated Production YAML Anatomy &amp; Field Reference</h2>
 <p>Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:</p>

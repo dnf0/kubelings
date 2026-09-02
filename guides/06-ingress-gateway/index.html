@@ -666,6 +666,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1726,6 +1776,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1868,7 +1968,7 @@
 </div>
 <hr />
 <h2 id="1-architectural-overview-control-plane-mechanics">1. Architectural Overview &amp; Control Plane Mechanics</h2>
-<p>In Kubernetes, <strong>Ingress &amp; Gateway API</strong> is reconciled through declarative state loops managed by the control plane:</p>
+<p>In Kubernetes, <strong>Ingress &amp; Gateway API</strong> is reconciled through declarative state loops managed by the control plane and node daemons:</p>
 <pre class="mermaid"><code>flowchart TD
     subgraph Internet["Public Traffic &amp; Edge Clients"]
         USER["Browser / HTTPS Client"]
@@ -1899,7 +1999,33 @@
         SVC1 --&gt; EP1
         SVC2 --&gt; EP2
     end</code></pre>
-<p>When resources in this chapter are submitted, the <code>kube-apiserver</code> validates the OpenAPI v3 schema, stores state in <code>etcd</code>, and triggers the responsible controllers or node daemons to reconcile actual cluster state.</p>
+<h3 id="11-architectural-flow-lifecycle-walkthrough">1.1 Architectural Flow &amp; Lifecycle Walkthrough</h3>
+<ol>
+<li><strong>Public DNS Resolution</strong>: An external internet client queries public DNS for <code>api.example.com</code>. DNS resolves to the public IPv4/IPv6 Elastic IP of the cloud infrastructure Load Balancer (AWS NLB, GCP Cloud LB, or Azure LB).</li>
+<li><strong>Layer 4 Load Balancer Distribution</strong>: The Cloud Load Balancer terminates or passes through TCP/TLS connections and distributes raw Layer 4 traffic across the cluster worker nodes hosting the Ingress Controller daemon.</li>
+<li><strong>Ingress Controller Proxying</strong>: The Ingress Controller (Envoy Proxy, NGINX, or Traefik) receives the TCP stream. It performs TLS termination using the X.509 certificate stored in a Kubernetes <code>Secret</code> (<code>tls.crt</code>/<code>tls.key</code>).</li>
+<li><strong>Dynamic Routing Table Evaluation</strong>: The proxy inspects the HTTP/1.1 <code>Host</code> header or HTTP/2 <code>:authority</code> pseudo-header and the URL path (e.g. <code>/v1/checkout</code>). It matches these against the compiled Ingress rules (<code>spec.rules[*].http.paths</code>).</li>
+<li><strong>Direct Pod Reverse-Proxying</strong>: The Ingress Controller bypasses intermediate <code>kube-proxy</code> ClusterIP hops by directly querying <code>EndpointSlice</code> IPs. It opens an upstream HTTP keep-alive connection directly to the selected application Pod (<code>10.244.2.40:8080</code>), streaming the HTTP request and piping the response back to the client.</li>
+</ol>
+<h3 id="12-serialization-protocols-communication-pathways">1.2 Serialization, Protocols &amp; Communication Pathways</h3>
+<ul>
+<li><strong>Envoy Dynamic xDS gRPC APIs</strong>: Modern ingress controllers use Envoy's Discovery Services (<code>LDS</code> for Listeners, <code>RDS</code> for Routes, <code>CDS</code> for Clusters, <code>EDS</code> for Endpoints) streaming Protobuf payloads over bidirectional gRPC over HTTP/2.</li>
+<li><strong>HTTP/1.1, HTTP/2 &amp; gRPC Upstream Wire Protocols</strong>: The ingress edge terminates external client protocols and negotiates ALPN (<code>h2</code>, <code>http/1.1</code>), forwarding requests upstream over persistent TCP connection pools.</li>
+<li><strong>OpenSSL / BoringSSL TLS Handshake</strong>: Server Name Indication (SNI) routing and TLS certificate verification executed during client cryptographic session establishment.</li>
+</ul>
+<h3 id="13-deep-dive-component-breakdown">1.3 Deep-Dive Component Breakdown</h3>
+<ul>
+<li><strong>Cloud Load Balancer (NLB/ALB)</strong>: Layer 4 high-throughput load balancer provisioned by the cloud controller manager in response to <code>Service.spec.type: LoadBalancer</code>.</li>
+<li><strong>Ingress Controller</strong>: Software reverse proxy running inside the cluster that continuously reconciles <code>networking.k8s.io/v1 Ingress</code> resources into low-level proxy configuration files or in-memory xDS trees.</li>
+<li><strong>TLS Secret Subsystem</strong>: PEM-encoded X.509 certificate chains and RSA/ECDSA private keys injected into proxy memory for dynamic SNI certificate matching.</li>
+<li><strong>Direct Upstream Endpoint Pool</strong>: In-memory proxy routing table maintained by subscribing to Kubernetes EndpointSlice changes to enable sub-millisecond route convergence.</li>
+</ul>
+<h3 id="14-under-the-hood-mechanics-failure-modes">1.4 Under-The-Hood Mechanics &amp; Failure Modes</h3>
+<ul>
+<li><strong>NGINX Reload Latency Spikes</strong>: Legacy Ingress controllers write text <code>nginx.conf</code> files and trigger <code>nginx -s reload</code> on every endpoint change. In high-churn clusters, frequent reloads exhaust worker process file descriptors and drop active client TCP connections.</li>
+<li><strong>Path Precedence Misconfigurations</strong>: Ingress paths default to <code>pathType: Prefix</code>. If a generic catch-all path (<code>/</code>) is evaluated ahead of a specific subpath (<code>/v1/checkout</code>), traffic may route to unintended default backends unless exact ordering and longest-prefix-match rules are applied.</li>
+<li><strong>Client IP Masking (SNAT)</strong>: When external traffic routes through intermediate NodePort hops, the node executes Source NAT (SNAT), replacing the client's public IP with the node's internal IP. Setting <code>service.spec.externalTrafficPolicy: Local</code> preserves the original client IP and avoids unnecessary cross-node hops.</li>
+</ul>
 <hr />
 <h2 id="2-annotated-production-yaml-anatomy-field-reference">2. Annotated Production YAML Anatomy &amp; Field Reference</h2>
 <p>Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:</p>

@@ -638,6 +638,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1726,6 +1776,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Architectural Overview &amp; Control Plane Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-architectural-flow-lifecycle-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Architectural Flow &amp; Lifecycle Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-serialization-protocols-communication-pathways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Serialization, Protocols &amp; Communication Pathways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deep-dive-component-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Deep-Dive Component Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-under-the-hood-mechanics-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Under-The-Hood Mechanics &amp; Failure Modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1869,7 +1969,7 @@
 </div>
 <hr />
 <h2 id="1-architectural-overview-control-plane-mechanics">1. Architectural Overview &amp; Control Plane Mechanics</h2>
-<p>In Kubernetes, <strong>Services &amp; Networking</strong> is reconciled through declarative state loops managed by the control plane:</p>
+<p>In Kubernetes, <strong>Services &amp; Networking</strong> is reconciled through declarative state loops managed by the control plane and node daemons:</p>
 <pre class="mermaid"><code>flowchart TD
     subgraph ClientLayer["Client Pods &amp; External Traffic"]
         CLIENT["Client Pod&lt;br/&gt;&lt;code&gt;10.244.1.15&lt;/code&gt;"]
@@ -1894,7 +1994,36 @@
     VIP --&gt;|DNAT Packet Load Balance| POD1
     VIP --&gt;|DNAT Packet Load Balance| POD2
     VIP --&gt;|DNAT Packet Load Balance| POD3</code></pre>
-<p>When resources in this chapter are submitted, the <code>kube-apiserver</code> validates the OpenAPI v3 schema, stores state in <code>etcd</code>, and triggers the responsible controllers or node daemons to reconcile actual cluster state.</p>
+<h3 id="11-architectural-flow-lifecycle-walkthrough">1.1 Architectural Flow &amp; Lifecycle Walkthrough</h3>
+<ol>
+<li><strong>Service Registration &amp; VIP Allocation</strong>: An operator creates a <code>v1/Service</code> with <code>spec.type: ClusterIP</code> and selector <code>app: payment-api</code>. <code>kube-apiserver</code> assigns an immutable Virtual IP (VIP) from the preconfigured CIDR block (e.g., <code>10.96.0.0/12</code>).</li>
+<li><strong>EndpointSlice Controller Reconciliation</strong>: The <code>EndpointSlice</code> controller inside <code>kube-controller-manager</code> queries the informer cache for all running Pods whose labels match <code>app: payment-api</code> and whose <code>status.conditions[Ready]</code> is <code>True</code>. It populates <code>discovery.k8s.io/v1 EndpointSlice</code> objects containing lists of direct Pod CNI IP addresses and ports.</li>
+<li><strong>CoreDNS A-Record Resolution</strong>: When a client Pod executes an HTTP request to <code>http://payment-api.default.svc.cluster.local</code>, the local Linux resolver sends a DNS query over UDP 53 to CoreDNS. CoreDNS responds with the Service ClusterIP VIP (<code>10.96.0.10</code>).</li>
+<li><strong>Kernel Datapath Packet Interception (<code>kube-proxy</code>)</strong>: The client container initiates a TCP SYN packet addressed to <code>10.96.0.10:80</code>. As the packet traverses the host kernel networking stack:</li>
+<li><strong>iptables Mode</strong>: Netfilter traverses the <code>KUBE-SERVICES</code> chain to <code>KUBE-SVC-XXX</code>, applying random probabilistic matching (<code>-m statistic --mode random --probability 0.33</code>) to select an endpoint, executing Destination NAT (DNAT) to rewrite the destination IP to the real Pod IP (<code>10.244.2.40:8080</code>).</li>
+<li><strong>IPVS Mode</strong>: The kernel IP Virtual Server (IPVS) module performs direct hash-table lookups (<code>ipset</code>) in $O(1)$ time complexity, routing the packet to the selected backend.</li>
+<li><strong>eBPF Mode (Cilium)</strong>: eBPF programs attached to the cgroup socket egress (<code>sockops</code>) rewrite the destination IP and port in the socket data structure before packets are even emitted to the network stack.</li>
+<li><strong>Direct CNI Pod Delivery</strong>: The rewritten IP packet traverses the overlay or direct routing CNI network (Calico, Cilium, AWS VPC CNI) directly to the target Pod's <code>veth</code> interface, where the application process processes the request and responds.</li>
+</ol>
+<h3 id="12-serialization-protocols-communication-pathways">1.2 Serialization, Protocols &amp; Communication Pathways</h3>
+<ul>
+<li><strong>DNS RFC 1035 UDP/TCP Wire Protocol</strong>: CoreDNS processes binary DNS requests over port 53, caching A, AAAA, and SRV record lookups in-memory.</li>
+<li><strong>Netlink System Calls</strong>: <code>kube-proxy</code> in IPVS mode uses Linux Netlink sockets (<code>AF_NETLINK</code>) to program kernel IPVS virtual servers and <code>ipset</code> collections directly without spawning shell processes.</li>
+<li><strong>Protobuf API Streaming</strong>: The EndpointSlice controller streams high-scale endpoint updates over Protobuf connections to avoid JSON serialization bottlenecks in clusters with tens of thousands of pods.</li>
+</ul>
+<h3 id="13-deep-dive-component-breakdown">1.3 Deep-Dive Component Breakdown</h3>
+<ul>
+<li><strong>CoreDNS</strong>: High-performance, plugin-based DNS server running in <code>kube-system</code>, dynamically configured via Kubernetes API watches to serve cluster-internal service discovery.</li>
+<li><strong>kube-proxy</strong>: Node daemon responsible for reflecting Kubernetes Service definitions into Linux kernel Netfilter (<code>iptables</code>), IPVS, or user-space routing tables.</li>
+<li><strong>EndpointSlice</strong>: Scalable replacement for legacy <code>v1.Endpoints</code>, splitting large endpoint lists into chunks of up to 100 endpoints to minimize network traffic and API server serialization latency on large deployments.</li>
+<li><strong>Linux Netfilter &amp; Conntrack</strong>: Kernel connection tracking subsystem that stores active bidirectional TCP/UDP flow state in <code>/proc/net/nf_conntrack</code>, enabling accurate reverse SNAT/DNAT on reply packets.</li>
+</ul>
+<h3 id="14-under-the-hood-mechanics-failure-modes">1.4 Under-The-Hood Mechanics &amp; Failure Modes</h3>
+<ul>
+<li><strong>Conntrack Table Saturation</strong>: High connection churn without TCP connection reuse can exceed <code>nf_conntrack_max</code>, causing the kernel to drop new TCP SYN packets silently with <code>nf_conntrack: table full, dropping packet</code>.</li>
+<li><strong>Stale Endpoints During Rolling Updates</strong>: If a terminating Pod does not immediately unregister from the EndpointSlice before shutting down its HTTP server, incoming in-flight TCP requests receive <code>TCP RST</code> (Connection Refused) errors. Implementing a <code>preStop</code> hook (<code>sleep 5</code>) gives the EndpointSlice controller time to propagate removal across all nodes.</li>
+<li><strong>CoreDNS 5-Second DNS Lookup Delays</strong>: Linux <code>glibc</code> sends IPv4 (A) and IPv6 (AAAA) DNS queries concurrently over UDP. Netfilter conntrack race conditions can cause one query to be dropped, triggering a full 5-second glibc DNS retry timeout (mitigated by configuring <code>single-request-reopen</code> in <code>/etc/resolv.conf</code> or deploying NodeLocal DNSCache).</li>
+</ul>
 <hr />
 <h2 id="2-annotated-production-yaml-anatomy-field-reference">2. Annotated Production YAML Anatomy &amp; Field Reference</h2>
 <p>Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:</p>
