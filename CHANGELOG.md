@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Full 114-Exercise Browser WebAssembly Learning Platform (`docs/playground.md`)**: Expanded the Pyodide WebAssembly learning platform to include all 114 exercises across 26 curriculum chapters.
+- **Client-Side State Engine (`KubelingsStorage`)**: Implemented debounced `localStorage` auto-saving for user code, progressive hint tracking, exercise completion flags, and global progress calculation (`X / 114 Completed • Y%`).
+- **Curriculum Syllabus Sidebar**: Added split-pane UI featuring a collapsible 26-chapter accordion tree, live search filtering, completion badges, and status tabs (All, To Do, Done).
+- **Progress Import & Export**: Enabled one-click JSON progress backup export (`kubelings-progress-YYYY-MM-DD.json`) and restoration across browsers/devices.
+- **Keyboard Navigation**: Added `Alt+Left` / `Alt+Right` sequential navigation shortcuts and inline Next Exercise advancement upon test pass.
+
 ## [0.9.11] - 2026-08-28
 
 ### Changed
