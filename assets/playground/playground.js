@@ -1194,16 +1194,68 @@
       const container = state.container;
       if (!container) return;
 
-      const isFs = container.classList.toggle("is-fullscreen");
+      const isFsNative = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      const isFsClass = container.classList.contains("is-fullscreen");
+
+      if (isFsNative) {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      } else if (isFsClass) {
+        container.classList.remove("is-fullscreen");
+        if (state.elements.fullscreenBtn) {
+          state.elements.fullscreenBtn.textContent = "⛶ Fullscreen";
+        }
+        setTimeout(() => {
+          if (state.editor) state.editor.layout();
+          if (state.diffEditor) state.diffEditor.layout();
+        }, 100);
+      } else {
+        if (container.requestFullscreen) {
+          container.requestFullscreen().catch(() => {
+            container.classList.add("is-fullscreen");
+            if (state.elements.fullscreenBtn) {
+              state.elements.fullscreenBtn.textContent = "✕ Exit Fullscreen";
+            }
+            setTimeout(() => {
+              if (state.editor) state.editor.layout();
+              if (state.diffEditor) state.diffEditor.layout();
+            }, 100);
+          });
+        } else if (container.webkitRequestFullscreen) {
+          container.webkitRequestFullscreen();
+        } else {
+          container.classList.add("is-fullscreen");
+          if (state.elements.fullscreenBtn) {
+            state.elements.fullscreenBtn.textContent = "✕ Exit Fullscreen";
+          }
+          setTimeout(() => {
+            if (state.editor) state.editor.layout();
+            if (state.diffEditor) state.diffEditor.layout();
+          }, 100);
+        }
+      }
+    }
+
+    const handleFsChange = () => {
+      const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || (state.container && state.container.classList.contains("is-fullscreen")));
       if (state.elements.fullscreenBtn) {
         state.elements.fullscreenBtn.textContent = isFs ? "✕ Exit Fullscreen" : "⛶ Fullscreen";
       }
-
       setTimeout(() => {
         if (state.editor) state.editor.layout();
         if (state.diffEditor) state.diffEditor.layout();
-      }, 50);
-    }
+      }, 100);
+      setTimeout(() => {
+        if (state.editor) state.editor.layout();
+        if (state.diffEditor) state.diffEditor.layout();
+      }, 300);
+    };
+
+    document.addEventListener("fullscreenchange", handleFsChange);
+    document.addEventListener("webkitfullscreenchange", handleFsChange);
 
     if (state.elements.fullscreenBtn) {
       state.elements.fullscreenBtn.addEventListener("click", toggleFullscreen);
