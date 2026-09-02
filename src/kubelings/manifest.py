@@ -1472,6 +1472,162 @@ def build_manifest() -> Manifest:
                 ),
             ],
         ),
+        Chapter(
+            number=27,
+            name="27_aws_eks",
+            title="AWS EKS & Cloud Architecture",
+            description="IRSA, EKS Pod Identity, AWS Load Balancer Controller, VPC CNI, and Karpenter",
+            exercises=[
+                Exercise(
+                    name="eks01",
+                    title="EKS Pod Identity & IRSA ServiceAccounts",
+                    path="exercises/27_aws_eks/eks01.yaml",
+                    chapter_name="27_aws_eks",
+                    hints=[
+                        "Annotate ServiceAccount with eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/my-app-role",
+                        "Configure projected serviceAccountToken with audience sts.amazonaws.com",
+                        "Mount AWS web identity token volume at /var/run/secrets/eks.amazonaws.com/serviceaccount",
+                    ],
+                ),
+                Exercise(
+                    name="eks02",
+                    title="AWS Load Balancer Controller & ALB Ingress",
+                    path="exercises/27_aws_eks/eks02.yaml",
+                    chapter_name="27_aws_eks",
+                    hints=[
+                        "Set ingressClassName: alb or annotate kubernetes.io/ingress.class: alb",
+                        "Add annotation alb.ingress.kubernetes.io/scheme: internet-facing",
+                        "Set alb.ingress.kubernetes.io/target-type: ip for direct pod IP routing",
+                    ],
+                ),
+                Exercise(
+                    name="eks03",
+                    title="AWS VPC CNI Security Groups for Pods",
+                    path="exercises/27_aws_eks/eks03.yaml",
+                    chapter_name="27_aws_eks",
+                    hints=[
+                        "Define SecurityGroupPolicy with apiVersion vpcresources.k8s.aws/v1alpha1",
+                        "Configure podSelector matching target application labels",
+                        "Specify securityGroups.groups with AWS security group IDs (e.g. sg-0123456789abcdef0)",
+                    ],
+                ),
+                Exercise(
+                    name="eks04",
+                    title="Karpenter NodePool & EC2NodeClass",
+                    path="exercises/27_aws_eks/eks04.yaml",
+                    chapter_name="27_aws_eks",
+                    hints=[
+                        "Define NodePool with apiVersion karpenter.sh/v1 referencing template spec",
+                        "Configure requirements for node.kubernetes.io/instance-type or karpenter.k8s.aws/instance-family",
+                        "Specify EC2NodeClass with amiFamily AL2023 and subnetSelectorTerms",
+                    ],
+                ),
+            ],
+        ),
+        Chapter(
+            number=28,
+            name="28_gcp_gke",
+            title="Google Cloud GKE & Ecosystem",
+            description="Workload Identity Federation, GKE Autopilot, GKE Gateway API, and Config Connector",
+            exercises=[
+                Exercise(
+                    name="gke01",
+                    title="GKE Workload Identity Federation",
+                    path="exercises/28_gcp_gke/gke01.yaml",
+                    chapter_name="28_gcp_gke",
+                    hints=[
+                        "Annotate ServiceAccount with iam.gke.io/gcp-service-account: app-gsa@project.iam.gserviceaccount.com",
+                        "Ensure Pod specifies serviceAccountName referencing the annotated ServiceAccount",
+                        "Configure nodeSelector with iam.gke.io/gke-metadata-server-enabled: 'true'",
+                    ],
+                ),
+                Exercise(
+                    name="gke02",
+                    title="GKE Autopilot Workload Sizing & Compute Classes",
+                    path="exercises/28_gcp_gke/gke02.yaml",
+                    chapter_name="28_gcp_gke",
+                    hints=[
+                        "In GKE Autopilot, resource requests equal resource limits if limits are omitted",
+                        "Add annotation autopilot.gke.io/compute-class: Performance or Scale-Out",
+                        "Specify resources.requests with valid Autopilot CPU/memory increments",
+                    ],
+                ),
+                Exercise(
+                    name="gke03",
+                    title="GKE Gateway API & Cloud Armor Policies",
+                    path="exercises/28_gcp_gke/gke03.yaml",
+                    chapter_name="28_gcp_gke",
+                    hints=[
+                        "Define GCPBackendPolicy with apiVersion networking.gke.io/v1",
+                        "Target HTTPRoute or Service under spec.targetRef",
+                        "Attach Cloud Armor security policy under spec.default.securityPolicy",
+                    ],
+                ),
+                Exercise(
+                    name="gke04",
+                    title="Google Config Connector Cloud Resources",
+                    path="exercises/28_gcp_gke/gke04.yaml",
+                    chapter_name="28_gcp_gke",
+                    hints=[
+                        "Define StorageBucket with apiVersion storage.cnrm.cloud.google.com/v1beta1",
+                        "Set uniformBucketLevelAccess: true and storageClass: STANDARD",
+                        "Configure cnrm.cloud.google.com/deletion-policy: abandon annotation",
+                    ],
+                ),
+            ],
+        ),
+        Chapter(
+            number=29,
+            name="29_enterprise_governance",
+            title="Enterprise Multi-Account Governance & Secrets",
+            description="AWS Control Tower, External Secrets Operator, HashiCorp Vault, and ArgoCD ApplicationSets",
+            exercises=[
+                Exercise(
+                    name="eso01",
+                    title="External Secrets Operator SecretStore & ExternalSecret",
+                    path="exercises/29_enterprise_governance/eso01.yaml",
+                    chapter_name="29_enterprise_governance",
+                    hints=[
+                        "Define SecretStore with apiVersion external-secrets.io/v1beta1 provider aws/secretsManager or gcp/secretManager",
+                        "Define ExternalSecret referencing secretStoreRef",
+                        "Specify target.name for the materialized Kubernetes Secret and data.remoteRef.key",
+                    ],
+                ),
+                Exercise(
+                    name="vault01",
+                    title="HashiCorp Vault Agent Sidecar Injector",
+                    path="exercises/29_enterprise_governance/vault01.yaml",
+                    chapter_name="29_enterprise_governance",
+                    hints=[
+                        "Add annotation vault.hashicorp.com/agent-inject: 'true'",
+                        "Specify vault.hashicorp.com/role with Kubernetes auth role name",
+                        "Define vault.hashicorp.com/agent-inject-secret-<filename> with secret engine path",
+                    ],
+                ),
+                Exercise(
+                    name="gov01",
+                    title="ArgoCD ApplicationSet Multi-Cluster Matrix Generator",
+                    path="exercises/29_enterprise_governance/gov01.yaml",
+                    chapter_name="29_enterprise_governance",
+                    hints=[
+                        "Define ApplicationSet with apiVersion argoproj.io/v1alpha1",
+                        "Configure spec.generators with matrix combining clusters and git directories",
+                        "Set spec.template.destination.server: '{{server}}' and path: '{{path}}'",
+                    ],
+                ),
+                Exercise(
+                    name="gov02",
+                    title="Multi-Tenant Namespace Quotas & Security Policies",
+                    path="exercises/29_enterprise_governance/gov02.yaml",
+                    chapter_name="29_enterprise_governance",
+                    hints=[
+                        "Define ResourceQuota limiting requests.cpu, requests.memory, and persistentvolumeclaims",
+                        "Define LimitRange specifying default container request and limit boundaries",
+                        "Enforce pod-security.kubernetes.io/enforce: restricted label on tenant namespace",
+                    ],
+                ),
+            ],
+        ),
     ]
     return Manifest(chapters=chapters)
 

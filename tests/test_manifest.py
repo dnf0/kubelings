@@ -27,8 +27,8 @@ def test_exercise_dataclass_properties():
 
 def test_manifest_loads_all_chapters():
     manifest = get_manifest()
-    assert len(manifest.chapters) == 26
-    assert len(manifest.all_exercises) == 114
+    assert len(manifest.chapters) == 29
+    assert len(manifest.all_exercises) == 126
 
     first = manifest.all_exercises[0]
     assert first.name == "pods01"
@@ -36,11 +36,11 @@ def test_manifest_loads_all_chapters():
     assert first.path == "exercises/01_pods/pods01.yaml"
 
     last = manifest.all_exercises[-1]
-    assert last.name == "accel04"
-    assert last.chapter_name == "26_hardware_acceleration_dra"
+    assert last.name == "gov02"
+    assert last.chapter_name == "29_enterprise_governance"
 
 
-def test_all_26_chapters_structure():
+def test_all_29_chapters_structure():
     manifest = get_manifest()
     expected_chapters = [
         (1, "01_pods", 6),
@@ -69,6 +69,9 @@ def test_all_26_chapters_structure():
         (24, "24_kuberay_ml", 4),
         (25, "25_batch_kueue_volcano", 4),
         (26, "26_hardware_acceleration_dra", 4),
+        (27, "27_aws_eks", 4),
+        (28, "28_gcp_gke", 4),
+        (29, "29_enterprise_governance", 4),
     ]
 
     for number, name, count in expected_chapters:
@@ -139,8 +142,20 @@ def test_get_next_exercise():
     assert next_across_v6 is not None
     assert next_across_v6.name == "accel01"
 
+    next_across_v7 = get_next_exercise("accel04")
+    assert next_across_v7 is not None
+    assert next_across_v7.name == "eks01"
+
+    next_across_v8 = get_next_exercise("eks04")
+    assert next_across_v8 is not None
+    assert next_across_v8.name == "gke01"
+
+    next_across_v9 = get_next_exercise("gke04")
+    assert next_across_v9 is not None
+    assert next_across_v9.name == "eso01"
+
     # Test last exercise returns None
-    assert get_next_exercise("accel04") is None
+    assert get_next_exercise("gov02") is None
 
     # Test nonexistent exercise returns None
     assert get_next_exercise("nonexistent") is None
