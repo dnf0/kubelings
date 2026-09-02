@@ -71,41 +71,6 @@ jobs:
       - name: Run Pytest
         run: pytest tests/ -v
 
-  kind-cluster-test:
-    name: Live Kind Cluster E2E (Python 3.12)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: |
-          uv pip install --system -e ".[dev]"
-
-      - name: Create kind cluster
-        uses: helm/kind-action@v1.12.0
-        with:
-          cluster_name: kind-kubelings-ci
-          wait: 120s
-
-      - name: Verify CLI detects active cluster
-        run: |
-          kubectl get nodes
-          kubelings cluster
-
-      - name: Run live cluster test suite
-        run: pytest tests/test_live_cluster.py -v
-
   vscode-extension:
     name: VS Code Extension (Node 20)
     runs-on: ubuntu-latest

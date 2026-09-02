@@ -1,7 +1,7 @@
 """Generate 26 in-depth Kubernetes Reference Guides for MkDocs."""
 
-import json
 from pathlib import Path
+
 from kubelings.manifest import get_manifest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -45,10 +45,12 @@ for chapter in manifest.chapters:
 
     ex_links = []
     for ex in chapter.exercises:
-        ex_links.append(f"- [**`{ex.name}`**: {ex.title}](../playground/index.html?exercise={ex.name})")
+        ex_links.append(
+            f"- [**`{ex.name}`**: {ex.title}](../playground/index.html?exercise={ex.name})"
+        )
 
     exercise_list_md = "\n".join(ex_links)
-    
+
     first_ex = chapter.exercises[0].name if chapter.exercises else "pods01"
     starter_snippet = ""
     if chapter.exercises:
@@ -70,7 +72,7 @@ for chapter in manifest.chapters:
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **{chapter.title}** represents fundamental declarative resources managed through continuous control loops. 
+In Kubernetes, **{chapter.title}** represents fundamental declarative resources managed through continuous control loops.
 
 ```text
     ┌──────────────────────┐          Declarative Manifest (YAML)
@@ -121,10 +123,10 @@ When inspecting or debugging resources in this category, use the following triag
 
 ```bash
 # 1. Check resource status and conditions
-kubectl get {chapter.name.split('_')[-1]} -o wide
+kubectl get {chapter.name.split("_")[-1]} -o wide
 
 # 2. Inspect detailed control plane events and controller messages
-kubectl describe {chapter.name.split('_')[-1]} <resource-name>
+kubectl describe {chapter.name.split("_")[-1]} <resource-name>
 
 # 3. Stream real-time logs (if applicable)
 kubectl logs -l app=<label> --tail=100 -f
