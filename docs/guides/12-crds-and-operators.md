@@ -3,7 +3,7 @@
 <div class="grid cards" markdown>
 
 -   :material-school: **Topic Focus** &bull; CRD Schemas, Subresources, Python Operator Loops, and Webhooks
--   :material-play-circle: **Interactive Challenges** &bull; 4 Hands-on Exercises
+-   :material-api: **Primary APIs** &bull; `apiextensions.k8s.io/v1` &bull; `CustomResourceDefinition`
 -   :material-rocket-launch: [**Launch Playground in Wasm →**](../playground/index.html?chapter=12){ .md-button .md-button--primary }
 
 </div>
@@ -12,79 +12,172 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Custom Resources, CRDs & Operators** represents fundamental declarative resources managed through continuous control loops. 
+In Kubernetes, **Custom Resources, CRDs & Operators** is reconciled through declarative state loops managed by the control plane:
 
 ```text
-    ┌──────────────────────┐          Declarative Manifest (YAML)
-    │   kube-apiserver     │ ◄─────────────────────────────────────────────
-    └──────────┬───────────┘
-               │ (Watches & Stores in etcd)
-               ▼
-    ┌──────────────────────┐          Reconciles Desired State vs Actual State
-    │  Controller / Daemon │ ─────────────────────────────────────────────► [ Cluster State ]
-    └──────────────────────┘
+┌───────────────────────────┐
+    │ CustomResourceDefinition  │ ◄── Registers `Foo` Kind in API Server
+    └─────────────┬─────────────┘
+                  │ OpenAPI v3 Validation Schema
+                  ▼
+    ┌───────────────────────────┐         Watches & Reconciles    ┌───────────────────────────┐
+    │   Custom Resource (CR)    │ ◄─────────────────────────────► │   Custom Operator Pod     │
+    │   (Kind: DatabaseCluster) │                                 │   (Reconciliation Loop)   │
+    └───────────────────────────┘                                 └─────────────┬─────────────┘
+                                                                                │ Creates & Manages
+                                                                                ▼
+                                                                  ┌───────────────────────────┐
+                                                                  │ Pods, PVCs, StatefulSets  │
+                                                                  └───────────────────────────┘
 ```
 
-When you declare resources for this domain, the Kubernetes API Server validates the OpenAPI v3 schema, persists the specification to etcd, and signals the responsible controller or node daemon to reconcile actual state with your desired specification.
+When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
 
 ---
 
-## 2. Annotated YAML Anatomy & Schema Reference
+## 2. Annotated Production YAML Anatomy & Field Reference
 
-Below is a production-ready declarative manifest illustrating key fields, structure, and configuration semantics for this chapter:
+Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:
 
 ```yaml
-
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: databaseclusters.storage.example.com
+spec:
+  group: storage.example.com
+  names:
+    plural: databaseclusters
+    singular: databasecluster
+    kind: DatabaseCluster
+    shortNames:
+    - dbc
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+    subresources:
+      status: {}
+      scale:
+        specReplicasPath: .spec.replicas
+        statusReplicasPath: .status.replicas
+    schema:
+      openAPIV3Schema:
+        type: object
+        required: ["spec"]
+        properties:
+          spec:
+            type: object
+            required: ["engine", "replicas"]
+            properties:
+              engine:
+                type: string
+                enum: ["postgres", "mysql", "redis"]
+              replicas:
+                type: integer
+                minimum: 1
+                maximum: 10
+              storageSize:
+                type: string
+                pattern: "^[0-9]+(Gi|Mi)$"
+          status:
+            type: object
+            properties:
+              phase:
+                type: string
+              replicas:
+                type: integer
 ```
 
-### Key Field Reference
+### Key Field Schema Reference
 
-- **`apiVersion`**: The target API group and version for the resource schema.
-- **`kind`**: The resource type identifier.
-- **`metadata.name`**: Unique DNS-1123 compliant identifier for this resource within its namespace.
-- **`metadata.labels`**: Key-value pairs used by selectors, services, and queries.
-- **`spec`**: The desired state specification managed by Kubernetes controllers.
-
----
-
-## 3. Production Best Practices & Hardening Guidelines
-
-1. **Explicit Resource Declarations**: Always specify resource constraints (`requests` and `limits`) to ensure predictable scheduling and prevent node resource starvation.
-2. **Immutable Identifiers & Clear Labeling**: Use standard Kubernetes recommended labels (`app.kubernetes.io/name`, `app.kubernetes.io/instance`, `app.kubernetes.io/version`, `app.kubernetes.io/component`).
-3. **Defense in Depth**: Follow least-privilege security principles (e.g. `runAsNonRoot: true`, `readOnlyRootFilesystem: true`, dropping all unnecessary Linux capabilities).
-4. **Health Check Probes**: Configure comprehensive startup, liveness, and readiness probes with appropriate failure thresholds and timing delays.
-5. **Declarative GitOps Management**: Maintain all manifests in version control and deploy through automated reconciliation pipelines.
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `spec.scope` | `Enum` | `Namespaced` (resources live in namespaces) or `Cluster` (cluster-wide). |
+| `spec.versions[*].subresources.status` | `Object` | Enables `/status` subresource; separates spec updates from status updates. |
+| `spec.versions[*].schema.openAPIV3Schema` | `Object` | Strict structural schema validation enforced by the API Server on write. |
 
 ---
 
-## 4. Troubleshooting & Diagnostic Workflows
+## 3. Real-World Architectural Patterns
 
-When inspecting or debugging resources in this category, use the following triage sequence:
+### Custom Resource Instance (CR)
 
-```bash
-# 1. Check resource status and conditions
-kubectl get operators -o wide
-
-# 2. Inspect detailed control plane events and controller messages
-kubectl describe operators <resource-name>
-
-# 3. Stream real-time logs (if applicable)
-kubectl logs -l app=<label> --tail=100 -f
+```yaml
+apiVersion: storage.example.com/v1alpha1
+kind: DatabaseCluster
+metadata:
+  name: primary-postgres
+  namespace: default
+spec:
+  engine: postgres
+  replicas: 3
+  storageSize: 50Gi
 ```
 
+### CRD with Additional Printer Columns
+
+```yaml
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: backups.storage.example.com
+spec:
+  group: storage.example.com
+  names:
+    kind: Backup
+    plural: backups
+  scope: Namespaced
+  versions:
+  - name: v1
+    served: true
+    storage: true
+    additionalPrinterColumns:
+    - name: Status
+      type: string
+      jsonPath: .status.phase
+    - name: Age
+      type: date
+      jsonPath: .metadata.creationTimestamp
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+```
+
+
 ---
 
-## 5. Interactive Practice Exercises
+## 4. Production Hardening & Operational Governance
 
-Practice the concepts from this chapter directly in your browser using our client-side WebAssembly environment:
+- Always include complete OpenAPI v3 validation schemas with `type`, `required`, and `enum` bounds to prevent invalid state persistence.
+- Use `/status` subresources so operator reconciliation updates do not conflict with user spec mutations.
+- Follow Kubernetes API versioning conventions (`v1alpha1` &rarr; `v1beta1` &rarr; `v1`) and use conversion webhooks when altering stored schemas.
 
-- [**`crd01`**: CustomResourceDefinition (CRD) Schema](../playground/index.html?exercise=crd01)
-- [**`crd02`**: CRD Subresources & Printer Columns](../playground/index.html?exercise=crd02)
-- [**`crd03`**: Python Kubernetes Operator Loop](../playground/index.html?exercise=crd03)
-- [**`crd04`**: Dynamic Admission Webhooks](../playground/index.html?exercise=crd04)
+---
 
-<div style="margin-top: 1.5rem;">
-  <a href="../playground/index.html?chapter=12" class="md-button md-button--primary">
-    ⚡ Practice Chapter 12 in WebAssembly Playground →
-  </a>
-</div>
+## 5. Failure Modes & Diagnostic Triage Tree
+
+??? failure "`error: unable to recognize "cr.yaml": no matches for kind`"
+    **Root Cause:** CRD is not registered, or apiVersion group/version is mismatched.
+
+    **Diagnostic Triage Sequence:**
+    1. Check registered CRDs: `kubectl get crds`
+2. Verify served API versions: `kubectl get crd <name> -o yaml`.
+
+
+---
+
+## 6. Interactive Practice Matrix
+
+Practice concepts from this chapter directly in the interactive WebAssembly sandbox:
+
+| Exercise ID | Challenge Description | Direct Link | Action |
+| :--- | :--- | :--- | :--- |
+| **`crd01`** | CustomResourceDefinition (CRD) Schema | [`../playground/index.html?exercise=crd01`](../playground/index.html?exercise=crd01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=crd01){ .md-button .md-button--primary } |
+| **`crd02`** | CRD Subresources & Printer Columns | [`../playground/index.html?exercise=crd02`](../playground/index.html?exercise=crd02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=crd02){ .md-button .md-button--primary } |
+| **`crd03`** | Python Kubernetes Operator Loop | [`../playground/index.html?exercise=crd03`](../playground/index.html?exercise=crd03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=crd03){ .md-button .md-button--primary } |
+| **`crd04`** | Dynamic Admission Webhooks | [`../playground/index.html?exercise=crd04`](../playground/index.html?exercise=crd04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=crd04){ .md-button .md-button--primary } |

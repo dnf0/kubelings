@@ -3,7 +3,7 @@
 <div class="grid cards" markdown>
 
 -   :material-school: **Topic Focus** &bull; CiliumNetworkPolicies, L7 HTTP Routing, Mutual TLS, and Hubble Observability
--   :material-play-circle: **Interactive Challenges** &bull; 4 Hands-on Exercises
+-   :material-api: **Primary APIs** &bull; `cilium.io/v2` &bull; `CiliumNetworkPolicy`, `CiliumClusterwideNetworkPolicy`
 -   :material-rocket-launch: [**Launch Playground in Wasm →**](../playground/index.html?chapter=15){ .md-button .md-button--primary }
 
 </div>
@@ -12,79 +12,156 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Service Mesh, eBPF & Cilium** represents fundamental declarative resources managed through continuous control loops. 
+In Kubernetes, **Service Mesh, eBPF & Cilium** is reconciled through declarative state loops managed by the control plane:
 
 ```text
-    ┌──────────────────────┐          Declarative Manifest (YAML)
-    │   kube-apiserver     │ ◄─────────────────────────────────────────────
-    └──────────┬───────────┘
-               │ (Watches & Stores in etcd)
-               ▼
-    ┌──────────────────────┐          Reconciles Desired State vs Actual State
-    │  Controller / Daemon │ ─────────────────────────────────────────────► [ Cluster State ]
-    └──────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+    │                        Linux Kernel                         │
+    │  ┌───────────────────────────────────────────────────────┐  │
+    │  │                   eBPF Hook Programs                  │  │
+    │  │  • L3/L4 Filtering (Fast Path Bypass iptables)        │  │
+    │  │  • L7 HTTP/gRPC Inspection via Envoy                  │  │
+    │  │  • Transparent WireGuard / IPsec Encryption           │  │
+    │  └───────────────────────────────────────────────────────┘  │
+    └─────────────────────────────┬───────────────────────────────┘
+                                  │ Hubble Telemetry Stream
+                                  ▼
+    ┌─────────────────────────────────────────────────────────────┐
+    │                 Hubble Observability UI                     │
+    └─────────────────────────────────────────────────────────────┘
 ```
 
-When you declare resources for this domain, the Kubernetes API Server validates the OpenAPI v3 schema, persists the specification to etcd, and signals the responsible controller or node daemon to reconcile actual state with your desired specification.
+When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
 
 ---
 
-## 2. Annotated YAML Anatomy & Schema Reference
+## 2. Annotated Production YAML Anatomy & Field Reference
 
-Below is a production-ready declarative manifest illustrating key fields, structure, and configuration semantics for this chapter:
+Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:
 
 ```yaml
-
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: secure-payment-l7
+  namespace: finance
+spec:
+  endpointSelector:
+    matchLabels:
+      app: payment-processor
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        app: checkout-api
+    toPorts:
+    - ports:
+      - port: "8080"
+        protocol: TCP
+      rules:
+        http:
+        - method: POST
+          path: "/v1/charge"
+  egress:
+  - toFQDNs:
+    - matchName: "api.stripe.com"
+    toPorts:
+    - ports:
+      - port: "443"
+        protocol: TCP
 ```
 
-### Key Field Reference
+### Key Field Schema Reference
 
-- **`apiVersion`**: The target API group and version for the resource schema.
-- **`kind`**: The resource type identifier.
-- **`metadata.name`**: Unique DNS-1123 compliant identifier for this resource within its namespace.
-- **`metadata.labels`**: Key-value pairs used by selectors, services, and queries.
-- **`spec`**: The desired state specification managed by Kubernetes controllers.
-
----
-
-## 3. Production Best Practices & Hardening Guidelines
-
-1. **Explicit Resource Declarations**: Always specify resource constraints (`requests` and `limits`) to ensure predictable scheduling and prevent node resource starvation.
-2. **Immutable Identifiers & Clear Labeling**: Use standard Kubernetes recommended labels (`app.kubernetes.io/name`, `app.kubernetes.io/instance`, `app.kubernetes.io/version`, `app.kubernetes.io/component`).
-3. **Defense in Depth**: Follow least-privilege security principles (e.g. `runAsNonRoot: true`, `readOnlyRootFilesystem: true`, dropping all unnecessary Linux capabilities).
-4. **Health Check Probes**: Configure comprehensive startup, liveness, and readiness probes with appropriate failure thresholds and timing delays.
-5. **Declarative GitOps Management**: Maintain all manifests in version control and deploy through automated reconciliation pipelines.
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `endpointSelector` | `Object` | Selects Cilium endpoints (Pods) using identity-based labels rather than volatile IP addresses. |
+| `ingress[*].toPorts[*].rules.http` | `Array` | L7 application-layer policy (methods, exact URI paths, regex matching). |
+| `egress[*].toFQDNs` | `Array` | DNS-aware egress security policy allowlisting specific external hostnames. |
 
 ---
 
-## 4. Troubleshooting & Diagnostic Workflows
+## 3. Real-World Architectural Patterns
 
-When inspecting or debugging resources in this category, use the following triage sequence:
+### Clusterwide L7 Kafka Security Policy
 
-```bash
-# 1. Check resource status and conditions
-kubectl get cilium -o wide
-
-# 2. Inspect detailed control plane events and controller messages
-kubectl describe cilium <resource-name>
-
-# 3. Stream real-time logs (if applicable)
-kubectl logs -l app=<label> --tail=100 -f
+```yaml
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: kafka-topic-isolation
+spec:
+  endpointSelector:
+    matchLabels:
+      app: kafka
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        role: telemetry-producer
+    toPorts:
+    - ports:
+      - port: "9092"
+        protocol: TCP
+      rules:
+        kafka:
+        - role: produce
+          topic: "sensor-telemetry"
 ```
 
+### Mutual TLS (mTLS) Strict Authentication
+
+```yaml
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: enforce-mtls
+  namespace: secure
+spec:
+  endpointSelector:
+    matchLabels:
+      app: vault
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        app: client
+    authentication:
+      mode: required
+```
+
+
 ---
 
-## 5. Interactive Practice Exercises
+## 4. Production Hardening & Operational Governance
 
-Practice the concepts from this chapter directly in your browser using our client-side WebAssembly environment:
+- Use Cilium eBPF host routing (`bpf.masquerade=true`, `kube-proxy-replacement=true`) for line-rate packet processing without iptables overhead.
+- Enforce strict egress FQDN allowlisting to protect against data exfiltration and supply chain attacks.
+- Enable Hubble metrics and network flow logs for complete audit visibility.
 
-- [**`mesh01`**: Cilium L7 HTTP Filtering & Routing](../playground/index.html?exercise=mesh01)
-- [**`mesh02`**: Strict Mutual TLS & PeerAuthentication](../playground/index.html?exercise=mesh02)
-- [**`mesh03`**: CiliumClusterwideNetworkPolicy with DNS FQDN Egress](../playground/index.html?exercise=mesh03)
-- [**`mesh04`**: Hubble Observability & OpenTelemetry Tracing](../playground/index.html?exercise=mesh04)
+---
 
-<div style="margin-top: 1.5rem;">
-  <a href="../playground/index.html?chapter=15" class="md-button md-button--primary">
-    ⚡ Practice Chapter 15 in WebAssembly Playground →
-  </a>
-</div>
+## 5. Failure Modes & Diagnostic Triage Tree
+
+??? failure "Hubble Flow Inspection"
+    **Root Cause:** Diagnose dropped packets and L7 authorization rejections in real time.
+
+    **Diagnostic Triage Sequence:**
+    ```bash
+# Stream live drops in namespace
+hubble observe --namespace finance --verdict DROPPED
+
+# Trace HTTP status codes
+hubble observe --namespace finance --protocol http
+```
+
+
+---
+
+## 6. Interactive Practice Matrix
+
+Practice concepts from this chapter directly in the interactive WebAssembly sandbox:
+
+| Exercise ID | Challenge Description | Direct Link | Action |
+| :--- | :--- | :--- | :--- |
+| **`mesh01`** | Cilium L7 HTTP Filtering & Routing | [`../playground/index.html?exercise=mesh01`](../playground/index.html?exercise=mesh01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=mesh01){ .md-button .md-button--primary } |
+| **`mesh02`** | Strict Mutual TLS & PeerAuthentication | [`../playground/index.html?exercise=mesh02`](../playground/index.html?exercise=mesh02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=mesh02){ .md-button .md-button--primary } |
+| **`mesh03`** | CiliumClusterwideNetworkPolicy with DNS FQDN Egress | [`../playground/index.html?exercise=mesh03`](../playground/index.html?exercise=mesh03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=mesh03){ .md-button .md-button--primary } |
+| **`mesh04`** | Hubble Observability & OpenTelemetry Tracing | [`../playground/index.html?exercise=mesh04`](../playground/index.html?exercise=mesh04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=mesh04){ .md-button .md-button--primary } |

@@ -3,7 +3,7 @@
 <div class="grid cards" markdown>
 
 -   :material-school: **Topic Focus** &bull; Base Manifests, ConfigMap/Secret Generators, Patches, and Multi-Environment Overlays
--   :material-play-circle: **Interactive Challenges** &bull; 4 Hands-on Exercises
+-   :material-api: **Primary APIs** &bull; `kustomize.config.k8s.io/v1beta1` &bull; `Kustomization`
 -   :material-rocket-launch: [**Launch Playground in Wasm →**](../playground/index.html?chapter=20){ .md-button .md-button--primary }
 
 </div>
@@ -12,79 +12,126 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Declarative Customization with Kustomize** represents fundamental declarative resources managed through continuous control loops. 
+In Kubernetes, **Declarative Customization with Kustomize** is reconciled through declarative state loops managed by the control plane:
 
 ```text
-    ┌──────────────────────┐          Declarative Manifest (YAML)
-    │   kube-apiserver     │ ◄─────────────────────────────────────────────
-    └──────────┬───────────┘
-               │ (Watches & Stores in etcd)
-               ▼
-    ┌──────────────────────┐          Reconciles Desired State vs Actual State
-    │  Controller / Daemon │ ─────────────────────────────────────────────► [ Cluster State ]
-    └──────────────────────┘
+┌───────────────────────────┐
+    │     Base Configuration    │ ◄── Common Deployment, Service, Config
+    │    (`base/kustomization`) │
+    └─────────────┬─────────────┘
+                  │ Inherited by Environments
+          ┌───────┴───────┐
+          ▼               ▼
+    ┌───────────┐   ┌───────────┐
+    │  Dev      │   │  Prod     │ ◄── Strategic Merge Patches,
+    │  Overlay  │   │  Overlay  │     Replica Count, Name Prefixes
+    └───────────┘   └───────────┘
 ```
 
-When you declare resources for this domain, the Kubernetes API Server validates the OpenAPI v3 schema, persists the specification to etcd, and signals the responsible controller or node daemon to reconcile actual state with your desired specification.
+When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
 
 ---
 
-## 2. Annotated YAML Anatomy & Schema Reference
+## 2. Annotated Production YAML Anatomy & Field Reference
 
-Below is a production-ready declarative manifest illustrating key fields, structure, and configuration semantics for this chapter:
+Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:
 
 ```yaml
-
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: production
+namePrefix: prod-
+commonLabels:
+  environment: production
+  managed-by: kustomize
+resources:
+- ../../base
+patches:
+- target:
+    kind: Deployment
+    name: web-app
+  patch: |-
+    - op: replace
+      path: /spec/replicas
+      value: 10
+configMapGenerator:
+- name: app-env
+  behavior: merge
+  literals:
+  - LOG_LEVEL=warn
+  - CACHE_TTL=3600
 ```
 
-### Key Field Reference
+### Key Field Schema Reference
 
-- **`apiVersion`**: The target API group and version for the resource schema.
-- **`kind`**: The resource type identifier.
-- **`metadata.name`**: Unique DNS-1123 compliant identifier for this resource within its namespace.
-- **`metadata.labels`**: Key-value pairs used by selectors, services, and queries.
-- **`spec`**: The desired state specification managed by Kubernetes controllers.
-
----
-
-## 3. Production Best Practices & Hardening Guidelines
-
-1. **Explicit Resource Declarations**: Always specify resource constraints (`requests` and `limits`) to ensure predictable scheduling and prevent node resource starvation.
-2. **Immutable Identifiers & Clear Labeling**: Use standard Kubernetes recommended labels (`app.kubernetes.io/name`, `app.kubernetes.io/instance`, `app.kubernetes.io/version`, `app.kubernetes.io/component`).
-3. **Defense in Depth**: Follow least-privilege security principles (e.g. `runAsNonRoot: true`, `readOnlyRootFilesystem: true`, dropping all unnecessary Linux capabilities).
-4. **Health Check Probes**: Configure comprehensive startup, liveness, and readiness probes with appropriate failure thresholds and timing delays.
-5. **Declarative GitOps Management**: Maintain all manifests in version control and deploy through automated reconciliation pipelines.
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `resources` | `Array` | Relative paths to bases, other overlays, or remote Git URLs. |
+| `patches` | `Array` | Targeted JSON 6902 patches or Strategic Merge Patches modifying specific fields without duplicating manifests. |
+| `configMapGenerator` | `Array` | Generates ConfigMaps with automatic content-hash suffixes for zero-downtime rolling updates. |
 
 ---
 
-## 4. Troubleshooting & Diagnostic Workflows
+## 3. Real-World Architectural Patterns
 
-When inspecting or debugging resources in this category, use the following triage sequence:
+### Base Kustomization Definition
 
-```bash
-# 1. Check resource status and conditions
-kubectl get overlays -o wide
-
-# 2. Inspect detailed control plane events and controller messages
-kubectl describe overlays <resource-name>
-
-# 3. Stream real-time logs (if applicable)
-kubectl logs -l app=<label> --tail=100 -f
+```yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- deployment.yaml
+- service.yaml
 ```
 
+### Strategic Merge Patch for Resource Limits
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app
+spec:
+  template:
+    spec:
+      containers:
+      - name: app
+        resources:
+          limits:
+            cpu: "2"
+            memory: "4Gi"
+```
+
+
 ---
 
-## 5. Interactive Practice Exercises
+## 4. Production Hardening & Operational Governance
 
-Practice the concepts from this chapter directly in your browser using our client-side WebAssembly environment:
+- Use `configMapGenerator` with hash suffixes so configuration updates trigger automated rolling restarts.
+- Keep `base/` minimal and purely structural; push environment-specific configurations into `overlays/`.
+- Validate Kustomize builds in CI with `kubectl kustomize overlays/production --dry-run=client`.
 
-- [**`kustomize01`**: Kustomize Base Manifests & Metadata Transformations](../playground/index.html?exercise=kustomize01)
-- [**`kustomize02`**: Kustomize ConfigMap & Secret Generators](../playground/index.html?exercise=kustomize02)
-- [**`kustomize03`**: Kustomize Strategic Merge & JSON6902 Target Patches](../playground/index.html?exercise=kustomize03)
-- [**`kustomize04`**: Kustomize Multi-Environment Overlays & Image Transforms](../playground/index.html?exercise=kustomize04)
+---
 
-<div style="margin-top: 1.5rem;">
-  <a href="../playground/index.html?chapter=20" class="md-button md-button--primary">
-    ⚡ Practice Chapter 20 in WebAssembly Playground →
-  </a>
-</div>
+## 5. Failure Modes & Diagnostic Triage Tree
+
+??? failure "`patch target not found`"
+    **Root Cause:** Patch target `kind` or `name` does not match any resource generated in the base.
+
+    **Diagnostic Triage Sequence:**
+    1. Review base build output: `kubectl kustomize base`
+2. Verify `namePrefix` or `nameSuffix` has not modified the target name prior to patching.
+
+
+---
+
+## 6. Interactive Practice Matrix
+
+Practice concepts from this chapter directly in the interactive WebAssembly sandbox:
+
+| Exercise ID | Challenge Description | Direct Link | Action |
+| :--- | :--- | :--- | :--- |
+| **`kustomize01`** | Kustomize Base Manifests & Metadata Transformations | [`../playground/index.html?exercise=kustomize01`](../playground/index.html?exercise=kustomize01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=kustomize01){ .md-button .md-button--primary } |
+| **`kustomize02`** | Kustomize ConfigMap & Secret Generators | [`../playground/index.html?exercise=kustomize02`](../playground/index.html?exercise=kustomize02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=kustomize02){ .md-button .md-button--primary } |
+| **`kustomize03`** | Kustomize Strategic Merge & JSON6902 Target Patches | [`../playground/index.html?exercise=kustomize03`](../playground/index.html?exercise=kustomize03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=kustomize03){ .md-button .md-button--primary } |
+| **`kustomize04`** | Kustomize Multi-Environment Overlays & Image Transforms | [`../playground/index.html?exercise=kustomize04`](../playground/index.html?exercise=kustomize04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=kustomize04){ .md-button .md-button--primary } |

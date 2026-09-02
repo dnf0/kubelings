@@ -3,7 +3,7 @@
 <div class="grid cards" markdown>
 
 -   :material-school: **Topic Focus** &bull; Chart Specifications, Go Templating, Values Schemas, and Subcharts
--   :material-play-circle: **Interactive Challenges** &bull; 4 Hands-on Exercises
+-   :material-api: **Primary APIs** &bull; `helm.sh` &bull; `Chart.yaml`, `values.yaml`, `templates/*.yaml`
 -   :material-rocket-launch: [**Launch Playground in Wasm →**](../playground/index.html?chapter=19){ .md-button .md-button--primary }
 
 </div>
@@ -12,79 +12,153 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Package Management with Helm** represents fundamental declarative resources managed through continuous control loops. 
+In Kubernetes, **Package Management with Helm** is reconciled through declarative state loops managed by the control plane:
 
 ```text
-    ┌──────────────────────┐          Declarative Manifest (YAML)
-    │   kube-apiserver     │ ◄─────────────────────────────────────────────
-    └──────────┬───────────┘
-               │ (Watches & Stores in etcd)
-               ▼
-    ┌──────────────────────┐          Reconciles Desired State vs Actual State
-    │  Controller / Daemon │ ─────────────────────────────────────────────► [ Cluster State ]
-    └──────────────────────┘
+┌───────────────────────────┐      ┌───────────────────────────┐
+    │     Chart.yaml            │      │       values.yaml         │
+    │  (Metadata, Dependencies) │      │  (User Config Overrides)  │
+    └─────────────┬─────────────┘      └─────────────┬─────────────┘
+                  │                                  │
+                  ▼                                  ▼
+    ┌─────────────────────────────────────────────────────────────┐
+    │                Helm Template Rendering Engine               │
+    │  • Evaluates Go Templates (`templates/deployment.yaml`)     │
+    │  • Applies Helper Functions (`_helpers.tpl`)                │
+    │  • Validates OpenAPI values schema (`values.schema.json`)   │
+    └─────────────────────────────┬───────────────────────────────┘
+                                  │ Fully Rendered Kubernetes Manifests
+                                  ▼
+    ┌─────────────────────────────────────────────────────────────┐
+    │                      Kubernetes Cluster                     │
+    └─────────────────────────────────────────────────────────────┘
 ```
 
-When you declare resources for this domain, the Kubernetes API Server validates the OpenAPI v3 schema, persists the specification to etcd, and signals the responsible controller or node daemon to reconcile actual state with your desired specification.
+When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
 
 ---
 
-## 2. Annotated YAML Anatomy & Schema Reference
+## 2. Annotated Production YAML Anatomy & Field Reference
 
-Below is a production-ready declarative manifest illustrating key fields, structure, and configuration semantics for this chapter:
+Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:
 
 ```yaml
-
+# Chart.yaml
+apiVersion: v2
+name: enterprise-web-app
+description: Production-grade Helm chart for microservice web workloads
+type: application
+version: 1.4.0
+appVersion: "2.18.0"
+maintainers:
+- name: SRE Platform Team
+  email: platform@example.com
+dependencies:
+- name: redis
+  version: 18.0.0
+  repository: https://charts.bitnami.com/bitnami
+  condition: redis.enabled
 ```
 
-### Key Field Reference
+### Key Field Schema Reference
 
-- **`apiVersion`**: The target API group and version for the resource schema.
-- **`kind`**: The resource type identifier.
-- **`metadata.name`**: Unique DNS-1123 compliant identifier for this resource within its namespace.
-- **`metadata.labels`**: Key-value pairs used by selectors, services, and queries.
-- **`spec`**: The desired state specification managed by Kubernetes controllers.
-
----
-
-## 3. Production Best Practices & Hardening Guidelines
-
-1. **Explicit Resource Declarations**: Always specify resource constraints (`requests` and `limits`) to ensure predictable scheduling and prevent node resource starvation.
-2. **Immutable Identifiers & Clear Labeling**: Use standard Kubernetes recommended labels (`app.kubernetes.io/name`, `app.kubernetes.io/instance`, `app.kubernetes.io/version`, `app.kubernetes.io/component`).
-3. **Defense in Depth**: Follow least-privilege security principles (e.g. `runAsNonRoot: true`, `readOnlyRootFilesystem: true`, dropping all unnecessary Linux capabilities).
-4. **Health Check Probes**: Configure comprehensive startup, liveness, and readiness probes with appropriate failure thresholds and timing delays.
-5. **Declarative GitOps Management**: Maintain all manifests in version control and deploy through automated reconciliation pipelines.
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `apiVersion: v2` | `String` | Standard for Helm 3 charts; supports declarative chart dependencies. |
+| `version` vs `appVersion` | `SemVer` | `version` is the chart version; `appVersion` reflects the packaged application version. |
+| `dependencies` | `Array` | Subcharts managed and bundled via `helm dependency update`. |
 
 ---
 
-## 4. Troubleshooting & Diagnostic Workflows
+## 3. Real-World Architectural Patterns
 
-When inspecting or debugging resources in this category, use the following triage sequence:
+### Production values.yaml Structure
 
-```bash
-# 1. Check resource status and conditions
-kubectl get packaging -o wide
+```yaml
+# values.yaml
+replicaCount: 3
 
-# 2. Inspect detailed control plane events and controller messages
-kubectl describe packaging <resource-name>
+image:
+  repository: nginx
+  tag: 1.27-alpine
+  pullPolicy: IfNotPresent
 
-# 3. Stream real-time logs (if applicable)
-kubectl logs -l app=<label> --tail=100 -f
+service:
+  type: ClusterIP
+  port: 80
+
+resources:
+  limits:
+    cpu: 250m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+redis:
+  enabled: true
+  auth:
+    enabled: true
 ```
 
+### Rendered Helm Template Deployment Manifest
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-enterprise-web-app
+  labels:
+    helm.sh/chart: enterprise-web-app-1.4.0
+    app.kubernetes.io/name: enterprise-web-app
+    app.kubernetes.io/instance: release
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: enterprise-web-app
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: enterprise-web-app
+    spec:
+      containers:
+      - name: web
+        image: nginx:1.27-alpine
+        ports:
+        - containerPort: 80
+```
+
+
 ---
 
-## 5. Interactive Practice Exercises
+## 4. Production Hardening & Operational Governance
 
-Practice the concepts from this chapter directly in your browser using our client-side WebAssembly environment:
+- Create a strict `values.schema.json` to catch invalid data types during `helm lint` and CI.
+- Always quote string variables in templates (e.g. `{{ .Values.tag | quote }}`) to avoid YAML type coercion issues.
+- Use `helm template --debug` and `helm lint` in pull request workflows to validate charts before publishing.
 
-- [**`helm01`**: Helm Chart.yaml Metadata & Dependencies](../playground/index.html?exercise=helm01)
-- [**`helm02`**: Helm Go Templating & Named Helpers (_helpers.tpl)](../playground/index.html?exercise=helm02)
-- [**`helm03`**: Helm values.schema.json Validation Schema](../playground/index.html?exercise=helm03)
-- [**`helm04`**: Helm Subcharts & Global Values](../playground/index.html?exercise=helm04)
+---
 
-<div style="margin-top: 1.5rem;">
-  <a href="../playground/index.html?chapter=19" class="md-button md-button--primary">
-    ⚡ Practice Chapter 19 in WebAssembly Playground →
-  </a>
-</div>
+## 5. Failure Modes & Diagnostic Triage Tree
+
+??? failure "Helm Template Rendering Error (`nil pointer evaluating interface`)"
+    **Root Cause:** Referenced value key does not exist in `values.yaml`.
+
+    **Diagnostic Triage Sequence:**
+    1. Run template debug: `helm template my-release ./my-chart --debug`
+2. Use `default` or `required` filters to handle optional fields safely.
+
+
+---
+
+## 6. Interactive Practice Matrix
+
+Practice concepts from this chapter directly in the interactive WebAssembly sandbox:
+
+| Exercise ID | Challenge Description | Direct Link | Action |
+| :--- | :--- | :--- | :--- |
+| **`helm01`** | Helm Chart.yaml Metadata & Dependencies | [`../playground/index.html?exercise=helm01`](../playground/index.html?exercise=helm01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=helm01){ .md-button .md-button--primary } |
+| **`helm02`** | Helm Go Templating & Named Helpers (_helpers.tpl) | [`../playground/index.html?exercise=helm02`](../playground/index.html?exercise=helm02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=helm02){ .md-button .md-button--primary } |
+| **`helm03`** | Helm values.schema.json Validation Schema | [`../playground/index.html?exercise=helm03`](../playground/index.html?exercise=helm03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=helm03){ .md-button .md-button--primary } |
+| **`helm04`** | Helm Subcharts & Global Values | [`../playground/index.html?exercise=helm04`](../playground/index.html?exercise=helm04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=helm04){ .md-button .md-button--primary } |

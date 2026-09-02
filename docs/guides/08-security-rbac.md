@@ -3,7 +3,7 @@
 <div class="grid cards" markdown>
 
 -   :material-school: **Topic Focus** &bull; ServiceAccounts, Roles, ClusterRoles, SecurityContext, and PSS
--   :material-play-circle: **Interactive Challenges** &bull; 5 Hands-on Exercises
+-   :material-api: **Primary APIs** &bull; `rbac.authorization.k8s.io/v1`, `v1` &bull; `Role`, `ClusterRole`, `RoleBinding`, `ServiceAccount`
 -   :material-rocket-launch: [**Launch Playground in Wasm →**](../playground/index.html?chapter=8){ .md-button .md-button--primary }
 
 </div>
@@ -12,80 +12,163 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Security, RBAC & Service Accounts** represents fundamental declarative resources managed through continuous control loops. 
+In Kubernetes, **Security, RBAC & Service Accounts** is reconciled through declarative state loops managed by the control plane:
 
 ```text
-    ┌──────────────────────┐          Declarative Manifest (YAML)
-    │   kube-apiserver     │ ◄─────────────────────────────────────────────
-    └──────────┬───────────┘
-               │ (Watches & Stores in etcd)
-               ▼
-    ┌──────────────────────┐          Reconciles Desired State vs Actual State
-    │  Controller / Daemon │ ─────────────────────────────────────────────► [ Cluster State ]
-    └──────────────────────┘
+┌───────────────────────────┐
+    │      ServiceAccount       │ ◄── Injected into Pod JWT Token
+    └─────────────┬─────────────┘
+                  │ Bound via RoleBinding
+                  ▼
+    ┌───────────────────────────┐
+    │     Role / ClusterRole    │ ◄── Rules: apiGroups, resources, verbs
+    └─────────────┬─────────────┘
+                  │ Authorizes
+                  ▼
+    ┌───────────────────────────┐
+    │       kube-apiserver      │ ──► [ GET /api/v1/namespaces/default/pods ] ✓
+    └───────────────────────────┘
 ```
 
-When you declare resources for this domain, the Kubernetes API Server validates the OpenAPI v3 schema, persists the specification to etcd, and signals the responsible controller or node daemon to reconcile actual state with your desired specification.
+When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
 
 ---
 
-## 2. Annotated YAML Anatomy & Schema Reference
+## 2. Annotated Production YAML Anatomy & Field Reference
 
-Below is a production-ready declarative manifest illustrating key fields, structure, and configuration semantics for this chapter:
+Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:
 
 ```yaml
-
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: deployment-manager
+  namespace: production
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: deployment-operator
+  namespace: production
+rules:
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets"]
+  verbs: ["get", "list", "watch", "create", "update", "patch"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: bind-deployment-operator
+  namespace: production
+subjects:
+- kind: ServiceAccount
+  name: deployment-manager
+  namespace: production
+roleRef:
+  kind: Role
+  name: deployment-operator
+  apiGroup: rbac.authorization.k8s.io
 ```
 
-### Key Field Reference
+### Key Field Schema Reference
 
-- **`apiVersion`**: The target API group and version for the resource schema.
-- **`kind`**: The resource type identifier.
-- **`metadata.name`**: Unique DNS-1123 compliant identifier for this resource within its namespace.
-- **`metadata.labels`**: Key-value pairs used by selectors, services, and queries.
-- **`spec`**: The desired state specification managed by Kubernetes controllers.
-
----
-
-## 3. Production Best Practices & Hardening Guidelines
-
-1. **Explicit Resource Declarations**: Always specify resource constraints (`requests` and `limits`) to ensure predictable scheduling and prevent node resource starvation.
-2. **Immutable Identifiers & Clear Labeling**: Use standard Kubernetes recommended labels (`app.kubernetes.io/name`, `app.kubernetes.io/instance`, `app.kubernetes.io/version`, `app.kubernetes.io/component`).
-3. **Defense in Depth**: Follow least-privilege security principles (e.g. `runAsNonRoot: true`, `readOnlyRootFilesystem: true`, dropping all unnecessary Linux capabilities).
-4. **Health Check Probes**: Configure comprehensive startup, liveness, and readiness probes with appropriate failure thresholds and timing delays.
-5. **Declarative GitOps Management**: Maintain all manifests in version control and deploy through automated reconciliation pipelines.
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `rules[*].apiGroups` | `Array` | Target API group (`""` for core v1, `"apps"`, `"networking.k8s.io"`). |
+| `rules[*].resources` | `Array` | Kubernetes resource nouns (`pods`, `deployments`, `configmaps`). |
+| `rules[*].verbs` | `Array` | Permitted operations (`get`, `list`, `watch`, `create`, `update`, `patch`, `delete`). |
 
 ---
 
-## 4. Troubleshooting & Diagnostic Workflows
+## 3. Real-World Architectural Patterns
 
-When inspecting or debugging resources in this category, use the following triage sequence:
+### ClusterRole for Cross-Namespace Read-Only Audit
 
-```bash
-# 1. Check resource status and conditions
-kubectl get rbac -o wide
-
-# 2. Inspect detailed control plane events and controller messages
-kubectl describe rbac <resource-name>
-
-# 3. Stream real-time logs (if applicable)
-kubectl logs -l app=<label> --tail=100 -f
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cluster-viewer
+rules:
+- apiGroups: ["", "apps", "batch", "networking.k8s.io"]
+  resources: ["*"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: bind-cluster-viewer
+subjects:
+- kind: ServiceAccount
+  name: auditor
+  namespace: security-tools
+roleRef:
+  kind: ClusterRole
+  name: cluster-viewer
+  apiGroup: rbac.authorization.k8s.io
 ```
 
+### Pod Security Standard Restricted SecurityContext
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hardened-secure-pod
+spec:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    fsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: secure-app
+    image: alpine:3.20
+    command: ["sleep", "3600"]
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+        - ALL
+```
+
+
 ---
 
-## 5. Interactive Practice Exercises
+## 4. Production Hardening & Operational Governance
 
-Practice the concepts from this chapter directly in your browser using our client-side WebAssembly environment:
+- Follow the Principle of Least Privilege: never grant wildcard `*` permissions in production RoleBindings.
+- Disable automatic ServiceAccount token mounting with `automountServiceAccountToken: false` on pods that do not interact with the API Server.
+- Enforce Pod Security Standards (`pod-security.kubernetes.io/enforce: restricted`) at the Namespace level.
 
-- [**`rbac01`**: ServiceAccounts & Token Management](../playground/index.html?exercise=rbac01)
-- [**`rbac02`**: Roles & RoleBindings](../playground/index.html?exercise=rbac02)
-- [**`rbac03`**: ClusterRoles & ClusterRoleBindings](../playground/index.html?exercise=rbac03)
-- [**`rbac04`**: Pod & Container SecurityContext](../playground/index.html?exercise=rbac04)
-- [**`rbac05`**: Pod Security Standards (PSS/PSA)](../playground/index.html?exercise=rbac05)
+---
 
-<div style="margin-top: 1.5rem;">
-  <a href="../playground/index.html?chapter=8" class="md-button md-button--primary">
-    ⚡ Practice Chapter 08 in WebAssembly Playground →
-  </a>
-</div>
+## 5. Failure Modes & Diagnostic Triage Tree
+
+??? failure "API Request `403 Forbidden`"
+    **Root Cause:** ServiceAccount lacks RBAC verb or resource permission.
+
+    **Diagnostic Triage Sequence:**
+    1. Test authorization: `kubectl auth can-i create deployments --as=system:serviceaccount:production:deployment-manager -n production`
+2. Inspect RoleBinding subjects and roleRef matching.
+
+
+---
+
+## 6. Interactive Practice Matrix
+
+Practice concepts from this chapter directly in the interactive WebAssembly sandbox:
+
+| Exercise ID | Challenge Description | Direct Link | Action |
+| :--- | :--- | :--- | :--- |
+| **`rbac01`** | ServiceAccounts & Token Management | [`../playground/index.html?exercise=rbac01`](../playground/index.html?exercise=rbac01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=rbac01){ .md-button .md-button--primary } |
+| **`rbac02`** | Roles & RoleBindings | [`../playground/index.html?exercise=rbac02`](../playground/index.html?exercise=rbac02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=rbac02){ .md-button .md-button--primary } |
+| **`rbac03`** | ClusterRoles & ClusterRoleBindings | [`../playground/index.html?exercise=rbac03`](../playground/index.html?exercise=rbac03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=rbac03){ .md-button .md-button--primary } |
+| **`rbac04`** | Pod & Container SecurityContext | [`../playground/index.html?exercise=rbac04`](../playground/index.html?exercise=rbac04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=rbac04){ .md-button .md-button--primary } |
+| **`rbac05`** | Pod Security Standards (PSS/PSA) | [`../playground/index.html?exercise=rbac05`](../playground/index.html?exercise=rbac05) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=rbac05){ .md-button .md-button--primary } |

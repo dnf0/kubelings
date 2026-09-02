@@ -3,7 +3,7 @@
 <div class="grid cards" markdown>
 
 -   :material-school: **Topic Focus** &bull; Process Execution Auditing, Sensitive File Tracing, Kernel Sigkill Actions, and Socket Probes
--   :material-play-circle: **Interactive Challenges** &bull; 4 Hands-on Exercises
+-   :material-api: **Primary APIs** &bull; `cilium.io/v1alpha1` &bull; `TracingPolicy`, `TracingPolicyNamespaced`
 -   :material-rocket-launch: [**Launch Playground in Wasm →**](../playground/index.html?chapter=23){ .md-button .md-button--primary }
 
 </div>
@@ -12,79 +12,147 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Kernel-Level Security & Observability with eBPF Tetragon** represents fundamental declarative resources managed through continuous control loops. 
+In Kubernetes, **Kernel-Level Security & Observability with eBPF Tetragon** is reconciled through declarative state loops managed by the control plane:
 
 ```text
-    ┌──────────────────────┐          Declarative Manifest (YAML)
-    │   kube-apiserver     │ ◄─────────────────────────────────────────────
-    └──────────┬───────────┘
-               │ (Watches & Stores in etcd)
-               ▼
-    ┌──────────────────────┐          Reconciles Desired State vs Actual State
-    │  Controller / Daemon │ ─────────────────────────────────────────────► [ Cluster State ]
-    └──────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+    │                         Linux Kernel                        │
+    │  System Calls: `sys_execve`, `sys_openat`, `sys_socket`     │
+    │  ┌───────────────────────────────────────────────────────┐  │
+    │  │             Tetragon eBPF In-Kernel Probe             │  │
+    │  │  • Real-time Process Ancestry & Namespace Tracing     │  │
+    │  │  • In-Kernel Kill Action (Synchronous SIGKILL)        │  │
+    │  └───────────────────────────────────────────────────────┘  │
+    └─────────────────────────────┬───────────────────────────────┘
+                                  │ JSON Security Event Log
+                                  ▼
+    ┌─────────────────────────────────────────────────────────────┐
+    │                 SIEM / Alerting Pipeline                    │
+    └─────────────────────────────────────────────────────────────┘
 ```
 
-When you declare resources for this domain, the Kubernetes API Server validates the OpenAPI v3 schema, persists the specification to etcd, and signals the responsible controller or node daemon to reconcile actual state with your desired specification.
+When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
 
 ---
 
-## 2. Annotated YAML Anatomy & Schema Reference
+## 2. Annotated Production YAML Anatomy & Field Reference
 
-Below is a production-ready declarative manifest illustrating key fields, structure, and configuration semantics for this chapter:
+Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:
 
 ```yaml
-
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: block-privilege-escalation-exec
+spec:
+  kprobes:
+  - call: "sys_execve"
+    syscall: true
+    args:
+    - index: 0
+      type: "string"
+    selectors:
+    - matchArgs:
+      - index: 0
+        operator: "Prefix"
+        values:
+        - "/bin/nc"
+        - "/usr/bin/ncat"
+        - "/bin/netcat"
+      matchActions:
+      - action: Sigkill
 ```
 
-### Key Field Reference
+### Key Field Schema Reference
 
-- **`apiVersion`**: The target API group and version for the resource schema.
-- **`kind`**: The resource type identifier.
-- **`metadata.name`**: Unique DNS-1123 compliant identifier for this resource within its namespace.
-- **`metadata.labels`**: Key-value pairs used by selectors, services, and queries.
-- **`spec`**: The desired state specification managed by Kubernetes controllers.
-
----
-
-## 3. Production Best Practices & Hardening Guidelines
-
-1. **Explicit Resource Declarations**: Always specify resource constraints (`requests` and `limits`) to ensure predictable scheduling and prevent node resource starvation.
-2. **Immutable Identifiers & Clear Labeling**: Use standard Kubernetes recommended labels (`app.kubernetes.io/name`, `app.kubernetes.io/instance`, `app.kubernetes.io/version`, `app.kubernetes.io/component`).
-3. **Defense in Depth**: Follow least-privilege security principles (e.g. `runAsNonRoot: true`, `readOnlyRootFilesystem: true`, dropping all unnecessary Linux capabilities).
-4. **Health Check Probes**: Configure comprehensive startup, liveness, and readiness probes with appropriate failure thresholds and timing delays.
-5. **Declarative GitOps Management**: Maintain all manifests in version control and deploy through automated reconciliation pipelines.
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `kprobes` | `Array` | Attaches eBPF probes to kernel symbols and system calls. |
+| `selectors[*].matchArgs` | `Array` | Filters system call arguments (file paths, sockets, flags). |
+| `selectors[*].matchActions` | `Array` | Action dispatched upon match (e.g. `Sigkill` terminates process immediately in kernel). |
 
 ---
 
-## 4. Troubleshooting & Diagnostic Workflows
+## 3. Real-World Architectural Patterns
 
-When inspecting or debugging resources in this category, use the following triage sequence:
+### Detect Sensitive File Access (/etc/shadow)
 
-```bash
-# 1. Check resource status and conditions
-kubectl get tetragon -o wide
-
-# 2. Inspect detailed control plane events and controller messages
-kubectl describe tetragon <resource-name>
-
-# 3. Stream real-time logs (if applicable)
-kubectl logs -l app=<label> --tail=100 -f
+```yaml
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: detect-shadow-file-access
+spec:
+  kprobes:
+  - call: "fd_install"
+    syscall: false
+    args:
+    - index: 1
+      type: "file"
+    selectors:
+    - matchArgs:
+      - index: 1
+        operator: "Prefix"
+        values:
+        - "/etc/shadow"
+      matchActions:
+      - action: Post
 ```
 
+### Namespaced Tracing Policy for Production Workloads
+
+```yaml
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicyNamespaced
+metadata:
+  name: restrict-shell-in-pod
+  namespace: payment-apps
+spec:
+  kprobes:
+  - call: "sys_execve"
+    syscall: true
+    args:
+    - index: 0
+      type: "string"
+    selectors:
+    - matchArgs:
+      - index: 0
+        operator: "Prefix"
+        values: ["/bin/sh", "/bin/bash"]
+      matchActions:
+      - action: Sigkill
+```
+
+
 ---
 
-## 5. Interactive Practice Exercises
+## 4. Production Hardening & Operational Governance
 
-Practice the concepts from this chapter directly in your browser using our client-side WebAssembly environment:
+- Use `Sigkill` actions on reverse shell binaries (`nc`, `ncat`, `socat`) in production namespaces.
+- Enforce Namespaced TracingPolicies so security rules follow application boundaries.
+- Forward Tetragon JSON audit logs (`tetra getevents -o compact`) to SIEM systems for forensic audits.
 
-- [**`tetragon01`**: Process Execution Tracing with sys_execve](../playground/index.html?exercise=tetragon01)
-- [**`tetragon02`**: Sensitive File & Credential Access Auditing](../playground/index.html?exercise=tetragon02)
-- [**`tetragon03`**: Real-Time Kernel Sigkill Enforcement](../playground/index.html?exercise=tetragon03)
-- [**`tetragon04`**: eBPF TCP Socket & Network Egress Observability](../playground/index.html?exercise=tetragon04)
+---
 
-<div style="margin-top: 1.5rem;">
-  <a href="../playground/index.html?chapter=23" class="md-button md-button--primary">
-    ⚡ Practice Chapter 23 in WebAssembly Playground →
-  </a>
-</div>
+## 5. Failure Modes & Diagnostic Triage Tree
+
+??? failure "Process Terminated Unexpectedly with `SIGKILL`"
+    **Root Cause:** Workload executed a binary blocked by an active TracingPolicy.
+
+    **Diagnostic Triage Sequence:**
+    1. Inspect Tetragon logs: `kubectl logs -n kube-system -l app.kubernetes.io/name=tetragon -c tetragon --tail=100`
+2. Stream live events: `tetra getevents --namespace <namespace>`
+
+
+---
+
+## 6. Interactive Practice Matrix
+
+Practice concepts from this chapter directly in the interactive WebAssembly sandbox:
+
+| Exercise ID | Challenge Description | Direct Link | Action |
+| :--- | :--- | :--- | :--- |
+| **`tetragon01`** | Process Execution Tracing with sys_execve | [`../playground/index.html?exercise=tetragon01`](../playground/index.html?exercise=tetragon01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=tetragon01){ .md-button .md-button--primary } |
+| **`tetragon02`** | Sensitive File & Credential Access Auditing | [`../playground/index.html?exercise=tetragon02`](../playground/index.html?exercise=tetragon02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=tetragon02){ .md-button .md-button--primary } |
+| **`tetragon03`** | Real-Time Kernel Sigkill Enforcement | [`../playground/index.html?exercise=tetragon03`](../playground/index.html?exercise=tetragon03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=tetragon03){ .md-button .md-button--primary } |
+| **`tetragon04`** | eBPF TCP Socket & Network Egress Observability | [`../playground/index.html?exercise=tetragon04`](../playground/index.html?exercise=tetragon04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=tetragon04){ .md-button .md-button--primary } |

@@ -3,7 +3,7 @@
 <div class="grid cards" markdown>
 
 -   :material-school: **Topic Focus** &bull; Kueue Cohort Borrowing, Suspended Workloads, Volcano Gang Scheduling, and Fair-Share Queues
--   :material-play-circle: **Interactive Challenges** &bull; 4 Hands-on Exercises
+-   :material-api: **Primary APIs** &bull; `kueue.x-k8s.io/v1beta1`, `scheduling.volcano.sh/v1beta1` &bull; `ClusterQueue`, `LocalQueue`, `PodGroup`
 -   :material-rocket-launch: [**Launch Playground in Wasm →**](../playground/index.html?chapter=25){ .md-button .md-button--primary }
 
 </div>
@@ -12,79 +12,143 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **AI Batch Scheduling & Queuing with Kueue and Volcano** represents fundamental declarative resources managed through continuous control loops. 
+In Kubernetes, **AI Batch Scheduling & Queuing with Kueue and Volcano** is reconciled through declarative state loops managed by the control plane:
 
 ```text
-    ┌──────────────────────┐          Declarative Manifest (YAML)
-    │   kube-apiserver     │ ◄─────────────────────────────────────────────
-    └──────────┬───────────┘
-               │ (Watches & Stores in etcd)
-               ▼
-    ┌──────────────────────┐          Reconciles Desired State vs Actual State
-    │  Controller / Daemon │ ─────────────────────────────────────────────► [ Cluster State ]
-    └──────────────────────┘
+┌───────────────────────────┐
+    │   User Submitted Jobs     │ ──► [ LocalQueue (Namespace A) ]
+    └───────────────────────────┘                     │
+                                                      ▼
+    ┌─────────────────────────────────────────────────────────────┐
+    │                      ClusterQueue                           │
+    │  • Cohort Borrowing (Shares idle capacity between teams)    │
+    │  • Preemption & Fair-Share Scheduling                       │
+    └─────────────────────────────┬───────────────────────────────┘
+                                  │ Admits Workload
+                                  ▼
+    ┌─────────────────────────────────────────────────────────────┐
+    │          Gang Scheduling (Volcano / Coscheduling)           │
+    │          [ All N Pods Scheduled Simultaneously or None ]   │
+    └─────────────────────────────────────────────────────────────┘
 ```
 
-When you declare resources for this domain, the Kubernetes API Server validates the OpenAPI v3 schema, persists the specification to etcd, and signals the responsible controller or node daemon to reconcile actual state with your desired specification.
+When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
 
 ---
 
-## 2. Annotated YAML Anatomy & Schema Reference
+## 2. Annotated Production YAML Anatomy & Field Reference
 
-Below is a production-ready declarative manifest illustrating key fields, structure, and configuration semantics for this chapter:
+Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:
 
 ```yaml
-
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: ClusterQueue
+metadata:
+  name: research-cluster-queue
+spec:
+  namespaceSelector: {}
+  cohort: engineering-cohort
+  resourceGroups:
+  - coveredResources: ["cpu", "memory", "nvidia.com/gpu"]
+    flavors:
+    - name: standard-flavor
+      resources:
+      - name: "cpu"
+        nominalQuota: "32"
+        borrowingLimit: "16"
+      - name: "memory"
+        nominalQuota: 128Gi
+      - name: "nvidia.com/gpu"
+        nominalQuota: "8"
+---
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: LocalQueue
+metadata:
+  name: research-team-queue
+  namespace: research-ns
+spec:
+  clusterQueue: research-cluster-queue
 ```
 
-### Key Field Reference
+### Key Field Schema Reference
 
-- **`apiVersion`**: The target API group and version for the resource schema.
-- **`kind`**: The resource type identifier.
-- **`metadata.name`**: Unique DNS-1123 compliant identifier for this resource within its namespace.
-- **`metadata.labels`**: Key-value pairs used by selectors, services, and queries.
-- **`spec`**: The desired state specification managed by Kubernetes controllers.
-
----
-
-## 3. Production Best Practices & Hardening Guidelines
-
-1. **Explicit Resource Declarations**: Always specify resource constraints (`requests` and `limits`) to ensure predictable scheduling and prevent node resource starvation.
-2. **Immutable Identifiers & Clear Labeling**: Use standard Kubernetes recommended labels (`app.kubernetes.io/name`, `app.kubernetes.io/instance`, `app.kubernetes.io/version`, `app.kubernetes.io/component`).
-3. **Defense in Depth**: Follow least-privilege security principles (e.g. `runAsNonRoot: true`, `readOnlyRootFilesystem: true`, dropping all unnecessary Linux capabilities).
-4. **Health Check Probes**: Configure comprehensive startup, liveness, and readiness probes with appropriate failure thresholds and timing delays.
-5. **Declarative GitOps Management**: Maintain all manifests in version control and deploy through automated reconciliation pipelines.
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `ClusterQueue` | `Cluster Resource` | Pools cluster-wide compute resources and establishes quotas, borrowing limits, and preemption policies. |
+| `cohort` | `String` | Enables capacity sharing: queues in the same cohort can borrow unused quota from sister queues. |
+| `LocalQueue` | `Namespace Resource` | Submission queue in a specific namespace pointing to an upstream ClusterQueue. |
 
 ---
 
-## 4. Troubleshooting & Diagnostic Workflows
+## 3. Real-World Architectural Patterns
 
-When inspecting or debugging resources in this category, use the following triage sequence:
+### Volcano Gang Scheduling PodGroup
 
-```bash
-# 1. Check resource status and conditions
-kubectl get volcano -o wide
-
-# 2. Inspect detailed control plane events and controller messages
-kubectl describe volcano <resource-name>
-
-# 3. Stream real-time logs (if applicable)
-kubectl logs -l app=<label> --tail=100 -f
+```yaml
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: distributed-training-pg
+  namespace: default
+spec:
+  minMember: 4
+  minResources:
+    cpu: "8"
+    memory: "32Gi"
 ```
 
+### Kueue-Managed Batch Job Submission
+
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sample-batch-analysis
+  namespace: research-ns
+  labels:
+    kueue.x-k8s.io/queue-name: research-team-queue
+spec:
+  parallelism: 4
+  completions: 4
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: worker
+        image: python:3.12-slim
+        command: ["python", "-c", "print('Batch step complete')"]
+```
+
+
 ---
 
-## 5. Interactive Practice Exercises
+## 4. Production Hardening & Operational Governance
 
-Practice the concepts from this chapter directly in your browser using our client-side WebAssembly environment:
+- Use Gang Scheduling (`minMember`) for distributed PyTorch/JAX training to avoid deadlock where half the workers occupy GPUs waiting forever for missing peers.
+- Establish `borrowingLimit` bounds to prevent a single team from monopolizing cohort resources.
+- Enable preemption rules to allow high-priority production jobs to reclaim borrowed capacity.
 
-- [**`kueue01`**: Kueue ResourceFlavor & ClusterQueue Cohort Borrowing](../playground/index.html?exercise=kueue01)
-- [**`kueue02`**: Kueue LocalQueue & Suspended Workload Gating](../playground/index.html?exercise=kueue02)
-- [**`volcano01`**: Volcano Gang Scheduling & Deadlock Prevention](../playground/index.html?exercise=volcano01)
-- [**`volcano02`**: Volcano Queue & Fair-Share Scheduling](../playground/index.html?exercise=volcano02)
+---
 
-<div style="margin-top: 1.5rem;">
-  <a href="../playground/index.html?chapter=25" class="md-button md-button--primary">
-    ⚡ Practice Chapter 25 in WebAssembly Playground →
-  </a>
-</div>
+## 5. Failure Modes & Diagnostic Triage Tree
+
+??? failure "Job Inactive / Workload Not Admitted by Kueue"
+    **Root Cause:** ClusterQueue nominal quota and borrowing limits are exhausted.
+
+    **Diagnostic Triage Sequence:**
+    1. Inspect Kueue Workload: `kubectl get workloads -n <namespace>`
+2. Check ClusterQueue status: `kubectl describe clusterqueue <name>`
+
+
+---
+
+## 6. Interactive Practice Matrix
+
+Practice concepts from this chapter directly in the interactive WebAssembly sandbox:
+
+| Exercise ID | Challenge Description | Direct Link | Action |
+| :--- | :--- | :--- | :--- |
+| **`kueue01`** | Kueue ResourceFlavor & ClusterQueue Cohort Borrowing | [`../playground/index.html?exercise=kueue01`](../playground/index.html?exercise=kueue01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=kueue01){ .md-button .md-button--primary } |
+| **`kueue02`** | Kueue LocalQueue & Suspended Workload Gating | [`../playground/index.html?exercise=kueue02`](../playground/index.html?exercise=kueue02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=kueue02){ .md-button .md-button--primary } |
+| **`volcano01`** | Volcano Gang Scheduling & Deadlock Prevention | [`../playground/index.html?exercise=volcano01`](../playground/index.html?exercise=volcano01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=volcano01){ .md-button .md-button--primary } |
+| **`volcano02`** | Volcano Queue & Fair-Share Scheduling | [`../playground/index.html?exercise=volcano02`](../playground/index.html?exercise=volcano02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=volcano02){ .md-button .md-button--primary } |

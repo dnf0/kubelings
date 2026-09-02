@@ -3,7 +3,7 @@
 <div class="grid cards" markdown>
 
 -   :material-school: **Topic Focus** &bull; Ingress Controllers, Path Routing, TLS, and Gateway API
--   :material-play-circle: **Interactive Challenges** &bull; 4 Hands-on Exercises
+-   :material-api: **Primary APIs** &bull; `networking.k8s.io/v1` &bull; `Ingress`, `IngressClass`
 -   :material-rocket-launch: [**Launch Playground in Wasm →**](../playground/index.html?chapter=6){ .md-button .md-button--primary }
 
 </div>
@@ -12,79 +12,172 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Ingress & Gateway API** represents fundamental declarative resources managed through continuous control loops. 
+In Kubernetes, **Ingress & Gateway API** is reconciled through declarative state loops managed by the control plane:
 
 ```text
-    ┌──────────────────────┐          Declarative Manifest (YAML)
-    │   kube-apiserver     │ ◄─────────────────────────────────────────────
-    └──────────┬───────────┘
-               │ (Watches & Stores in etcd)
-               ▼
-    ┌──────────────────────┐          Reconciles Desired State vs Actual State
-    │  Controller / Daemon │ ─────────────────────────────────────────────► [ Cluster State ]
-    └──────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+    │                        Internet                             │
+    └─────────────────────────────┬───────────────────────────────┘
+                                  │ HTTPS (Port 443 / TLS)
+                                  ▼
+    ┌─────────────────────────────────────────────────────────────┐
+    │          Ingress Controller (NGINX / Envoy / Traefik)       │
+    └──────────────┬──────────────────────────────┬───────────────┘
+                   │ /api/*                       │ /static/*
+                   ▼                              ▼
+    ┌─────────────────────────────┐┌──────────────────────────────┐
+    │ Service: `api-service:80`   ││ Service: `static-service:80` │
+    └─────────────────────────────┘└──────────────────────────────┘
 ```
 
-When you declare resources for this domain, the Kubernetes API Server validates the OpenAPI v3 schema, persists the specification to etcd, and signals the responsible controller or node daemon to reconcile actual state with your desired specification.
+When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
 
 ---
 
-## 2. Annotated YAML Anatomy & Schema Reference
+## 2. Annotated Production YAML Anatomy & Field Reference
 
-Below is a production-ready declarative manifest illustrating key fields, structure, and configuration semantics for this chapter:
+Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:
 
 ```yaml
-
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: production-ingress
+  namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - api.example.com
+    secretName: api-example-tls
+  rules:
+  - host: api.example.com
+    http:
+      paths:
+      - path: /v1
+        pathType: Prefix
+        backend:
+          service:
+            name: api-v1-service
+            port:
+              number: 80
+      - path: /v2
+        pathType: Prefix
+        backend:
+          service:
+            name: api-v2-service
+            port:
+              number: 80
 ```
 
-### Key Field Reference
+### Key Field Schema Reference
 
-- **`apiVersion`**: The target API group and version for the resource schema.
-- **`kind`**: The resource type identifier.
-- **`metadata.name`**: Unique DNS-1123 compliant identifier for this resource within its namespace.
-- **`metadata.labels`**: Key-value pairs used by selectors, services, and queries.
-- **`spec`**: The desired state specification managed by Kubernetes controllers.
-
----
-
-## 3. Production Best Practices & Hardening Guidelines
-
-1. **Explicit Resource Declarations**: Always specify resource constraints (`requests` and `limits`) to ensure predictable scheduling and prevent node resource starvation.
-2. **Immutable Identifiers & Clear Labeling**: Use standard Kubernetes recommended labels (`app.kubernetes.io/name`, `app.kubernetes.io/instance`, `app.kubernetes.io/version`, `app.kubernetes.io/component`).
-3. **Defense in Depth**: Follow least-privilege security principles (e.g. `runAsNonRoot: true`, `readOnlyRootFilesystem: true`, dropping all unnecessary Linux capabilities).
-4. **Health Check Probes**: Configure comprehensive startup, liveness, and readiness probes with appropriate failure thresholds and timing delays.
-5. **Declarative GitOps Management**: Maintain all manifests in version control and deploy through automated reconciliation pipelines.
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `spec.ingressClassName` | `String` | Selects the Ingress controller implementation responsible for parsing this resource. |
+| `spec.rules[*].http.paths[*].pathType` | `Enum` | `Prefix` (matches URI prefix), `Exact` (exact URI match), `ImplementationSpecific`. |
+| `spec.tls[*].secretName` | `String` | TLS Certificate secret containing `tls.crt` and `tls.key` keys. |
 
 ---
 
-## 4. Troubleshooting & Diagnostic Workflows
+## 3. Real-World Architectural Patterns
 
-When inspecting or debugging resources in this category, use the following triage sequence:
+### Host-Based Virtual Hosting Routing
 
-```bash
-# 1. Check resource status and conditions
-kubectl get gateway -o wide
-
-# 2. Inspect detailed control plane events and controller messages
-kubectl describe gateway <resource-name>
-
-# 3. Stream real-time logs (if applicable)
-kubectl logs -l app=<label> --tail=100 -f
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: multi-tenant-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: app1.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: app1-service
+            port:
+              number: 80
+  - host: app2.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: app2-service
+            port:
+              number: 80
 ```
 
+### Canary Traffic Splitting via Ingress Annotations
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-canary
+  annotations:
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-weight: "20"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: api.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: api-canary-service
+            port:
+              number: 80
+```
+
+
 ---
 
-## 5. Interactive Practice Exercises
+## 4. Production Hardening & Operational Governance
 
-Practice the concepts from this chapter directly in your browser using our client-side WebAssembly environment:
+- Enforce TLS 1.3 and automatic HTTP-to-HTTPS redirects across all public routes.
+- Integrate `cert-manager` for automated Let's Encrypt TLS certificate lifecycle and renewal.
+- Implement rate-limiting and request size restrictions via Ingress controller annotations.
 
-- [**`ingress01`**: Ingress Host & Path Routing](../playground/index.html?exercise=ingress01)
-- [**`ingress02`**: Ingress TLS Termination](../playground/index.html?exercise=ingress02)
-- [**`ingress03`**: Ingress Annotations & Rewrites](../playground/index.html?exercise=ingress03)
-- [**`ingress04`**: Gateway API Fundamentals](../playground/index.html?exercise=ingress04)
+---
 
-<div style="margin-top: 1.5rem;">
-  <a href="../playground/index.html?chapter=6" class="md-button md-button--primary">
-    ⚡ Practice Chapter 06 in WebAssembly Playground →
-  </a>
-</div>
+## 5. Failure Modes & Diagnostic Triage Tree
+
+??? failure "Ingress `404 Not Found`"
+    **Root Cause:** Path prefix or hostname does not match Ingress rule definitions.
+
+    **Diagnostic Triage Sequence:**
+    1. Verify Ingress rules: `kubectl describe ingress <name>`
+2. Verify Ingress Controller logs: `kubectl logs -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx`
+
+??? failure "Ingress `502 Bad Gateway`"
+    **Root Cause:** Target backend Service or Pod is offline or failing health probes.
+
+    **Diagnostic Triage Sequence:**
+    1. Verify backend Service endpoints: `kubectl get endpoints <service-name>`
+
+
+---
+
+## 6. Interactive Practice Matrix
+
+Practice concepts from this chapter directly in the interactive WebAssembly sandbox:
+
+| Exercise ID | Challenge Description | Direct Link | Action |
+| :--- | :--- | :--- | :--- |
+| **`ingress01`** | Ingress Host & Path Routing | [`../playground/index.html?exercise=ingress01`](../playground/index.html?exercise=ingress01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=ingress01){ .md-button .md-button--primary } |
+| **`ingress02`** | Ingress TLS Termination | [`../playground/index.html?exercise=ingress02`](../playground/index.html?exercise=ingress02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=ingress02){ .md-button .md-button--primary } |
+| **`ingress03`** | Ingress Annotations & Rewrites | [`../playground/index.html?exercise=ingress03`](../playground/index.html?exercise=ingress03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=ingress03){ .md-button .md-button--primary } |
+| **`ingress04`** | Gateway API Fundamentals | [`../playground/index.html?exercise=ingress04`](../playground/index.html?exercise=ingress04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=ingress04){ .md-button .md-button--primary } |

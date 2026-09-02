@@ -3,7 +3,7 @@
 <div class="grid cards" markdown>
 
 -   :material-school: **Topic Focus** &bull; Node Placement, Affinity, Taints, Tolerations, and Topology Spread
--   :material-play-circle: **Interactive Challenges** &bull; 5 Hands-on Exercises
+-   :material-api: **Primary APIs** &bull; `v1` &bull; `Pod`, `Node`
 -   :material-rocket-launch: [**Launch Playground in Wasm →**](../playground/index.html?chapter=7){ .md-button .md-button--primary }
 
 </div>
@@ -12,80 +12,169 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Scheduling, Affinity & Advanced Placement** represents fundamental declarative resources managed through continuous control loops. 
+In Kubernetes, **Scheduling, Affinity & Advanced Placement** is reconciled through declarative state loops managed by the control plane:
 
 ```text
-    ┌──────────────────────┐          Declarative Manifest (YAML)
-    │   kube-apiserver     │ ◄─────────────────────────────────────────────
-    └──────────┬───────────┘
-               │ (Watches & Stores in etcd)
-               ▼
-    ┌──────────────────────┐          Reconciles Desired State vs Actual State
-    │  Controller / Daemon │ ─────────────────────────────────────────────► [ Cluster State ]
-    └──────────────────────┘
+┌───────────────────────────┐
+    │      kube-scheduler       │
+    └─────────────┬─────────────┘
+                  │ 1. Filtering (Tolerations, NodeSelector, Affinity)
+                  │ 2. Scoring (Topology Spread, Resource Packing)
+                  ▼
+    ┌───────────────────────────┬───────────────────────────┐
+    │  Zone: us-east-1a         │  Zone: us-east-1b         │
+    │  [ Node A ] [ Node B ]    │  [ Node C ] [ Node D ]    │
+    └───────────────────────────┴───────────────────────────┘
 ```
 
-When you declare resources for this domain, the Kubernetes API Server validates the OpenAPI v3 schema, persists the specification to etcd, and signals the responsible controller or node daemon to reconcile actual state with your desired specification.
+When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
 
 ---
 
-## 2. Annotated YAML Anatomy & Schema Reference
+## 2. Annotated Production YAML Anatomy & Field Reference
 
-Below is a production-ready declarative manifest illustrating key fields, structure, and configuration semantics for this chapter:
+Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:
 
 ```yaml
-
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ha-workload
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: ha-app
+  template:
+    metadata:
+      labels:
+        app: ha-app
+    spec:
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app: ha-app
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/worker
+                operator: Exists
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: ha-app
+              topologyKey: kubernetes.io/hostname
+      tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "compute"
+        effect: "NoSchedule"
+      containers:
+      - name: app
+        image: nginx:1.27-alpine
 ```
 
-### Key Field Reference
+### Key Field Schema Reference
 
-- **`apiVersion`**: The target API group and version for the resource schema.
-- **`kind`**: The resource type identifier.
-- **`metadata.name`**: Unique DNS-1123 compliant identifier for this resource within its namespace.
-- **`metadata.labels`**: Key-value pairs used by selectors, services, and queries.
-- **`spec`**: The desired state specification managed by Kubernetes controllers.
-
----
-
-## 3. Production Best Practices & Hardening Guidelines
-
-1. **Explicit Resource Declarations**: Always specify resource constraints (`requests` and `limits`) to ensure predictable scheduling and prevent node resource starvation.
-2. **Immutable Identifiers & Clear Labeling**: Use standard Kubernetes recommended labels (`app.kubernetes.io/name`, `app.kubernetes.io/instance`, `app.kubernetes.io/version`, `app.kubernetes.io/component`).
-3. **Defense in Depth**: Follow least-privilege security principles (e.g. `runAsNonRoot: true`, `readOnlyRootFilesystem: true`, dropping all unnecessary Linux capabilities).
-4. **Health Check Probes**: Configure comprehensive startup, liveness, and readiness probes with appropriate failure thresholds and timing delays.
-5. **Declarative GitOps Management**: Maintain all manifests in version control and deploy through automated reconciliation pipelines.
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `topologySpreadConstraints` | `Array` | Distributes Pods evenly across zones/nodes to prevent single-zone outages (`maxSkew: 1`). |
+| `affinity.nodeAffinity` | `Object` | Directs Pod placement onto nodes matching specific hardware/architectural labels. |
+| `tolerations` | `Array` | Permits Pods to be scheduled on nodes tainted with `NoSchedule` or `NoExecute`. |
 
 ---
 
-## 4. Troubleshooting & Diagnostic Workflows
+## 3. Real-World Architectural Patterns
 
-When inspecting or debugging resources in this category, use the following triage sequence:
+### GPU Node Taint & Toleration Placement
 
-```bash
-# 1. Check resource status and conditions
-kubectl get scheduling -o wide
-
-# 2. Inspect detailed control plane events and controller messages
-kubectl describe scheduling <resource-name>
-
-# 3. Stream real-time logs (if applicable)
-kubectl logs -l app=<label> --tail=100 -f
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ml-inference-task
+spec:
+  tolerations:
+  - key: "nvidia.com/gpu"
+    operator: "Exists"
+    effect: "NoSchedule"
+  nodeSelector:
+    accelerator: nvidia-a100
+  containers:
+  - name: inference
+    image: python:3.12-slim
+    command: ["python", "-c", "print('Inference worker running...')"]
 ```
 
+### Pod Anti-Affinity for Zero Co-location
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: singleton-per-node
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: singleton
+  template:
+    metadata:
+      labels:
+        app: singleton
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app: singleton
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - name: app
+        image: nginx:alpine
+```
+
+
 ---
 
-## 5. Interactive Practice Exercises
+## 4. Production Hardening & Operational Governance
 
-Practice the concepts from this chapter directly in your browser using our client-side WebAssembly environment:
+- Use `topologySpreadConstraints` with `topologyKey: topology.kubernetes.io/zone` for multi-AZ clusters.
+- Use `preferredDuringScheduling` when soft affinity is desired to prevent unschedulable pod deadlocks.
+- Reserve specialized nodes (GPU, high-memory) using node taints to prevent general workloads from consuming expensive compute.
 
-- [**`sched01`**: Node Placement (nodeName & nodeSelector)](../playground/index.html?exercise=sched01)
-- [**`sched02`**: Node Affinity & Constraints](../playground/index.html?exercise=sched02)
-- [**`sched03`**: Pod Affinity & Pod Anti-Affinity](../playground/index.html?exercise=sched03)
-- [**`sched04`**: Taints and Tolerations](../playground/index.html?exercise=sched04)
-- [**`sched05`**: Topology Spread Constraints](../playground/index.html?exercise=sched05)
+---
 
-<div style="margin-top: 1.5rem;">
-  <a href="../playground/index.html?chapter=7" class="md-button md-button--primary">
-    ⚡ Practice Chapter 07 in WebAssembly Playground →
-  </a>
-</div>
+## 5. Failure Modes & Diagnostic Triage Tree
+
+??? failure "Pod Stuck in `Pending` (`0/10 nodes available`)"
+    **Root Cause:** Tolerations, affinity rules, or resource requests cannot be satisfied.
+
+    **Diagnostic Triage Sequence:**
+    1. Inspect scheduling failures: `kubectl describe pod <name>`
+2. Review node taints: `kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints`
+3. Review node labels: `kubectl get nodes --show-labels`
+
+
+---
+
+## 6. Interactive Practice Matrix
+
+Practice concepts from this chapter directly in the interactive WebAssembly sandbox:
+
+| Exercise ID | Challenge Description | Direct Link | Action |
+| :--- | :--- | :--- | :--- |
+| **`sched01`** | Node Placement (nodeName & nodeSelector) | [`../playground/index.html?exercise=sched01`](../playground/index.html?exercise=sched01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=sched01){ .md-button .md-button--primary } |
+| **`sched02`** | Node Affinity & Constraints | [`../playground/index.html?exercise=sched02`](../playground/index.html?exercise=sched02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=sched02){ .md-button .md-button--primary } |
+| **`sched03`** | Pod Affinity & Pod Anti-Affinity | [`../playground/index.html?exercise=sched03`](../playground/index.html?exercise=sched03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=sched03){ .md-button .md-button--primary } |
+| **`sched04`** | Taints and Tolerations | [`../playground/index.html?exercise=sched04`](../playground/index.html?exercise=sched04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=sched04){ .md-button .md-button--primary } |
+| **`sched05`** | Topology Spread Constraints | [`../playground/index.html?exercise=sched05`](../playground/index.html?exercise=sched05) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=sched05){ .md-button .md-button--primary } |

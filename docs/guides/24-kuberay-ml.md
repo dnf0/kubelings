@@ -3,7 +3,7 @@
 <div class="grid cards" markdown>
 
 -   :material-school: **Topic Focus** &bull; RayCluster Architectures, Heterogeneous Worker Pools, RayJob Batch Fine-Tuning, and RayService Serving
--   :material-play-circle: **Interactive Challenges** &bull; 4 Hands-on Exercises
+-   :material-api: **Primary APIs** &bull; `ray.io/v1` &bull; `RayCluster`, `RayJob`, `RayService`
 -   :material-rocket-launch: [**Launch Playground in Wasm →**](../playground/index.html?chapter=24){ .md-button .md-button--primary }
 
 </div>
@@ -12,79 +12,159 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Distributed AI & ML Orchestration with KubeRay** represents fundamental declarative resources managed through continuous control loops. 
+In Kubernetes, **Distributed AI & ML Orchestration with KubeRay** is reconciled through declarative state loops managed by the control plane:
 
 ```text
-    ┌──────────────────────┐          Declarative Manifest (YAML)
-    │   kube-apiserver     │ ◄─────────────────────────────────────────────
-    └──────────┬───────────┘
-               │ (Watches & Stores in etcd)
-               ▼
-    ┌──────────────────────┐          Reconciles Desired State vs Actual State
-    │  Controller / Daemon │ ─────────────────────────────────────────────► [ Cluster State ]
-    └──────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+    │                     RayCluster Topology                     │
+    │  ┌───────────────────────────────────────────────────────┐  │
+    │  │                  Ray Head Node Pod                    │  │
+    │  │  (GCS Metadata Store, Dashboard, Global Scheduler)   │  │
+    │  └──────────────────────────┬────────────────────────────┘  │
+    │                             │ Distributed Tasks & Actors    │
+    │              ┌──────────────┴──────────────┐                │
+    │              ▼                             ▼                │
+    │  ┌───────────────────────┐     ┌───────────────────────┐    │
+    │  │   Ray Worker Pod 1    │     │   Ray Worker Pod 2    │    │
+    │  │   (GPU Worker Group)  │     │   (CPU Worker Group)  │    │
+    │  └───────────────────────┘     └───────────────────────┘    │
+    └─────────────────────────────────────────────────────────────┘
 ```
 
-When you declare resources for this domain, the Kubernetes API Server validates the OpenAPI v3 schema, persists the specification to etcd, and signals the responsible controller or node daemon to reconcile actual state with your desired specification.
+When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
 
 ---
 
-## 2. Annotated YAML Anatomy & Schema Reference
+## 2. Annotated Production YAML Anatomy & Field Reference
 
-Below is a production-ready declarative manifest illustrating key fields, structure, and configuration semantics for this chapter:
+Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:
 
 ```yaml
-
+apiVersion: ray.io/v1
+kind: RayCluster
+metadata:
+  name: distributed-training-cluster
+  namespace: ml-workloads
+spec:
+  rayVersion: "2.35.0"
+  headGroupSpec:
+    rayStartParams:
+      dashboard-host: "0.0.0.0"
+    template:
+      spec:
+        containers:
+        - name: ray-head
+          image: rayproject/ray:2.35.0-py310
+          resources:
+            limits:
+              cpu: "2"
+              memory: "8Gi"
+            requests:
+              cpu: "1"
+              memory: "4Gi"
+  workerGroupSpecs:
+  - groupName: gpu-workers
+    replicas: 2
+    minReplicas: 1
+    maxReplicas: 8
+    rayStartParams: {}
+    template:
+      spec:
+        containers:
+        - name: ray-worker
+          image: rayproject/ray:2.35.0-py310-gpu
+          resources:
+            limits:
+              cpu: "4"
+              memory: "16Gi"
+            requests:
+              cpu: "2"
+              memory: "8Gi"
 ```
 
-### Key Field Reference
+### Key Field Schema Reference
 
-- **`apiVersion`**: The target API group and version for the resource schema.
-- **`kind`**: The resource type identifier.
-- **`metadata.name`**: Unique DNS-1123 compliant identifier for this resource within its namespace.
-- **`metadata.labels`**: Key-value pairs used by selectors, services, and queries.
-- **`spec`**: The desired state specification managed by Kubernetes controllers.
-
----
-
-## 3. Production Best Practices & Hardening Guidelines
-
-1. **Explicit Resource Declarations**: Always specify resource constraints (`requests` and `limits`) to ensure predictable scheduling and prevent node resource starvation.
-2. **Immutable Identifiers & Clear Labeling**: Use standard Kubernetes recommended labels (`app.kubernetes.io/name`, `app.kubernetes.io/instance`, `app.kubernetes.io/version`, `app.kubernetes.io/component`).
-3. **Defense in Depth**: Follow least-privilege security principles (e.g. `runAsNonRoot: true`, `readOnlyRootFilesystem: true`, dropping all unnecessary Linux capabilities).
-4. **Health Check Probes**: Configure comprehensive startup, liveness, and readiness probes with appropriate failure thresholds and timing delays.
-5. **Declarative GitOps Management**: Maintain all manifests in version control and deploy through automated reconciliation pipelines.
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `headGroupSpec` | `Object` | Configuration for Ray Head node (Global Control Store, scheduler, web dashboard). |
+| `workerGroupSpecs` | `Array` | Heterogeneous worker pools (CPU, GPU, high-memory) with independent autoscaling bounds. |
+| `RayJob` / `RayService` | `CRD` | `RayJob` submits batch training tasks to completion; `RayService` provides zero-downtime serving with Ray Serve. |
 
 ---
 
-## 4. Troubleshooting & Diagnostic Workflows
+## 3. Real-World Architectural Patterns
 
-When inspecting or debugging resources in this category, use the following triage sequence:
+### RayJob Batch Submission Spec
 
-```bash
-# 1. Check resource status and conditions
-kubectl get ml -o wide
-
-# 2. Inspect detailed control plane events and controller messages
-kubectl describe ml <resource-name>
-
-# 3. Stream real-time logs (if applicable)
-kubectl logs -l app=<label> --tail=100 -f
+```yaml
+apiVersion: ray.io/v1
+kind: RayJob
+metadata:
+  name: llm-finetuning-job
+  namespace: ml-workloads
+spec:
+  entrypoint: "python train.py --epochs 10"
+  shutdownAfterJobFinishes: true
+  rayClusterSpec:
+    rayVersion: "2.35.0"
+    headGroupSpec:
+      template:
+        spec:
+          containers:
+          - name: ray-head
+            image: rayproject/ray:2.35.0
 ```
 
+### RayService for Multi-Model Inference
+
+```yaml
+apiVersion: ray.io/v1
+kind: RayService
+metadata:
+  name: embedding-service
+  namespace: ml-workloads
+spec:
+  serviceUnhealthyThreshold: 300
+  rayClusterConfig:
+    rayVersion: "2.35.0"
+    headGroupSpec:
+      template:
+        spec:
+          containers:
+          - name: ray-head
+            image: rayproject/ray:2.35.0
+```
+
+
 ---
 
-## 5. Interactive Practice Exercises
+## 4. Production Hardening & Operational Governance
 
-Practice the concepts from this chapter directly in your browser using our client-side WebAssembly environment:
+- Use `shutdownAfterJobFinishes: true` on `RayJob` resources to release expensive cloud GPU instances immediately after training.
+- Deploy Ray clusters in isolated namespaces paired with ResourceQuotas.
+- Expose the Ray Dashboard (port 8265) through secure Ingress with OAuth/OIDC authentication.
 
-- [**`ray01`**: RayCluster Core Architecture & Head Node](../playground/index.html?exercise=ray01)
-- [**`ray02`**: Heterogeneous Worker Pools & Autoscaling](../playground/index.html?exercise=ray02)
-- [**`ray03`**: RayJob for Distributed Batch Fine-Tuning](../playground/index.html?exercise=ray03)
-- [**`ray04`**: RayService for Production LLM Serving](../playground/index.html?exercise=ray04)
+---
 
-<div style="margin-top: 1.5rem;">
-  <a href="../playground/index.html?chapter=24" class="md-button md-button--primary">
-    ⚡ Practice Chapter 24 in WebAssembly Playground →
-  </a>
-</div>
+## 5. Failure Modes & Diagnostic Triage Tree
+
+??? failure "Ray Worker Nodes Not Joining Cluster"
+    **Root Cause:** GCS connection failure or mismatched `rayVersion`.
+
+    **Diagnostic Triage Sequence:**
+    1. Inspect Head logs: `kubectl logs <head-pod-name> -c ray-head`
+2. Inspect Worker logs: `kubectl logs <worker-pod-name> -c ray-worker`
+
+
+---
+
+## 6. Interactive Practice Matrix
+
+Practice concepts from this chapter directly in the interactive WebAssembly sandbox:
+
+| Exercise ID | Challenge Description | Direct Link | Action |
+| :--- | :--- | :--- | :--- |
+| **`ray01`** | RayCluster Core Architecture & Head Node | [`../playground/index.html?exercise=ray01`](../playground/index.html?exercise=ray01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=ray01){ .md-button .md-button--primary } |
+| **`ray02`** | Heterogeneous Worker Pools & Autoscaling | [`../playground/index.html?exercise=ray02`](../playground/index.html?exercise=ray02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=ray02){ .md-button .md-button--primary } |
+| **`ray03`** | RayJob for Distributed Batch Fine-Tuning | [`../playground/index.html?exercise=ray03`](../playground/index.html?exercise=ray03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=ray03){ .md-button .md-button--primary } |
+| **`ray04`** | RayService for Production LLM Serving | [`../playground/index.html?exercise=ray04`](../playground/index.html?exercise=ray04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=ray04){ .md-button .md-button--primary } |

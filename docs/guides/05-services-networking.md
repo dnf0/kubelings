@@ -3,7 +3,7 @@
 <div class="grid cards" markdown>
 
 -   :material-school: **Topic Focus** &bull; ClusterIP, Headless, NodePort, LoadBalancer, and CoreDNS
--   :material-play-circle: **Interactive Challenges** &bull; 5 Hands-on Exercises
+-   :material-api: **Primary APIs** &bull; `v1`, `discovery.k8s.io/v1` &bull; `Service`, `EndpointSlice`
 -   :material-rocket-launch: [**Launch Playground in Wasm →**](../playground/index.html?chapter=5){ .md-button .md-button--primary }
 
 </div>
@@ -12,80 +12,136 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Services & Networking** represents fundamental declarative resources managed through continuous control loops. 
+In Kubernetes, **Services & Networking** is reconciled through declarative state loops managed by the control plane:
 
 ```text
-    ┌──────────────────────┐          Declarative Manifest (YAML)
-    │   kube-apiserver     │ ◄─────────────────────────────────────────────
-    └──────────┬───────────┘
-               │ (Watches & Stores in etcd)
-               ▼
-    ┌──────────────────────┐          Reconciles Desired State vs Actual State
-    │  Controller / Daemon │ ─────────────────────────────────────────────► [ Cluster State ]
-    └──────────────────────┘
+┌───────────────────────────┐
+    │     Client / Ingress      │
+    └─────────────┬─────────────┘
+                  │ DNS: `api.default.svc.cluster.local`
+                  ▼
+    ┌───────────────────────────┐
+    │   Service (ClusterIP)     │ ◄── Virtual IP (iptables / IPVS / eBPF)
+    └─────────────┬─────────────┘
+                  │ EndpointSlice Controller
+                  ▼
+    ┌───────────────────────────┐
+    │       EndpointSlice       │ ──► [ 10.244.1.12:8080 (Pod A) ]
+    │   (List of Healthy IPs)   │ ──► [ 10.244.2.45:8080 (Pod B) ]
+    └───────────────────────────┘
 ```
 
-When you declare resources for this domain, the Kubernetes API Server validates the OpenAPI v3 schema, persists the specification to etcd, and signals the responsible controller or node daemon to reconcile actual state with your desired specification.
+When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
 
 ---
 
-## 2. Annotated YAML Anatomy & Schema Reference
+## 2. Annotated Production YAML Anatomy & Field Reference
 
-Below is a production-ready declarative manifest illustrating key fields, structure, and configuration semantics for this chapter:
+Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:
 
 ```yaml
-
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: default
+  labels:
+    app: backend
+spec:
+  type: ClusterIP
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+  selector:
+    app: backend
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+    protocol: TCP
 ```
 
-### Key Field Reference
+### Key Field Schema Reference
 
-- **`apiVersion`**: The target API group and version for the resource schema.
-- **`kind`**: The resource type identifier.
-- **`metadata.name`**: Unique DNS-1123 compliant identifier for this resource within its namespace.
-- **`metadata.labels`**: Key-value pairs used by selectors, services, and queries.
-- **`spec`**: The desired state specification managed by Kubernetes controllers.
-
----
-
-## 3. Production Best Practices & Hardening Guidelines
-
-1. **Explicit Resource Declarations**: Always specify resource constraints (`requests` and `limits`) to ensure predictable scheduling and prevent node resource starvation.
-2. **Immutable Identifiers & Clear Labeling**: Use standard Kubernetes recommended labels (`app.kubernetes.io/name`, `app.kubernetes.io/instance`, `app.kubernetes.io/version`, `app.kubernetes.io/component`).
-3. **Defense in Depth**: Follow least-privilege security principles (e.g. `runAsNonRoot: true`, `readOnlyRootFilesystem: true`, dropping all unnecessary Linux capabilities).
-4. **Health Check Probes**: Configure comprehensive startup, liveness, and readiness probes with appropriate failure thresholds and timing delays.
-5. **Declarative GitOps Management**: Maintain all manifests in version control and deploy through automated reconciliation pipelines.
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `spec.type` | `Enum` | `ClusterIP` (internal virtual IP), `NodePort` (dedicated port on all nodes), `LoadBalancer` (cloud provider VIP), `ExternalName` (CNAME redirect). |
+| `spec.clusterIP: None` | `String` | Creates a Headless Service; DNS queries return raw Pod IPs directly instead of a virtual VIP. |
+| `spec.ports[*].targetPort` | `Integer / String` | The destination port exposed by container processes in matching Pods. |
 
 ---
 
-## 4. Troubleshooting & Diagnostic Workflows
+## 3. Real-World Architectural Patterns
 
-When inspecting or debugging resources in this category, use the following triage sequence:
+### Headless Service for Stateful Workloads
 
-```bash
-# 1. Check resource status and conditions
-kubectl get networking -o wide
-
-# 2. Inspect detailed control plane events and controller messages
-kubectl describe networking <resource-name>
-
-# 3. Stream real-time logs (if applicable)
-kubectl logs -l app=<label> --tail=100 -f
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-headless
+spec:
+  clusterIP: None
+  selector:
+    app: kafka
+  ports:
+  - name: tcp-kafka
+    port: 9092
+    targetPort: 9092
 ```
 
+### ExternalName Service for Cloud SaaS Integration
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: external-database
+spec:
+  type: ExternalName
+  externalName: db.production.rds.amazonaws.com
+```
+
+
 ---
 
-## 5. Interactive Practice Exercises
+## 4. Production Hardening & Operational Governance
 
-Practice the concepts from this chapter directly in your browser using our client-side WebAssembly environment:
+- Use `ClusterIP` as default; avoid exposing services as `NodePort` directly to public networks.
+- Configure readiness probes on Pods to guarantee traffic is routed only to warm, healthy endpoints.
+- Audit `EndpointSlice` scaling for large workloads (>1,000 pods) to prevent control plane memory pressure.
 
-- [**`net01`**: ClusterIP Services & Port Mapping](../playground/index.html?exercise=net01)
-- [**`net02`**: Headless Services & Stateful Addressing](../playground/index.html?exercise=net02)
-- [**`net03`**: NodePort & LoadBalancer Service Types](../playground/index.html?exercise=net03)
-- [**`net04`**: CoreDNS Internal Service Resolution](../playground/index.html?exercise=net04)
-- [**`net05`**: ExternalName Services & Manual Endpoints](../playground/index.html?exercise=net05)
+---
 
-<div style="margin-top: 1.5rem;">
-  <a href="../playground/index.html?chapter=5" class="md-button md-button--primary">
-    ⚡ Practice Chapter 05 in WebAssembly Playground →
-  </a>
-</div>
+## 5. Failure Modes & Diagnostic Triage Tree
+
+??? failure "Service Has No Endpoints (`503` / Connection Refused)"
+    **Root Cause:** Service selector does not match any Pod labels, or Pod readiness probes are failing.
+
+    **Diagnostic Triage Sequence:**
+    1. Check matching endpoints: `kubectl get endpoints <service-name>`
+2. Verify Pod labels: `kubectl get pods --show-labels`
+3. Verify container port binding: `kubectl get pods -o jsonpath='{.items[*].spec.containers[*].ports}'`
+
+??? failure "CoreDNS Name Resolution Failure"
+    **Root Cause:** DNS lookup fails for `service.namespace.svc.cluster.local`.
+
+    **Diagnostic Triage Sequence:**
+    1. Test from inside cluster: `kubectl run curl --rm -it --image=curlimages/curl -- nslookup <service-name>`
+2. Check CoreDNS pods: `kubectl get pods -n kube-system -l k8s-app=kube-dns`.
+
+
+---
+
+## 6. Interactive Practice Matrix
+
+Practice concepts from this chapter directly in the interactive WebAssembly sandbox:
+
+| Exercise ID | Challenge Description | Direct Link | Action |
+| :--- | :--- | :--- | :--- |
+| **`net01`** | ClusterIP Services & Port Mapping | [`../playground/index.html?exercise=net01`](../playground/index.html?exercise=net01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=net01){ .md-button .md-button--primary } |
+| **`net02`** | Headless Services & Stateful Addressing | [`../playground/index.html?exercise=net02`](../playground/index.html?exercise=net02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=net02){ .md-button .md-button--primary } |
+| **`net03`** | NodePort & LoadBalancer Service Types | [`../playground/index.html?exercise=net03`](../playground/index.html?exercise=net03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=net03){ .md-button .md-button--primary } |
+| **`net04`** | CoreDNS Internal Service Resolution | [`../playground/index.html?exercise=net04`](../playground/index.html?exercise=net04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=net04){ .md-button .md-button--primary } |
+| **`net05`** | ExternalName Services & Manual Endpoints | [`../playground/index.html?exercise=net05`](../playground/index.html?exercise=net05) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=net05){ .md-button .md-button--primary } |

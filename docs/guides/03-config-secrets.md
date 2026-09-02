@@ -3,7 +3,7 @@
 <div class="grid cards" markdown>
 
 -   :material-school: **Topic Focus** &bull; ConfigMaps, Secrets, In-Memory Mounts, and Immutability
--   :material-play-circle: **Interactive Challenges** &bull; 5 Hands-on Exercises
+-   :material-api: **Primary APIs** &bull; `v1` &bull; `ConfigMap`, `Secret`
 -   :material-rocket-launch: [**Launch Playground in Wasm →**](../playground/index.html?chapter=3){ .md-button .md-button--primary }
 
 </div>
@@ -12,80 +12,150 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Configuration & Secret Management** represents fundamental declarative resources managed through continuous control loops. 
+In Kubernetes, **Configuration & Secret Management** is reconciled through declarative state loops managed by the control plane:
 
 ```text
-    ┌──────────────────────┐          Declarative Manifest (YAML)
-    │   kube-apiserver     │ ◄─────────────────────────────────────────────
-    └──────────┬───────────┘
-               │ (Watches & Stores in etcd)
-               ▼
-    ┌──────────────────────┐          Reconciles Desired State vs Actual State
-    │  Controller / Daemon │ ─────────────────────────────────────────────► [ Cluster State ]
-    └──────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+    │                      Kubernetes API                         │
+    │   ┌────────────────────┐          ┌─────────────────────┐   │
+    │   │  ConfigMap (Plain) │          │ Secret (Base64/KMS) │   │
+    │   └─────────┬──────────┘          └──────────┬──────────┘   │
+    └─────────────┼────────────────────────────────┼──────────────┘
+                  │                                │
+                  ▼ Mounted as Files / Env Vars    ▼
+    ┌─────────────────────────────────────────────────────────────┐
+    │                         Pod Spec                            │
+    │  • envFrom: configMapRef / secretRef                        │
+    │  • volumes.configMap -> /etc/config                         │
+    │  • volumes.secret    -> /etc/secrets (tmpfs memory)         │
+    └─────────────────────────────────────────────────────────────┘
 ```
 
-When you declare resources for this domain, the Kubernetes API Server validates the OpenAPI v3 schema, persists the specification to etcd, and signals the responsible controller or node daemon to reconcile actual state with your desired specification.
+When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
 
 ---
 
-## 2. Annotated YAML Anatomy & Schema Reference
+## 2. Annotated Production YAML Anatomy & Field Reference
 
-Below is a production-ready declarative manifest illustrating key fields, structure, and configuration semantics for this chapter:
+Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:
 
 ```yaml
-
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: default
+data:
+  APP_ENV: "production"
+  LOG_LEVEL: "info"
+  nginx.conf: |
+    events { worker_connections 1024; }
+    http {
+      server {
+        listen 80;
+        location / { return 200 "OK"; }
+      }
+    }
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secrets
+  namespace: default
+type: Opaque
+stringData:
+  DB_PASSWORD: "super-secure-production-password"
+  API_KEY: "secret-token-xyz-123"
 ```
 
-### Key Field Reference
+### Key Field Schema Reference
 
-- **`apiVersion`**: The target API group and version for the resource schema.
-- **`kind`**: The resource type identifier.
-- **`metadata.name`**: Unique DNS-1123 compliant identifier for this resource within its namespace.
-- **`metadata.labels`**: Key-value pairs used by selectors, services, and queries.
-- **`spec`**: The desired state specification managed by Kubernetes controllers.
-
----
-
-## 3. Production Best Practices & Hardening Guidelines
-
-1. **Explicit Resource Declarations**: Always specify resource constraints (`requests` and `limits`) to ensure predictable scheduling and prevent node resource starvation.
-2. **Immutable Identifiers & Clear Labeling**: Use standard Kubernetes recommended labels (`app.kubernetes.io/name`, `app.kubernetes.io/instance`, `app.kubernetes.io/version`, `app.kubernetes.io/component`).
-3. **Defense in Depth**: Follow least-privilege security principles (e.g. `runAsNonRoot: true`, `readOnlyRootFilesystem: true`, dropping all unnecessary Linux capabilities).
-4. **Health Check Probes**: Configure comprehensive startup, liveness, and readiness probes with appropriate failure thresholds and timing delays.
-5. **Declarative GitOps Management**: Maintain all manifests in version control and deploy through automated reconciliation pipelines.
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `data` vs `stringData` | `Map` | `data` expects base64 encoded strings; `stringData` accepts raw text and is auto-encoded on write. |
+| `immutable: true` | `Boolean` | Protects against accidental config modification and reduces kube-apiserver watch load. |
+| `envFrom.configMapRef` | `Object` | Exposes all key-value pairs in a ConfigMap as individual container environment variables. |
 
 ---
 
-## 4. Troubleshooting & Diagnostic Workflows
+## 3. Real-World Architectural Patterns
 
-When inspecting or debugging resources in this category, use the following triage sequence:
+### Projected Volume Config Injection
 
-```bash
-# 1. Check resource status and conditions
-kubectl get secrets -o wide
-
-# 2. Inspect detailed control plane events and controller messages
-kubectl describe secrets <resource-name>
-
-# 3. Stream real-time logs (if applicable)
-kubectl logs -l app=<label> --tail=100 -f
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: projected-config-pod
+spec:
+  containers:
+  - name: app
+    image: alpine:3.20
+    command: ["sh", "-c", "ls -la /etc/config && sleep 3600"]
+    volumeMounts:
+    - name: config-bundle
+      mountPath: /etc/config
+      readOnly: true
+  volumes:
+  - name: config-bundle
+    projected:
+      sources:
+      - configMap:
+          name: app-config
+      - secret:
+          name: app-secrets
 ```
 
+### Immutable Configuration Pattern
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: static-routing-table-v1
+immutable: true
+data:
+  routes.json: |
+    {"/api/v1": "http://api-v1", "/api/v2": "http://api-v2"}
+```
+
+
 ---
 
-## 5. Interactive Practice Exercises
+## 4. Production Hardening & Operational Governance
 
-Practice the concepts from this chapter directly in your browser using our client-side WebAssembly environment:
+- Store sensitive data exclusively in `Secret` resources backed by KMS envelope encryption or external vault integrations (External Secrets Operator).
+- Set `immutable: true` on ConfigMaps and Secrets used with immutable deployment pipelines to eliminate drift.
+- Always mount Secret volumes with `readOnly: true` to prevent unauthorized in-pod file manipulation.
 
-- [**`config01`**: ConfigMaps as Environment Variables](../playground/index.html?exercise=config01)
-- [**`config02`**: ConfigMaps Mounted as Volumes](../playground/index.html?exercise=config02)
-- [**`config03`**: Secrets & Base64 Encoding](../playground/index.html?exercise=config03)
-- [**`config04`**: Secret Volume Mounts & Permissions](../playground/index.html?exercise=config04)
-- [**`config05`**: Immutable ConfigMaps and Secrets](../playground/index.html?exercise=config05)
+---
 
-<div style="margin-top: 1.5rem;">
-  <a href="../playground/index.html?chapter=3" class="md-button md-button--primary">
-    ⚡ Practice Chapter 03 in WebAssembly Playground →
-  </a>
-</div>
+## 5. Failure Modes & Diagnostic Triage Tree
+
+??? failure "`CreateContainerConfigError`"
+    **Root Cause:** Referenced ConfigMap or Secret does not exist or key name is misspelled.
+
+    **Diagnostic Triage Sequence:**
+    1. Run `kubectl describe pod <name>` and inspect the exact missing key.
+2. Check namespace: `kubectl get configmap,secret -n <namespace>`.
+
+??? failure "Live ConfigMap Update Not Reflected in Pod"
+    **Root Cause:** ConfigMaps injected as environment variables are static and require pod restart; volume mounts take up to kubelet sync period (default ~60s).
+
+    **Diagnostic Triage Sequence:**
+    1. Trigger rolling restart: `kubectl rollout restart deployment/<name>`.
+
+
+---
+
+## 6. Interactive Practice Matrix
+
+Practice concepts from this chapter directly in the interactive WebAssembly sandbox:
+
+| Exercise ID | Challenge Description | Direct Link | Action |
+| :--- | :--- | :--- | :--- |
+| **`config01`** | ConfigMaps as Environment Variables | [`../playground/index.html?exercise=config01`](../playground/index.html?exercise=config01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=config01){ .md-button .md-button--primary } |
+| **`config02`** | ConfigMaps Mounted as Volumes | [`../playground/index.html?exercise=config02`](../playground/index.html?exercise=config02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=config02){ .md-button .md-button--primary } |
+| **`config03`** | Secrets & Base64 Encoding | [`../playground/index.html?exercise=config03`](../playground/index.html?exercise=config03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=config03){ .md-button .md-button--primary } |
+| **`config04`** | Secret Volume Mounts & Permissions | [`../playground/index.html?exercise=config04`](../playground/index.html?exercise=config04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=config04){ .md-button .md-button--primary } |
+| **`config05`** | Immutable ConfigMaps and Secrets | [`../playground/index.html?exercise=config05`](../playground/index.html?exercise=config05) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=config05){ .md-button .md-button--primary } |

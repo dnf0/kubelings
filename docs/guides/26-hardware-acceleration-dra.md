@@ -3,7 +3,7 @@
 <div class="grid cards" markdown>
 
 -   :material-school: **Topic Focus** &bull; NVIDIA MIG Slicing, Apple Silicon GPU / MPS Acceleration, Dynamic Resource Allocation (DRA), and Production vLLM LLM Serving
--   :material-play-circle: **Interactive Challenges** &bull; 4 Hands-on Exercises
+-   :material-api: **Primary APIs** &bull; `resource.k8s.io/v1alpha3` &bull; `ResourceClaim`, `ResourceClaimTemplate`, `DeviceClass`
 -   :material-rocket-launch: [**Launch Playground in Wasm →**](../playground/index.html?chapter=26){ .md-button .md-button--primary }
 
 </div>
@@ -12,79 +12,139 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Hardware Acceleration: NVIDIA MIG, Apple Silicon GPU & DRA** represents fundamental declarative resources managed through continuous control loops. 
+In Kubernetes, **Hardware Acceleration: NVIDIA MIG, Apple Silicon GPU & DRA** is reconciled through declarative state loops managed by the control plane:
 
 ```text
-    ┌──────────────────────┐          Declarative Manifest (YAML)
-    │   kube-apiserver     │ ◄─────────────────────────────────────────────
-    └──────────┬───────────┘
-               │ (Watches & Stores in etcd)
-               ▼
-    ┌──────────────────────┐          Reconciles Desired State vs Actual State
-    │  Controller / Daemon │ ─────────────────────────────────────────────► [ Cluster State ]
-    └──────────────────────┘
+┌───────────────────────────┐
+    │     Pod Specification     │ ──► References `ResourceClaim`
+    └─────────────┬─────────────┘
+                  │
+                  ▼
+    ┌───────────────────────────┐
+    │       ResourceClaim       │ ◄── Requests Specific Device Attributes
+    │  (DRA: GPU, TPU, FPGA)    │     (e.g., 20GB VRAM, NVLink Mesh)
+    └─────────────┬─────────────┘
+                  │ Dynamic Driver Allocation
+                  ▼
+    ┌───────────────────────────┐
+    │   DRA Node Driver Plugin  │ ──► Configures Hardware & Binds to Container
+    └───────────────────────────┘
 ```
 
-When you declare resources for this domain, the Kubernetes API Server validates the OpenAPI v3 schema, persists the specification to etcd, and signals the responsible controller or node daemon to reconcile actual state with your desired specification.
+When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
 
 ---
 
-## 2. Annotated YAML Anatomy & Schema Reference
+## 2. Annotated Production YAML Anatomy & Field Reference
 
-Below is a production-ready declarative manifest illustrating key fields, structure, and configuration semantics for this chapter:
+Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:
 
 ```yaml
-
+apiVersion: resource.k8s.io/v1alpha3
+kind: ResourceClaim
+metadata:
+  name: gpu-claim
+  namespace: default
+spec:
+  devices:
+    requests:
+    - name: high-mem-gpu
+      deviceClassName: gpu.nvidia.com
+      selectors:
+      - cel:
+          expression: "device.attributes['gpu.nvidia.com'].memory >= 24 * 1024 * 1024 * 1024"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dra-accelerated-inference
+  namespace: default
+spec:
+  resourceClaims:
+  - name: gpu-resource
+    resourceClaimName: gpu-claim
+  containers:
+  - name: inference-engine
+    image: nvidia/cuda:12.4.1-runtime-ubuntu22.04
+    command: ["nvidia-smi"]
+    resources:
+      claims:
+      - name: gpu-resource
 ```
 
-### Key Field Reference
+### Key Field Schema Reference
 
-- **`apiVersion`**: The target API group and version for the resource schema.
-- **`kind`**: The resource type identifier.
-- **`metadata.name`**: Unique DNS-1123 compliant identifier for this resource within its namespace.
-- **`metadata.labels`**: Key-value pairs used by selectors, services, and queries.
-- **`spec`**: The desired state specification managed by Kubernetes controllers.
-
----
-
-## 3. Production Best Practices & Hardening Guidelines
-
-1. **Explicit Resource Declarations**: Always specify resource constraints (`requests` and `limits`) to ensure predictable scheduling and prevent node resource starvation.
-2. **Immutable Identifiers & Clear Labeling**: Use standard Kubernetes recommended labels (`app.kubernetes.io/name`, `app.kubernetes.io/instance`, `app.kubernetes.io/version`, `app.kubernetes.io/component`).
-3. **Defense in Depth**: Follow least-privilege security principles (e.g. `runAsNonRoot: true`, `readOnlyRootFilesystem: true`, dropping all unnecessary Linux capabilities).
-4. **Health Check Probes**: Configure comprehensive startup, liveness, and readiness probes with appropriate failure thresholds and timing delays.
-5. **Declarative GitOps Management**: Maintain all manifests in version control and deploy through automated reconciliation pipelines.
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `DeviceClass` | `Cluster Resource` | Defines the hardware class and selecting driver (e.g. `gpu.nvidia.com`, `dra.intel.com`). |
+| `ResourceClaim` | `Claim Resource` | Requests fine-grained device properties (memory, architecture, interconnects) using CEL expressions. |
+| `spec.resourceClaims` | `Pod Spec` | Binds claims to container instances dynamically during scheduling. |
 
 ---
 
-## 4. Troubleshooting & Diagnostic Workflows
+## 3. Real-World Architectural Patterns
 
-When inspecting or debugging resources in this category, use the following triage sequence:
+### NVIDIA Multi-Instance GPU (MIG) Partitioning
 
-```bash
-# 1. Check resource status and conditions
-kubectl get dra -o wide
-
-# 2. Inspect detailed control plane events and controller messages
-kubectl describe dra <resource-name>
-
-# 3. Stream real-time logs (if applicable)
-kubectl logs -l app=<label> --tail=100 -f
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mig-partitioned-pod
+spec:
+  containers:
+  - name: cuda-task
+    image: nvidia/cuda:12.4.1-base-ubuntu22.04
+    resources:
+      limits:
+        nvidia.com/mig-1g.10gb: 1
 ```
 
+### ResourceClaimTemplate with Stateful Deployment
+
+```yaml
+apiVersion: resource.k8s.io/v1alpha3
+kind: ResourceClaimTemplate
+metadata:
+  name: per-pod-gpu-template
+spec:
+  spec:
+    devices:
+      requests:
+      - name: dedicated-gpu
+        deviceClassName: gpu.nvidia.com
+```
+
+
 ---
 
-## 5. Interactive Practice Exercises
+## 4. Production Hardening & Operational Governance
 
-Practice the concepts from this chapter directly in your browser using our client-side WebAssembly environment:
+- Use Dynamic Resource Allocation (DRA) for complex hardware constraints rather than static integer extended resources (`nvidia.com/gpu: 1`).
+- Leverage NVIDIA MIG to slice large A100/H100 GPUs into isolated compute instances for lightweight inference tasks.
+- Enforce resource limits on GPU-enabled namespaces using dedicated quotas.
 
-- [**`accel01`**: NVIDIA MIG Slicing & Partitioning](../playground/index.html?exercise=accel01)
-- [**`accel02`**: Apple Silicon GPU & Metal MPS Acceleration](../playground/index.html?exercise=accel02)
-- [**`accel03`**: Dynamic Resource Allocation (DRA) Standard](../playground/index.html?exercise=accel03)
-- [**`accel04`**: Production vLLM LLM Inference Server](../playground/index.html?exercise=accel04)
+---
 
-<div style="margin-top: 1.5rem;">
-  <a href="../playground/index.html?chapter=26" class="md-button md-button--primary">
-    ⚡ Practice Chapter 26 in WebAssembly Playground →
-  </a>
-</div>
+## 5. Failure Modes & Diagnostic Triage Tree
+
+??? failure "`Failed to allocate device for claim`"
+    **Root Cause:** No node in cluster has a hardware device satisfying the CEL selector expression.
+
+    **Diagnostic Triage Sequence:**
+    1. Inspect claim state: `kubectl describe resourceclaim <name>`
+2. Check DRA driver plugin daemonset: `kubectl get pods -n kube-system -l app=nvidia-dra-driver-kubelet-plugin`
+
+
+---
+
+## 6. Interactive Practice Matrix
+
+Practice concepts from this chapter directly in the interactive WebAssembly sandbox:
+
+| Exercise ID | Challenge Description | Direct Link | Action |
+| :--- | :--- | :--- | :--- |
+| **`accel01`** | NVIDIA MIG Slicing & Partitioning | [`../playground/index.html?exercise=accel01`](../playground/index.html?exercise=accel01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=accel01){ .md-button .md-button--primary } |
+| **`accel02`** | Apple Silicon GPU & Metal MPS Acceleration | [`../playground/index.html?exercise=accel02`](../playground/index.html?exercise=accel02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=accel02){ .md-button .md-button--primary } |
+| **`accel03`** | Dynamic Resource Allocation (DRA) Standard | [`../playground/index.html?exercise=accel03`](../playground/index.html?exercise=accel03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=accel03){ .md-button .md-button--primary } |
+| **`accel04`** | Production vLLM LLM Inference Server | [`../playground/index.html?exercise=accel04`](../playground/index.html?exercise=accel04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=accel04){ .md-button .md-button--primary } |

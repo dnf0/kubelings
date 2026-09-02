@@ -3,7 +3,7 @@
 <div class="grid cards" markdown>
 
 -   :material-school: **Topic Focus** &bull; CompositeResourceDefinitions (XRDs), Compositions, Managed Resources, and Developer Claims
--   :material-play-circle: **Interactive Challenges** &bull; 4 Hands-on Exercises
+-   :material-api: **Primary APIs** &bull; `apiextensions.crossplane.io/v1`, `pkg.crossplane.io/v1` &bull; `CompositeResourceDefinition`, `Composition`
 -   :material-rocket-launch: [**Launch Playground in Wasm →**](../playground/index.html?chapter=22){ .md-button .md-button--primary }
 
 </div>
@@ -12,79 +12,129 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Infrastructure as Data with Crossplane** represents fundamental declarative resources managed through continuous control loops. 
+In Kubernetes, **Infrastructure as Data with Crossplane** is reconciled through declarative state loops managed by the control plane:
 
 ```text
-    ┌──────────────────────┐          Declarative Manifest (YAML)
-    │   kube-apiserver     │ ◄─────────────────────────────────────────────
-    └──────────┬───────────┘
-               │ (Watches & Stores in etcd)
-               ▼
-    ┌──────────────────────┐          Reconciles Desired State vs Actual State
-    │  Controller / Daemon │ ─────────────────────────────────────────────► [ Cluster State ]
-    └──────────────────────┘
+┌───────────────────────────┐
+    │     Application Dev       │ ──► Declares Composite Resource Claim (XRC)
+    └─────────────┬─────────────┘
+                  │
+                  ▼
+    ┌───────────────────────────┐
+    │        Composition        │ ◄── Platform Team Blueprint
+    └─────────────┬─────────────┘
+                  │ Composes Managed Resources (MR)
+          ┌───────┴───────┐
+          ▼               ▼
+    ┌───────────┐   ┌───────────┐
+    │  AWS RDS  │   │  AWS S3   │ ◄── External Cloud Providers
+    │  Instance │   │  Bucket   │
+    └───────────┘   └───────────┘
 ```
 
-When you declare resources for this domain, the Kubernetes API Server validates the OpenAPI v3 schema, persists the specification to etcd, and signals the responsible controller or node daemon to reconcile actual state with your desired specification.
+When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
 
 ---
 
-## 2. Annotated YAML Anatomy & Schema Reference
+## 2. Annotated Production YAML Anatomy & Field Reference
 
-Below is a production-ready declarative manifest illustrating key fields, structure, and configuration semantics for this chapter:
+Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:
 
 ```yaml
-
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xpostgresqlinstances.database.example.org
+spec:
+  group: database.example.org
+  names:
+    kind: XPostgreSQLInstance
+    plural: xpostgresqlinstances
+  claimNames:
+    kind: PostgreSQLInstance
+    plural: postgresqlinstances
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            required: ["storageGB"]
+            properties:
+              storageGB:
+                type: integer
 ```
 
-### Key Field Reference
+### Key Field Schema Reference
 
-- **`apiVersion`**: The target API group and version for the resource schema.
-- **`kind`**: The resource type identifier.
-- **`metadata.name`**: Unique DNS-1123 compliant identifier for this resource within its namespace.
-- **`metadata.labels`**: Key-value pairs used by selectors, services, and queries.
-- **`spec`**: The desired state specification managed by Kubernetes controllers.
-
----
-
-## 3. Production Best Practices & Hardening Guidelines
-
-1. **Explicit Resource Declarations**: Always specify resource constraints (`requests` and `limits`) to ensure predictable scheduling and prevent node resource starvation.
-2. **Immutable Identifiers & Clear Labeling**: Use standard Kubernetes recommended labels (`app.kubernetes.io/name`, `app.kubernetes.io/instance`, `app.kubernetes.io/version`, `app.kubernetes.io/component`).
-3. **Defense in Depth**: Follow least-privilege security principles (e.g. `runAsNonRoot: true`, `readOnlyRootFilesystem: true`, dropping all unnecessary Linux capabilities).
-4. **Health Check Probes**: Configure comprehensive startup, liveness, and readiness probes with appropriate failure thresholds and timing delays.
-5. **Declarative GitOps Management**: Maintain all manifests in version control and deploy through automated reconciliation pipelines.
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `CompositeResourceDefinition` (XRD) | `API Contract` | Defines the custom schema exposed to application developers. |
+| `Composition` | `Infrastructure Template` | Binds the XRD to specific Managed Resources (e.g. AWS RDS, GCP CloudSQL). |
+| `Managed Resource` (MR) | `Cloud Primitive` | Direct representation of cloud resources with continuous state reconciliation. |
 
 ---
 
-## 4. Troubleshooting & Diagnostic Workflows
+## 3. Real-World Architectural Patterns
 
-When inspecting or debugging resources in this category, use the following triage sequence:
+### Application Developer Claim (XRC)
 
-```bash
-# 1. Check resource status and conditions
-kubectl get iac -o wide
-
-# 2. Inspect detailed control plane events and controller messages
-kubectl describe iac <resource-name>
-
-# 3. Stream real-time logs (if applicable)
-kubectl logs -l app=<label> --tail=100 -f
+```yaml
+apiVersion: database.example.org/v1alpha1
+kind: PostgreSQLInstance
+metadata:
+  name: app-database
+  namespace: default
+spec:
+  storageGB: 20
 ```
 
+### ProviderConfig IAM Configuration
+
+```yaml
+apiVersion: aws.upbound.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: default
+spec:
+  credentials:
+    source: IRSA
+```
+
+
 ---
 
-## 5. Interactive Practice Exercises
+## 4. Production Hardening & Operational Governance
 
-Practice the concepts from this chapter directly in your browser using our client-side WebAssembly environment:
+- Use IAM Roles for Service Accounts (IRSA / Workload Identity) rather than static long-lived cloud API keys.
+- Lock Composition schemas with strict validation and automated drift detection.
+- Protect critical databases from accidental deletion with `deletionPolicy: Orphan`.
 
-- [**`crossplane01`**: CompositeResourceDefinition (XRD) Schema](../playground/index.html?exercise=crossplane01)
-- [**`crossplane02`**: Composition and Field Path Transforms](../playground/index.html?exercise=crossplane02)
-- [**`crossplane03`**: ProviderConfig and Resource Deletion Policies](../playground/index.html?exercise=crossplane03)
-- [**`crossplane04`**: Developer Self-Service Claims & Connection Secrets](../playground/index.html?exercise=crossplane04)
+---
 
-<div style="margin-top: 1.5rem;">
-  <a href="../playground/index.html?chapter=22" class="md-button md-button--primary">
-    ⚡ Practice Chapter 22 in WebAssembly Playground →
-  </a>
-</div>
+## 5. Failure Modes & Diagnostic Triage Tree
+
+??? failure "Managed Resource `Ready=False` / `Synced=False`"
+    **Root Cause:** Cloud provider authentication failure or parameter validation error.
+
+    **Diagnostic Triage Sequence:**
+    1. Run `kubectl describe <managed-resource> <name>`
+2. Verify ProviderConfig status: `kubectl get providerconfigs`.
+
+
+---
+
+## 6. Interactive Practice Matrix
+
+Practice concepts from this chapter directly in the interactive WebAssembly sandbox:
+
+| Exercise ID | Challenge Description | Direct Link | Action |
+| :--- | :--- | :--- | :--- |
+| **`crossplane01`** | CompositeResourceDefinition (XRD) Schema | [`../playground/index.html?exercise=crossplane01`](../playground/index.html?exercise=crossplane01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=crossplane01){ .md-button .md-button--primary } |
+| **`crossplane02`** | Composition and Field Path Transforms | [`../playground/index.html?exercise=crossplane02`](../playground/index.html?exercise=crossplane02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=crossplane02){ .md-button .md-button--primary } |
+| **`crossplane03`** | ProviderConfig and Resource Deletion Policies | [`../playground/index.html?exercise=crossplane03`](../playground/index.html?exercise=crossplane03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=crossplane03){ .md-button .md-button--primary } |
+| **`crossplane04`** | Developer Self-Service Claims & Connection Secrets | [`../playground/index.html?exercise=crossplane04`](../playground/index.html?exercise=crossplane04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=crossplane04){ .md-button .md-button--primary } |

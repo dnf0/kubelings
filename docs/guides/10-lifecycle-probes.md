@@ -3,7 +3,7 @@
 <div class="grid cards" markdown>
 
 -   :material-school: **Topic Focus** &bull; Liveness, Readiness, Startup Probes, and Termination Hooks
--   :material-play-circle: **Interactive Challenges** &bull; 4 Hands-on Exercises
+-   :material-api: **Primary APIs** &bull; `v1` &bull; `Pod`
 -   :material-rocket-launch: [**Launch Playground in Wasm →**](../playground/index.html?chapter=10){ .md-button .md-button--primary }
 
 </div>
@@ -12,79 +12,165 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Health Checking, Probes & Lifecycle** represents fundamental declarative resources managed through continuous control loops. 
+In Kubernetes, **Health Checking, Probes & Lifecycle** is reconciled through declarative state loops managed by the control plane:
 
 ```text
-    ┌──────────────────────┐          Declarative Manifest (YAML)
-    │   kube-apiserver     │ ◄─────────────────────────────────────────────
-    └──────────┬───────────┘
-               │ (Watches & Stores in etcd)
-               ▼
-    ┌──────────────────────┐          Reconciles Desired State vs Actual State
-    │  Controller / Daemon │ ─────────────────────────────────────────────► [ Cluster State ]
-    └──────────────────────┘
+Container Startup
+           │
+           ▼
+    ┌─────────────────────────┐
+    │      Startup Probe      │ ──(Fails)──► Kubelet Restarts Container
+    └────────────┬────────────┘
+                 │ (Passes)
+                 ▼
+    ┌─────────────────────────┐          ┌─────────────────────────┐
+    │     Liveness Probe      │ ──Fail──►│ Kubelet Restarts Cont.  │
+    └─────────────────────────┘          └─────────────────────────┘
+    ┌─────────────────────────┐          ┌─────────────────────────┐
+    │     Readiness Probe     │ ──Fail──►│ Remove from Endpoints   │
+    └─────────────────────────┘          └─────────────────────────┘
 ```
 
-When you declare resources for this domain, the Kubernetes API Server validates the OpenAPI v3 schema, persists the specification to etcd, and signals the responsible controller or node daemon to reconcile actual state with your desired specification.
+When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
 
 ---
 
-## 2. Annotated YAML Anatomy & Schema Reference
+## 2. Annotated Production YAML Anatomy & Field Reference
 
-Below is a production-ready declarative manifest illustrating key fields, structure, and configuration semantics for this chapter:
+Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:
 
 ```yaml
-
+apiVersion: v1
+kind: Pod
+metadata:
+  name: robust-lifecycle-service
+spec:
+  containers:
+  - name: web-app
+    image: nginx:1.27-alpine
+    ports:
+    - containerPort: 8080
+    startupProbe:
+      httpGet:
+        path: /healthz
+        port: 8080
+      failureThreshold: 30
+      periodSeconds: 2
+    livenessProbe:
+      httpGet:
+        path: /healthz
+        port: 8080
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 2
+      failureThreshold: 3
+    readinessProbe:
+      httpGet:
+        path: /ready
+        port: 8080
+      initialDelaySeconds: 2
+      periodSeconds: 5
+      successThreshold: 1
+      failureThreshold: 2
+    lifecycle:
+      preStop:
+        exec:
+          command: ["sh", "-c", "sleep 10"]
 ```
 
-### Key Field Reference
+### Key Field Schema Reference
 
-- **`apiVersion`**: The target API group and version for the resource schema.
-- **`kind`**: The resource type identifier.
-- **`metadata.name`**: Unique DNS-1123 compliant identifier for this resource within its namespace.
-- **`metadata.labels`**: Key-value pairs used by selectors, services, and queries.
-- **`spec`**: The desired state specification managed by Kubernetes controllers.
-
----
-
-## 3. Production Best Practices & Hardening Guidelines
-
-1. **Explicit Resource Declarations**: Always specify resource constraints (`requests` and `limits`) to ensure predictable scheduling and prevent node resource starvation.
-2. **Immutable Identifiers & Clear Labeling**: Use standard Kubernetes recommended labels (`app.kubernetes.io/name`, `app.kubernetes.io/instance`, `app.kubernetes.io/version`, `app.kubernetes.io/component`).
-3. **Defense in Depth**: Follow least-privilege security principles (e.g. `runAsNonRoot: true`, `readOnlyRootFilesystem: true`, dropping all unnecessary Linux capabilities).
-4. **Health Check Probes**: Configure comprehensive startup, liveness, and readiness probes with appropriate failure thresholds and timing delays.
-5. **Declarative GitOps Management**: Maintain all manifests in version control and deploy through automated reconciliation pipelines.
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `startupProbe` | `Object` | Disables liveness/readiness checks until application initialization is complete. Ideal for slow JVM / ML warmups. |
+| `livenessProbe` | `Object` | Detects deadlocks or broken states; triggers kubelet container restart upon failure. |
+| `readinessProbe` | `Object` | Determines if the container can receive traffic; triggers removal from Service EndpointSlices when failing. |
+| `lifecycle.preStop` | `Object` | Executes synchronously before container receives SIGTERM, allowing in-flight requests to drain. |
 
 ---
 
-## 4. Troubleshooting & Diagnostic Workflows
+## 3. Real-World Architectural Patterns
 
-When inspecting or debugging resources in this category, use the following triage sequence:
+### TCP Socket Readiness & Exec Liveness
 
-```bash
-# 1. Check resource status and conditions
-kubectl get probes -o wide
-
-# 2. Inspect detailed control plane events and controller messages
-kubectl describe probes <resource-name>
-
-# 3. Stream real-time logs (if applicable)
-kubectl logs -l app=<label> --tail=100 -f
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: custom-probes
+spec:
+  containers:
+  - name: redis
+    image: redis:7.2-alpine
+    ports:
+    - containerPort: 6379
+    livenessProbe:
+      exec:
+        command: ["redis-cli", "ping"]
+      periodSeconds: 10
+    readinessProbe:
+      tcpSocket:
+        port: 6379
+      periodSeconds: 5
 ```
 
+### gRPC Health Checking Protocol Probe
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: grpc-service
+spec:
+  containers:
+  - name: grpc-app
+    image: grpc-server:v1
+    ports:
+    - containerPort: 50051
+    livenessProbe:
+      grpc:
+        port: 50051
+        service: "HealthService"
+      initialDelaySeconds: 10
+```
+
+
 ---
 
-## 5. Interactive Practice Exercises
+## 4. Production Hardening & Operational Governance
 
-Practice the concepts from this chapter directly in your browser using our client-side WebAssembly environment:
+- Always include a `preStop` hook with a brief `sleep` (e.g. 5–10s) to give kube-proxy / iptables time to propagate endpoint removal before SIGTERM.
+- Never point liveness probes at downstream dependencies (e.g. database); liveness should test only local container health.
+- Use `startupProbe` with high `failureThreshold` for slow-booting applications rather than inflated `initialDelaySeconds` on liveness probes.
 
-- [**`health01`**: Liveness Probes](../playground/index.html?exercise=health01)
-- [**`health02`**: Readiness Probes](../playground/index.html?exercise=health02)
-- [**`health03`**: Startup Probes](../playground/index.html?exercise=health03)
-- [**`health04`**: Lifecycle Hooks & Graceful Shutdown](../playground/index.html?exercise=health04)
+---
 
-<div style="margin-top: 1.5rem;">
-  <a href="../playground/index.html?chapter=10" class="md-button md-button--primary">
-    ⚡ Practice Chapter 10 in WebAssembly Playground →
-  </a>
-</div>
+## 5. Failure Modes & Diagnostic Triage Tree
+
+??? failure "Container Constantly Restarting (`Unhealthy` events)"
+    **Root Cause:** Liveness probe timeout or non-200 HTTP response code.
+
+    **Diagnostic Triage Sequence:**
+    1. Run `kubectl describe pod <name>` and inspect `Events`.
+2. Check probe response manually: `kubectl exec -it <name> -- wget -qO- http://localhost:8080/healthz`.
+
+??? failure "Pod Running but Service Not Serving Traffic"
+    **Root Cause:** Readiness probe is failing, causing Pod exclusion from Endpoints.
+
+    **Diagnostic Triage Sequence:**
+    1. Check endpoint membership: `kubectl get endpoints <service-name>`
+2. Check readiness status in `kubectl describe pod <name>`.
+
+
+---
+
+## 6. Interactive Practice Matrix
+
+Practice concepts from this chapter directly in the interactive WebAssembly sandbox:
+
+| Exercise ID | Challenge Description | Direct Link | Action |
+| :--- | :--- | :--- | :--- |
+| **`health01`** | Liveness Probes | [`../playground/index.html?exercise=health01`](../playground/index.html?exercise=health01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=health01){ .md-button .md-button--primary } |
+| **`health02`** | Readiness Probes | [`../playground/index.html?exercise=health02`](../playground/index.html?exercise=health02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=health02){ .md-button .md-button--primary } |
+| **`health03`** | Startup Probes | [`../playground/index.html?exercise=health03`](../playground/index.html?exercise=health03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=health03){ .md-button .md-button--primary } |
+| **`health04`** | Lifecycle Hooks & Graceful Shutdown | [`../playground/index.html?exercise=health04`](../playground/index.html?exercise=health04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=health04){ .md-button .md-button--primary } |
