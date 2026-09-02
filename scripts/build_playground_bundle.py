@@ -35,6 +35,12 @@ def build_bundle(repo_root: Path | None = None) -> dict[str, Any]:
     validator_code = validator_path.read_text(encoding="utf-8")
     models_code = models_path.read_text(encoding="utf-8")
 
+    validators_dir = repo_root / "src" / "kubelings" / "validators"
+    validators_modules: dict[str, str] = {}
+    if validators_dir.exists():
+        for py_file in validators_dir.glob("*.py"):
+            validators_modules[py_file.name] = py_file.read_text(encoding="utf-8")
+
     manifest = get_manifest()
 
     chapters_data: list[dict[str, Any]] = []
@@ -81,6 +87,7 @@ def build_bundle(repo_root: Path | None = None) -> dict[str, Any]:
         "version": __version__,
         "validator_code": validator_code,
         "models_code": models_code,
+        "validators_modules": validators_modules,
         "chapters": chapters_data,
         "exercises": exercises_data,
         "total_chapters": len(chapters_data),

@@ -33,6 +33,8 @@ def test_playground_bundle_generation(tmp_path: Path):
     assert data["version"] == __version__
     assert "validator_code" in data
     assert "models_code" in data
+    assert "validators_modules" in data
+    assert len(data["validators_modules"]) >= 26
     assert "chapters" in data
     assert "exercises" in data
 
