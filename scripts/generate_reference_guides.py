@@ -1,7 +1,7 @@
 """Generate 26 in-depth Kubernetes Reference Guides for MkDocs with full manifests, diagrams, and bidirectional links."""
 
 from pathlib import Path
-import yaml
+
 from kubelings.manifest import build_manifest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -83,13 +83,31 @@ spec:
     emptyDir: {}
 """,
         "fields": [
-            ("`spec.initContainers`", "Array", "Containers executed sequentially before app containers start. Must exit with code 0."),
-            ("`spec.containers[*].resources`", "Object", "Compute requests (scheduler quota) and limits (cgroup enforcement)."),
-            ("`spec.volumes`", "Array", "Shared storage abstractions mounted into container filesystems."),
-            ("`spec.terminationGracePeriodSeconds`", "Integer (Default: 30)", "Duration given for SIGTERM handling before SIGKILL is dispatched."),
+            (
+                "`spec.initContainers`",
+                "Array",
+                "Containers executed sequentially before app containers start. Must exit with code 0.",
+            ),
+            (
+                "`spec.containers[*].resources`",
+                "Object",
+                "Compute requests (scheduler quota) and limits (cgroup enforcement).",
+            ),
+            (
+                "`spec.volumes`",
+                "Array",
+                "Shared storage abstractions mounted into container filesystems.",
+            ),
+            (
+                "`spec.terminationGracePeriodSeconds`",
+                "Integer (Default: 30)",
+                "Duration given for SIGTERM handling before SIGKILL is dispatched.",
+            ),
         ],
         "patterns": [
-            ("Sidecar Logging Pattern", """apiVersion: v1
+            (
+                "Sidecar Logging Pattern",
+                """apiVersion: v1
 kind: Pod
 metadata:
   name: sidecar-log-processor
@@ -110,8 +128,11 @@ spec:
   volumes:
   - name: log-volume
     emptyDir: {}
-"""),
-            ("Downward API Metadata Injection", """apiVersion: v1
+""",
+            ),
+            (
+                "Downward API Metadata Injection",
+                """apiVersion: v1
 kind: Pod
 metadata:
   name: downward-api-env
@@ -135,7 +156,8 @@ spec:
       valueFrom:
         fieldRef:
           fieldPath: status.podIP
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Always set both `requests` and `limits` to establish predictable QoS classes (Guaranteed vs Burstable).",
@@ -144,9 +166,21 @@ spec:
             "Pair multi-instance workloads with `PodDisruptionBudget` to ensure high availability during node drains.",
         ],
         "troubleshooting": [
-            ("`CrashLoopBackOff`", "Container starts and exits immediately with an error code.", "1. Inspect exit code: `kubectl get pod <name> -o jsonpath='{.status.containerStatuses[*].state.terminated}'`\n2. Check previous container logs: `kubectl logs <name> -c <container> --previous`\n3. Verify entrypoint args and required environment variables."),
-            ("`OOMKilled` (Exit Code 137)", "Container exceeded its memory limit cgroup.", "1. Run `kubectl describe pod <name>` and look for `Last State: Terminated / Reason: OOMKilled`.\n2. Increase `resources.limits.memory` or profile application heap memory consumption."),
-            ("`Pending` (Scheduling Failure)", "Scheduler cannot find a node meeting CPU/memory/taint requirements.", "1. Inspect scheduling events: `kubectl describe pod <name>`\n2. Review cluster capacity: `kubectl describe nodes | grep -A 8 'Allocated resources'`."),
+            (
+                "`CrashLoopBackOff`",
+                "Container starts and exits immediately with an error code.",
+                "1. Inspect exit code: `kubectl get pod <name> -o jsonpath='{.status.containerStatuses[*].state.terminated}'`\n2. Check previous container logs: `kubectl logs <name> -c <container> --previous`\n3. Verify entrypoint args and required environment variables.",
+            ),
+            (
+                "`OOMKilled` (Exit Code 137)",
+                "Container exceeded its memory limit cgroup.",
+                "1. Run `kubectl describe pod <name>` and look for `Last State: Terminated / Reason: OOMKilled`.\n2. Increase `resources.limits.memory` or profile application heap memory consumption.",
+            ),
+            (
+                "`Pending` (Scheduling Failure)",
+                "Scheduler cannot find a node meeting CPU/memory/taint requirements.",
+                "1. Inspect scheduling events: `kubectl describe pod <name>`\n2. Review cluster capacity: `kubectl describe nodes | grep -A 8 'Allocated resources'`.",
+            ),
         ],
     },
     2: {
@@ -203,12 +237,26 @@ spec:
             memory: 256Mi
 """,
         "fields": [
-            ("`spec.strategy.rollingUpdate`", "Object", "Controls zero-downtime rollouts via `maxSurge` (surge capacity) and `maxUnavailable` (tolerated disruption)."),
-            ("`spec.selector.matchLabels`", "Map", "Immutable label query used by the controller to discover its owned Pods. Must match `spec.template.metadata.labels`."),
-            ("`spec.revisionHistoryLimit`", "Integer (Default: 10)", "Number of historical ReplicaSets retained for instant rollbacks."),
+            (
+                "`spec.strategy.rollingUpdate`",
+                "Object",
+                "Controls zero-downtime rollouts via `maxSurge` (surge capacity) and `maxUnavailable` (tolerated disruption).",
+            ),
+            (
+                "`spec.selector.matchLabels`",
+                "Map",
+                "Immutable label query used by the controller to discover its owned Pods. Must match `spec.template.metadata.labels`.",
+            ),
+            (
+                "`spec.revisionHistoryLimit`",
+                "Integer (Default: 10)",
+                "Number of historical ReplicaSets retained for instant rollbacks.",
+            ),
         ],
         "patterns": [
-            ("StatefulSet with VolumeClaimTemplates", """apiVersion: apps/v1
+            (
+                "StatefulSet with VolumeClaimTemplates",
+                """apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: redis-cluster
@@ -239,8 +287,11 @@ spec:
       resources:
         requests:
           storage: 5Gi
-"""),
-            ("CronJob with Concurrency Policy", """apiVersion: batch/v1
+""",
+            ),
+            (
+                "CronJob with Concurrency Policy",
+                """apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: nightly-backup
@@ -259,7 +310,8 @@ spec:
           - name: backup
             image: busybox:1.36
             command: ["sh", "-c", "echo 'Running DB dump...'; exit 0"]
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Use `maxUnavailable: 0` during rolling updates to guarantee baseline capacity is never reduced.",
@@ -267,8 +319,16 @@ spec:
             "StatefulSets should be paired with headless Services for stable network identities (`$(pod-name).$(service-name).$(namespace).svc.cluster.local`).",
         ],
         "troubleshooting": [
-            ("Rollout Stuck / Deployment Blocked", "New ReplicaSet cannot progress due to image pull or readiness probe failures.", "1. View rollout status: `kubectl rollout status deployment/<name>`\n2. Inspect rollout history: `kubectl rollout history deployment/<name>`\n3. Roll back immediately: `kubectl rollout undo deployment/<name>`"),
-            ("StatefulSet Pod Stuck Terminating", "Volume detach/attach cycle locked or node unready.", "1. Check PV status: `kubectl get pvc -l app=<name>`\n2. Inspect node status: `kubectl describe node <node>`"),
+            (
+                "Rollout Stuck / Deployment Blocked",
+                "New ReplicaSet cannot progress due to image pull or readiness probe failures.",
+                "1. View rollout status: `kubectl rollout status deployment/<name>`\n2. Inspect rollout history: `kubectl rollout history deployment/<name>`\n3. Roll back immediately: `kubectl rollout undo deployment/<name>`",
+            ),
+            (
+                "StatefulSet Pod Stuck Terminating",
+                "Volume detach/attach cycle locked or node unready.",
+                "1. Check PV status: `kubectl get pvc -l app=<name>`\n2. Inspect node status: `kubectl describe node <node>`",
+            ),
         ],
     },
     3: {
@@ -318,12 +378,26 @@ stringData:
   API_KEY: "secret-token-xyz-123"
 """,
         "fields": [
-            ("`data` vs `stringData`", "Map", "`data` expects base64 encoded strings; `stringData` accepts raw text and is auto-encoded on write."),
-            ("`immutable: true`", "Boolean", "Protects against accidental config modification and reduces kube-apiserver watch load."),
-            ("`envFrom.configMapRef`", "Object", "Exposes all key-value pairs in a ConfigMap as individual container environment variables."),
+            (
+                "`data` vs `stringData`",
+                "Map",
+                "`data` expects base64 encoded strings; `stringData` accepts raw text and is auto-encoded on write.",
+            ),
+            (
+                "`immutable: true`",
+                "Boolean",
+                "Protects against accidental config modification and reduces kube-apiserver watch load.",
+            ),
+            (
+                "`envFrom.configMapRef`",
+                "Object",
+                "Exposes all key-value pairs in a ConfigMap as individual container environment variables.",
+            ),
         ],
         "patterns": [
-            ("Projected Volume Config Injection", """apiVersion: v1
+            (
+                "Projected Volume Config Injection",
+                """apiVersion: v1
 kind: Pod
 metadata:
   name: projected-config-pod
@@ -344,8 +418,11 @@ spec:
           name: app-config
       - secret:
           name: app-secrets
-"""),
-            ("Immutable Configuration Pattern", """apiVersion: v1
+""",
+            ),
+            (
+                "Immutable Configuration Pattern",
+                """apiVersion: v1
 kind: ConfigMap
 metadata:
   name: static-routing-table-v1
@@ -353,7 +430,8 @@ immutable: true
 data:
   routes.json: |
     {"/api/v1": "http://api-v1", "/api/v2": "http://api-v2"}
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Store sensitive data exclusively in `Secret` resources backed by KMS envelope encryption or external vault integrations (External Secrets Operator).",
@@ -361,8 +439,16 @@ data:
             "Always mount Secret volumes with `readOnly: true` to prevent unauthorized in-pod file manipulation.",
         ],
         "troubleshooting": [
-            ("`CreateContainerConfigError`", "Referenced ConfigMap or Secret does not exist or key name is misspelled.", "1. Run `kubectl describe pod <name>` and inspect the exact missing key.\n2. Check namespace: `kubectl get configmap,secret -n <namespace>`."),
-            ("Live ConfigMap Update Not Reflected in Pod", "ConfigMaps injected as environment variables are static and require pod restart; volume mounts take up to kubelet sync period (default ~60s).", "1. Trigger rolling restart: `kubectl rollout restart deployment/<name>`."),
+            (
+                "`CreateContainerConfigError`",
+                "Referenced ConfigMap or Secret does not exist or key name is misspelled.",
+                "1. Run `kubectl describe pod <name>` and inspect the exact missing key.\n2. Check namespace: `kubectl get configmap,secret -n <namespace>`.",
+            ),
+            (
+                "Live ConfigMap Update Not Reflected in Pod",
+                "ConfigMaps injected as environment variables are static and require pod restart; volume mounts take up to kubelet sync period (default ~60s).",
+                "1. Trigger rolling restart: `kubectl rollout restart deployment/<name>`.",
+            ),
         ],
     },
     4: {
@@ -407,12 +493,26 @@ spec:
       storage: 20Gi
 """,
         "fields": [
-            ("`accessModes`", "Array", "`ReadWriteOnce` (single node), `ReadOnlyMany` (multi-node read), `ReadWriteMany` (multi-node write), `ReadWriteOncePod` (single pod)."),
-            ("`volumeBindingMode`", "Enum", "`Immediate` binds immediately; `WaitForFirstConsumer` delays binding until Pod scheduling to respect zone/node constraints."),
-            ("`reclaimPolicy`", "Enum", "`Delete` cleans up underlying physical disk upon PVC deletion; `Retain` preserves data for manual recovery."),
+            (
+                "`accessModes`",
+                "Array",
+                "`ReadWriteOnce` (single node), `ReadOnlyMany` (multi-node read), `ReadWriteMany` (multi-node write), `ReadWriteOncePod` (single pod).",
+            ),
+            (
+                "`volumeBindingMode`",
+                "Enum",
+                "`Immediate` binds immediately; `WaitForFirstConsumer` delays binding until Pod scheduling to respect zone/node constraints.",
+            ),
+            (
+                "`reclaimPolicy`",
+                "Enum",
+                "`Delete` cleans up underlying physical disk upon PVC deletion; `Retain` preserves data for manual recovery.",
+            ),
         ],
         "patterns": [
-            ("Dynamic PVC with StatefulSet Volume Template", """apiVersion: apps/v1
+            (
+                "Dynamic PVC with StatefulSet Volume Template",
+                """apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: database
@@ -444,8 +544,11 @@ spec:
       resources:
         requests:
           storage: 10Gi
-"""),
-            ("Local Static PersistentVolume", """apiVersion: v1
+""",
+            ),
+            (
+                "Local Static PersistentVolume",
+                """apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: local-pv-storage
@@ -466,7 +569,8 @@ spec:
           operator: In
           values:
           - node-worker-1
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Always use `volumeBindingMode: WaitForFirstConsumer` for cloud block storage (EBS/GPD/AzureDisk) to avoid multi-zone scheduling deadlocks.",
@@ -474,8 +578,16 @@ spec:
             "Protect production PVCs from accidental deletion by setting `reclaimPolicy: Retain` on mission-critical StorageClasses.",
         ],
         "troubleshooting": [
-            ("PVC Stuck in `Pending`", "No PV matches capacity/accessMode, or StorageClass provisioner is failing.", "1. Run `kubectl describe pvc <name>`\n2. Verify StorageClass existence: `kubectl get storageclass`\n3. Check CSI controller logs in `kube-system`."),
-            ("Multi-Attach Error (`VolumeAttachment` Deadlock)", "Previous Pod on another node holds the read-write block lease.", "1. Find attaching pod: `kubectl get volumeattachments`\n2. Verify old pod termination on failing node."),
+            (
+                "PVC Stuck in `Pending`",
+                "No PV matches capacity/accessMode, or StorageClass provisioner is failing.",
+                "1. Run `kubectl describe pvc <name>`\n2. Verify StorageClass existence: `kubectl get storageclass`\n3. Check CSI controller logs in `kube-system`.",
+            ),
+            (
+                "Multi-Attach Error (`VolumeAttachment` Deadlock)",
+                "Previous Pod on another node holds the read-write block lease.",
+                "1. Find attaching pod: `kubectl get volumeattachments`\n2. Verify old pod termination on failing node.",
+            ),
         ],
     },
     5: {
@@ -519,12 +631,26 @@ spec:
     protocol: TCP
 """,
         "fields": [
-            ("`spec.type`", "Enum", "`ClusterIP` (internal virtual IP), `NodePort` (dedicated port on all nodes), `LoadBalancer` (cloud provider VIP), `ExternalName` (CNAME redirect)."),
-            ("`spec.clusterIP: None`", "String", "Creates a Headless Service; DNS queries return raw Pod IPs directly instead of a virtual VIP."),
-            ("`spec.ports[*].targetPort`", "Integer / String", "The destination port exposed by container processes in matching Pods."),
+            (
+                "`spec.type`",
+                "Enum",
+                "`ClusterIP` (internal virtual IP), `NodePort` (dedicated port on all nodes), `LoadBalancer` (cloud provider VIP), `ExternalName` (CNAME redirect).",
+            ),
+            (
+                "`spec.clusterIP: None`",
+                "String",
+                "Creates a Headless Service; DNS queries return raw Pod IPs directly instead of a virtual VIP.",
+            ),
+            (
+                "`spec.ports[*].targetPort`",
+                "Integer / String",
+                "The destination port exposed by container processes in matching Pods.",
+            ),
         ],
         "patterns": [
-            ("Headless Service for Stateful Workloads", """apiVersion: v1
+            (
+                "Headless Service for Stateful Workloads",
+                """apiVersion: v1
 kind: Service
 metadata:
   name: kafka-headless
@@ -536,15 +662,19 @@ spec:
   - name: tcp-kafka
     port: 9092
     targetPort: 9092
-"""),
-            ("ExternalName Service for Cloud SaaS Integration", """apiVersion: v1
+""",
+            ),
+            (
+                "ExternalName Service for Cloud SaaS Integration",
+                """apiVersion: v1
 kind: Service
 metadata:
   name: external-database
 spec:
   type: ExternalName
   externalName: db.production.rds.amazonaws.com
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Use `ClusterIP` as default; avoid exposing services as `NodePort` directly to public networks.",
@@ -552,8 +682,16 @@ spec:
             "Audit `EndpointSlice` scaling for large workloads (>1,000 pods) to prevent control plane memory pressure.",
         ],
         "troubleshooting": [
-            ("Service Has No Endpoints (`503` / Connection Refused)", "Service selector does not match any Pod labels, or Pod readiness probes are failing.", "1. Check matching endpoints: `kubectl get endpoints <service-name>`\n2. Verify Pod labels: `kubectl get pods --show-labels`\n3. Verify container port binding: `kubectl get pods -o jsonpath='{.items[*].spec.containers[*].ports}'`"),
-            ("CoreDNS Name Resolution Failure", "DNS lookup fails for `service.namespace.svc.cluster.local`.", "1. Test from inside cluster: `kubectl run curl --rm -it --image=curlimages/curl -- nslookup <service-name>`\n2. Check CoreDNS pods: `kubectl get pods -n kube-system -l k8s-app=kube-dns`."),
+            (
+                "Service Has No Endpoints (`503` / Connection Refused)",
+                "Service selector does not match any Pod labels, or Pod readiness probes are failing.",
+                "1. Check matching endpoints: `kubectl get endpoints <service-name>`\n2. Verify Pod labels: `kubectl get pods --show-labels`\n3. Verify container port binding: `kubectl get pods -o jsonpath='{.items[*].spec.containers[*].ports}'`",
+            ),
+            (
+                "CoreDNS Name Resolution Failure",
+                "DNS lookup fails for `service.namespace.svc.cluster.local`.",
+                "1. Test from inside cluster: `kubectl run curl --rm -it --image=curlimages/curl -- nslookup <service-name>`\n2. Check CoreDNS pods: `kubectl get pods -n kube-system -l k8s-app=kube-dns`.",
+            ),
         ],
     },
     6: {
@@ -608,12 +746,26 @@ spec:
               number: 80
 """,
         "fields": [
-            ("`spec.ingressClassName`", "String", "Selects the Ingress controller implementation responsible for parsing this resource."),
-            ("`spec.rules[*].http.paths[*].pathType`", "Enum", "`Prefix` (matches URI prefix), `Exact` (exact URI match), `ImplementationSpecific`."),
-            ("`spec.tls[*].secretName`", "String", "TLS Certificate secret containing `tls.crt` and `tls.key` keys."),
+            (
+                "`spec.ingressClassName`",
+                "String",
+                "Selects the Ingress controller implementation responsible for parsing this resource.",
+            ),
+            (
+                "`spec.rules[*].http.paths[*].pathType`",
+                "Enum",
+                "`Prefix` (matches URI prefix), `Exact` (exact URI match), `ImplementationSpecific`.",
+            ),
+            (
+                "`spec.tls[*].secretName`",
+                "String",
+                "TLS Certificate secret containing `tls.crt` and `tls.key` keys.",
+            ),
         ],
         "patterns": [
-            ("Host-Based Virtual Hosting Routing", """apiVersion: networking.k8s.io/v1
+            (
+                "Host-Based Virtual Hosting Routing",
+                """apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: multi-tenant-ingress
@@ -640,8 +792,11 @@ spec:
             name: app2-service
             port:
               number: 80
-"""),
-            ("Canary Traffic Splitting via Ingress Annotations", """apiVersion: networking.k8s.io/v1
+""",
+            ),
+            (
+                "Canary Traffic Splitting via Ingress Annotations",
+                """apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: api-canary
@@ -661,7 +816,8 @@ spec:
             name: api-canary-service
             port:
               number: 80
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Enforce TLS 1.3 and automatic HTTP-to-HTTPS redirects across all public routes.",
@@ -669,8 +825,16 @@ spec:
             "Implement rate-limiting and request size restrictions via Ingress controller annotations.",
         ],
         "troubleshooting": [
-            ("Ingress `404 Not Found`", "Path prefix or hostname does not match Ingress rule definitions.", "1. Verify Ingress rules: `kubectl describe ingress <name>`\n2. Verify Ingress Controller logs: `kubectl logs -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx`"),
-            ("Ingress `502 Bad Gateway`", "Target backend Service or Pod is offline or failing health probes.", "1. Verify backend Service endpoints: `kubectl get endpoints <service-name>`"),
+            (
+                "Ingress `404 Not Found`",
+                "Path prefix or hostname does not match Ingress rule definitions.",
+                "1. Verify Ingress rules: `kubectl describe ingress <name>`\n2. Verify Ingress Controller logs: `kubectl logs -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx`",
+            ),
+            (
+                "Ingress `502 Bad Gateway`",
+                "Target backend Service or Pod is offline or failing health probes.",
+                "1. Verify backend Service endpoints: `kubectl get endpoints <service-name>`",
+            ),
         ],
     },
     7: {
@@ -734,12 +898,26 @@ spec:
         image: nginx:1.27-alpine
 """,
         "fields": [
-            ("`topologySpreadConstraints`", "Array", "Distributes Pods evenly across zones/nodes to prevent single-zone outages (`maxSkew: 1`)."),
-            ("`affinity.nodeAffinity`", "Object", "Directs Pod placement onto nodes matching specific hardware/architectural labels."),
-            ("`tolerations`", "Array", "Permits Pods to be scheduled on nodes tainted with `NoSchedule` or `NoExecute`."),
+            (
+                "`topologySpreadConstraints`",
+                "Array",
+                "Distributes Pods evenly across zones/nodes to prevent single-zone outages (`maxSkew: 1`).",
+            ),
+            (
+                "`affinity.nodeAffinity`",
+                "Object",
+                "Directs Pod placement onto nodes matching specific hardware/architectural labels.",
+            ),
+            (
+                "`tolerations`",
+                "Array",
+                "Permits Pods to be scheduled on nodes tainted with `NoSchedule` or `NoExecute`.",
+            ),
         ],
         "patterns": [
-            ("GPU Node Taint & Toleration Placement", """apiVersion: v1
+            (
+                "GPU Node Taint & Toleration Placement",
+                """apiVersion: v1
 kind: Pod
 metadata:
   name: ml-inference-task
@@ -754,8 +932,11 @@ spec:
   - name: inference
     image: python:3.12-slim
     command: ["python", "-c", "print('Inference worker running...')"]
-"""),
-            ("Pod Anti-Affinity for Zero Co-location", """apiVersion: apps/v1
+""",
+            ),
+            (
+                "Pod Anti-Affinity for Zero Co-location",
+                """apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: singleton-per-node
@@ -779,7 +960,8 @@ spec:
       containers:
       - name: app
         image: nginx:alpine
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Use `topologySpreadConstraints` with `topologyKey: topology.kubernetes.io/zone` for multi-AZ clusters.",
@@ -787,7 +969,11 @@ spec:
             "Reserve specialized nodes (GPU, high-memory) using node taints to prevent general workloads from consuming expensive compute.",
         ],
         "troubleshooting": [
-            ("Pod Stuck in `Pending` (`0/10 nodes available`)", "Tolerations, affinity rules, or resource requests cannot be satisfied.", "1. Inspect scheduling failures: `kubectl describe pod <name>`\n2. Review node taints: `kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints`\n3. Review node labels: `kubectl get nodes --show-labels`"),
+            (
+                "Pod Stuck in `Pending` (`0/10 nodes available`)",
+                "Tolerations, affinity rules, or resource requests cannot be satisfied.",
+                "1. Inspect scheduling failures: `kubectl describe pod <name>`\n2. Review node taints: `kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints`\n3. Review node labels: `kubectl get nodes --show-labels`",
+            ),
         ],
     },
     8: {
@@ -842,12 +1028,26 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 """,
         "fields": [
-            ("`rules[*].apiGroups`", "Array", "Target API group (`\"\"` for core v1, `\"apps\"`, `\"networking.k8s.io\"`)."),
-            ("`rules[*].resources`", "Array", "Kubernetes resource nouns (`pods`, `deployments`, `configmaps`)."),
-            ("`rules[*].verbs`", "Array", "Permitted operations (`get`, `list`, `watch`, `create`, `update`, `patch`, `delete`)."),
+            (
+                "`rules[*].apiGroups`",
+                "Array",
+                'Target API group (`""` for core v1, `"apps"`, `"networking.k8s.io"`).',
+            ),
+            (
+                "`rules[*].resources`",
+                "Array",
+                "Kubernetes resource nouns (`pods`, `deployments`, `configmaps`).",
+            ),
+            (
+                "`rules[*].verbs`",
+                "Array",
+                "Permitted operations (`get`, `list`, `watch`, `create`, `update`, `patch`, `delete`).",
+            ),
         ],
         "patterns": [
-            ("ClusterRole for Cross-Namespace Read-Only Audit", """apiVersion: rbac.authorization.k8s.io/v1
+            (
+                "ClusterRole for Cross-Namespace Read-Only Audit",
+                """apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: cluster-viewer
@@ -868,8 +1068,11 @@ roleRef:
   kind: ClusterRole
   name: cluster-viewer
   apiGroup: rbac.authorization.k8s.io
-"""),
-            ("Pod Security Standard Restricted SecurityContext", """apiVersion: v1
+""",
+            ),
+            (
+                "Pod Security Standard Restricted SecurityContext",
+                """apiVersion: v1
 kind: Pod
 metadata:
   name: hardened-secure-pod
@@ -891,7 +1094,8 @@ spec:
       capabilities:
         drop:
         - ALL
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Follow the Principle of Least Privilege: never grant wildcard `*` permissions in production RoleBindings.",
@@ -899,7 +1103,11 @@ spec:
             "Enforce Pod Security Standards (`pod-security.kubernetes.io/enforce: restricted`) at the Namespace level.",
         ],
         "troubleshooting": [
-            ("API Request `403 Forbidden`", "ServiceAccount lacks RBAC verb or resource permission.", "1. Test authorization: `kubectl auth can-i create deployments --as=system:serviceaccount:production:deployment-manager -n production`\n2. Inspect RoleBinding subjects and roleRef matching."),
+            (
+                "API Request `403 Forbidden`",
+                "ServiceAccount lacks RBAC verb or resource permission.",
+                "1. Test authorization: `kubectl auth can-i create deployments --as=system:serviceaccount:production:deployment-manager -n production`\n2. Inspect RoleBinding subjects and roleRef matching.",
+            ),
         ],
     },
     9: {
@@ -958,12 +1166,26 @@ spec:
       port: 53
 """,
         "fields": [
-            ("`spec.podSelector`", "Object", "Selects target Pods governed by this policy. Empty `{}` matches all Pods in namespace."),
-            ("`spec.policyTypes`", "Array", "`Ingress` (inbound traffic control), `Egress` (outbound traffic control)."),
-            ("`spec.ingress[*].from`", "Array", "List of allowed sources. Multiple elements in single block are OR-ed; elements in separate blocks are AND-ed."),
+            (
+                "`spec.podSelector`",
+                "Object",
+                "Selects target Pods governed by this policy. Empty `{}` matches all Pods in namespace.",
+            ),
+            (
+                "`spec.policyTypes`",
+                "Array",
+                "`Ingress` (inbound traffic control), `Egress` (outbound traffic control).",
+            ),
+            (
+                "`spec.ingress[*].from`",
+                "Array",
+                "List of allowed sources. Multiple elements in single block are OR-ed; elements in separate blocks are AND-ed.",
+            ),
         ],
         "patterns": [
-            ("Default Deny All Ingress Traffic", """apiVersion: networking.k8s.io/v1
+            (
+                "Default Deny All Ingress Traffic",
+                """apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: default-deny-ingress
@@ -972,8 +1194,11 @@ spec:
   podSelector: {}
   policyTypes:
   - Ingress
-"""),
-            ("Allow Egress Only to DNS and Internal CIDR", """apiVersion: networking.k8s.io/v1
+""",
+            ),
+            (
+                "Allow Egress Only to DNS and Internal CIDR",
+                """apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: restrict-egress
@@ -995,7 +1220,8 @@ spec:
         cidr: 10.0.0.0/16
         except:
         - 10.0.100.0/24
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Start with a namespace-wide `default-deny-ingress` and `default-deny-egress` policy and explicitly allowlist required traffic flows.",
@@ -1003,7 +1229,11 @@ spec:
             "Verify that your CNI plugin (e.g. Cilium, Calico, Antrea) actively enforces NetworkPolicy resources.",
         ],
         "troubleshooting": [
-            ("Pod Cannot Connect to Remote Service / DNS Timeout", "Egress policy is blocking traffic to CoreDNS or backend CIDR.", "1. Verify CNI policy enforcement status.\n2. Temporarily test DNS with: `kubectl exec -it <pod> -- nslookup kubernetes.default`\n3. Verify ingress/egress port and namespaceSelector definitions."),
+            (
+                "Pod Cannot Connect to Remote Service / DNS Timeout",
+                "Egress policy is blocking traffic to CoreDNS or backend CIDR.",
+                "1. Verify CNI policy enforcement status.\n2. Temporarily test DNS with: `kubectl exec -it <pod> -- nslookup kubernetes.default`\n3. Verify ingress/egress port and namespaceSelector definitions.",
+            ),
         ],
     },
     10: {
@@ -1063,13 +1293,31 @@ spec:
           command: ["sh", "-c", "sleep 10"]
 """,
         "fields": [
-            ("`startupProbe`", "Object", "Disables liveness/readiness checks until application initialization is complete. Ideal for slow JVM / ML warmups."),
-            ("`livenessProbe`", "Object", "Detects deadlocks or broken states; triggers kubelet container restart upon failure."),
-            ("`readinessProbe`", "Object", "Determines if the container can receive traffic; triggers removal from Service EndpointSlices when failing."),
-            ("`lifecycle.preStop`", "Object", "Executes synchronously before container receives SIGTERM, allowing in-flight requests to drain."),
+            (
+                "`startupProbe`",
+                "Object",
+                "Disables liveness/readiness checks until application initialization is complete. Ideal for slow JVM / ML warmups.",
+            ),
+            (
+                "`livenessProbe`",
+                "Object",
+                "Detects deadlocks or broken states; triggers kubelet container restart upon failure.",
+            ),
+            (
+                "`readinessProbe`",
+                "Object",
+                "Determines if the container can receive traffic; triggers removal from Service EndpointSlices when failing.",
+            ),
+            (
+                "`lifecycle.preStop`",
+                "Object",
+                "Executes synchronously before container receives SIGTERM, allowing in-flight requests to drain.",
+            ),
         ],
         "patterns": [
-            ("TCP Socket Readiness & Exec Liveness", """apiVersion: v1
+            (
+                "TCP Socket Readiness & Exec Liveness",
+                """apiVersion: v1
 kind: Pod
 metadata:
   name: custom-probes
@@ -1087,8 +1335,11 @@ spec:
       tcpSocket:
         port: 6379
       periodSeconds: 5
-"""),
-            ("gRPC Health Checking Protocol Probe", """apiVersion: v1
+""",
+            ),
+            (
+                "gRPC Health Checking Protocol Probe",
+                """apiVersion: v1
 kind: Pod
 metadata:
   name: grpc-service
@@ -1103,7 +1354,8 @@ spec:
         port: 50051
         service: "HealthService"
       initialDelaySeconds: 10
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Always include a `preStop` hook with a brief `sleep` (e.g. 5–10s) to give kube-proxy / iptables time to propagate endpoint removal before SIGTERM.",
@@ -1111,8 +1363,16 @@ spec:
             "Use `startupProbe` with high `failureThreshold` for slow-booting applications rather than inflated `initialDelaySeconds` on liveness probes.",
         ],
         "troubleshooting": [
-            ("Container Constantly Restarting (`Unhealthy` events)", "Liveness probe timeout or non-200 HTTP response code.", "1. Run `kubectl describe pod <name>` and inspect `Events`.\n2. Check probe response manually: `kubectl exec -it <name> -- wget -qO- http://localhost:8080/healthz`."),
-            ("Pod Running but Service Not Serving Traffic", "Readiness probe is failing, causing Pod exclusion from Endpoints.", "1. Check endpoint membership: `kubectl get endpoints <service-name>`\n2. Check readiness status in `kubectl describe pod <name>`."),
+            (
+                "Container Constantly Restarting (`Unhealthy` events)",
+                "Liveness probe timeout or non-200 HTTP response code.",
+                "1. Run `kubectl describe pod <name>` and inspect `Events`.\n2. Check probe response manually: `kubectl exec -it <name> -- wget -qO- http://localhost:8080/healthz`.",
+            ),
+            (
+                "Pod Running but Service Not Serving Traffic",
+                "Readiness probe is failing, causing Pod exclusion from Endpoints.",
+                "1. Check endpoint membership: `kubectl get endpoints <service-name>`\n2. Check readiness status in `kubectl describe pod <name>`.",
+            ),
         ],
     },
     11: {
@@ -1173,12 +1433,26 @@ spec:
         periodSeconds: 60
 """,
         "fields": [
-            ("`scaleTargetRef`", "Object", "Target controller to scale (`Deployment`, `ReplicaSet`, `StatefulSet`)."),
-            ("`metrics[*].type`", "Enum", "`Resource` (CPU/Memory via metrics-server), `Pods` (custom pod metrics), `External` (cloud queues/Prometheus)."),
-            ("`behavior.scaleDown.stabilizationWindowSeconds`", "Integer", "Prevents thrashing (flapping) by damping scale-down operations for specified duration."),
+            (
+                "`scaleTargetRef`",
+                "Object",
+                "Target controller to scale (`Deployment`, `ReplicaSet`, `StatefulSet`).",
+            ),
+            (
+                "`metrics[*].type`",
+                "Enum",
+                "`Resource` (CPU/Memory via metrics-server), `Pods` (custom pod metrics), `External` (cloud queues/Prometheus).",
+            ),
+            (
+                "`behavior.scaleDown.stabilizationWindowSeconds`",
+                "Integer",
+                "Prevents thrashing (flapping) by damping scale-down operations for specified duration.",
+            ),
         ],
         "patterns": [
-            ("KEDA Event-Driven SQS Queue Scaler", """apiVersion: keda.sh/v1alpha1
+            (
+                "KEDA Event-Driven SQS Queue Scaler",
+                """apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
   name: sqs-worker-scaler
@@ -1194,8 +1468,11 @@ spec:
       queueURL: https://sqs.us-east-1.amazonaws.com/123456789012/order-processing
       queueLength: "10"
       awsRegion: "us-east-1"
-"""),
-            ("Custom Prometheus Metric HPA", """apiVersion: autoscaling/v2
+""",
+            ),
+            (
+                "Custom Prometheus Metric HPA",
+                """apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: http-requests-hpa
@@ -1214,7 +1491,8 @@ spec:
       target:
         type: AverageValue
         averageValue: 1k
-"""),
+""",
+            ),
         ],
         "hardening": [
             "All scaled containers MUST define explicit `resources.requests.cpu` and `resources.requests.memory`; HPA cannot calculate percentages without requests.",
@@ -1222,7 +1500,11 @@ spec:
             "Avoid running HPA and VPA (Vertical Pod Autoscaler) on the same CPU/memory metrics simultaneously to prevent scaling contention.",
         ],
         "troubleshooting": [
-            ("HPA Status `<unknown>/75%`", "Metrics Server is not installed or Pods lack CPU requests.", "1. Verify Metrics Server: `kubectl get apiservices | grep metrics`\n2. Verify Pod metrics: `kubectl top pods`\n3. Check HPA conditions: `kubectl describe hpa <name>`"),
+            (
+                "HPA Status `<unknown>/75%`",
+                "Metrics Server is not installed or Pods lack CPU requests.",
+                "1. Verify Metrics Server: `kubectl get apiservices | grep metrics`\n2. Verify Pod metrics: `kubectl top pods`\n3. Check HPA conditions: `kubectl describe hpa <name>`",
+            ),
         ],
     },
     12: {
@@ -1294,12 +1576,26 @@ spec:
                 type: integer
 """,
         "fields": [
-            ("`spec.scope`", "Enum", "`Namespaced` (resources live in namespaces) or `Cluster` (cluster-wide)."),
-            ("`spec.versions[*].subresources.status`", "Object", "Enables `/status` subresource; separates spec updates from status updates."),
-            ("`spec.versions[*].schema.openAPIV3Schema`", "Object", "Strict structural schema validation enforced by the API Server on write."),
+            (
+                "`spec.scope`",
+                "Enum",
+                "`Namespaced` (resources live in namespaces) or `Cluster` (cluster-wide).",
+            ),
+            (
+                "`spec.versions[*].subresources.status`",
+                "Object",
+                "Enables `/status` subresource; separates spec updates from status updates.",
+            ),
+            (
+                "`spec.versions[*].schema.openAPIV3Schema`",
+                "Object",
+                "Strict structural schema validation enforced by the API Server on write.",
+            ),
         ],
         "patterns": [
-            ("Custom Resource Instance (CR)", """apiVersion: storage.example.com/v1alpha1
+            (
+                "Custom Resource Instance (CR)",
+                """apiVersion: storage.example.com/v1alpha1
 kind: DatabaseCluster
 metadata:
   name: primary-postgres
@@ -1308,8 +1604,11 @@ spec:
   engine: postgres
   replicas: 3
   storageSize: 50Gi
-"""),
-            ("CRD with Additional Printer Columns", """apiVersion: apiextensions.k8s.io/v1
+""",
+            ),
+            (
+                "CRD with Additional Printer Columns",
+                """apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   name: backups.storage.example.com
@@ -1336,7 +1635,8 @@ spec:
         properties:
           spec:
             type: object
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Always include complete OpenAPI v3 validation schemas with `type`, `required`, and `enum` bounds to prevent invalid state persistence.",
@@ -1344,7 +1644,11 @@ spec:
             "Follow Kubernetes API versioning conventions (`v1alpha1` &rarr; `v1beta1` &rarr; `v1`) and use conversion webhooks when altering stored schemas.",
         ],
         "troubleshooting": [
-            ("`error: unable to recognize \"cr.yaml\": no matches for kind`", "CRD is not registered, or apiVersion group/version is mismatched.", "1. Check registered CRDs: `kubectl get crds`\n2. Verify served API versions: `kubectl get crd <name> -o yaml`."),
+            (
+                '`error: unable to recognize "cr.yaml": no matches for kind`',
+                "CRD is not registered, or apiVersion group/version is mismatched.",
+                "1. Check registered CRDs: `kubectl get crds`\n2. Verify served API versions: `kubectl get crd <name> -o yaml`.",
+            ),
         ],
     },
     13: {
@@ -1382,11 +1686,21 @@ spec:
 """,
         "fields": [
             ("`status.phase`", "Enum", "`Pending`, `Running`, `Succeeded`, `Failed`, `Unknown`."),
-            ("`status.containerStatuses[*].state`", "Object", "`waiting`, `running`, or `terminated` (with reason and exit code)."),
-            ("`kubectl debug`", "CLI Command", "Attaches ephemeral container to running pod for live kernel/network inspection."),
+            (
+                "`status.containerStatuses[*].state`",
+                "Object",
+                "`waiting`, `running`, or `terminated` (with reason and exit code).",
+            ),
+            (
+                "`kubectl debug`",
+                "CLI Command",
+                "Attaches ephemeral container to running pod for live kernel/network inspection.",
+            ),
         ],
         "patterns": [
-            ("Ephemeral Debugging Container Injection", """# Attach an ephemeral debug container with network tools to a running pod
+            (
+                "Ephemeral Debugging Container Injection",
+                """# Attach an ephemeral debug container with network tools to a running pod
 # kubectl debug -it target-pod --image=nicolaka/netshoot --target=web-app
 apiVersion: v1
 kind: Pod
@@ -1396,8 +1710,11 @@ spec:
   containers:
   - name: web-app
     image: nginx:alpine
-"""),
-            ("Node Problem Diagnostic Pod", """apiVersion: v1
+""",
+            ),
+            (
+                "Node Problem Diagnostic Pod",
+                """apiVersion: v1
 kind: Pod
 metadata:
   name: node-debugger
@@ -1411,7 +1728,8 @@ spec:
     command: ["sh", "-c", "nsenter --target 1 --mount --uts --ipc --net --pid /bin/sh"]
     securityContext:
       privileged: true
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Restrict `kubectl debug` with ephemeral containers using RBAC to prevent unauthorized cluster privilege escalation.",
@@ -1419,7 +1737,11 @@ spec:
             "Use structured JSON logging in all container workloads to simplify log aggregation and alerting.",
         ],
         "troubleshooting": [
-            ("Golden Triage Commands", "Standard 4-step triage sequence for any broken Kubernetes workload.", "```bash\n# 1. Identify failing resources\nkubectl get pods -A -o wide --sort-by=.status.startTime\n\n# 2. Inspect events & container state\nkubectl describe pod <pod-name>\n\n# 3. Read previous container crash logs\nkubectl logs <pod-name> -c <container> --previous --tail=100\n\n# 4. Check cluster-wide chronological warning events\nkubectl get events -A --field-selector type=Warning --sort-by=.metadata.creationTimestamp\n```"),
+            (
+                "Golden Triage Commands",
+                "Standard 4-step triage sequence for any broken Kubernetes workload.",
+                "```bash\n# 1. Identify failing resources\nkubectl get pods -A -o wide --sort-by=.status.startTime\n\n# 2. Inspect events & container state\nkubectl describe pod <pod-name>\n\n# 3. Read previous container crash logs\nkubectl logs <pod-name> -c <container> --previous --tail=100\n\n# 4. Check cluster-wide chronological warning events\nkubectl get events -A --field-selector type=Warning --sort-by=.metadata.creationTimestamp\n```",
+            ),
         ],
     },
     14: {
@@ -1465,12 +1787,26 @@ spec:
     - ApplyOutOfSyncOnly=true
 """,
         "fields": [
-            ("`spec.source`", "Object", "Git repository URL, branch/tag (`targetRevision`), and directory path containing manifests/Helm/Kustomize."),
-            ("`spec.syncPolicy.automated.prune`", "Boolean", "Deletes cluster resources when their YAML manifests are removed from Git."),
-            ("`spec.syncPolicy.automated.selfHeal`", "Boolean", "Reverts manual out-of-band `kubectl` mutations back to Git state within seconds."),
+            (
+                "`spec.source`",
+                "Object",
+                "Git repository URL, branch/tag (`targetRevision`), and directory path containing manifests/Helm/Kustomize.",
+            ),
+            (
+                "`spec.syncPolicy.automated.prune`",
+                "Boolean",
+                "Deletes cluster resources when their YAML manifests are removed from Git.",
+            ),
+            (
+                "`spec.syncPolicy.automated.selfHeal`",
+                "Boolean",
+                "Reverts manual out-of-band `kubectl` mutations back to Git state within seconds.",
+            ),
         ],
         "patterns": [
-            ("Argo Rollouts Canary with AnalysisTemplate", """apiVersion: argoproj.io/v1alpha1
+            (
+                "Argo Rollouts Canary with AnalysisTemplate",
+                """apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
   name: web-rollout
@@ -1494,8 +1830,11 @@ spec:
       containers:
       - name: web
         image: nginx:1.27-alpine
-"""),
-            ("ApplicationSet Matrix Generator", """apiVersion: argoproj.io/v1alpha1
+""",
+            ),
+            (
+                "ApplicationSet Matrix Generator",
+                """apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   name: cluster-addons
@@ -1520,7 +1859,8 @@ spec:
       destination:
         server: "{{url}}"
         namespace: kube-addons
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Always enable `prune: true` and `selfHeal: true` in production GitOps pipelines to enforce true declarative reconciliation.",
@@ -1528,7 +1868,11 @@ spec:
             "Protect production clusters using ArgoCD AppProjects with restricted destination namespaces and allowed source repositories.",
         ],
         "troubleshooting": [
-            ("Application `OutOfSync` / Degraded", "Manifest syntax error or immutable field modification.", "1. Inspect sync status in ArgoCD CLI: `argocd app get <app-name>`\n2. Trigger manual sync with diff: `argocd app sync <app-name> --dry-run`\n3. Check controller logs: `kubectl logs -n argocd -l app.kubernetes.io/name=argocd-application-controller`"),
+            (
+                "Application `OutOfSync` / Degraded",
+                "Manifest syntax error or immutable field modification.",
+                "1. Inspect sync status in ArgoCD CLI: `argocd app get <app-name>`\n2. Trigger manual sync with diff: `argocd app sync <app-name> --dry-run`\n3. Check controller logs: `kubectl logs -n argocd -l app.kubernetes.io/name=argocd-application-controller`",
+            ),
         ],
     },
     15: {
@@ -1580,12 +1924,26 @@ spec:
         protocol: TCP
 """,
         "fields": [
-            ("`endpointSelector`", "Object", "Selects Cilium endpoints (Pods) using identity-based labels rather than volatile IP addresses."),
-            ("`ingress[*].toPorts[*].rules.http`", "Array", "L7 application-layer policy (methods, exact URI paths, regex matching)."),
-            ("`egress[*].toFQDNs`", "Array", "DNS-aware egress security policy allowlisting specific external hostnames."),
+            (
+                "`endpointSelector`",
+                "Object",
+                "Selects Cilium endpoints (Pods) using identity-based labels rather than volatile IP addresses.",
+            ),
+            (
+                "`ingress[*].toPorts[*].rules.http`",
+                "Array",
+                "L7 application-layer policy (methods, exact URI paths, regex matching).",
+            ),
+            (
+                "`egress[*].toFQDNs`",
+                "Array",
+                "DNS-aware egress security policy allowlisting specific external hostnames.",
+            ),
         ],
         "patterns": [
-            ("Clusterwide L7 Kafka Security Policy", """apiVersion: cilium.io/v2
+            (
+                "Clusterwide L7 Kafka Security Policy",
+                """apiVersion: cilium.io/v2
 kind: CiliumClusterwideNetworkPolicy
 metadata:
   name: kafka-topic-isolation
@@ -1605,8 +1963,11 @@ spec:
         kafka:
         - role: produce
           topic: "sensor-telemetry"
-"""),
-            ("Mutual TLS (mTLS) Strict Authentication", """apiVersion: cilium.io/v2
+""",
+            ),
+            (
+                "Mutual TLS (mTLS) Strict Authentication",
+                """apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: enforce-mtls
@@ -1621,7 +1982,8 @@ spec:
         app: client
     authentication:
       mode: required
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Use Cilium eBPF host routing (`bpf.masquerade=true`, `kube-proxy-replacement=true`) for line-rate packet processing without iptables overhead.",
@@ -1629,7 +1991,11 @@ spec:
             "Enable Hubble metrics and network flow logs for complete audit visibility.",
         ],
         "troubleshooting": [
-            ("Hubble Flow Inspection", "Diagnose dropped packets and L7 authorization rejections in real time.", "```bash\n# Stream live drops in namespace\nhubble observe --namespace finance --verdict DROPPED\n\n# Trace HTTP status codes\nhubble observe --namespace finance --protocol http\n```"),
+            (
+                "Hubble Flow Inspection",
+                "Diagnose dropped packets and L7 authorization rejections in real time.",
+                "```bash\n# Stream live drops in namespace\nhubble observe --namespace finance --verdict DROPPED\n\n# Trace HTTP status codes\nhubble observe --namespace finance --protocol http\n```",
+            ),
         ],
     },
     16: {
@@ -1672,12 +2038,26 @@ spec:
               allowPrivilegeEscalation: false
 """,
         "fields": [
-            ("`validationFailureAction`", "Enum", "`Audit` (logs violations without blocking) or `Enforce` (rejects non-compliant API requests)."),
-            ("`background`", "Boolean", "Scans existing cluster resources periodically to report non-compliant workloads."),
-            ("`rules[*].mutate` / `rules[*].generate`", "Object", "Automates manifest transformation and default resource creation."),
+            (
+                "`validationFailureAction`",
+                "Enum",
+                "`Audit` (logs violations without blocking) or `Enforce` (rejects non-compliant API requests).",
+            ),
+            (
+                "`background`",
+                "Boolean",
+                "Scans existing cluster resources periodically to report non-compliant workloads.",
+            ),
+            (
+                "`rules[*].mutate` / `rules[*].generate`",
+                "Object",
+                "Automates manifest transformation and default resource creation.",
+            ),
         ],
         "patterns": [
-            ("Auto-Inject Default NetworkPolicy on Namespace Creation", """apiVersion: kyverno.io/v1
+            (
+                "Auto-Inject Default NetworkPolicy on Namespace Creation",
+                """apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: default-network-policy
@@ -1701,8 +2081,11 @@ spec:
           policyTypes:
           - Ingress
           - Egress
-"""),
-            ("Gatekeeper ConstraintTemplate (Rego)", """apiVersion: templates.gatekeeper.sh/v1
+""",
+            ),
+            (
+                "Gatekeeper ConstraintTemplate (Rego)",
+                """apiVersion: templates.gatekeeper.sh/v1
 kind: ConstraintTemplate
 metadata:
   name: k8srequiredlabels
@@ -1729,7 +2112,8 @@ spec:
         count(missing) > 0
         msg := sprintf("Missing required labels: %v", [missing])
       }
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Start policies in `validationFailureAction: Audit` for 2 weeks to assess existing workloads before switching to `Enforce`.",
@@ -1737,7 +2121,11 @@ spec:
             "Run policy validation tests in CI (e.g. `kyverno test .` or `gator test .`) before manifests reach cluster environments.",
         ],
         "troubleshooting": [
-            ("Manifest Rejected by Policy (`Error from server: admission webhook denied`)", "Resource violated an enforced policy rule.", "1. Review the exact error message returned by `kubectl`.\n2. Check Kyverno PolicyReports: `kubectl get policyreports -A`\n3. Check Gatekeeper constraints: `kubectl get constraints`"),
+            (
+                "Manifest Rejected by Policy (`Error from server: admission webhook denied`)",
+                "Resource violated an enforced policy rule.",
+                "1. Review the exact error message returned by `kubectl`.\n2. Check Kyverno PolicyReports: `kubectl get policyreports -A`\n3. Check Gatekeeper constraints: `kubectl get constraints`",
+            ),
         ],
     },
     17: {
@@ -1788,20 +2176,37 @@ spec:
     type: Container
 """,
         "fields": [
-            ("`ResourceQuota`", "Hard ceiling", "Bounds aggregate compute resources, storage allocations, and object counts across a namespace."),
-            ("`LimitRange`", "Defaults & Bounds", "Injects default resource requests/limits for bare pods and enforces min/max container size constraints."),
-            ("`vcluster`", "Virtual Cluster", "Runs a lightweight, dedicated control plane inside a namespace for full multi-tenant CRD and cluster-admin isolation."),
+            (
+                "`ResourceQuota`",
+                "Hard ceiling",
+                "Bounds aggregate compute resources, storage allocations, and object counts across a namespace.",
+            ),
+            (
+                "`LimitRange`",
+                "Defaults & Bounds",
+                "Injects default resource requests/limits for bare pods and enforces min/max container size constraints.",
+            ),
+            (
+                "`vcluster`",
+                "Virtual Cluster",
+                "Runs a lightweight, dedicated control plane inside a namespace for full multi-tenant CRD and cluster-admin isolation.",
+            ),
         ],
         "patterns": [
-            ("Hierarchical Namespaces (HNC) Tree", """apiVersion: hnc.x-k8s.io/v1alpha2
+            (
+                "Hierarchical Namespaces (HNC) Tree",
+                """apiVersion: hnc.x-k8s.io/v1alpha2
 kind: HierarchyConfiguration
 metadata:
   name: hierarchy
   namespace: team-alpha-staging
 spec:
   parent: team-alpha-root
-"""),
-            ("vcluster Helm Values Configuration", """# vcluster helm configuration for lightweight k3s tenant
+""",
+            ),
+            (
+                "vcluster Helm Values Configuration",
+                """# vcluster helm configuration for lightweight k3s tenant
 syncer:
   extraArgs:
   - --sync-nodes=false
@@ -1814,7 +2219,8 @@ isolation:
     quota:
       requests.cpu: "2"
       requests.memory: 4Gi
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Combine `ResourceQuota` with `LimitRange` in every tenant namespace to prevent unconstrained pod scheduling from saturating quotas.",
@@ -1822,7 +2228,11 @@ isolation:
             "Enforce NetworkPolicies between tenant namespaces to eliminate cross-tenant lateral movement.",
         ],
         "troubleshooting": [
-            ("`exceeded quota: ... requested: ..., used: ..., limited: ...`", "Tenant namespace has exhausted its ResourceQuota ceiling.", "1. Inspect quota usage: `kubectl describe resourcequota -n <tenant-namespace>`\n2. Delete orphaned pods or scale down unused deployments."),
+            (
+                "`exceeded quota: ... requested: ..., used: ..., limited: ...`",
+                "Tenant namespace has exhausted its ResourceQuota ceiling.",
+                "1. Inspect quota usage: `kubectl describe resourcequota -n <tenant-namespace>`\n2. Delete orphaned pods or scale down unused deployments.",
+            ),
         ],
     },
     18: {
@@ -1868,12 +2278,26 @@ webhooks:
   failurePolicy: Fail
 """,
         "fields": [
-            ("`failurePolicy`", "Enum", "`Fail` (rejects API request if webhook times out or crashes) or `Ignore` (allows request through upon failure)."),
-            ("`clientConfig.caBundle`", "Base64", "PEM-encoded CA certificate used by API Server to verify the webhook server TLS certificate."),
-            ("`sideEffects: None`", "Enum", "Guarantees the webhook has no out-of-band side effects on dry-run requests."),
+            (
+                "`failurePolicy`",
+                "Enum",
+                "`Fail` (rejects API request if webhook times out or crashes) or `Ignore` (allows request through upon failure).",
+            ),
+            (
+                "`clientConfig.caBundle`",
+                "Base64",
+                "PEM-encoded CA certificate used by API Server to verify the webhook server TLS certificate.",
+            ),
+            (
+                "`sideEffects: None`",
+                "Enum",
+                "Guarantees the webhook has no out-of-band side effects on dry-run requests.",
+            ),
         ],
         "patterns": [
-            ("Mutating Webhook for Sidecar Injection", """apiVersion: admissionregistration.k8s.io/v1
+            (
+                "Mutating Webhook for Sidecar Injection",
+                """apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
   name: sidecar-injector
@@ -1892,8 +2316,11 @@ webhooks:
   admissionReviewVersions: ["v1"]
   sideEffects: None
   failurePolicy: Ignore
-"""),
-            ("Namespace Exclusion Selector", """# Webhook configuration with namespaceSelector to exclude system components
+""",
+            ),
+            (
+                "Namespace Exclusion Selector",
+                """# Webhook configuration with namespaceSelector to exclude system components
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
 metadata:
@@ -1917,7 +2344,8 @@ webhooks:
       path: "/validate"
   admissionReviewVersions: ["v1"]
   sideEffects: None
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Always set `namespaceSelector` to exclude `kube-system` from webhooks to prevent circular bricking of control plane restarts.",
@@ -1925,7 +2353,11 @@ webhooks:
             "Use `cert-manager` CA injector to automatically maintain `caBundle` synchronization.",
         ],
         "troubleshooting": [
-            ("`Internal error occurred: failed calling webhook ... connection refused`", "Webhook server pod is dead or unreachable over TLS.", "1. Inspect webhook server logs: `kubectl logs -n <namespace> -l app=<webhook-name>`\n2. Temporarily switch `failurePolicy: Ignore` to restore cluster operations during emergencies."),
+            (
+                "`Internal error occurred: failed calling webhook ... connection refused`",
+                "Webhook server pod is dead or unreachable over TLS.",
+                "1. Inspect webhook server logs: `kubectl logs -n <namespace> -l app=<webhook-name>`\n2. Temporarily switch `failurePolicy: Ignore` to restore cluster operations during emergencies.",
+            ),
         ],
     },
     19: {
@@ -1967,12 +2399,26 @@ dependencies:
   condition: redis.enabled
 """,
         "fields": [
-            ("`apiVersion: v2`", "String", "Standard for Helm 3 charts; supports declarative chart dependencies."),
-            ("`version` vs `appVersion`", "SemVer", "`version` is the chart version; `appVersion` reflects the packaged application version."),
-            ("`dependencies`", "Array", "Subcharts managed and bundled via `helm dependency update`."),
+            (
+                "`apiVersion: v2`",
+                "String",
+                "Standard for Helm 3 charts; supports declarative chart dependencies.",
+            ),
+            (
+                "`version` vs `appVersion`",
+                "SemVer",
+                "`version` is the chart version; `appVersion` reflects the packaged application version.",
+            ),
+            (
+                "`dependencies`",
+                "Array",
+                "Subcharts managed and bundled via `helm dependency update`.",
+            ),
         ],
         "patterns": [
-            ("Production values.yaml Structure", """# values.yaml
+            (
+                "Production values.yaml Structure",
+                """# values.yaml
 replicaCount: 3
 
 image:
@@ -1996,8 +2442,11 @@ redis:
   enabled: true
   auth:
     enabled: true
-"""),
-            ("Rendered Helm Template Deployment Manifest", """apiVersion: apps/v1
+""",
+            ),
+            (
+                "Rendered Helm Template Deployment Manifest",
+                """apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: release-enterprise-web-app
@@ -2020,7 +2469,8 @@ spec:
         image: nginx:1.27-alpine
         ports:
         - containerPort: 80
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Create a strict `values.schema.json` to catch invalid data types during `helm lint` and CI.",
@@ -2028,7 +2478,11 @@ spec:
             "Use `helm template --debug` and `helm lint` in pull request workflows to validate charts before publishing.",
         ],
         "troubleshooting": [
-            ("Helm Template Rendering Error (`nil pointer evaluating interface`)", "Referenced value key does not exist in `values.yaml`.", "1. Run template debug: `helm template my-release ./my-chart --debug`\n2. Use `default` or `required` filters to handle optional fields safely."),
+            (
+                "Helm Template Rendering Error (`nil pointer evaluating interface`)",
+                "Referenced value key does not exist in `values.yaml`.",
+                "1. Run template debug: `helm template my-release ./my-chart --debug`\n2. Use `default` or `required` filters to handle optional fields safely.",
+            ),
         ],
     },
     20: {
@@ -2072,18 +2526,35 @@ configMapGenerator:
   - CACHE_TTL=3600
 """,
         "fields": [
-            ("`resources`", "Array", "Relative paths to bases, other overlays, or remote Git URLs."),
-            ("`patches`", "Array", "Targeted JSON 6902 patches or Strategic Merge Patches modifying specific fields without duplicating manifests."),
-            ("`configMapGenerator`", "Array", "Generates ConfigMaps with automatic content-hash suffixes for zero-downtime rolling updates."),
+            (
+                "`resources`",
+                "Array",
+                "Relative paths to bases, other overlays, or remote Git URLs.",
+            ),
+            (
+                "`patches`",
+                "Array",
+                "Targeted JSON 6902 patches or Strategic Merge Patches modifying specific fields without duplicating manifests.",
+            ),
+            (
+                "`configMapGenerator`",
+                "Array",
+                "Generates ConfigMaps with automatic content-hash suffixes for zero-downtime rolling updates.",
+            ),
         ],
         "patterns": [
-            ("Base Kustomization Definition", """apiVersion: kustomize.config.k8s.io/v1beta1
+            (
+                "Base Kustomization Definition",
+                """apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
 - deployment.yaml
 - service.yaml
-"""),
-            ("Strategic Merge Patch for Resource Limits", """apiVersion: apps/v1
+""",
+            ),
+            (
+                "Strategic Merge Patch for Resource Limits",
+                """apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: web-app
@@ -2096,7 +2567,8 @@ spec:
           limits:
             cpu: "2"
             memory: "4Gi"
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Use `configMapGenerator` with hash suffixes so configuration updates trigger automated rolling restarts.",
@@ -2104,7 +2576,11 @@ spec:
             "Validate Kustomize builds in CI with `kubectl kustomize overlays/production --dry-run=client`.",
         ],
         "troubleshooting": [
-            ("`patch target not found`", "Patch target `kind` or `name` does not match any resource generated in the base.", "1. Review base build output: `kubectl kustomize base`\n2. Verify `namePrefix` or `nameSuffix` has not modified the target name prior to patching."),
+            (
+                "`patch target not found`",
+                "Patch target `kind` or `name` does not match any resource generated in the base.",
+                "1. Review base build output: `kubectl kustomize base`\n2. Verify `namePrefix` or `nameSuffix` has not modified the target name prior to patching.",
+            ),
         ],
     },
     21: {
@@ -2177,12 +2653,26 @@ spec:
       weight: 10
 """,
         "fields": [
-            ("`GatewayClass`", "Infrastructure", "Defines the controller implementation (e.g. Envoy Gateway, Cilium, Istio). Managed by Cluster Admins."),
-            ("`Gateway`", "Entrypoint", "Defines network listeners, TLS termination, and allowed route namespaces."),
-            ("`HTTPRoute.spec.rules[*].backendRefs`", "Array", "Defines weighted traffic routing, request header modifications, and url rewriting."),
+            (
+                "`GatewayClass`",
+                "Infrastructure",
+                "Defines the controller implementation (e.g. Envoy Gateway, Cilium, Istio). Managed by Cluster Admins.",
+            ),
+            (
+                "`Gateway`",
+                "Entrypoint",
+                "Defines network listeners, TLS termination, and allowed route namespaces.",
+            ),
+            (
+                "`HTTPRoute.spec.rules[*].backendRefs`",
+                "Array",
+                "Defines weighted traffic routing, request header modifications, and url rewriting.",
+            ),
         ],
         "patterns": [
-            ("Cross-Namespace ReferenceGrant for TLS Security", """apiVersion: gateway.networking.k8s.io/v1beta1
+            (
+                "Cross-Namespace ReferenceGrant for TLS Security",
+                """apiVersion: gateway.networking.k8s.io/v1beta1
 kind: ReferenceGrant
 metadata:
   name: allow-gateway-tls
@@ -2196,8 +2686,11 @@ spec:
   - group: ""
     kind: Secret
     name: wildcard-tls
-"""),
-            ("Header-Based Canary Route", """apiVersion: gateway.networking.k8s.io/v1
+""",
+            ),
+            (
+                "Header-Based Canary Route",
+                """apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: beta-testers-route
@@ -2214,7 +2707,8 @@ spec:
     backendRefs:
     - name: api-beta-svc
       port: 8080
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Use `allowedRoutes.namespaces` to restrict which namespaces can attach routes to shared Gateway listeners.",
@@ -2222,7 +2716,11 @@ spec:
             "Standardize on Gateway API as the next-generation successor to Kubernetes Ingress.",
         ],
         "troubleshooting": [
-            ("HTTPRoute `Not Admitted` / `ResolvedRefs=False`", "Parent Gateway not found or ReferenceGrant missing.", "1. Check HTTPRoute status: `kubectl describe httproute <name> -n <namespace>`\n2. Verify Gateway listener conditions: `kubectl describe gateway <name> -n <namespace>`."),
+            (
+                "HTTPRoute `Not Admitted` / `ResolvedRefs=False`",
+                "Parent Gateway not found or ReferenceGrant missing.",
+                "1. Check HTTPRoute status: `kubectl describe httproute <name> -n <namespace>`\n2. Verify Gateway listener conditions: `kubectl describe gateway <name> -n <namespace>`.",
+            ),
         ],
     },
     22: {
@@ -2273,27 +2771,45 @@ spec:
                 type: integer
 """,
         "fields": [
-            ("`CompositeResourceDefinition` (XRD)", "API Contract", "Defines the custom schema exposed to application developers."),
-            ("`Composition`", "Infrastructure Template", "Binds the XRD to specific Managed Resources (e.g. AWS RDS, GCP CloudSQL)."),
-            ("`Managed Resource` (MR)", "Cloud Primitive", "Direct representation of cloud resources with continuous state reconciliation."),
+            (
+                "`CompositeResourceDefinition` (XRD)",
+                "API Contract",
+                "Defines the custom schema exposed to application developers.",
+            ),
+            (
+                "`Composition`",
+                "Infrastructure Template",
+                "Binds the XRD to specific Managed Resources (e.g. AWS RDS, GCP CloudSQL).",
+            ),
+            (
+                "`Managed Resource` (MR)",
+                "Cloud Primitive",
+                "Direct representation of cloud resources with continuous state reconciliation.",
+            ),
         ],
         "patterns": [
-            ("Application Developer Claim (XRC)", """apiVersion: database.example.org/v1alpha1
+            (
+                "Application Developer Claim (XRC)",
+                """apiVersion: database.example.org/v1alpha1
 kind: PostgreSQLInstance
 metadata:
   name: app-database
   namespace: default
 spec:
   storageGB: 20
-"""),
-            ("ProviderConfig IAM Configuration", """apiVersion: aws.upbound.io/v1beta1
+""",
+            ),
+            (
+                "ProviderConfig IAM Configuration",
+                """apiVersion: aws.upbound.io/v1beta1
 kind: ProviderConfig
 metadata:
   name: default
 spec:
   credentials:
     source: IRSA
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Use IAM Roles for Service Accounts (IRSA / Workload Identity) rather than static long-lived cloud API keys.",
@@ -2301,7 +2817,11 @@ spec:
             "Protect critical databases from accidental deletion with `deletionPolicy: Orphan`.",
         ],
         "troubleshooting": [
-            ("Managed Resource `Ready=False` / `Synced=False`", "Cloud provider authentication failure or parameter validation error.", "1. Run `kubectl describe <managed-resource> <name>`\n2. Verify ProviderConfig status: `kubectl get providerconfigs`."),
+            (
+                "Managed Resource `Ready=False` / `Synced=False`",
+                "Cloud provider authentication failure or parameter validation error.",
+                "1. Run `kubectl describe <managed-resource> <name>`\n2. Verify ProviderConfig status: `kubectl get providerconfigs`.",
+            ),
         ],
     },
     23: {
@@ -2347,11 +2867,21 @@ spec:
 """,
         "fields": [
             ("`kprobes`", "Array", "Attaches eBPF probes to kernel symbols and system calls."),
-            ("`selectors[*].matchArgs`", "Array", "Filters system call arguments (file paths, sockets, flags)."),
-            ("`selectors[*].matchActions`", "Array", "Action dispatched upon match (e.g. `Sigkill` terminates process immediately in kernel)."),
+            (
+                "`selectors[*].matchArgs`",
+                "Array",
+                "Filters system call arguments (file paths, sockets, flags).",
+            ),
+            (
+                "`selectors[*].matchActions`",
+                "Array",
+                "Action dispatched upon match (e.g. `Sigkill` terminates process immediately in kernel).",
+            ),
         ],
         "patterns": [
-            ("Detect Sensitive File Access (/etc/shadow)", """apiVersion: cilium.io/v1alpha1
+            (
+                "Detect Sensitive File Access (/etc/shadow)",
+                """apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
 metadata:
   name: detect-shadow-file-access
@@ -2370,8 +2900,11 @@ spec:
         - "/etc/shadow"
       matchActions:
       - action: Post
-"""),
-            ("Namespaced Tracing Policy for Production Workloads", """apiVersion: cilium.io/v1alpha1
+""",
+            ),
+            (
+                "Namespaced Tracing Policy for Production Workloads",
+                """apiVersion: cilium.io/v1alpha1
 kind: TracingPolicyNamespaced
 metadata:
   name: restrict-shell-in-pod
@@ -2390,7 +2923,8 @@ spec:
         values: ["/bin/sh", "/bin/bash"]
       matchActions:
       - action: Sigkill
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Use `Sigkill` actions on reverse shell binaries (`nc`, `ncat`, `socat`) in production namespaces.",
@@ -2398,7 +2932,11 @@ spec:
             "Forward Tetragon JSON audit logs (`tetra getevents -o compact`) to SIEM systems for forensic audits.",
         ],
         "troubleshooting": [
-            ("Process Terminated Unexpectedly with `SIGKILL`", "Workload executed a binary blocked by an active TracingPolicy.", "1. Inspect Tetragon logs: `kubectl logs -n kube-system -l app.kubernetes.io/name=tetragon -c tetragon --tail=100`\n2. Stream live events: `tetra getevents --namespace <namespace>`"),
+            (
+                "Process Terminated Unexpectedly with `SIGKILL`",
+                "Workload executed a binary blocked by an active TracingPolicy.",
+                "1. Inspect Tetragon logs: `kubectl logs -n kube-system -l app.kubernetes.io/name=tetragon -c tetragon --tail=100`\n2. Stream live events: `tetra getevents --namespace <namespace>`",
+            ),
         ],
     },
     24: {
@@ -2462,12 +3000,26 @@ spec:
               memory: "8Gi"
 """,
         "fields": [
-            ("`headGroupSpec`", "Object", "Configuration for Ray Head node (Global Control Store, scheduler, web dashboard)."),
-            ("`workerGroupSpecs`", "Array", "Heterogeneous worker pools (CPU, GPU, high-memory) with independent autoscaling bounds."),
-            ("`RayJob` / `RayService`", "CRD", "`RayJob` submits batch training tasks to completion; `RayService` provides zero-downtime serving with Ray Serve."),
+            (
+                "`headGroupSpec`",
+                "Object",
+                "Configuration for Ray Head node (Global Control Store, scheduler, web dashboard).",
+            ),
+            (
+                "`workerGroupSpecs`",
+                "Array",
+                "Heterogeneous worker pools (CPU, GPU, high-memory) with independent autoscaling bounds.",
+            ),
+            (
+                "`RayJob` / `RayService`",
+                "CRD",
+                "`RayJob` submits batch training tasks to completion; `RayService` provides zero-downtime serving with Ray Serve.",
+            ),
         ],
         "patterns": [
-            ("RayJob Batch Submission Spec", """apiVersion: ray.io/v1
+            (
+                "RayJob Batch Submission Spec",
+                """apiVersion: ray.io/v1
 kind: RayJob
 metadata:
   name: llm-finetuning-job
@@ -2483,8 +3035,11 @@ spec:
           containers:
           - name: ray-head
             image: rayproject/ray:2.35.0
-"""),
-            ("RayService for Multi-Model Inference", """apiVersion: ray.io/v1
+""",
+            ),
+            (
+                "RayService for Multi-Model Inference",
+                """apiVersion: ray.io/v1
 kind: RayService
 metadata:
   name: embedding-service
@@ -2499,7 +3054,8 @@ spec:
           containers:
           - name: ray-head
             image: rayproject/ray:2.35.0
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Use `shutdownAfterJobFinishes: true` on `RayJob` resources to release expensive cloud GPU instances immediately after training.",
@@ -2507,7 +3063,11 @@ spec:
             "Expose the Ray Dashboard (port 8265) through secure Ingress with OAuth/OIDC authentication.",
         ],
         "troubleshooting": [
-            ("Ray Worker Nodes Not Joining Cluster", "GCS connection failure or mismatched `rayVersion`.", "1. Inspect Head logs: `kubectl logs <head-pod-name> -c ray-head`\n2. Inspect Worker logs: `kubectl logs <worker-pod-name> -c ray-worker`"),
+            (
+                "Ray Worker Nodes Not Joining Cluster",
+                "GCS connection failure or mismatched `rayVersion`.",
+                "1. Inspect Head logs: `kubectl logs <head-pod-name> -c ray-head`\n2. Inspect Worker logs: `kubectl logs <worker-pod-name> -c ray-worker`",
+            ),
         ],
     },
     25: {
@@ -2559,12 +3119,26 @@ spec:
   clusterQueue: research-cluster-queue
 """,
         "fields": [
-            ("`ClusterQueue`", "Cluster Resource", "Pools cluster-wide compute resources and establishes quotas, borrowing limits, and preemption policies."),
-            ("`cohort`", "String", "Enables capacity sharing: queues in the same cohort can borrow unused quota from sister queues."),
-            ("`LocalQueue`", "Namespace Resource", "Submission queue in a specific namespace pointing to an upstream ClusterQueue."),
+            (
+                "`ClusterQueue`",
+                "Cluster Resource",
+                "Pools cluster-wide compute resources and establishes quotas, borrowing limits, and preemption policies.",
+            ),
+            (
+                "`cohort`",
+                "String",
+                "Enables capacity sharing: queues in the same cohort can borrow unused quota from sister queues.",
+            ),
+            (
+                "`LocalQueue`",
+                "Namespace Resource",
+                "Submission queue in a specific namespace pointing to an upstream ClusterQueue.",
+            ),
         ],
         "patterns": [
-            ("Volcano Gang Scheduling PodGroup", """apiVersion: scheduling.volcano.sh/v1beta1
+            (
+                "Volcano Gang Scheduling PodGroup",
+                """apiVersion: scheduling.volcano.sh/v1beta1
 kind: PodGroup
 metadata:
   name: distributed-training-pg
@@ -2574,8 +3148,11 @@ spec:
   minResources:
     cpu: "8"
     memory: "32Gi"
-"""),
-            ("Kueue-Managed Batch Job Submission", """apiVersion: batch/v1
+""",
+            ),
+            (
+                "Kueue-Managed Batch Job Submission",
+                """apiVersion: batch/v1
 kind: Job
 metadata:
   name: sample-batch-analysis
@@ -2592,7 +3169,8 @@ spec:
       - name: worker
         image: python:3.12-slim
         command: ["python", "-c", "print('Batch step complete')"]
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Use Gang Scheduling (`minMember`) for distributed PyTorch/JAX training to avoid deadlock where half the workers occupy GPUs waiting forever for missing peers.",
@@ -2600,7 +3178,11 @@ spec:
             "Enable preemption rules to allow high-priority production jobs to reclaim borrowed capacity.",
         ],
         "troubleshooting": [
-            ("Job Inactive / Workload Not Admitted by Kueue", "ClusterQueue nominal quota and borrowing limits are exhausted.", "1. Inspect Kueue Workload: `kubectl get workloads -n <namespace>`\n2. Check ClusterQueue status: `kubectl describe clusterqueue <name>`"),
+            (
+                "Job Inactive / Workload Not Admitted by Kueue",
+                "ClusterQueue nominal quota and borrowing limits are exhausted.",
+                "1. Inspect Kueue Workload: `kubectl get workloads -n <namespace>`\n2. Check ClusterQueue status: `kubectl describe clusterqueue <name>`",
+            ),
         ],
     },
     26: {
@@ -2654,12 +3236,26 @@ spec:
       - name: gpu-resource
 """,
         "fields": [
-            ("`DeviceClass`", "Cluster Resource", "Defines the hardware class and selecting driver (e.g. `gpu.nvidia.com`, `dra.intel.com`)."),
-            ("`ResourceClaim`", "Claim Resource", "Requests fine-grained device properties (memory, architecture, interconnects) using CEL expressions."),
-            ("`spec.resourceClaims`", "Pod Spec", "Binds claims to container instances dynamically during scheduling."),
+            (
+                "`DeviceClass`",
+                "Cluster Resource",
+                "Defines the hardware class and selecting driver (e.g. `gpu.nvidia.com`, `dra.intel.com`).",
+            ),
+            (
+                "`ResourceClaim`",
+                "Claim Resource",
+                "Requests fine-grained device properties (memory, architecture, interconnects) using CEL expressions.",
+            ),
+            (
+                "`spec.resourceClaims`",
+                "Pod Spec",
+                "Binds claims to container instances dynamically during scheduling.",
+            ),
         ],
         "patterns": [
-            ("NVIDIA Multi-Instance GPU (MIG) Partitioning", """apiVersion: v1
+            (
+                "NVIDIA Multi-Instance GPU (MIG) Partitioning",
+                """apiVersion: v1
 kind: Pod
 metadata:
   name: mig-partitioned-pod
@@ -2670,8 +3266,11 @@ spec:
     resources:
       limits:
         nvidia.com/mig-1g.10gb: 1
-"""),
-            ("ResourceClaimTemplate with Stateful Deployment", """apiVersion: resource.k8s.io/v1alpha3
+""",
+            ),
+            (
+                "ResourceClaimTemplate with Stateful Deployment",
+                """apiVersion: resource.k8s.io/v1alpha3
 kind: ResourceClaimTemplate
 metadata:
   name: per-pod-gpu-template
@@ -2681,7 +3280,8 @@ spec:
       requests:
       - name: dedicated-gpu
         deviceClassName: gpu.nvidia.com
-"""),
+""",
+            ),
         ],
         "hardening": [
             "Use Dynamic Resource Allocation (DRA) for complex hardware constraints rather than static integer extended resources (`nvidia.com/gpu: 1`).",
@@ -2689,7 +3289,11 @@ spec:
             "Enforce resource limits on GPU-enabled namespaces using dedicated quotas.",
         ],
         "troubleshooting": [
-            ("`Failed to allocate device for claim`", "No node in cluster has a hardware device satisfying the CEL selector expression.", "1. Inspect claim state: `kubectl describe resourceclaim <name>`\n2. Check DRA driver plugin daemonset: `kubectl get pods -n kube-system -l app=nvidia-dra-driver-kubelet-plugin`"),
+            (
+                "`Failed to allocate device for claim`",
+                "No node in cluster has a hardware device satisfying the CEL selector expression.",
+                "1. Inspect claim state: `kubectl describe resourceclaim <name>`\n2. Check DRA driver plugin daemonset: `kubectl get pods -n kube-system -l app=nvidia-dra-driver-kubelet-plugin`",
+            ),
         ],
     },
 }
@@ -2812,3 +3416,27 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
     print(f"Generated {guide_path}")
 
 print("All 26 reference guides successfully generated!")
+
+# Generate bidirectional curriculum syllabus
+syllabus_lines = [
+    "# Curriculum Syllabus",
+    "",
+    "Kubelings features **26 chapters** covering **114 real-world exercises** with bidirectional reference guides and WebAssembly playground integration:",
+    "",
+    "---",
+    "",
+]
+
+for chapter in manifest.chapters:
+    data = CHAPTER_DATA.get(chapter.number)
+    slug = data["slug"] if data else f"{chapter.number:02d}-{chapter.name}"
+    syllabus_lines.append(f"### [Chapter {chapter.number:02d}: {chapter.title}](guides/{slug}.md)")
+    for ex in chapter.exercises:
+        syllabus_lines.append(
+            f"- [**`{ex.name}`**](playground/index.html?exercise={ex.name}): {ex.title}"
+        )
+    syllabus_lines.append("")
+
+syllabus_path = REPO_ROOT / "docs" / "syllabus.md"
+syllabus_path.write_text("\n".join(syllabus_lines), encoding="utf-8")
+print(f"Generated {syllabus_path}")

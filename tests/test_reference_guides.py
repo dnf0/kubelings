@@ -1,9 +1,10 @@
 """Tests verifying that all 26 reference guides are comprehensive, valid, and bidirectionally linked."""
 
-from pathlib import Path
 import re
-import yaml
+from pathlib import Path
+
 import pytest
+import yaml
 
 from kubelings.manifest import build_manifest
 
@@ -53,25 +54,39 @@ def test_guide_contains_all_required_sections(slug: str):
     content = guide_path.read_text(encoding="utf-8")
 
     # Section 1: Hero card with link to playground
-    assert "../playground/index.html?chapter=" in content, f"{slug}: Missing playground launcher link"
+    assert "../playground/index.html?chapter=" in content, (
+        f"{slug}: Missing playground launcher link"
+    )
 
     # Section 2: Architecture Overview & Control Plane Mechanics
-    assert re.search(r"## 1\. Architectural Overview", content), f"{slug}: Missing Section 1 Architecture"
+    assert re.search(r"## 1\. Architectural Overview", content), (
+        f"{slug}: Missing Section 1 Architecture"
+    )
 
     # Section 3: Annotated Production YAML
-    assert re.search(r"## 2\. Annotated Production YAML", content), f"{slug}: Missing Section 2 YAML Anatomy"
+    assert re.search(r"## 2\. Annotated Production YAML", content), (
+        f"{slug}: Missing Section 2 YAML Anatomy"
+    )
 
     # Section 4: Real-World Patterns
-    assert re.search(r"## 3\. Real-World Architectural Patterns", content), f"{slug}: Missing Section 3 Patterns"
+    assert re.search(r"## 3\. Real-World Architectural Patterns", content), (
+        f"{slug}: Missing Section 3 Patterns"
+    )
 
     # Section 5: Production Hardening
-    assert re.search(r"## 4\. Production Hardening", content), f"{slug}: Missing Section 4 Hardening"
+    assert re.search(r"## 4\. Production Hardening", content), (
+        f"{slug}: Missing Section 4 Hardening"
+    )
 
     # Section 6: Failure Modes & Diagnostics
-    assert re.search(r"## 5\. Failure Modes & Diagnostic Triage Tree", content), f"{slug}: Missing Section 5 Triage"
+    assert re.search(r"## 5\. Failure Modes & Diagnostic Triage Tree", content), (
+        f"{slug}: Missing Section 5 Triage"
+    )
 
     # Section 7: Interactive Practice Matrix
-    assert re.search(r"## 6\. Interactive Practice Matrix", content), f"{slug}: Missing Section 6 Practice Matrix"
+    assert re.search(r"## 6\. Interactive Practice Matrix", content), (
+        f"{slug}: Missing Section 6 Practice Matrix"
+    )
 
 
 @pytest.mark.parametrize("slug", CHAPTER_SLUGS)
@@ -82,18 +97,22 @@ def test_guide_yaml_manifests_are_valid_and_non_empty(slug: str):
 
     # Find all yaml fenced code blocks
     yaml_blocks = re.findall(r"```yaml\n(.*?)```", content, re.DOTALL)
-    assert len(yaml_blocks) >= 2, f"{slug}: Must have at least 2 YAML manifests, found {len(yaml_blocks)}"
+    assert len(yaml_blocks) >= 2, (
+        f"{slug}: Must have at least 2 YAML manifests, found {len(yaml_blocks)}"
+    )
 
     for i, block in enumerate(yaml_blocks):
         stripped = block.strip()
-        assert len(stripped) > 20, f"{slug}: YAML block {i+1} is empty or too short: '{stripped}'"
+        assert len(stripped) > 20, f"{slug}: YAML block {i + 1} is empty or too short: '{stripped}'"
         # Parse with yaml.safe_load (handle multi-doc yaml too)
         docs = list(yaml.safe_load_all(stripped))
-        assert len(docs) >= 1, f"{slug}: YAML block {i+1} parsed into zero documents"
+        assert len(docs) >= 1, f"{slug}: YAML block {i + 1} parsed into zero documents"
         for doc in docs:
             if doc is not None:
-                assert isinstance(doc, dict), f"{slug}: YAML block {i+1} doc must be a dict, got {type(doc)}"
-                assert len(doc) > 0, f"{slug}: YAML block {i+1} doc is empty"
+                assert isinstance(doc, dict), (
+                    f"{slug}: YAML block {i + 1} doc must be a dict, got {type(doc)}"
+                )
+                assert len(doc) > 0, f"{slug}: YAML block {i + 1} doc is empty"
 
 
 def test_all_114_exercises_are_linked_in_guides():
@@ -111,4 +130,6 @@ def test_all_114_exercises_are_linked_in_guides():
             linked_exercise_ids.add(m)
 
     missing = all_exercise_ids - linked_exercise_ids
-    assert not missing, f"The following exercises are not linked in any reference guide: {sorted(missing)}"
+    assert not missing, (
+        f"The following exercises are not linked in any reference guide: {sorted(missing)}"
+    )

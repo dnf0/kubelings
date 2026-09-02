@@ -1,171 +1,171 @@
 # Curriculum Syllabus
 
-Kubelings features **26 chapters** covering **114 real-world exercises**:
+Kubelings features **26 chapters** covering **114 real-world exercises** with bidirectional reference guides and WebAssembly playground integration:
 
 ---
 
-### Chapter 01: Pods & Core Workloads
-- `pods01`: First Pod Manifest & Spec (API syntax, container structure).
-- `pods02`: Multi-Container Pods & Sidecar Pattern (`emptyDir` shared volume).
-- `pods03`: Init Containers for Pre-Flight Checks & Data Population.
-- `pods04`: Resource Requests, Limits & Quality of Service (Guaranteed, Burstable).
-- `pods05`: Downward API & Pod Metadata Injection via Env Variables.
-- `pods06`: Pod Disruption Budgets (PDB) & High Availability.
+### [Chapter 01: Kubernetes Core Workloads & Pods](guides/01-pods.md)
+- [**`pods01`**](playground/index.html?exercise=pods01): First Pod Manifest & Spec
+- [**`pods02`**](playground/index.html?exercise=pods02): Multi-Container Pods & Sidecar Pattern
+- [**`pods03`**](playground/index.html?exercise=pods03): Init Containers for Initialization
+- [**`pods04`**](playground/index.html?exercise=pods04): Resource Requests, Limits & QoS
+- [**`pods05`**](playground/index.html?exercise=pods05): Downward API & Env Variables
+- [**`pods06`**](playground/index.html?exercise=pods06): Pod Disruption Budgets & Static Pods
 
-### Chapter 02: Controllers & Replication
-- `ctrl01`: ReplicaSets & MatchLabels Selectors.
-- `ctrl02`: Deployments & Zero-Downtime Rolling Update Strategy.
-- `ctrl03`: Deployment Rollbacks & Revision History.
-- `ctrl04`: StatefulSets & Stable Network Identifiers / PersistentVolumeClaims.
-- `ctrl05`: DaemonSets for Cluster Node Daemons (fluentd/prom-node-exporter).
-- `ctrl06`: Jobs & CronJobs for Batch Processing.
+### [Chapter 02: Controllers & Replication](guides/02-controllers.md)
+- [**`ctrl01`**](playground/index.html?exercise=ctrl01): ReplicaSets & Label Selectors
+- [**`ctrl02`**](playground/index.html?exercise=ctrl02): Deployments & Rolling Updates
+- [**`ctrl03`**](playground/index.html?exercise=ctrl03): Deployment Rollbacks & Revision History
+- [**`ctrl04`**](playground/index.html?exercise=ctrl04): StatefulSets & Stable Network IDs
+- [**`ctrl05`**](playground/index.html?exercise=ctrl05): DaemonSets for Node-Level Daemons
+- [**`ctrl06`**](playground/index.html?exercise=ctrl06): Jobs & CronJobs
 
-### Chapter 03: Configuration & Secrets
-- `config01`: ConfigMaps & Direct Key-Value Pair Ingestion.
-- `config02`: Secret Creation & Base64 Decoding.
-- `config03`: Mounting ConfigMaps as Volume Directories.
-- `config04`: Mounting Secrets with Restricted File Permissions (`defaultMode`).
-- `config05`: Immutable ConfigMaps & Secrets for Performance & Safety.
+### [Chapter 03: Configuration & Secret Management](guides/03-config-secrets.md)
+- [**`config01`**](playground/index.html?exercise=config01): ConfigMaps as Environment Variables
+- [**`config02`**](playground/index.html?exercise=config02): ConfigMaps Mounted as Volumes
+- [**`config03`**](playground/index.html?exercise=config03): Secrets & Base64 Encoding
+- [**`config04`**](playground/index.html?exercise=config04): Secret Volume Mounts & Permissions
+- [**`config05`**](playground/index.html?exercise=config05): Immutable ConfigMaps and Secrets
 
-### Chapter 04: Storage & Persistent Volumes
-- `storage01`: Ephemeral Storage with `emptyDir` & Host Volumes.
-- `storage02`: PersistentVolumes (PV) with Static Provisioning.
-- `storage03`: PersistentVolumeClaims (PVC) Binding & AccessModes (`ReadWriteOnce`, `ReadOnlyMany`).
-- `storage04`: StorageClasses & Dynamic Volume Provisioning.
-- `storage05`: Volume Snapshots & Restore Workflows.
+### [Chapter 04: Storage & Persistent Volumes](guides/04-storage.md)
+- [**`storage01`**](playground/index.html?exercise=storage01): Volume Types (emptyDir & hostPath)
+- [**`storage02`**](playground/index.html?exercise=storage02): PersistentVolumes & PersistentVolumeClaims
+- [**`storage03`**](playground/index.html?exercise=storage03): Access Modes & Reclaim Policies
+- [**`storage04`**](playground/index.html?exercise=storage04): StorageClasses & Dynamic Provisioning
+- [**`storage05`**](playground/index.html?exercise=storage05): Volume Snapshots & Volume Expansion
 
-### Chapter 05: Services & Networking
-- `net01`: ClusterIP Services & Label Selector Target Routing.
-- `net02`: Headless Services for Stateful Discovery.
-- `net03`: NodePort Services for External Edge Ingress.
-- `net04`: CoreDNS Resolution & SRV Records.
-- `net05`: ExternalName Services for Third-Party Endpoints.
+### [Chapter 05: Services & Networking](guides/05-services-networking.md)
+- [**`net01`**](playground/index.html?exercise=net01): ClusterIP Services & Port Mapping
+- [**`net02`**](playground/index.html?exercise=net02): Headless Services & Stateful Addressing
+- [**`net03`**](playground/index.html?exercise=net03): NodePort & LoadBalancer Service Types
+- [**`net04`**](playground/index.html?exercise=net04): CoreDNS Internal Service Resolution
+- [**`net05`**](playground/index.html?exercise=net05): ExternalName Services & Manual Endpoints
 
-### Chapter 06: Ingress & Traffic Management
-- `ingress01`: Ingress Resources & Multi-Path Routing Rules.
-- `ingress02`: TLS Termination & Secret References.
-- `ingress03`: Custom Ingress Annotations & URL Rewriting.
-- `ingress04`: Gateway API Architecture.
+### [Chapter 06: Ingress & Gateway API](guides/06-ingress-gateway.md)
+- [**`ingress01`**](playground/index.html?exercise=ingress01): Ingress Host & Path Routing
+- [**`ingress02`**](playground/index.html?exercise=ingress02): Ingress TLS Termination
+- [**`ingress03`**](playground/index.html?exercise=ingress03): Ingress Annotations & Rewrites
+- [**`ingress04`**](playground/index.html?exercise=ingress04): Gateway API Fundamentals
 
-### Chapter 07: Scheduling & Placement
-- `sched01`: Node Selection with `nodeSelector`.
-- `sched02`: Node Affinity & Anti-Affinity (Required vs Preferred).
-- `sched03`: Pod Anti-Affinity for Multi-Zone Redundancy.
-- `sched04`: Taints & Tolerations for Dedicated Workloads.
-- `sched05`: Topology Spread Constraints for Max-Skew Balancing.
+### [Chapter 07: Scheduling, Affinity & Advanced Placement](guides/07-scheduling.md)
+- [**`sched01`**](playground/index.html?exercise=sched01): Node Placement (nodeName & nodeSelector)
+- [**`sched02`**](playground/index.html?exercise=sched02): Node Affinity & Constraints
+- [**`sched03`**](playground/index.html?exercise=sched03): Pod Affinity & Pod Anti-Affinity
+- [**`sched04`**](playground/index.html?exercise=sched04): Taints and Tolerations
+- [**`sched05`**](playground/index.html?exercise=sched05): Topology Spread Constraints
 
-### Chapter 08: Security & RBAC
-- `rbac01`: ServiceAccounts & IAM Tokens.
-- `rbac02`: Roles & RoleBindings (Namespace Scoped).
-- `rbac03`: ClusterRoles & ClusterRoleBindings (Cluster Scoped).
-- `rbac04`: SecurityContext (RunAsNonRoot, ReadOnlyRootFilesystem, Drop Capabilities).
-- `rbac05`: Pod Security Standards (Privileged, Baseline, Restricted).
+### [Chapter 08: Security, RBAC & Service Accounts](guides/08-security-rbac.md)
+- [**`rbac01`**](playground/index.html?exercise=rbac01): ServiceAccounts & Token Management
+- [**`rbac02`**](playground/index.html?exercise=rbac02): Roles & RoleBindings
+- [**`rbac03`**](playground/index.html?exercise=rbac03): ClusterRoles & ClusterRoleBindings
+- [**`rbac04`**](playground/index.html?exercise=rbac04): Pod & Container SecurityContext
+- [**`rbac05`**](playground/index.html?exercise=rbac05): Pod Security Standards (PSS/PSA)
 
-### Chapter 09: Network Policies
-- `netpol01`: Default Deny All Traffic Policy.
-- `netpol02`: Ingress Traffic Filtering by Namespace & Pod Selector.
-- `netpol03`: Egress Traffic Allow-Listing & DNS Port 53 Egress.
-- `netpol04`: Named Ports & CIDR IPBlock Exceptions.
+### [Chapter 09: Network Policies & Traffic Segmentation](guides/09-network-policies.md)
+- [**`netpol01`**](playground/index.html?exercise=netpol01): Default Deny Network Policy
+- [**`netpol02`**](playground/index.html?exercise=netpol02): Ingress Traffic Filtering
+- [**`netpol03`**](playground/index.html?exercise=netpol03): Egress Traffic & DNS Access
+- [**`netpol04`**](playground/index.html?exercise=netpol04): Named Ports & IPBlock CIDR Exceptions
 
-### Chapter 10: Lifecycle & Probes
-- `health01`: HTTP & TCP Liveness Probes.
-- `health02`: Readiness Probes for Traffic Shedding.
-- `health03`: Startup Probes for Slow Bootstrapping Workloads.
-- `health04`: PostStart & PreStop Lifecycle Hooks.
+### [Chapter 10: Health Checking, Probes & Lifecycle](guides/10-lifecycle-probes.md)
+- [**`health01`**](playground/index.html?exercise=health01): Liveness Probes
+- [**`health02`**](playground/index.html?exercise=health02): Readiness Probes
+- [**`health03`**](playground/index.html?exercise=health03): Startup Probes
+- [**`health04`**](playground/index.html?exercise=health04): Lifecycle Hooks & Graceful Shutdown
 
-### Chapter 11: Autoscaling
-- `autoscale01`: Horizontal Pod Autoscaler (HPA v2) CPU/Memory Scaling.
-- `autoscale02`: HPA Scaling Policies & Stabilization Windows.
-- `autoscale03`: Vertical Pod Autoscaler (VPA) Resource Recommendations.
-- `autoscale04`: Event-Driven Autoscaling (KEDA ScaledObjects).
+### [Chapter 11: Autoscaling (HPA, VPA, KEDA)](guides/11-autoscaling.md)
+- [**`autoscale01`**](playground/index.html?exercise=autoscale01): Horizontal Pod Autoscaler (HPA v2)
+- [**`autoscale02`**](playground/index.html?exercise=autoscale02): HPA Custom Scaling Behavior
+- [**`autoscale03`**](playground/index.html?exercise=autoscale03): Vertical Pod Autoscaler (VPA)
+- [**`autoscale04`**](playground/index.html?exercise=autoscale04): Event-Driven Autoscaling (KEDA)
 
-### Chapter 12: CRDs & Operators
-- `crd01`: CustomResourceDefinition (CRD) OpenAPI v3 Schemas.
-- `crd02`: CRD Subresources (`/status`, `/scale`) & Custom Columns.
-- `crd03`: Kubernetes Operator Reconciliation Loops in Python.
-- `crd04`: Dynamic Admission Controller Architecture.
+### [Chapter 12: Custom Resources, CRDs & Operators](guides/12-crds-and-operators.md)
+- [**`crd01`**](playground/index.html?exercise=crd01): CustomResourceDefinition (CRD) Schema
+- [**`crd02`**](playground/index.html?exercise=crd02): CRD Subresources & Printer Columns
+- [**`crd03`**](playground/index.html?exercise=crd03): Python Kubernetes Operator Loop
+- [**`crd04`**](playground/index.html?exercise=crd04): Dynamic Admission Webhooks
 
-### Chapter 13: Troubleshooting & Diagnostics
-- `troubleshoot01`: CrashLoopBackOff & Container Exit Code Analysis.
-- `troubleshoot02`: ImagePullBackOff & Registry Authentication.
-- `troubleshoot03`: Pending Pods & Insufficient Capacity Diagnosis.
-- `troubleshoot04`: ResourceQuota & LimitRange Bottlenecks.
-- `troubleshoot05`: Ephemeral Debug Containers (`kubectl debug`).
+### [Chapter 13: Observability, Debugging & Production Troubleshooting](guides/13-troubleshooting.md)
+- [**`troubleshoot01`**](playground/index.html?exercise=troubleshoot01): Debugging CrashLoopBackOff & Exit Codes
+- [**`troubleshoot02`**](playground/index.html?exercise=troubleshoot02): Debugging ImagePullBackOff
+- [**`troubleshoot03`**](playground/index.html?exercise=troubleshoot03): Debugging Pending Pods & Scheduling Failures
+- [**`troubleshoot04`**](playground/index.html?exercise=troubleshoot04): ResourceQuotas & LimitRanges
+- [**`troubleshoot05`**](playground/index.html?exercise=troubleshoot05): Ephemeral Debug Containers & Event Triage
 
-### Chapter 14: GitOps with ArgoCD
-- `gitops01`: ArgoCD Application CRD & Automated Sync Policies.
-- `gitops02`: ArgoCD ApplicationSet Matrix & Directory Generators.
-- `gitops03`: Sync Windows, ServerSideApply & Retry Backoff.
-- `gitops04`: Progressive Delivery with Argo Rollouts (Canary Analysis).
+### [Chapter 14: GitOps Continuous Delivery with ArgoCD](guides/14-gitops-argocd.md)
+- [**`gitops01`**](playground/index.html?exercise=gitops01): ArgoCD Application CRD & Sync Policies
+- [**`gitops02`**](playground/index.html?exercise=gitops02): ArgoCD ApplicationSet Matrix Generator
+- [**`gitops03`**](playground/index.html?exercise=gitops03): Sync Windows, ServerSideApply & Retry Backoff
+- [**`gitops04`**](playground/index.html?exercise=gitops04): Progressive Delivery with Argo Rollouts
 
-### Chapter 15: Service Mesh with Cilium
-- `mesh01`: Cilium L7 HTTP Filtering & Path-Based Routing.
-- `mesh02`: Strict Mutual TLS (mTLS) & PeerAuthentication.
-- `mesh03`: CiliumClusterwideNetworkPolicy with DNS FQDN Egress.
-- `mesh04`: Hubble Observability & OpenTelemetry Tracing.
+### [Chapter 15: Service Mesh, eBPF & Cilium](guides/15-service-mesh-cilium.md)
+- [**`mesh01`**](playground/index.html?exercise=mesh01): Cilium L7 HTTP Filtering & Routing
+- [**`mesh02`**](playground/index.html?exercise=mesh02): Strict Mutual TLS & PeerAuthentication
+- [**`mesh03`**](playground/index.html?exercise=mesh03): CiliumClusterwideNetworkPolicy with DNS FQDN Egress
+- [**`mesh04`**](playground/index.html?exercise=mesh04): Hubble Observability & OpenTelemetry Tracing
 
-### Chapter 16: Policy as Code
-- `policy01`: Kyverno ClusterPolicy for Required Labels Validation.
-- `policy02`: Kyverno Mutating Policy for Security Defaults (`runAsNonRoot`).
-- `policy03`: Kyverno Generate Policy for Default Deny NetworkPolicy.
-- `policy04`: OPA Gatekeeper ConstraintTemplate & Constraint with Rego logic.
+### [Chapter 16: Policy as Code (Kyverno & Gatekeeper)](guides/16-policy-as-code.md)
+- [**`policy01`**](playground/index.html?exercise=policy01): Kyverno ClusterPolicy for Required Labels
+- [**`policy02`**](playground/index.html?exercise=policy02): Kyverno Mutating Policy for Security Defaults
+- [**`policy03`**](playground/index.html?exercise=policy03): Kyverno Generate Policy for Default Deny NetworkPolicy
+- [**`policy04`**](playground/index.html?exercise=policy04): OPA Gatekeeper ConstraintTemplate & Constraint
 
-### Chapter 17: Multi-Tenancy & Virtual Clusters
-- `tenant01`: Hierarchical Namespace Controller (HNC) Subnamespace Anchors.
-- `tenant02`: Multi-Document Tenant ResourceQuotas and LimitRanges.
-- `tenant03`: Virtual Cluster (`vcluster`) Control Plane Specification.
-- `tenant04`: Multi-Tenant Network Isolation & Egress Filtering.
+### [Chapter 17: Multi-Tenancy & Virtual Clusters](guides/17-multitenancy-vcluster.md)
+- [**`tenant01`**](playground/index.html?exercise=tenant01): HNC Hierarchical Subnamespace Anchor
+- [**`tenant02`**](playground/index.html?exercise=tenant02): Tenant ResourceQuotas and LimitRanges
+- [**`tenant03`**](playground/index.html?exercise=tenant03): Virtual Cluster (vcluster) Control Plane
+- [**`tenant04`**](playground/index.html?exercise=tenant04): Multi-Tenant Network Isolation & Egress Filtering
 
-### Chapter 18: Advanced Admission Webhooks
-- `webhook01`: MutatingWebhookConfiguration Manifest & CABundle Routing.
-- `webhook02`: ValidatingWebhookConfiguration Manifest & Scope Filters.
-- `webhook03`: Dynamic Sidecar Injection AdmissionReview JSON Patch.
-- `webhook04`: CRD Webhook Conversion Strategy for Multi-Version APIs.
+### [Chapter 18: Advanced Admission Webhooks](guides/18-admission-webhooks.md)
+- [**`webhook01`**](playground/index.html?exercise=webhook01): MutatingWebhookConfiguration Manifest
+- [**`webhook02`**](playground/index.html?exercise=webhook02): ValidatingWebhookConfiguration Manifest
+- [**`webhook03`**](playground/index.html?exercise=webhook03): Dynamic Sidecar Injection AdmissionReview Response
+- [**`webhook04`**](playground/index.html?exercise=webhook04): CRD Webhook Conversion Strategy
 
-### Chapter 19: Package Management with Helm
-- `helm01`: Helm `Chart.yaml` Metadata & Dependencies (Helm v3, SemVer, Subcharts).
-- `helm02`: Helm Go Templating & Named Helpers (`_helpers.tpl`, `chart_fullname`, Template Injection).
-- `helm03`: Helm `values.schema.json` Validation Schema (JSONSchema Draft-7 structure).
-- `helm04`: Helm Subcharts & Global Values Propagation (`global`, dependency overrides).
+### [Chapter 19: Package Management with Helm](guides/19-helm-packaging.md)
+- [**`helm01`**](playground/index.html?exercise=helm01): Helm Chart.yaml Metadata & Dependencies
+- [**`helm02`**](playground/index.html?exercise=helm02): Helm Go Templating & Named Helpers (_helpers.tpl)
+- [**`helm03`**](playground/index.html?exercise=helm03): Helm values.schema.json Validation Schema
+- [**`helm04`**](playground/index.html?exercise=helm04): Helm Subcharts & Global Values
 
-### Chapter 20: Declarative Customization with Kustomize
-- `kustomize01`: Kustomize Base Manifests & Metadata Transformations (`resources`, `namespace`, `namePrefix`, `commonLabels`, `commonAnnotations`).
-- `kustomize02`: Kustomize ConfigMap & Secret Generators (`configMapGenerator`, `secretGenerator`, `generatorOptions`).
-- `kustomize03`: Kustomize Strategic Merge & JSON6902 Target Patches (`patches` with JSON6902 replace/add operations).
-- `kustomize04`: Kustomize Multi-Environment Overlays & Image Transforms (`overlays/prod`, `images`, `replicas`).
+### [Chapter 20: Declarative Customization with Kustomize](guides/20-kustomize-overlays.md)
+- [**`kustomize01`**](playground/index.html?exercise=kustomize01): Kustomize Base Manifests & Metadata Transformations
+- [**`kustomize02`**](playground/index.html?exercise=kustomize02): Kustomize ConfigMap & Secret Generators
+- [**`kustomize03`**](playground/index.html?exercise=kustomize03): Kustomize Strategic Merge & JSON6902 Target Patches
+- [**`kustomize04`**](playground/index.html?exercise=kustomize04): Kustomize Multi-Environment Overlays & Image Transforms
 
-### Chapter 21: Next-Gen Traffic Routing with Kubernetes Gateway API
-- `gateway01`: GatewayClass and Gateway Declaration (`gateway.networking.k8s.io/v1`, HTTP listener configuration).
-- `gateway02`: HTTPRoute Path & Header-Based Routing (parentRefs, path prefix matching, request header conditions).
-- `gateway03`: Canary Traffic Splitting & URL Rewriting (weighted backendRefs, `URLRewrite` filters, header injection).
-- `gateway04`: Cross-Namespace Security with ReferenceGrant (`ReferenceGrant` authorization for cross-namespace services).
+### [Chapter 21: Next-Gen Traffic Routing with Kubernetes Gateway API](guides/21-gateway-api.md)
+- [**`gateway01`**](playground/index.html?exercise=gateway01): GatewayClass and Gateway Declaration
+- [**`gateway02`**](playground/index.html?exercise=gateway02): HTTPRoute Path & Header-Based Routing
+- [**`gateway03`**](playground/index.html?exercise=gateway03): Canary Traffic Splitting & URL Rewriting
+- [**`gateway04`**](playground/index.html?exercise=gateway04): Cross-Namespace Security with ReferenceGrant
 
-### Chapter 22: Infrastructure as Data with Crossplane
-- `crossplane01`: CompositeResourceDefinition (XRD) Schema (`apiextensions.crossplane.io/v1`, custom infrastructure schemas).
-- `crossplane02`: Composition and Field Path Transforms (`Composition` mapping XRD fields to managed cloud resources).
-- `crossplane03`: ProviderConfig and Resource Deletion Policies (`ProviderConfig` secret credentials and deletion policies).
-- `crossplane04`: Developer Self-Service Claims & Connection Secrets (namespaced claims and secret propagation).
+### [Chapter 22: Infrastructure as Data with Crossplane](guides/22-crossplane-iac.md)
+- [**`crossplane01`**](playground/index.html?exercise=crossplane01): CompositeResourceDefinition (XRD) Schema
+- [**`crossplane02`**](playground/index.html?exercise=crossplane02): Composition and Field Path Transforms
+- [**`crossplane03`**](playground/index.html?exercise=crossplane03): ProviderConfig and Resource Deletion Policies
+- [**`crossplane04`**](playground/index.html?exercise=crossplane04): Developer Self-Service Claims & Connection Secrets
 
-### Chapter 23: Kernel-Level Security & Observability with eBPF Tetragon
-- `tetragon01`: Process Execution Tracing with sys_execve (`cilium.io/v1alpha1` `TracingPolicy` for kernel process auditing).
-- `tetragon02`: Sensitive File & Credential Access Auditing (`sys_openat` monitoring on `/etc/shadow` and service account tokens).
-- `tetragon03`: Real-Time Kernel Sigkill Enforcement (synchronous `Sigkill` actions on unauthorized root binaries).
-- `tetragon04`: eBPF TCP Socket & Network Egress Observability (`tcp_connect` kernel socket probes and event streaming).
+### [Chapter 23: Kernel-Level Security & Observability with eBPF Tetragon](guides/23-ebpf-tetragon.md)
+- [**`tetragon01`**](playground/index.html?exercise=tetragon01): Process Execution Tracing with sys_execve
+- [**`tetragon02`**](playground/index.html?exercise=tetragon02): Sensitive File & Credential Access Auditing
+- [**`tetragon03`**](playground/index.html?exercise=tetragon03): Real-Time Kernel Sigkill Enforcement
+- [**`tetragon04`**](playground/index.html?exercise=tetragon04): eBPF TCP Socket & Network Egress Observability
 
-### Chapter 24: Distributed AI & ML Orchestration with KubeRay
-- `ray01`: RayCluster Core Architecture & Head Node (`ray.io/v1` `RayCluster`, GCS/Dashboard ports, head/worker specifications).
-- `ray02`: Heterogeneous Worker Pools & Autoscaling (Distinct CPU and GPU worker groups with min/max replica limits and `nvidia.com/gpu` constraints).
-- `ray03`: RayJob for Distributed Batch Fine-Tuning (`RayJob` entrypoints, ephemeral compute lifecycle, `shutdownAfterJobFinishes`, and TTL cleanup).
-- `ray04`: RayService for Production LLM Serving (`RayService` zero-downtime serving, `serveConfigV2` multi-application definitions, and health thresholds).
+### [Chapter 24: Distributed AI & ML Orchestration with KubeRay](guides/24-kuberay-ml.md)
+- [**`ray01`**](playground/index.html?exercise=ray01): RayCluster Core Architecture & Head Node
+- [**`ray02`**](playground/index.html?exercise=ray02): Heterogeneous Worker Pools & Autoscaling
+- [**`ray03`**](playground/index.html?exercise=ray03): RayJob for Distributed Batch Fine-Tuning
+- [**`ray04`**](playground/index.html?exercise=ray04): RayService for Production LLM Serving
 
-### Chapter 25: AI Batch Scheduling & Queuing with Kueue and Volcano
-- `kueue01`: Kueue ResourceFlavor & ClusterQueue Cohort Borrowing (`kueue.x-k8s.io/v1beta1` `ResourceFlavor`, `ClusterQueue` cohort borrowing limits, and multi-resource quotas).
-- `kueue02`: Kueue LocalQueue & Suspended Workload Gating (`LocalQueue` namespace bindings, `batch/v1` `Job` queue label assignment, and admission gating via `suspend: true`).
-- `volcano01`: Volcano Gang Scheduling & Deadlock Prevention (`batch.volcano.sh/v1alpha1` `Job`, `minAvailable` all-or-nothing scheduling, and multi-task master/worker groups).
-- `volcano02`: Volcano Queue & Fair-Share Scheduling (`scheduling.volcano.sh/v1beta1` `Queue`, proportional weight allocations, reclaimable quotas, and resource capabilities).
+### [Chapter 25: AI Batch Scheduling & Queuing with Kueue and Volcano](guides/25-batch-kueue-volcano.md)
+- [**`kueue01`**](playground/index.html?exercise=kueue01): Kueue ResourceFlavor & ClusterQueue Cohort Borrowing
+- [**`kueue02`**](playground/index.html?exercise=kueue02): Kueue LocalQueue & Suspended Workload Gating
+- [**`volcano01`**](playground/index.html?exercise=volcano01): Volcano Gang Scheduling & Deadlock Prevention
+- [**`volcano02`**](playground/index.html?exercise=volcano02): Volcano Queue & Fair-Share Scheduling
 
-### Chapter 26: Hardware Acceleration: NVIDIA MIG, Apple Silicon GPU & DRA
-- `accel01`: NVIDIA MIG Slicing & Partitioning (A100/H100 nodeSelectors, multi-instance GPU slice resources `nvidia.com/mig-3g.40gb`, and `NVIDIA_VISIBLE_DEVICES`).
-- `accel02`: Apple Silicon GPU & Metal MPS Acceleration (`kubernetes.io/arch: arm64` node pinning, `apple.com/gpu` device limits, and `PYTORCH_ENABLE_MPS_FALLBACK` PyTorch MPS execution).
-- `accel03`: Dynamic Resource Allocation (DRA) Standard (`resource.k8s.io/v1alpha3` `ResourceClaimTemplate`, device class requests, and Pod claim attachments).
-- `accel04`: Production vLLM LLM Inference Server (`apps/v1` `Deployment`, OpenAI-compatible API serving, GPU memory utilization flags, health probes, and model volume mounts).
+### [Chapter 26: Hardware Acceleration: NVIDIA MIG, Apple Silicon GPU & DRA](guides/26-hardware-acceleration-dra.md)
+- [**`accel01`**](playground/index.html?exercise=accel01): NVIDIA MIG Slicing & Partitioning
+- [**`accel02`**](playground/index.html?exercise=accel02): Apple Silicon GPU & Metal MPS Acceleration
+- [**`accel03`**](playground/index.html?exercise=accel03): Dynamic Resource Allocation (DRA) Standard
+- [**`accel04`**](playground/index.html?exercise=accel04): Production vLLM LLM Inference Server
