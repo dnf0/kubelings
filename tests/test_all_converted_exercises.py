@@ -23,9 +23,9 @@ def runner() -> ExerciseRunner:
     return ExerciseRunner()
 
 
-def test_manifest_contains_all_114_exercises():
-    assert len(all_exercises) == 114
-    assert len(manifest_model.chapters) == 26
+def test_manifest_contains_all_126_exercises():
+    assert len(all_exercises) == 126
+    assert len(manifest_model.chapters) == 29
 
 
 @pytest.mark.parametrize("ex", all_exercises, ids=lambda e: e.name)

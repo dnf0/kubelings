@@ -37,11 +37,14 @@ CHAPTER_SLUGS = [
     "24-kuberay-ml",
     "25-batch-kueue-volcano",
     "26-hardware-acceleration-dra",
+    "27-aws-eks",
+    "28-gcp-gke",
+    "29-enterprise-governance",
 ]
 
 
-def test_all_26_guide_files_exist():
-    """Verify all 26 chapter guide files exist in docs/guides/."""
+def test_all_29_guide_files_exist():
+    """Verify all 29 chapter guide files exist in docs/guides/."""
     for slug in CHAPTER_SLUGS:
         guide_path = GUIDES_DIR / f"{slug}.md"
         assert guide_path.exists(), f"Missing reference guide: {guide_path}"
@@ -115,11 +118,11 @@ def test_guide_yaml_manifests_are_valid_and_non_empty(slug: str):
                 assert len(doc) > 0, f"{slug}: YAML block {i + 1} doc is empty"
 
 
-def test_all_114_exercises_are_linked_in_guides():
+def test_all_126_exercises_are_linked_in_guides():
     """Verify that every single exercise in the curriculum has a direct playground deep link in its chapter guide."""
     manifest = build_manifest()
     all_exercise_ids = {ex.name for ex in manifest.all_exercises}
-    assert len(all_exercise_ids) == 114
+    assert len(all_exercise_ids) == 126
 
     linked_exercise_ids = set()
     for slug in CHAPTER_SLUGS:

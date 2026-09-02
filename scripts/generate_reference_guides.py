@@ -3601,6 +3601,439 @@ spec:
             ),
         ],
     },
+    27: {
+        "slug": "27-aws-eks",
+        "api_groups": "`vpcresources.k8s.aws/v1alpha1` &bull; `karpenter.sh/v1` &bull; `alb.ingress.kubernetes.io` &bull; `eks.amazonaws.com`",
+        "diagram": """
+flowchart TD
+    subgraph IAM_ControlPlane["AWS IAM & STS Control Plane"]
+        OIDC["EKS OIDC Provider"]
+        IAM_ROLE["AWS IAM Role<br/><code>arn:aws:iam::123:role/s3-reader</code>"]
+        STS["AWS Security Token Service (STS)"]
+        OIDC <-->|Federated Trust| IAM_ROLE
+        IAM_ROLE --> STS
+    end
+
+    subgraph EKS_Cluster["Amazon EKS Cluster"]
+        K8S_SA["Kubernetes ServiceAccount<br/><code>eks.amazonaws.com/role-arn</code>"]
+        WEBHOOK["EKS Pod Mutating Webhook"]
+        POD["Application Pod (Worker)"]
+        K8S_SA --> POD
+        WEBHOOK -->|Injects AWS_WEB_IDENTITY_TOKEN_FILE| POD
+    end
+
+    subgraph AWS_VPC_Networking["AWS VPC & Compute Subnets"]
+        ALB["AWS Application Load Balancer (ALB)"]
+        LBC["AWS Load Balancer Controller"]
+        KARPENTER["Karpenter Autoscaler"]
+        EC2["EC2 Instances (AL2023 / Spot Fleet)"]
+        LBC -->|Provisions Target Groups (IP Mode)| ALB
+        ALB -->|Direct Pod Routing| POD
+        KARPENTER -->|Right-sized Nodes via Fleet API| EC2
+    end
+
+    POD <-->|Assumes Role via Token| STS
+    POD <-->|Authorized API Calls| S3[("Amazon S3 / DynamoDB")]
+""",
+        "primary_manifest": """apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: s3-reader-sa
+  namespace: default
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/s3-reader-role
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: alb-ingress
+  namespace: default
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  ingressClassName: alb
+  rules:
+    - host: api.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api-service
+                port:
+                  number: 8080
+""",
+        "fields": [
+            (
+                "`eks.amazonaws.com/role-arn`",
+                "Annotation",
+                "Binds a Kubernetes ServiceAccount to an AWS IAM Role via IAM Roles for Service Accounts (IRSA).",
+            ),
+            (
+                "`alb.ingress.kubernetes.io/target-type`",
+                "Annotation",
+                "Specifies `ip` for direct Pod IP target routing bypassing NodePort, or `instance` for EC2 node ports.",
+            ),
+            (
+                "`SecurityGroupPolicy`",
+                "CRD (`vpcresources.k8s.aws`)",
+                "Assigns AWS EC2 security groups directly to pods matching `podSelector` via branch ENIs.",
+            ),
+            (
+                "`NodePool` & `EC2NodeClass`",
+                "CRD (`karpenter.sh/v1`)",
+                "Configures declarative node provisioning, instance type filtering, spot/on-demand ratios, and AMI families.",
+            ),
+        ],
+        "patterns": [
+            (
+                "AWS VPC CNI SecurityGroupPolicy per Pod",
+                """apiVersion: vpcresources.k8s.aws/v1alpha1
+kind: SecurityGroupPolicy
+metadata:
+  name: payment-sg-policy
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: payment-gateway
+  securityGroups:
+    groupIds:
+      - sg-0123456789abcdef0
+      - sg-0987654321fedcba0
+""",
+            ),
+            (
+                "Karpenter v1 NodePool with EC2NodeClass",
+                """apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: default-pool
+spec:
+  template:
+    spec:
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: default-nodeclass
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: ["spot", "on-demand"]
+        - key: karpenter.k8s.aws/instance-family
+          operator: In
+          values: ["c6i", "c7i", "m6i"]
+  limits:
+    cpu: "100"
+    memory: 400Gi
+""",
+            ),
+        ],
+        "hardening": [
+            "Use EKS Pod Identity or IRSA instead of static IAM credentials or broad EC2 instance profile roles.",
+            "Deploy AWS Load Balancer Controller with target-type `ip` to minimize kube-proxy hop latency.",
+            "Utilize Karpenter for rapid node provisioning and consolidate underutilized nodes automatically.",
+        ],
+        "troubleshooting": [
+            (
+                "`WebIdentityErr: failed to retrieve credentials`",
+                "OIDC trust relationship on AWS IAM role is misconfigured or missing audience/subject claims.",
+                "1. Verify OIDC issuer URL: `aws eks describe-cluster --name <cluster> --query cluster.identity.oidc.issuer`\n2. Check IAM Trust Policy `StringEquals` matches `system:serviceaccount:<namespace>:<serviceaccount>`.",
+            ),
+        ],
+    },
+    28: {
+        "slug": "28-gcp-gke",
+        "api_groups": "`storage.cnrm.cloud.google.com` &bull; `networking.gke.io/v1` &bull; `iam.gke.io` &bull; `autopilot.gke.io`",
+        "diagram": """
+flowchart TD
+    subgraph GCP_IAM["Google Cloud IAM & Workload Identity"]
+        GSA["Google IAM Service Account (GSA)<br/><code>app@project.iam.gserviceaccount.com</code>"]
+        IAM_POLICY["roles/iam.workloadIdentityUser Binding"]
+        GCP_APIS[("Google Cloud APIs<br/>BigQuery, GCS, Secret Manager")]
+        GSA <--> IAM_POLICY
+        GSA --> GCP_APIS
+    end
+
+    subgraph GKE_Autopilot["GKE Autopilot Managed Cluster"]
+        KSA["Kubernetes ServiceAccount (KSA)<br/><code>iam.gke.io/gcp-service-account</code>"]
+        METADATA_SERVER["GKE Metadata Server (DaemonSet)"]
+        POD["Autopilot Pod<br/><code>autopilot.gke.io/compute-class: Performance</code>"]
+        KSA --> POD
+        POD <-->|Local Metadata Token Request| METADATA_SERVER
+    end
+
+    subgraph GKE_Ingress_Edge["GKE Gateway & Cloud Armor Edge"]
+        GCP_LB["Cloud Application Load Balancer"]
+        ARMOR["Cloud Armor Security Policy (DDoS & WAF)"]
+        GATEWAY["GKE Gateway API Controller"]
+        BACKEND_POLICY["GCPBackendPolicy CRD"]
+
+        GATEWAY --> GCP_LB
+        BACKEND_POLICY -->|Attaches Policy| GCP_LB
+        ARMOR --> GCP_LB
+        GCP_LB --> POD
+    end
+
+    METADATA_SERVER <-->|Exchanges K8S Token for GCP OAuth2| IAM_POLICY
+""",
+        "primary_manifest": """apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: bigquery-sa
+  namespace: default
+  annotations:
+    iam.gke.io/gcp-service-account: bq-sync@my-gcp-project.iam.gserviceaccount.com
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bq-loader-pod
+  namespace: default
+spec:
+  serviceAccountName: bigquery-sa
+  nodeSelector:
+    iam.gke.io/gke-metadata-server-enabled: "true"
+  containers:
+    - name: loader
+      image: google/cloud-sdk:slim
+      command: ["bq", "ls"]
+""",
+        "fields": [
+            (
+                "`iam.gke.io/gcp-service-account`",
+                "Annotation",
+                "Associates a Kubernetes ServiceAccount with a Google Cloud IAM Service Account via Workload Identity.",
+            ),
+            (
+                "`autopilot.gke.io/compute-class`",
+                "Annotation",
+                "Requests specialized GKE Autopilot hardware tiers such as `Performance` or `Scale-Out`.",
+            ),
+            (
+                "`GCPBackendPolicy`",
+                "CRD (`networking.gke.io`)",
+                "Attaches Google Cloud Armor security policies, backend timeouts, and CDN settings to Gateway API services.",
+            ),
+            (
+                "`StorageBucket`",
+                "CRD (`cnrm.cloud.google.com`)",
+                "Declaratively provisions Google Cloud Storage buckets using Google Config Connector (KCC).",
+            ),
+        ],
+        "patterns": [
+            (
+                "GKE Gateway API with Cloud Armor BackendPolicy",
+                """apiVersion: networking.gke.io/v1
+kind: GCPBackendPolicy
+metadata:
+  name: cloud-armor-backend-policy
+  namespace: default
+spec:
+  targetRef:
+    group: ""
+    kind: Service
+    name: web-frontend-svc
+  default:
+    securityPolicy: edge-ddos-protection-policy
+    logging:
+      enable: true
+      sampleRate: 1.0
+""",
+            ),
+            (
+                "Config Connector Declarative StorageBucket",
+                """apiVersion: storage.cnrm.cloud.google.com/v1beta1
+kind: StorageBucket
+metadata:
+  name: prod-analytics-archive-bucket
+  namespace: default
+  annotations:
+    cnrm.cloud.google.com/deletion-policy: abandon
+spec:
+  location: US-CENTRAL1
+  storageClass: STANDARD
+  uniformBucketLevelAccess: true
+  versioning:
+    enabled: true
+""",
+            ),
+        ],
+        "hardening": [
+            "Enable GKE Workload Identity on all nodepools and namespaces; disable legacy node compute service account access.",
+            "Use GKE Autopilot to enforce CIS Kubernetes benchmark defaults and eliminate unmanaged node operational burden.",
+            "Attach Cloud Armor security policies to all public ingress gateways for edge DDoS and OWASP Top 10 mitigation.",
+        ],
+        "troubleshooting": [
+            (
+                "`Metadata server returned 403 Forbidden`",
+                "The KSA is missing IAM role binding `roles/iam.workloadIdentityUser` or GKE metadata server is not enabled on node.",
+                "1. Verify IAM binding: `gcloud iam service-accounts get-iam-policy <GSA_EMAIL>`\n2. Check nodeSelector contains `iam.gke.io/gke-metadata-server-enabled: 'true'`.",
+            ),
+        ],
+    },
+    29: {
+        "slug": "29-enterprise-governance",
+        "api_groups": "`external-secrets.io/v1beta1` &bull; `argoproj.io/v1alpha1` &bull; `vault.hashicorp.com` &bull; `ResourceQuota`",
+        "diagram": """
+flowchart TD
+    subgraph Enterprise_Landing_Zone["Enterprise Multi-Account Cloud Architecture (Control Tower)"]
+        MANAGEMENT["AWS / GCP Management Org"]
+        SECRET_VAULT["HashiCorp Vault / AWS Secrets Manager"]
+        GIT_REPO[("GitOps Platform Baseline Repo<br/>(Git / GitHub)")]
+    end
+
+    subgraph Hub_Cluster["Platform Operations & Fleet Management (Hub Cluster)"]
+        ARGOCD["ArgoCD ApplicationSet Controller"]
+        MATRIX["Matrix Generator (Clusters x Directories)"]
+        ARGOCD --> MATRIX
+        GIT_REPO --> MATRIX
+    end
+
+    subgraph Spoke_Cluster["Spoke Tenant Cluster (Production EKS / GKE)"]
+        subgraph Tenant_Namespace["Tenant Namespace (Restricted PSA)"]
+            QUOTA["ResourceQuota & LimitRange"]
+            APP_POD["Application Pod"]
+            VAULT_AGENT["Vault Agent Sidecar Injector"]
+            ESO["External Secrets Operator (ESO)"]
+            K8S_SECRET["Materialized Kubernetes Secret"]
+
+            VAULT_AGENT -->|Injects In-Memory Secret| APP_POD
+            ESO -->|Syncs SecretStore| K8S_SECRET
+            K8S_SECRET --> APP_POD
+            QUOTA -->|Enforces Compute Capping| APP_POD
+        end
+    end
+
+    MATRIX -->|Instantiates Applications| Spoke_Cluster
+    SECRET_VAULT -->|Secure Dynamic Lease| VAULT_AGENT
+    SECRET_VAULT -->|Reconciles Remote Keys| ESO
+""",
+        "primary_manifest": """apiVersion: external-secrets.io/v1beta1
+kind: SecretStore
+metadata:
+  name: aws-secrets-store
+  namespace: default
+spec:
+  provider:
+    aws:
+      service: SecretsManager
+      region: us-east-1
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: app-db-credentials
+  namespace: default
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: aws-secrets-store
+    kind: SecretStore
+  target:
+    name: db-credentials-secret
+    creationPolicy: Owner
+  data:
+    - secretKey: password
+      remoteRef:
+        key: prod/rds/app-password
+""",
+        "fields": [
+            (
+                "`SecretStore` & `ExternalSecret`",
+                "CRD (`external-secrets.io`)",
+                "Synchronizes secrets from external cloud key-vaults (AWS Secrets Manager, GCP Secret Manager) into Kubernetes Secrets.",
+            ),
+            (
+                "`vault.hashicorp.com/agent-inject`",
+                "Annotation",
+                "Enables Vault sidecar injection to deliver secrets to containers via ephemeral in-memory volumes.",
+            ),
+            (
+                "`ApplicationSet`",
+                "CRD (`argoproj.io`)",
+                "Automates multi-cluster and multi-tenant GitOps deployments using matrix/cluster generators across cloud fleets.",
+            ),
+            (
+                "`ResourceQuota` & `LimitRange`",
+                "Core APIs",
+                "Enforces strict boundaries on aggregate compute usage and container sizing across multi-tenant namespaces.",
+            ),
+        ],
+        "patterns": [
+            (
+                "HashiCorp Vault Agent Sidecar Pod Injection",
+                """apiVersion: v1
+kind: Pod
+metadata:
+  name: secure-billing-service
+  namespace: default
+  annotations:
+    vault.hashicorp.com/agent-inject: "true"
+    vault.hashicorp.com/role: "billing-app-role"
+    vault.hashicorp.com/agent-inject-secret-database-config: "secret/data/billing/db"
+spec:
+  serviceAccountName: billing-service-sa
+  containers:
+    - name: billing-api
+      image: billing/app:v2.4
+      command: ["/app/server"]
+""",
+            ),
+            (
+                "ArgoCD ApplicationSet Multi-Cluster Matrix Generator",
+                """apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: fleet-baseline-monitoring
+  namespace: argocd
+spec:
+  generators:
+    - matrix:
+        generators:
+          - clusters:
+              selector:
+                matchLabels:
+                  tier: production
+          - git:
+              repoURL: https://github.com/enterprise/k8s-platform-baseline.git
+              revision: HEAD
+              directories:
+                - path: monitoring/*
+  template:
+    metadata:
+      name: "{{name}}-{{path.basename}}"
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/enterprise/k8s-platform-baseline.git
+        targetRevision: HEAD
+        path: "{{path}}"
+      destination:
+        server: "{{server}}"
+        namespace: monitoring
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+""",
+            ),
+        ],
+        "hardening": [
+            "Never store plaintext or base64 secrets in Git; sync through External Secrets Operator or HashiCorp Vault.",
+            "Standardize fleet-wide deployment using ArgoCD ApplicationSets to eliminate configuration drift across AWS/GCP accounts.",
+            "Enforce strict Pod Security Admission (PSA restricted) and ResourceQuotas in all tenant namespaces.",
+        ],
+        "troubleshooting": [
+            (
+                "`ExternalSecret SecretUpdateError`",
+                "The target cloud secret does not exist or the IAM role lacks `secretsmanager:GetSecretValue` permission.",
+                "1. Describe ExternalSecret status: `kubectl describe externalsecret <name>`\n2. Verify provider IAM role permissions and cloud secret name path.",
+            ),
+        ],
+    },
 }
 
 for chapter in manifest.chapters:
@@ -3729,13 +4162,13 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
     guide_path.write_text(md_content, encoding="utf-8")
     print(f"Generated {guide_path}")
 
-print("All 26 reference guides successfully generated!")
+print("All 29 reference guides successfully generated!")
 
 # Generate bidirectional curriculum syllabus
 syllabus_lines = [
     "# Curriculum Syllabus",
     "",
-    "Kubelings features **26 chapters** covering **114 real-world exercises** with bidirectional reference guides and WebAssembly playground integration:",
+    "Kubelings features **29 chapters** covering **126 real-world exercises** with bidirectional reference guides and WebAssembly playground integration:",
     "",
     "---",
     "",

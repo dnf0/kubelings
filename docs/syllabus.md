@@ -1,6 +1,6 @@
 # Curriculum Syllabus
 
-Kubelings features **26 chapters** covering **114 real-world exercises** with bidirectional reference guides and WebAssembly playground integration:
+Kubelings features **29 chapters** covering **126 real-world exercises** with bidirectional reference guides and WebAssembly playground integration:
 
 ---
 
@@ -169,3 +169,21 @@ Kubelings features **26 chapters** covering **114 real-world exercises** with bi
 - [**`accel02`**](playground/index.html?exercise=accel02): Apple Silicon GPU & Metal MPS Acceleration
 - [**`accel03`**](playground/index.html?exercise=accel03): Dynamic Resource Allocation (DRA) Standard
 - [**`accel04`**](playground/index.html?exercise=accel04): Production vLLM LLM Inference Server
+
+### [Chapter 27: AWS EKS & Cloud Architecture](guides/27-aws-eks.md)
+- [**`eks01`**](playground/index.html?exercise=eks01): EKS Pod Identity & IRSA ServiceAccounts
+- [**`eks02`**](playground/index.html?exercise=eks02): AWS Load Balancer Controller & ALB Ingress
+- [**`eks03`**](playground/index.html?exercise=eks03): AWS VPC CNI Security Groups for Pods
+- [**`eks04`**](playground/index.html?exercise=eks04): Karpenter NodePool & EC2NodeClass
+
+### [Chapter 28: Google Cloud GKE & Ecosystem](guides/28-gcp-gke.md)
+- [**`gke01`**](playground/index.html?exercise=gke01): GKE Workload Identity Federation
+- [**`gke02`**](playground/index.html?exercise=gke02): GKE Autopilot Workload Sizing & Compute Classes
+- [**`gke03`**](playground/index.html?exercise=gke03): GKE Gateway API & Cloud Armor Policies
+- [**`gke04`**](playground/index.html?exercise=gke04): Google Config Connector Cloud Resources
+
+### [Chapter 29: Enterprise Multi-Account Governance & Secrets](guides/29-enterprise-governance.md)
+- [**`eso01`**](playground/index.html?exercise=eso01): External Secrets Operator SecretStore & ExternalSecret
+- [**`vault01`**](playground/index.html?exercise=vault01): HashiCorp Vault Agent Sidecar Injector
+- [**`gov01`**](playground/index.html?exercise=gov01): ArgoCD ApplicationSet Multi-Cluster Matrix Generator
+- [**`gov02`**](playground/index.html?exercise=gov02): Multi-Tenant Namespace Quotas & Security Policies

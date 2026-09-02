@@ -85,6 +85,10 @@ nav:
       - 24. KubeRay Distributed AI: guides/24-kuberay-ml.md
       - 25. Batch AI (Kueue & Volcano): guides/25-batch-kueue-volcano.md
       - 26. Hardware Acceleration (DRA): guides/26-hardware-acceleration-dra.md
+  - Cloud Hyperscalers & Enterprise Governance:
+      - 27. AWS EKS & Cloud Architecture: guides/27-aws-eks.md
+      - 28. Google Cloud GKE & Ecosystem: guides/28-gcp-gke.md
+      - 29. Enterprise Multi-Account Governance: guides/29-enterprise-governance.md
   - Contributing: contributing.md
 
 not_in_nav: |

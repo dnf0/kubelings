@@ -41,8 +41,8 @@ def test_playground_bundle_generation(tmp_path: Path):
     manifest = get_manifest()
     assert len(data["chapters"]) == len(manifest.chapters)
     assert len(data["exercises"]) == len(manifest.all_exercises)
-    assert len(data["exercises"]) == 114
-    assert len(data["chapters"]) == 26
+    assert len(data["exercises"]) == 126
+    assert len(data["chapters"]) == 29
 
     for chapter in data["chapters"]:
         assert "number" in chapter
@@ -69,8 +69,8 @@ def test_playground_bundle_generation(tmp_path: Path):
 def test_build_bundle_direct():
     bundle = build_bundle(REPO_ROOT)
     assert bundle["version"] == __version__
-    assert len(bundle["chapters"]) == 26
-    assert len(bundle["exercises"]) == 114
+    assert len(bundle["chapters"]) == 29
+    assert len(bundle["exercises"]) == 126
     assert "class ManifestValidationError" in bundle["validator_code"]
     assert "class Exercise" in bundle["models_code"]
 

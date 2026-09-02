@@ -680,8 +680,8 @@ def test_chapters_24_26_manifest_registration():
     from kubelings.manifest import get_exercise_by_name, get_manifest
 
     manifest = get_manifest()
-    assert len(manifest.chapters) == 26
-    assert len(manifest.all_exercises) == 114
+    assert len(manifest.chapters) == 29
+    assert len(manifest.all_exercises) == 126
 
     ch24 = next((c for c in manifest.chapters if c.number == 24), None)
     assert ch24 is not None
