@@ -1,5 +1,6 @@
 # Solution: crossplane03.yaml
 # Topic: Crossplane - ProviderConfig and Resource Deletion Policies
+# Reference Guide: https://dnf0.github.io/kubelings/guides/22-crossplane-iac/
 
 apiVersion: aws.upbound.io/v1beta1
 kind: ProviderConfig

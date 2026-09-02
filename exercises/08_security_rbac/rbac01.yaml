@@ -1,5 +1,6 @@
 # Exercise: exercises/08_security_rbac/rbac01.yaml
 # Topic: ServiceAccounts & Token Management
+# Reference Guide: https://dnf0.github.io/kubelings/guides/08-security-rbac/
 #
 # Context & Why:
 # In production Kubernetes clusters, workload identity is established via ServiceAccounts.

@@ -1,5 +1,6 @@
 # Exercise: exercises/02_controllers/ctrl06.yaml
 # Topic: Jobs & CronJobs
+# Reference Guide: https://dnf0.github.io/kubelings/guides/02-controllers/
 #
 # Context & Why:
 # While Deployments and StatefulSets run non-terminating, continuous workloads,

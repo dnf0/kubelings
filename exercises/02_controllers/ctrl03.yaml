@@ -1,5 +1,6 @@
 # Exercise: exercises/02_controllers/ctrl03.yaml
 # Topic: Deployment Rollbacks & Revision History
+# Reference Guide: https://dnf0.github.io/kubelings/guides/02-controllers/
 #
 # Context & Why:
 # Whenever a Deployment's pod template is modified, the Deployment controller provisions

@@ -1,5 +1,6 @@
 # Solution: solutions/26_hardware_acceleration_dra/accel03.yaml
 # Topic: Kubernetes Dynamic Resource Allocation (DRA) Standard
+# Reference Guide: https://dnf0.github.io/kubelings/guides/26-hardware-acceleration-dra/
 
 apiVersion: resource.k8s.io/v1alpha3
 kind: ResourceClaimTemplate

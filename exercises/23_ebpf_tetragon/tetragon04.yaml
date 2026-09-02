@@ -1,5 +1,6 @@
 # Exercise: tetragon04.yaml
 # Topic: eBPF Network Observability - Tetragon Socket Connect Probes
+# Reference Guide: https://dnf0.github.io/kubelings/guides/23-ebpf-tetragon/
 #
 # Context & Why:
 # Deep visibility into outbound network connections is essential for identifying command-and-control (C2)

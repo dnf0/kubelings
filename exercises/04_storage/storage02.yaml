@@ -1,5 +1,6 @@
 # Exercise: exercises/04_storage/storage02.yaml
 # Topic: PersistentVolumes & PersistentVolumeClaims
+# Reference Guide: https://dnf0.github.io/kubelings/guides/04-storage/
 #
 # Context & Why:
 # Kubernetes decouples storage infrastructure administration from application storage consumption

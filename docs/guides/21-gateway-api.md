@@ -16,26 +16,26 @@ In Kubernetes, **Next-Gen Traffic Routing with Kubernetes Gateway API** is recon
 
 ```text
 ┌───────────────────────────┐
-    │     Cluster Operator      │ ──► Manages GatewayClass & Gateway (Infrastructure)
-    └─────────────┬─────────────┘
-                  │
-                  ▼
-    ┌───────────────────────────┐
-    │          Gateway          │ ◄── Listens on Port 80/443 (Shared VIP)
-    └─────────────┬─────────────┘
-                  │ Attaches Routes (Role-Oriented)
-                  ▼
-    ┌───────────────────────────┐
-    │  Application Developer    │ ──► Manages HTTPRoute (80% / 20% Traffic Split)
-    │  (HTTPRoute / GRPCRoute)  │
-    └─────────────┬─────────────┘
-                  │ Routes Traffic to Services
-          ┌───────┴───────┐
-          ▼               ▼
-    ┌───────────┐   ┌───────────┐
-    │ Service A │   │ Service B │
-    │   (80%)   │   │   (20%)   │
-    └───────────┘   └───────────┘
+│     Cluster Operator      │ ──► Manages GatewayClass & Gateway (Infrastructure)
+└─────────────┬─────────────┘
+              │
+              ▼
+┌───────────────────────────┐
+│          Gateway          │ ◄── Listens on Port 80/443 (Shared VIP)
+└─────────────┬─────────────┘
+              │ Attaches Routes (Role-Oriented)
+              ▼
+┌───────────────────────────┐
+│  Application Developer    │ ──► Manages HTTPRoute (80% / 20% Traffic Split)
+│  (HTTPRoute / GRPCRoute)  │
+└─────────────┬─────────────┘
+              │ Routes Traffic to Services
+      ┌───────┴───────┐
+      ▼               ▼
+┌───────────┐   ┌───────────┐
+│ Service A │   │ Service B │
+│   (80%)   │   │   (20%)   │
+└───────────┘   └───────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

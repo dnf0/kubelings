@@ -1,5 +1,6 @@
 # Exercise: exercises/09_network_policies/netpol02.yaml
 # Topic: Ingress Traffic Filtering
+# Reference Guide: https://dnf0.github.io/kubelings/guides/09-network-policies/
 #
 # Context & Why:
 # In multi-tier Kubernetes architectures, stateful components like relational databases should never

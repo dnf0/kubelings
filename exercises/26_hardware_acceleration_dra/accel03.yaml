@@ -1,5 +1,6 @@
 # Exercise: exercises/26_hardware_acceleration_dra/accel03.yaml
 # Topic: Kubernetes Dynamic Resource Allocation (DRA) Standard
+# Reference Guide: https://dnf0.github.io/kubelings/guides/26-hardware-acceleration-dra/
 #
 # Context & Why:
 # Traditional Kubernetes device allocation models rely on static integer counters (such as `nvidia.com/gpu: 1`),

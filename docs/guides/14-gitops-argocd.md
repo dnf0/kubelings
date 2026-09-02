@@ -16,18 +16,18 @@ In Kubernetes, **GitOps Continuous Delivery with ArgoCD** is reconciled through 
 
 ```text
 ┌───────────────────────────┐
-    │     Git Repository        │ ◄── Single Source of Truth (Git Commit / PR)
-    └─────────────┬─────────────┘
-                  │ ArgoCD Repo Server Polls / Webhook
-                  ▼
-    ┌───────────────────────────┐
-    │  ArgoCD Application Ctrl  │ ◄── Compares Git Desired State vs Cluster Live State
-    └─────────────┬─────────────┘
-                  │ Auto-Sync & Self-Healing Reconciliation
-                  ▼
-    ┌───────────────────────────┐
-    │    Kubernetes Cluster     │ ──► [ Deployments, Services, ConfigMaps ]
-    └───────────────────────────┘
+│     Git Repository        │ ◄── Single Source of Truth (Git Commit / PR)
+└─────────────┬─────────────┘
+              │ ArgoCD Repo Server Polls / Webhook
+              ▼
+┌───────────────────────────┐
+│  ArgoCD Application Ctrl  │ ◄── Compares Git Desired State vs Cluster Live State
+└─────────────┬─────────────┘
+              │ Auto-Sync & Self-Healing Reconciliation
+              ▼
+┌───────────────────────────┐
+│    Kubernetes Cluster     │ ──► [ Deployments, Services, ConfigMaps ]
+└───────────────────────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

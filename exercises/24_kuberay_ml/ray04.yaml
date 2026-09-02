@@ -1,5 +1,6 @@
 # Exercise: exercises/24_kuberay_ml/ray04.yaml
 # Topic: RayService for Production LLM Serving
+# Reference Guide: https://dnf0.github.io/kubelings/guides/24-kuberay-ml/
 #
 # Context & Why:
 # Serving Large Language Models (LLMs) and deep learning models in production demands high availability,

@@ -1,5 +1,6 @@
 # Exercise: exercises/07_scheduling/sched04.yaml
 # Topic: Taints and Tolerations
+# Reference Guide: https://dnf0.github.io/kubelings/guides/07-scheduling/
 #
 # Context & Why:
 # While Node Affinity attracts Pods to certain nodes, `Taints` allow a Node to repel a set of Pods.

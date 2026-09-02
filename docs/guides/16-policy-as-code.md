@@ -16,15 +16,15 @@ In Kubernetes, **Policy as Code (Kyverno & Gatekeeper)** is reconciled through d
 
 ```text
 ┌───────────────────────────┐
-    │     User / CI Pipeline    │ ──(kubectl apply)──► kube-apiserver
-    └───────────────────────────┘                            │
-                                                             ▼ Admission Phase
-    ┌─────────────────────────────────────────────────────────────┐
-    │            Policy Engine (Kyverno / Gatekeeper)             │
-    │  • Validate: Block privileged containers, enforce non-root  │
-    │  • Mutate: Auto-inject default securityContext & labels     │
-    │  • Generate: Auto-create NetworkPolicies on new Namespaces  │
-    └─────────────────────────────────────────────────────────────┘
+│     User / CI Pipeline    │ ──(kubectl apply)──► kube-apiserver
+└───────────────────────────┘                            │
+                                                         ▼ Admission Phase
+┌─────────────────────────────────────────────────────────────┐
+│            Policy Engine (Kyverno / Gatekeeper)             │
+│  • Validate: Block privileged containers, enforce non-root  │
+│  • Mutate: Auto-inject default securityContext & labels     │
+│  • Generate: Auto-create NetworkPolicies on new Namespaces  │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

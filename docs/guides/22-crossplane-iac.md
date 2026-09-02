@@ -16,20 +16,20 @@ In Kubernetes, **Infrastructure as Data with Crossplane** is reconciled through 
 
 ```text
 ┌───────────────────────────┐
-    │     Application Dev       │ ──► Declares Composite Resource Claim (XRC)
-    └─────────────┬─────────────┘
-                  │
-                  ▼
-    ┌───────────────────────────┐
-    │        Composition        │ ◄── Platform Team Blueprint
-    └─────────────┬─────────────┘
-                  │ Composes Managed Resources (MR)
-          ┌───────┴───────┐
-          ▼               ▼
-    ┌───────────┐   ┌───────────┐
-    │  AWS RDS  │   │  AWS S3   │ ◄── External Cloud Providers
-    │  Instance │   │  Bucket   │
-    └───────────┘   └───────────┘
+│     Application Dev       │ ──► Declares Composite Resource Claim (XRC)
+└─────────────┬─────────────┘
+              │
+              ▼
+┌───────────────────────────┐
+│        Composition        │ ◄── Platform Team Blueprint
+└─────────────┬─────────────┘
+              │ Composes Managed Resources (MR)
+      ┌───────┴───────┐
+      ▼               ▼
+┌───────────┐   ┌───────────┐
+│  AWS RDS  │   │  AWS S3   │ ◄── External Cloud Providers
+│  Instance │   │  Bucket   │
+└───────────┘   └───────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

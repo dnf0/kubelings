@@ -16,19 +16,19 @@ In Kubernetes, **Storage & Persistent Volumes** is reconciled through declarativ
 
 ```text
 ┌───────────────────────────┐
-    │       StorageClass        │ ◄── Provisioner (CSI: EBS/NFS/Ceph)
-    └─────────────┬─────────────┘
-                  │ Dynamic Provisioning
-                  ▼
-    ┌───────────────────────────┐         Binding (1-to-1)       ┌───────────────────────────┐
-    │     PersistentVolume      │ ◄────────────────────────────► │  PersistentVolumeClaim    │
-    │  (Cluster-Scoped Storage) │                                │  (Namespace-Scoped Claim) │
-    └───────────────────────────┘                                └─────────────┬─────────────┘
-                                                                               │ Mounted into
-                                                                               ▼
-                                                                 ┌───────────────────────────┐
-                                                                 │       Pod VolumeMount     │
-                                                                 └───────────────────────────┘
+│       StorageClass        │ ◄── Provisioner (CSI: EBS/NFS/Ceph)
+└─────────────┬─────────────┘
+              │ Dynamic Provisioning
+              ▼
+┌───────────────────────────┐         Binding (1-to-1)       ┌───────────────────────────┐
+│     PersistentVolume      │ ◄────────────────────────────► │  PersistentVolumeClaim    │
+│  (Cluster-Scoped Storage) │                                │  (Namespace-Scoped Claim) │
+└───────────────────────────┘                                └─────────────┬─────────────┘
+                                                                           │ Mounted into
+                                                                           ▼
+                                                             ┌───────────────────────────┐
+                                                             │       Pod VolumeMount     │
+                                                             └───────────────────────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

@@ -1,5 +1,6 @@
 # Exercise: exercises/05_services_networking/net02.yaml
 # Topic: Headless Services & Stateful Addressing
+# Reference Guide: https://dnf0.github.io/kubelings/guides/05-services-networking/
 #
 # Context & Why:
 # Standard Services provide a single virtual ClusterIP that randomly proxies connections across pods.

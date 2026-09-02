@@ -1,5 +1,6 @@
 # Exercise: exercises/08_security_rbac/rbac05.yaml
 # Topic: Pod Security Standards (PSS/PSA)
+# Reference Guide: https://dnf0.github.io/kubelings/guides/08-security-rbac/
 #
 # Context & Why:
 # Kubernetes Pod Security Admission (PSA) replaces deprecated PodSecurityPolicies (PSP) with built-in,

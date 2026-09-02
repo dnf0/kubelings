@@ -1,5 +1,6 @@
 # Exercise: solutions/12_crds_and_operators/crd04.yaml
 # Topic: Dynamic Admission Webhooks
+# Reference Guide: https://dnf0.github.io/kubelings/guides/12-crds-and-operators/
 #
 # Reference Solution
 

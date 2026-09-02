@@ -1,5 +1,6 @@
 # Exercise: exercises/13_troubleshooting/troubleshoot04.yaml
 # Topic: ResourceQuotas & LimitRanges
+# Reference Guide: https://dnf0.github.io/kubelings/guides/13-troubleshooting/
 #
 # Context & Why:
 # In multi-tenant Kubernetes clusters, resource governance prevents any single team or faulty workload

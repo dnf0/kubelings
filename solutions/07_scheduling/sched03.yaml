@@ -1,5 +1,6 @@
 # Exercise: solutions/07_scheduling/sched03.yaml
 # Topic: Pod Affinity & Pod Anti-Affinity
+# Reference Guide: https://dnf0.github.io/kubelings/guides/07-scheduling/
 #
 # Reference Solution
 

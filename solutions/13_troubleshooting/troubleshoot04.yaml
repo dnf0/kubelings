@@ -1,5 +1,6 @@
 # Exercise: solutions/13_troubleshooting/troubleshoot04.yaml
 # Topic: ResourceQuotas & LimitRanges
+# Reference Guide: https://dnf0.github.io/kubelings/guides/13-troubleshooting/
 #
 # Reference Solution
 

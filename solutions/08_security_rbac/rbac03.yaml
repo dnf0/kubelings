@@ -1,5 +1,6 @@
 # Exercise: solutions/08_security_rbac/rbac03.yaml
 # Topic: ClusterRoles & ClusterRoleBindings
+# Reference Guide: https://dnf0.github.io/kubelings/guides/08-security-rbac/
 #
 # Reference Solution
 

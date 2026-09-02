@@ -1,5 +1,6 @@
 # Exercise: exercises/10_lifecycle_probes/health01.yaml
 # Topic: Liveness Probes
+# Reference Guide: https://dnf0.github.io/kubelings/guides/10-lifecycle-probes/
 #
 # Context & Why:
 # In production environments, applications can experience fatal edge cases like unrecoverable deadlocks,

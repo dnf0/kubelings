@@ -1,5 +1,6 @@
 # Exercise: exercises/25_batch_kueue_volcano/kueue02.yaml
 # Topic: Kueue LocalQueue & Suspended Workload Gating
+# Reference Guide: https://dnf0.github.io/kubelings/guides/25-batch-kueue-volcano/
 #
 # Context & Why:
 # In multi-tenant Kubernetes clusters, developers submit jobs to namespace-scoped `LocalQueue` resources,

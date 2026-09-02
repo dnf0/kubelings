@@ -1,5 +1,6 @@
 # Exercise: exercises/12_crds_and_operators/crd02.yaml
 # Topic: CRD Subresources & Printer Columns
+# Reference Guide: https://dnf0.github.io/kubelings/guides/12-crds-and-operators/
 #
 # Context & Why:
 # CustomResourceDefinitions become first-class cluster primitives when equipped with subresources

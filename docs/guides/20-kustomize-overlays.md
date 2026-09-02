@@ -16,16 +16,16 @@ In Kubernetes, **Declarative Customization with Kustomize** is reconciled throug
 
 ```text
 ┌───────────────────────────┐
-    │     Base Configuration    │ ◄── Common Deployment, Service, Config
-    │    (`base/kustomization`) │
-    └─────────────┬─────────────┘
-                  │ Inherited by Environments
-          ┌───────┴───────┐
-          ▼               ▼
-    ┌───────────┐   ┌───────────┐
-    │  Dev      │   │  Prod     │ ◄── Strategic Merge Patches,
-    │  Overlay  │   │  Overlay  │     Replica Count, Name Prefixes
-    └───────────┘   └───────────┘
+│     Base Configuration    │ ◄── Common Deployment, Service, Config
+│    (`base/kustomization`) │
+└─────────────┬─────────────┘
+              │ Inherited by Environments
+      ┌───────┴───────┐
+      ▼               ▼
+┌───────────┐   ┌───────────┐
+│  Dev      │   │  Prod     │ ◄── Strategic Merge Patches,
+│  Overlay  │   │  Overlay  │     Replica Count, Name Prefixes
+└───────────┘   └───────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

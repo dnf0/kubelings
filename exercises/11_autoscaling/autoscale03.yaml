@@ -1,5 +1,6 @@
 # Exercise: exercises/11_autoscaling/autoscale03.yaml
 # Topic: Vertical Pod Autoscaler (VPA)
+# Reference Guide: https://dnf0.github.io/kubelings/guides/11-autoscaling/
 #
 # Context & Why:
 # Setting container CPU and memory requests and limits is notoriously error-prone: over-provisioning

@@ -16,19 +16,19 @@ In Kubernetes, **Kernel-Level Security & Observability with eBPF Tetragon** is r
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-    │                         Linux Kernel                        │
-    │  System Calls: `sys_execve`, `sys_openat`, `sys_socket`     │
-    │  ┌───────────────────────────────────────────────────────┐  │
-    │  │             Tetragon eBPF In-Kernel Probe             │  │
-    │  │  • Real-time Process Ancestry & Namespace Tracing     │  │
-    │  │  • In-Kernel Kill Action (Synchronous SIGKILL)        │  │
-    │  └───────────────────────────────────────────────────────┘  │
-    └─────────────────────────────┬───────────────────────────────┘
-                                  │ JSON Security Event Log
-                                  ▼
-    ┌─────────────────────────────────────────────────────────────┐
-    │                 SIEM / Alerting Pipeline                    │
-    └─────────────────────────────────────────────────────────────┘
+│                         Linux Kernel                        │
+│  System Calls: `sys_execve`, `sys_openat`, `sys_socket`     │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │             Tetragon eBPF In-Kernel Probe             │  │
+│  │  • Real-time Process Ancestry & Namespace Tracing     │  │
+│  │  • In-Kernel Kill Action (Synchronous SIGKILL)        │  │
+│  └───────────────────────────────────────────────────────┘  │
+└─────────────────────────────┬───────────────────────────────┘
+                              │ JSON Security Event Log
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                 SIEM / Alerting Pipeline                    │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

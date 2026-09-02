@@ -1,5 +1,6 @@
 # Exercise: exercises/01_pods/pods06.yaml
 # Topic: Pod Disruption Budgets (PDB)
+# Reference Guide: https://dnf0.github.io/kubelings/guides/01-pods/
 #
 # Context & Why:
 # High availability requires guarding against voluntary disruptions such as node drains

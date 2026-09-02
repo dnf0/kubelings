@@ -1,5 +1,6 @@
 # Exercise: exercises/11_autoscaling/autoscale02.yaml
 # Topic: HPA Custom Scaling Behavior
+# Reference Guide: https://dnf0.github.io/kubelings/guides/11-autoscaling/
 #
 # Context & Why:
 # Under bursty or oscillating workloads (such as flash sales or cron-driven webhook processing),

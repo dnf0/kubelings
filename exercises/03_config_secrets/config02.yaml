@@ -1,5 +1,6 @@
 # Exercise: exercises/03_config_secrets/config02.yaml
 # Topic: ConfigMaps Mounted as Volumes & subPath
+# Reference Guide: https://dnf0.github.io/kubelings/guides/03-config-secrets/
 #
 # Context & Why:
 # Many standard applications and servers (such as NGINX, HAProxy, and Apache) read configuration

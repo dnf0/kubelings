@@ -1,5 +1,6 @@
 # Exercise: exercises/02_controllers/ctrl04.yaml
 # Topic: StatefulSets & Stable Network IDs
+# Reference Guide: https://dnf0.github.io/kubelings/guides/02-controllers/
 #
 # Context & Why:
 # Stateless applications can be scaled arbitrarily with Deployments, but stateful workloads

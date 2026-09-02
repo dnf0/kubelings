@@ -1,5 +1,6 @@
 # Exercise: exercises/04_storage/storage05.yaml
 # Topic: Volume Snapshots & Volume Expansion
+# Reference Guide: https://dnf0.github.io/kubelings/guides/04-storage/
 #
 # Context & Why:
 # Enterprise storage architectures require disaster recovery, point-in-time backups, and capacity scaling.

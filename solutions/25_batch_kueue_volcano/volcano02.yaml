@@ -1,5 +1,6 @@
 # Solution: solutions/25_batch_kueue_volcano/volcano02.yaml
 # Topic: Volcano Queue & Fair-Share Scheduling
+# Reference Guide: https://dnf0.github.io/kubelings/guides/25-batch-kueue-volcano/
 
 apiVersion: scheduling.volcano.sh/v1beta1
 kind: Queue

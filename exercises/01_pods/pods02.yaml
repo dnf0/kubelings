@@ -1,5 +1,6 @@
 # Exercise: exercises/01_pods/pods02.yaml
 # Topic: Multi-Container Pods & Sidecar Pattern
+# Reference Guide: https://dnf0.github.io/kubelings/guides/01-pods/
 #
 # Context & Why:
 # Multi-container pods allow co-locating tightly coupled processes that must share

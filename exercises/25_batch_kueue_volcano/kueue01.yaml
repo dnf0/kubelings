@@ -1,5 +1,6 @@
 # Exercise: exercises/25_batch_kueue_volcano/kueue01.yaml
 # Topic: Kueue ResourceFlavor & ClusterQueue Cohort Borrowing
+# Reference Guide: https://dnf0.github.io/kubelings/guides/25-batch-kueue-volcano/
 #
 # Context & Why:
 # Kueue is a Kubernetes-native job queueing controller designed to manage batch and AI/ML workloads

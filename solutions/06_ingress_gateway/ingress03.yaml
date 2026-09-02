@@ -1,5 +1,6 @@
 # Exercise: solutions/06_ingress_gateway/ingress03.yaml
 # Topic: Ingress Annotations & Rewrites
+# Reference Guide: https://dnf0.github.io/kubelings/guides/06-ingress-gateway/
 #
 # Reference Solution
 

@@ -1,5 +1,6 @@
 # Exercise: exercises/13_troubleshooting/troubleshoot05.yaml
 # Topic: Ephemeral Debug Containers & Event Triage
+# Reference Guide: https://dnf0.github.io/kubelings/guides/13-troubleshooting/
 #
 # Context & Why:
 # Security best practices dictate running production applications in minimal, immutable container images

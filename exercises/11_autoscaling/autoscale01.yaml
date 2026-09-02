@@ -1,5 +1,6 @@
 # Exercise: exercises/11_autoscaling/autoscale01.yaml
 # Topic: Horizontal Pod Autoscaler (HPA v2)
+# Reference Guide: https://dnf0.github.io/kubelings/guides/11-autoscaling/
 #
 # Context & Why:
 # In production Kubernetes environments, traffic volume varies significantly throughout the day.

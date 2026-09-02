@@ -1,5 +1,6 @@
 # Exercise: exercises/11_autoscaling/autoscale04.yaml
 # Topic: Event-Driven Autoscaling (KEDA)
+# Reference Guide: https://dnf0.github.io/kubelings/guides/11-autoscaling/
 #
 # Context & Why:
 # Native Kubernetes HPA relies primarily on CPU and memory utilization, which are lagging indicators

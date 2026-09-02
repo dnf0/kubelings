@@ -1,5 +1,6 @@
 # Exercise: gateway04.yaml
 # Topic: Gateway API - ReferenceGrant Cross-Namespace Security
+# Reference Guide: https://dnf0.github.io/kubelings/guides/21-gateway-api/
 #
 # Context & Why:
 # In multi-tenant Kubernetes clusters, routing traffic across namespace boundaries introduces

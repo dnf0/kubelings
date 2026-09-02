@@ -16,19 +16,19 @@ In Kubernetes, **Services & Networking** is reconciled through declarative state
 
 ```text
 ┌───────────────────────────┐
-    │     Client / Ingress      │
-    └─────────────┬─────────────┘
-                  │ DNS: `api.default.svc.cluster.local`
-                  ▼
-    ┌───────────────────────────┐
-    │   Service (ClusterIP)     │ ◄── Virtual IP (iptables / IPVS / eBPF)
-    └─────────────┬─────────────┘
-                  │ EndpointSlice Controller
-                  ▼
-    ┌───────────────────────────┐
-    │       EndpointSlice       │ ──► [ 10.244.1.12:8080 (Pod A) ]
-    │   (List of Healthy IPs)   │ ──► [ 10.244.2.45:8080 (Pod B) ]
-    └───────────────────────────┘
+│     Client / Ingress      │
+└─────────────┬─────────────┘
+              │ DNS: `api.default.svc.cluster.local`
+              ▼
+┌───────────────────────────┐
+│   Service (ClusterIP)     │ ◄── Virtual IP (iptables / IPVS / eBPF)
+└─────────────┬─────────────┘
+              │ EndpointSlice Controller
+              ▼
+┌───────────────────────────┐
+│       EndpointSlice       │ ──► [ 10.244.1.12:8080 (Pod A) ]
+│   (List of Healthy IPs)   │ ──► [ 10.244.2.45:8080 (Pod B) ]
+└───────────────────────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

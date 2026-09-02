@@ -1,5 +1,6 @@
 # Solution: crossplane01.yaml
 # Topic: Crossplane - CompositeResourceDefinition (XRD)
+# Reference Guide: https://dnf0.github.io/kubelings/guides/22-crossplane-iac/
 
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition

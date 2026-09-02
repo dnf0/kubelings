@@ -16,18 +16,18 @@ In Kubernetes, **Autoscaling (HPA, VPA, KEDA)** is reconciled through declarativ
 
 ```text
 ┌───────────────────────────┐
-    │    Metrics Server / KEDA  │ ◄── CPU, Memory, SQS, Kafka Lag
-    └─────────────┬─────────────┘
-                  │ Evaluates Target vs Current Metric
-                  ▼
-    ┌───────────────────────────┐
-    │            HPA            │ ──► Scales Deployment Replicas (2 ──► 10)
-    └─────────────┬─────────────┘
-                  │
-                  ▼
-    ┌───────────────────────────┐
-    │     Cluster Autoscaler    │ ──► Provisions Additional Cloud Nodes
-    └───────────────────────────┘
+│    Metrics Server / KEDA  │ ◄── CPU, Memory, SQS, Kafka Lag
+└─────────────┬─────────────┘
+              │ Evaluates Target vs Current Metric
+              ▼
+┌───────────────────────────┐
+│            HPA            │ ──► Scales Deployment Replicas (2 ──► 10)
+└─────────────┬─────────────┘
+              │
+              ▼
+┌───────────────────────────┐
+│     Cluster Autoscaler    │ ──► Provisions Additional Cloud Nodes
+└───────────────────────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

@@ -1,5 +1,6 @@
 # Exercise: tetragon03.yaml
 # Topic: eBPF Security - Real-Time Kernel Enforcement and Sigkill Actions
+# Reference Guide: https://dnf0.github.io/kubelings/guides/23-ebpf-tetragon/
 #
 # Context & Why:
 # Passive security auditing is insufficient against automated zero-day exploits and rapid lateral

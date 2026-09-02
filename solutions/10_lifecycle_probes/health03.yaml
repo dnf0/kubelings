@@ -1,5 +1,6 @@
 # Exercise: solutions/10_lifecycle_probes/health03.yaml
 # Topic: Startup Probes
+# Reference Guide: https://dnf0.github.io/kubelings/guides/10-lifecycle-probes/
 #
 # Reference Solution
 

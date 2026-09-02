@@ -1,5 +1,6 @@
 # Exercise: exercises/24_kuberay_ml/ray03.yaml
 # Topic: RayJob for Distributed Batch Fine-Tuning
+# Reference Guide: https://dnf0.github.io/kubelings/guides/24-kuberay-ml/
 #
 # Context & Why:
 # Batch machine learning jobs (such as periodic model retraining, offline batch scoring, or fine-tuning)

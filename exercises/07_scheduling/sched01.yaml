@@ -1,5 +1,6 @@
 # Exercise: exercises/07_scheduling/sched01.yaml
 # Topic: Node Placement (nodeName & nodeSelector)
+# Reference Guide: https://dnf0.github.io/kubelings/guides/07-scheduling/
 #
 # Context & Why:
 # Kubernetes provides several tiers of node placement control to map workloads to specialized hardware:

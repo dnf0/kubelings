@@ -1,5 +1,6 @@
 # Exercise: exercises/02_controllers/ctrl02.yaml
 # Topic: Deployments & Rolling Updates
+# Reference Guide: https://dnf0.github.io/kubelings/guides/02-controllers/
 #
 # Context & Why:
 # Deployments provide declarative updates for Pods and ReplicaSets. While the `Recreate`

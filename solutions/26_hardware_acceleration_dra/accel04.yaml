@@ -1,5 +1,6 @@
 # Solution: solutions/26_hardware_acceleration_dra/accel04.yaml
 # Topic: High-Throughput Production LLM Inference Server with vLLM
+# Reference Guide: https://dnf0.github.io/kubelings/guides/26-hardware-acceleration-dra/
 
 apiVersion: apps/v1
 kind: Deployment

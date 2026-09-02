@@ -1,5 +1,6 @@
 # Exercise: exercises/25_batch_kueue_volcano/volcano02.yaml
 # Topic: Volcano Queue & Fair-Share Scheduling
+# Reference Guide: https://dnf0.github.io/kubelings/guides/25-batch-kueue-volcano/
 #
 # Context & Why:
 # Enterprise machine learning platforms share compute infrastructure among multiple research groups

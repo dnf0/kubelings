@@ -1,5 +1,6 @@
 # Exercise: exercises/24_kuberay_ml/ray01.yaml
 # Topic: RayCluster Core Architecture & Head Node
+# Reference Guide: https://dnf0.github.io/kubelings/guides/24-kuberay-ml/
 #
 # Context & Why:
 # KubeRay is the Kubernetes operator for Ray, the open-source unified compute framework used for

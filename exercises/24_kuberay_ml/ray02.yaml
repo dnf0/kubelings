@@ -1,5 +1,6 @@
 # Exercise: exercises/24_kuberay_ml/ray02.yaml
 # Topic: Heterogeneous Worker Pools & Autoscaling
+# Reference Guide: https://dnf0.github.io/kubelings/guides/24-kuberay-ml/
 #
 # Context & Why:
 # Real-world machine learning and LLM fine-tuning pipelines require heterogeneous compute tiers:

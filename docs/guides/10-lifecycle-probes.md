@@ -16,19 +16,19 @@ In Kubernetes, **Health Checking, Probes & Lifecycle** is reconciled through dec
 
 ```text
 Container Startup
-           │
-           ▼
-    ┌─────────────────────────┐
-    │      Startup Probe      │ ──(Fails)──► Kubelet Restarts Container
-    └────────────┬────────────┘
-                 │ (Passes)
-                 ▼
-    ┌─────────────────────────┐          ┌─────────────────────────┐
-    │     Liveness Probe      │ ──Fail──►│ Kubelet Restarts Cont.  │
-    └─────────────────────────┘          └─────────────────────────┘
-    ┌─────────────────────────┐          ┌─────────────────────────┐
-    │     Readiness Probe     │ ──Fail──►│ Remove from Endpoints   │
-    └─────────────────────────┘          └─────────────────────────┘
+       │
+       ▼
+┌─────────────────────────┐
+│      Startup Probe      │ ──(Fails)──► Kubelet Restarts Container
+└────────────┬────────────┘
+             │ (Passes)
+             ▼
+┌─────────────────────────┐          ┌─────────────────────────┐
+│     Liveness Probe      │ ──Fail──►│ Kubelet Restarts Cont.  │
+└─────────────────────────┘          └─────────────────────────┘
+┌─────────────────────────┐          ┌─────────────────────────┐
+│     Readiness Probe     │ ──Fail──►│ Remove from Endpoints   │
+└─────────────────────────┘          └─────────────────────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

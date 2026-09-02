@@ -1,5 +1,6 @@
 # Exercise: gateway02.yaml
 # Topic: Gateway API - HTTPRoute Path Matching and Backend Routing
+# Reference Guide: https://dnf0.github.io/kubelings/guides/21-gateway-api/
 #
 # Context & Why:
 # `HTTPRoute` decouples application layer-7 routing logic from gateway infrastructure, enabling

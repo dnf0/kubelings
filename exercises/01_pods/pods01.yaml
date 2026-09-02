@@ -1,5 +1,6 @@
 # Exercise: exercises/01_pods/pods01.yaml
 # Topic: First Pod Manifest & Spec
+# Reference Guide: https://dnf0.github.io/kubelings/guides/01-pods/
 #
 # Context & Why:
 # The Pod is the fundamental atomic unit of deployment in Kubernetes. It encapsulates

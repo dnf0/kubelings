@@ -1,5 +1,6 @@
 # Exercise: exercises/13_troubleshooting/troubleshoot01.yaml
 # Topic: Debugging CrashLoopBackOff & Exit Codes
+# Reference Guide: https://dnf0.github.io/kubelings/guides/13-troubleshooting/
 #
 # Context & Why:
 # `CrashLoopBackOff` is one of the most frequent incident conditions encountered in Kubernetes operations.

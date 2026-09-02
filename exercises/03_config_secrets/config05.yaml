@@ -1,5 +1,6 @@
 # Exercise: exercises/03_config_secrets/config05.yaml
 # Topic: Immutable ConfigMaps and Secrets
+# Reference Guide: https://dnf0.github.io/kubelings/guides/03-config-secrets/
 #
 # Context & Why:
 # By default, ConfigMaps and Secrets in Kubernetes are mutable. When data changes, the kubelet

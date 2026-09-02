@@ -1,5 +1,6 @@
 # Exercise: exercises/10_lifecycle_probes/health04.yaml
 # Topic: Lifecycle Hooks & Graceful Shutdown
+# Reference Guide: https://dnf0.github.io/kubelings/guides/10-lifecycle-probes/
 #
 # Context & Why:
 # During rolling updates, node drains, or autoscaling scale-down events, Kubernetes pods are terminated.

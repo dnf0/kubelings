@@ -16,22 +16,22 @@ In Kubernetes, **Package Management with Helm** is reconciled through declarativ
 
 ```text
 ┌───────────────────────────┐      ┌───────────────────────────┐
-    │     Chart.yaml            │      │       values.yaml         │
-    │  (Metadata, Dependencies) │      │  (User Config Overrides)  │
-    └─────────────┬─────────────┘      └─────────────┬─────────────┘
-                  │                                  │
-                  ▼                                  ▼
-    ┌─────────────────────────────────────────────────────────────┐
-    │                Helm Template Rendering Engine               │
-    │  • Evaluates Go Templates (`templates/deployment.yaml`)     │
-    │  • Applies Helper Functions (`_helpers.tpl`)                │
-    │  • Validates OpenAPI values schema (`values.schema.json`)   │
-    └─────────────────────────────┬───────────────────────────────┘
-                                  │ Fully Rendered Kubernetes Manifests
-                                  ▼
-    ┌─────────────────────────────────────────────────────────────┐
-    │                      Kubernetes Cluster                     │
-    └─────────────────────────────────────────────────────────────┘
+│     Chart.yaml            │      │       values.yaml         │
+│  (Metadata, Dependencies) │      │  (User Config Overrides)  │
+└─────────────┬─────────────┘      └─────────────┬─────────────┘
+              │                                  │
+              ▼                                  ▼
+┌─────────────────────────────────────────────────────────────┐
+│                Helm Template Rendering Engine               │
+│  • Evaluates Go Templates (`templates/deployment.yaml`)     │
+│  • Applies Helper Functions (`_helpers.tpl`)                │
+│  • Validates OpenAPI values schema (`values.schema.json`)   │
+└─────────────────────────────┬───────────────────────────────┘
+                              │ Fully Rendered Kubernetes Manifests
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                      Kubernetes Cluster                     │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

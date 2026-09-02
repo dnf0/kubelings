@@ -1,5 +1,6 @@
 # Exercise: exercises/04_storage/storage03.yaml
 # Topic: Access Modes & Reclaim Policies
+# Reference Guide: https://dnf0.github.io/kubelings/guides/04-storage/
 #
 # Context & Why:
 # Storage requirements vary depending on how applications access data:

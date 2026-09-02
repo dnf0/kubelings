@@ -1,5 +1,6 @@
 # Exercise: solutions/10_lifecycle_probes/health01.yaml
 # Topic: Liveness Probes
+# Reference Guide: https://dnf0.github.io/kubelings/guides/10-lifecycle-probes/
 #
 # Reference Solution
 

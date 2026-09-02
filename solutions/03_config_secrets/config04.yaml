@@ -1,5 +1,6 @@
 # Exercise: solutions/03_config_secrets/config04.yaml
 # Topic: Secret Volume Mounts & Permissions (defaultMode)
+# Reference Guide: https://dnf0.github.io/kubelings/guides/03-config-secrets/
 #
 # Reference Solution
 

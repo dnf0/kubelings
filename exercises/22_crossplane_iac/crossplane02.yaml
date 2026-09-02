@@ -1,5 +1,6 @@
 # Exercise: crossplane02.yaml
 # Topic: Crossplane - Composition and Field Path Transforms
+# Reference Guide: https://dnf0.github.io/kubelings/guides/22-crossplane-iac/
 #
 # Context & Why:
 # While an XRD defines the API interface contract, a `Composition` provides the concrete infrastructure

@@ -1,5 +1,6 @@
 # Exercise: exercises/08_security_rbac/rbac03.yaml
 # Topic: ClusterRoles & ClusterRoleBindings
+# Reference Guide: https://dnf0.github.io/kubelings/guides/08-security-rbac/
 #
 # Context & Why:
 # Unlike namespace-scoped Roles, `ClusterRoles` define permissions that apply cluster-wide.

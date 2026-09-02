@@ -1,5 +1,6 @@
 # Exercise: solutions/07_scheduling/sched02.yaml
 # Topic: Node Affinity & Constraints
+# Reference Guide: https://dnf0.github.io/kubelings/guides/07-scheduling/
 #
 # Reference Solution
 

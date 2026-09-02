@@ -1,5 +1,6 @@
 # Exercise: exercises/05_services_networking/net03.yaml
 # Topic: NodePort & LoadBalancer Service Types
+# Reference Guide: https://dnf0.github.io/kubelings/guides/05-services-networking/
 #
 # Context & Why:
 # Exposing Kubernetes services to external traffic outside the cluster network is accomplished via:

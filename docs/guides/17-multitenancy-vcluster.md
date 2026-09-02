@@ -16,18 +16,18 @@ In Kubernetes, **Multi-Tenancy & Virtual Clusters** is reconciled through declar
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-    │                      Host K8s Cluster                       │
-    │  ┌───────────────────────────────────────────────────────┐  │
-    │  │               Tenant Namespace: `team-alpha`          │  │
-    │  │  ┌─────────────────────────────────────────────────┐  │  │
-    │  │  │              vcluster Control Plane             │  │  │
-    │  │  │   (Virtual API Server + SQLite/k3s / Syncer)    │  │  │
-    │  │  └────────────────────────┬────────────────────────┘  │  │
-    │  │                           │ Synced Workload Pods      │  │
-    │  │                           ▼                           │  │
-    │  │  [ Pod A (synced) ] [ Pod B (synced) ] [ Secret ]     │  │
-    │  └───────────────────────────────────────────────────────┘  │
-    └─────────────────────────────────────────────────────────────┘
+│                      Host K8s Cluster                       │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │               Tenant Namespace: `team-alpha`          │  │
+│  │  ┌─────────────────────────────────────────────────┐  │  │
+│  │  │              vcluster Control Plane             │  │  │
+│  │  │   (Virtual API Server + SQLite/k3s / Syncer)    │  │  │
+│  │  └────────────────────────┬────────────────────────┘  │  │
+│  │                           │ Synced Workload Pods      │  │
+│  │                           ▼                           │  │
+│  │  [ Pod A (synced) ] [ Pod B (synced) ] [ Secret ]     │  │
+│  └───────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

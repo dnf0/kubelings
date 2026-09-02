@@ -1,5 +1,6 @@
 # Exercise: exercises/07_scheduling/sched05.yaml
 # Topic: Topology Spread Constraints
+# Reference Guide: https://dnf0.github.io/kubelings/guides/07-scheduling/
 #
 # Context & Why:
 # While Pod Anti-Affinity provides a binary (yes/no) placement decision per host or zone,

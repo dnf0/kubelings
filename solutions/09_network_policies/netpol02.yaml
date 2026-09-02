@@ -1,5 +1,6 @@
 # Exercise: solutions/09_network_policies/netpol02.yaml
 # Topic: Ingress Traffic Filtering
+# Reference Guide: https://dnf0.github.io/kubelings/guides/09-network-policies/
 #
 # Reference Solution
 

@@ -16,21 +16,21 @@ In Kubernetes, **Kubernetes Core Workloads & Pods** is reconciled through declar
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-    │                         Kubelet                             │
-    │  ┌─────────────────┐             ┌───────────────────────┐  │
-    │  │  Init Container │             │  Main App Container   │  │
-    │  │  (runs to exit) │ ──(Shared)─►│  (nginx / python)     │  │
-    │  └────────┬────────┘   Volumes   └───────────┬───────────┘  │
-    │           │                                  │              │
-    │           ▼                                  ▼              │
-    │     [ emptyDir / ]                     [ emptyDir / ]       │
-    │     [ ConfigMap  ]                     [ Secret     ]       │
-    │                                              ▲              │
-    │                                  ┌───────────┴───────────┐  │
-    │                                  │   Sidecar Container   │  │
-    │                                  │   (fluent-bit / proxy)│  │
-    │                                  └───────────────────────┘  │
-    └─────────────────────────────────────────────────────────────┘
+│                         Kubelet                             │
+│  ┌─────────────────┐             ┌───────────────────────┐  │
+│  │  Init Container │             │  Main App Container   │  │
+│  │  (runs to exit) │ ──(Shared)─►│  (nginx / python)     │  │
+│  └────────┬────────┘   Volumes   └───────────┬───────────┘  │
+│           │                                  │              │
+│           ▼                                  ▼              │
+│     [ emptyDir / ]                     [ emptyDir / ]       │
+│     [ ConfigMap  ]                     [ Secret     ]       │
+│                                              ▲              │
+│                                  ┌───────────┴───────────┐  │
+│                                  │   Sidecar Container   │  │
+│                                  │   (fluent-bit / proxy)│  │
+│                                  └───────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

@@ -1,5 +1,6 @@
 # Solution: solutions/25_batch_kueue_volcano/volcano01.yaml
 # Topic: Volcano Gang Scheduling & Deadlock Prevention
+# Reference Guide: https://dnf0.github.io/kubelings/guides/25-batch-kueue-volcano/
 
 apiVersion: batch.volcano.sh/v1alpha1
 kind: Job

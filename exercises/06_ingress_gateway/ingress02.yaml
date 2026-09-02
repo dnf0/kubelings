@@ -1,5 +1,6 @@
 # Exercise: exercises/06_ingress_gateway/ingress02.yaml
 # Topic: Ingress TLS Termination
+# Reference Guide: https://dnf0.github.io/kubelings/guides/06-ingress-gateway/
 #
 # Context & Why:
 # Serving web applications over HTTPS requires terminating TLS encryption at the cluster boundary.

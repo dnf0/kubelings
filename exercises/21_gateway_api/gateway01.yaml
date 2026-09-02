@@ -1,5 +1,6 @@
 # Exercise: gateway01.yaml
 # Topic: Gateway API - GatewayClass and Gateway Declaration
+# Reference Guide: https://dnf0.github.io/kubelings/guides/21-gateway-api/
 #
 # Context & Why:
 # The Kubernetes Gateway API is the modern, role-oriented evolution of Ingress networking.

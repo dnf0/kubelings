@@ -1,5 +1,6 @@
 # Exercise: exercises/09_network_policies/netpol01.yaml
 # Topic: Default Deny Network Policy
+# Reference Guide: https://dnf0.github.io/kubelings/guides/09-network-policies/
 #
 # Context & Why:
 # Kubernetes implements a flat, open network model by default: any pod in any namespace can

@@ -1,5 +1,6 @@
 # Exercise: exercises/03_config_secrets/config03.yaml
 # Topic: Secrets: Base64 Encoding & stringData
+# Reference Guide: https://dnf0.github.io/kubelings/guides/03-config-secrets/
 #
 # Context & Why:
 # Kubernetes Secrets store sensitive configuration assets such as database credentials, API tokens,

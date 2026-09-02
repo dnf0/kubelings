@@ -1,5 +1,6 @@
 # Exercise: exercises/06_ingress_gateway/ingress03.yaml
 # Topic: Ingress Annotations & Rewrites
+# Reference Guide: https://dnf0.github.io/kubelings/guides/06-ingress-gateway/
 #
 # Context & Why:
 # Because standard Kubernetes Ingress specifications are intentionally generic across different ingress

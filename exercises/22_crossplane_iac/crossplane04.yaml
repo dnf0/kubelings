@@ -1,5 +1,6 @@
 # Exercise: crossplane04.yaml
 # Topic: Crossplane - Developer Self-Service Claims and Connection Secrets
+# Reference Guide: https://dnf0.github.io/kubelings/guides/22-crossplane-iac/
 #
 # Context & Why:
 # Self-service developer workflows are central to internal developer platforms (IDP). Application

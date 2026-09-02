@@ -1,5 +1,6 @@
 # Exercise: exercises/05_services_networking/net04.yaml
 # Topic: CoreDNS Internal Service Resolution
+# Reference Guide: https://dnf0.github.io/kubelings/guides/05-services-networking/
 #
 # Context & Why:
 # CoreDNS powers in-cluster service discovery by serving authoritative DNS zones for Kubernetes resources.

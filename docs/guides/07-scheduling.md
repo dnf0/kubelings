@@ -16,15 +16,15 @@ In Kubernetes, **Scheduling, Affinity & Advanced Placement** is reconciled throu
 
 ```text
 ┌───────────────────────────┐
-    │      kube-scheduler       │
-    └─────────────┬─────────────┘
-                  │ 1. Filtering (Tolerations, NodeSelector, Affinity)
-                  │ 2. Scoring (Topology Spread, Resource Packing)
-                  ▼
-    ┌───────────────────────────┬───────────────────────────┐
-    │  Zone: us-east-1a         │  Zone: us-east-1b         │
-    │  [ Node A ] [ Node B ]    │  [ Node C ] [ Node D ]    │
-    └───────────────────────────┴───────────────────────────┘
+│      kube-scheduler       │
+└─────────────┬─────────────┘
+              │ 1. Filtering (Tolerations, NodeSelector, Affinity)
+              │ 2. Scoring (Topology Spread, Resource Packing)
+              ▼
+┌───────────────────────────┬───────────────────────────┐
+│  Zone: us-east-1a         │  Zone: us-east-1b         │
+│  [ Node A ] [ Node B ]    │  [ Node C ] [ Node D ]    │
+└───────────────────────────┴───────────────────────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

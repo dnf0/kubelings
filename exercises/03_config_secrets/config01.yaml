@@ -1,5 +1,6 @@
 # Exercise: exercises/03_config_secrets/config01.yaml
 # Topic: ConfigMaps as Environment Variables
+# Reference Guide: https://dnf0.github.io/kubelings/guides/03-config-secrets/
 #
 # Context & Why:
 # The Twelve-Factor App methodology advocates strict separation of configuration from code.

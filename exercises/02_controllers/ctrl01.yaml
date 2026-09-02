@@ -1,5 +1,6 @@
 # Exercise: exercises/02_controllers/ctrl01.yaml
 # Topic: ReplicaSets & Label Selectors
+# Reference Guide: https://dnf0.github.io/kubelings/guides/02-controllers/
 #
 # Context & Why:
 # The ReplicaSet controller's primary purpose is to maintain a stable, specified number of

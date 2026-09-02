@@ -1,5 +1,6 @@
 # Solution: tetragon04.yaml
 # Topic: eBPF Network Observability - Tetragon Socket Connect Probes
+# Reference Guide: https://dnf0.github.io/kubelings/guides/23-ebpf-tetragon/
 
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy

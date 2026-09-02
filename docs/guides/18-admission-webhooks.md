@@ -16,18 +16,18 @@ In Kubernetes, **Advanced Admission Webhooks** is reconciled through declarative
 
 ```text
 API Request ──► [ Authentication ] ──► [ Authorization ]
-                                                   │
-                                                   ▼
-    [ Mutating Webhooks ] ◄── Calls Webhook Service (Modifies Spec)
-           │
-           ▼
-    [ Schema Validation ]
-           │
-           ▼
-    [ Validating Webhooks ] ◄── Calls Webhook Service (Accept / Deny)
-           │
-           ▼
-    [ Persist to etcd ]
+                                               │
+                                               ▼
+[ Mutating Webhooks ] ◄── Calls Webhook Service (Modifies Spec)
+       │
+       ▼
+[ Schema Validation ]
+       │
+       ▼
+[ Validating Webhooks ] ◄── Calls Webhook Service (Accept / Deny)
+       │
+       ▼
+[ Persist to etcd ]
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

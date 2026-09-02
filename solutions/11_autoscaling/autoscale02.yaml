@@ -1,5 +1,6 @@
 # Exercise: solutions/11_autoscaling/autoscale02.yaml
 # Topic: HPA Custom Scaling Behavior
+# Reference Guide: https://dnf0.github.io/kubelings/guides/11-autoscaling/
 #
 # Reference Solution
 

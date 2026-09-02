@@ -16,18 +16,18 @@ In Kubernetes, **Controllers & Replication** is reconciled through declarative s
 
 ```text
 ┌───────────────────────────┐
-    │     Deployment Controller │
-    └─────────────┬─────────────┘
-                  │ Manages ReplicaSets (Rollouts, Revisions)
-                  ▼
-    ┌───────────────────────────┐
-    │         ReplicaSet        │
-    └─────────────┬─────────────┘
-                  │ Maintains Desired Spec Replicas
-                  ▼
-    ┌───────────┐   ┌───────────┐   ┌───────────┐
-    │  Pod 1    │   │  Pod 2    │   │  Pod 3    │
-    └───────────┘   └───────────┘   └───────────┘
+│     Deployment Controller │
+└─────────────┬─────────────┘
+              │ Manages ReplicaSets (Rollouts, Revisions)
+              ▼
+┌───────────────────────────┐
+│         ReplicaSet        │
+└─────────────┬─────────────┘
+              │ Maintains Desired Spec Replicas
+              ▼
+┌───────────┐   ┌───────────┐   ┌───────────┐
+│  Pod 1    │   │  Pod 2    │   │  Pod 3    │
+└───────────┘   └───────────┘   └───────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

@@ -1,5 +1,6 @@
 # Exercise: exercises/03_config_secrets/config04.yaml
 # Topic: Secret Volume Mounts & Permissions (defaultMode)
+# Reference Guide: https://dnf0.github.io/kubelings/guides/03-config-secrets/
 #
 # Context & Why:
 # When a Secret is mounted into a Pod as a volume, Kubernetes mounts it using an in-memory

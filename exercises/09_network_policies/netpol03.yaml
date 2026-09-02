@@ -1,5 +1,6 @@
 # Exercise: exercises/09_network_policies/netpol03.yaml
 # Topic: Egress Traffic & DNS Access
+# Reference Guide: https://dnf0.github.io/kubelings/guides/09-network-policies/
 #
 # Context & Why:
 # When Egress filtering is activated on a workload, the CNI network plugin blocks all outbound packets

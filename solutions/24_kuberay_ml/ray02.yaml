@@ -1,5 +1,6 @@
 # Solution: solutions/24_kuberay_ml/ray02.yaml
 # Topic: Heterogeneous Worker Pools & Autoscaling
+# Reference Guide: https://dnf0.github.io/kubelings/guides/24-kuberay-ml/
 
 apiVersion: ray.io/v1
 kind: RayCluster

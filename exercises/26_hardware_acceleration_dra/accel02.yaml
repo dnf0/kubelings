@@ -1,5 +1,6 @@
 # Exercise: exercises/26_hardware_acceleration_dra/accel02.yaml
 # Topic: Apple Silicon GPU & Metal Performance Shaders (MPS) Acceleration
+# Reference Guide: https://dnf0.github.io/kubelings/guides/26-hardware-acceleration-dra/
 #
 # Context & Why:
 # Local developer environments and edge Kubernetes deployments frequently run on Apple Silicon hardware

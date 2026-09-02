@@ -16,18 +16,18 @@ In Kubernetes, **Security, RBAC & Service Accounts** is reconciled through decla
 
 ```text
 ┌───────────────────────────┐
-    │      ServiceAccount       │ ◄── Injected into Pod JWT Token
-    └─────────────┬─────────────┘
-                  │ Bound via RoleBinding
-                  ▼
-    ┌───────────────────────────┐
-    │     Role / ClusterRole    │ ◄── Rules: apiGroups, resources, verbs
-    └─────────────┬─────────────┘
-                  │ Authorizes
-                  ▼
-    ┌───────────────────────────┐
-    │       kube-apiserver      │ ──► [ GET /api/v1/namespaces/default/pods ] ✓
-    └───────────────────────────┘
+│      ServiceAccount       │ ◄── Injected into Pod JWT Token
+└─────────────┬─────────────┘
+              │ Bound via RoleBinding
+              ▼
+┌───────────────────────────┐
+│     Role / ClusterRole    │ ◄── Rules: apiGroups, resources, verbs
+└─────────────┬─────────────┘
+              │ Authorizes
+              ▼
+┌───────────────────────────┐
+│       kube-apiserver      │ ──► [ GET /api/v1/namespaces/default/pods ] ✓
+└───────────────────────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

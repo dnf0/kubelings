@@ -16,20 +16,20 @@ In Kubernetes, **AI Batch Scheduling & Queuing with Kueue and Volcano** is recon
 
 ```text
 ┌───────────────────────────┐
-    │   User Submitted Jobs     │ ──► [ LocalQueue (Namespace A) ]
-    └───────────────────────────┘                     │
-                                                      ▼
-    ┌─────────────────────────────────────────────────────────────┐
-    │                      ClusterQueue                           │
-    │  • Cohort Borrowing (Shares idle capacity between teams)    │
-    │  • Preemption & Fair-Share Scheduling                       │
-    └─────────────────────────────┬───────────────────────────────┘
-                                  │ Admits Workload
-                                  ▼
-    ┌─────────────────────────────────────────────────────────────┐
-    │          Gang Scheduling (Volcano / Coscheduling)           │
-    │          [ All N Pods Scheduled Simultaneously or None ]   │
-    └─────────────────────────────────────────────────────────────┘
+│   User Submitted Jobs     │ ──► [ LocalQueue (Namespace A) ]
+└───────────────────────────┘                     │
+                                                  ▼
+┌─────────────────────────────────────────────────────────────┐
+│                      ClusterQueue                           │
+│  • Cohort Borrowing (Shares idle capacity between teams)    │
+│  • Preemption & Fair-Share Scheduling                       │
+└─────────────────────────────┬───────────────────────────────┘
+                              │ Admits Workload
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│          Gang Scheduling (Volcano / Coscheduling)           │
+│          [ All N Pods Scheduled Simultaneously or None ]   │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

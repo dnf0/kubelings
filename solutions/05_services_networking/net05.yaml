@@ -1,5 +1,6 @@
 # Exercise: solutions/05_services_networking/net05.yaml
 # Topic: ExternalName Services & Manual Endpoints
+# Reference Guide: https://dnf0.github.io/kubelings/guides/05-services-networking/
 #
 # Reference Solution
 

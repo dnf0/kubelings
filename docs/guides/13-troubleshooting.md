@@ -16,17 +16,17 @@ In Kubernetes, **Observability, Debugging & Production Troubleshooting** is reco
 
 ```text
 Troubleshooting Decision Flowchart
-    ┌───────────────────────────┐
-    │     Pod Not Working?      │
-    └─────────────┬─────────────┘
-                  │
-      ┌───────────┴───────────┐
-      ▼                       ▼
-    [ Status: Pending ]     [ Status: CrashLoopBackOff ]
-      │                       │
-      ├─► Insufficient CPU    ├─► Check logs: `kubectl logs --previous`
-      ├─► Missing PV / Secret ├─► Inspect Exit Code (137 = OOMKilled)
-      └─► Node Taint Mismatch └─► Check ConfigMap / Env Vars
+┌───────────────────────────┐
+│     Pod Not Working?      │
+└─────────────┬─────────────┘
+              │
+  ┌───────────┴───────────┐
+  ▼                       ▼
+[ Status: Pending ]     [ Status: CrashLoopBackOff ]
+  │                       │
+  ├─► Insufficient CPU    ├─► Check logs: `kubectl logs --previous`
+  ├─► Missing PV / Secret ├─► Inspect Exit Code (137 = OOMKilled)
+  └─► Node Taint Mismatch └─► Check ConfigMap / Env Vars
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

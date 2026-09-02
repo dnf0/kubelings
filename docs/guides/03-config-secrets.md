@@ -16,19 +16,19 @@ In Kubernetes, **Configuration & Secret Management** is reconciled through decla
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-    │                      Kubernetes API                         │
-    │   ┌────────────────────┐          ┌─────────────────────┐   │
-    │   │  ConfigMap (Plain) │          │ Secret (Base64/KMS) │   │
-    │   └─────────┬──────────┘          └──────────┬──────────┘   │
-    └─────────────┼────────────────────────────────┼──────────────┘
-                  │                                │
-                  ▼ Mounted as Files / Env Vars    ▼
-    ┌─────────────────────────────────────────────────────────────┐
-    │                         Pod Spec                            │
-    │  • envFrom: configMapRef / secretRef                        │
-    │  • volumes.configMap -> /etc/config                         │
-    │  • volumes.secret    -> /etc/secrets (tmpfs memory)         │
-    └─────────────────────────────────────────────────────────────┘
+│                      Kubernetes API                         │
+│   ┌────────────────────┐          ┌─────────────────────┐   │
+│   │  ConfigMap (Plain) │          │ Secret (Base64/KMS) │   │
+│   └─────────┬──────────┘          └──────────┬──────────┘   │
+└─────────────┼────────────────────────────────┼──────────────┘
+              │                                │
+              ▼ Mounted as Files / Env Vars    ▼
+┌─────────────────────────────────────────────────────────────┐
+│                         Pod Spec                            │
+│  • envFrom: configMapRef / secretRef                        │
+│  • volumes.configMap -> /etc/config                         │
+│  • volumes.secret    -> /etc/secrets (tmpfs memory)         │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

@@ -1,5 +1,6 @@
 # Exercise: exercises/07_scheduling/sched03.yaml
 # Topic: Pod Affinity & Pod Anti-Affinity
+# Reference Guide: https://dnf0.github.io/kubelings/guides/07-scheduling/
 #
 # Context & Why:
 # Inter-pod affinity and anti-affinity allow scheduling decisions to depend on the labels of *other pods*

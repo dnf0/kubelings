@@ -16,19 +16,19 @@ In Kubernetes, **Custom Resources, CRDs & Operators** is reconciled through decl
 
 ```text
 ┌───────────────────────────┐
-    │ CustomResourceDefinition  │ ◄── Registers `Foo` Kind in API Server
-    └─────────────┬─────────────┘
-                  │ OpenAPI v3 Validation Schema
-                  ▼
-    ┌───────────────────────────┐         Watches & Reconciles    ┌───────────────────────────┐
-    │   Custom Resource (CR)    │ ◄─────────────────────────────► │   Custom Operator Pod     │
-    │   (Kind: DatabaseCluster) │                                 │   (Reconciliation Loop)   │
-    └───────────────────────────┘                                 └─────────────┬─────────────┘
-                                                                                │ Creates & Manages
-                                                                                ▼
-                                                                  ┌───────────────────────────┐
-                                                                  │ Pods, PVCs, StatefulSets  │
-                                                                  └───────────────────────────┘
+│ CustomResourceDefinition  │ ◄── Registers `Foo` Kind in API Server
+└─────────────┬─────────────┘
+              │ OpenAPI v3 Validation Schema
+              ▼
+┌───────────────────────────┐         Watches & Reconciles    ┌───────────────────────────┐
+│   Custom Resource (CR)    │ ◄─────────────────────────────► │   Custom Operator Pod     │
+│   (Kind: DatabaseCluster) │                                 │   (Reconciliation Loop)   │
+└───────────────────────────┘                                 └─────────────┬─────────────┘
+                                                                            │ Creates & Manages
+                                                                            ▼
+                                                              ┌───────────────────────────┐
+                                                              │ Pods, PVCs, StatefulSets  │
+                                                              └───────────────────────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

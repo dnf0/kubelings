@@ -1,5 +1,6 @@
 # Solution: tetragon01.yaml
 # Topic: eBPF Observability - Tetragon TracingPolicy Process Execution Auditing
+# Reference Guide: https://dnf0.github.io/kubelings/guides/23-ebpf-tetragon/
 
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy

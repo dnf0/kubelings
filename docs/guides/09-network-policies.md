@@ -16,19 +16,19 @@ In Kubernetes, **Network Policies & Traffic Segmentation** is reconciled through
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-    │                     Frontend Namespace                      │
-    │   [ Frontend Pod ] ──(Port 5432 TCP)───┐                    │
-    └────────────────────────────────────────┼────────────────────┘
-                                             │ Allowed Ingress
-                                             ▼
-    ┌─────────────────────────────────────────────────────────────┐
-    │                     Database Namespace                      │
-    │   ┌─────────────────────────────────────────────────────┐   │
-    │   │           NetworkPolicy: Allow-From-Frontend        │   │
-    │   │   [ PostgreSQL Pod (Port 5432) ]                    │   │
-    │   │   Default Deny All Other Ingress / Egress           │   │
-    │   └─────────────────────────────────────────────────────┘   │
-    └─────────────────────────────────────────────────────────────┘
+│                     Frontend Namespace                      │
+│   [ Frontend Pod ] ──(Port 5432 TCP)───┐                    │
+└────────────────────────────────────────┼────────────────────┘
+                                         │ Allowed Ingress
+                                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│                     Database Namespace                      │
+│   ┌─────────────────────────────────────────────────────┐   │
+│   │           NetworkPolicy: Allow-From-Frontend        │   │
+│   │   [ PostgreSQL Pod (Port 5432) ]                    │   │
+│   │   Default Deny All Other Ingress / Egress           │   │
+│   └─────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

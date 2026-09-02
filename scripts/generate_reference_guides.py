@@ -1,5 +1,6 @@
 """Generate 26 in-depth Kubernetes Reference Guides for MkDocs with full manifests, diagrams, and bidirectional links."""
 
+import textwrap
 from pathlib import Path
 
 from kubelings.manifest import build_manifest
@@ -3362,7 +3363,7 @@ for chapter in manifest.chapters:
 In Kubernetes, **{chapter.title}** is reconciled through declarative state loops managed by the control plane:
 
 ```text
-{data["diagram"].strip()}
+{textwrap.dedent(data["diagram"]).strip()}
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

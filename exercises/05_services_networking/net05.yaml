@@ -1,5 +1,6 @@
 # Exercise: exercises/05_services_networking/net05.yaml
 # Topic: ExternalName Services & Manual Endpoints
+# Reference Guide: https://dnf0.github.io/kubelings/guides/05-services-networking/
 #
 # Context & Why:
 # During cloud migrations or hybrid architecture setups, applications running inside Kubernetes

@@ -1,5 +1,6 @@
 # Exercise: exercises/10_lifecycle_probes/health03.yaml
 # Topic: Startup Probes
+# Reference Guide: https://dnf0.github.io/kubelings/guides/10-lifecycle-probes/
 #
 # Context & Why:
 # Complex enterprise workloads (such as JVM applications, large machine learning models, or services

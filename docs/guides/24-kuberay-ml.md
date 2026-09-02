@@ -16,19 +16,19 @@ In Kubernetes, **Distributed AI & ML Orchestration with KubeRay** is reconciled 
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-    │                     RayCluster Topology                     │
-    │  ┌───────────────────────────────────────────────────────┐  │
-    │  │                  Ray Head Node Pod                    │  │
-    │  │  (GCS Metadata Store, Dashboard, Global Scheduler)   │  │
-    │  └──────────────────────────┬────────────────────────────┘  │
-    │                             │ Distributed Tasks & Actors    │
-    │              ┌──────────────┴──────────────┐                │
-    │              ▼                             ▼                │
-    │  ┌───────────────────────┐     ┌───────────────────────┐    │
-    │  │   Ray Worker Pod 1    │     │   Ray Worker Pod 2    │    │
-    │  │   (GPU Worker Group)  │     │   (CPU Worker Group)  │    │
-    │  └───────────────────────┘     └───────────────────────┘    │
-    └─────────────────────────────────────────────────────────────┘
+│                     RayCluster Topology                     │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │                  Ray Head Node Pod                    │  │
+│  │  (GCS Metadata Store, Dashboard, Global Scheduler)   │  │
+│  └──────────────────────────┬────────────────────────────┘  │
+│                             │ Distributed Tasks & Actors    │
+│              ┌──────────────┴──────────────┐                │
+│              ▼                             ▼                │
+│  ┌───────────────────────┐     ┌───────────────────────┐    │
+│  │   Ray Worker Pod 1    │     │   Ray Worker Pod 2    │    │
+│  │   (GPU Worker Group)  │     │   (CPU Worker Group)  │    │
+│  └───────────────────────┘     └───────────────────────┘    │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

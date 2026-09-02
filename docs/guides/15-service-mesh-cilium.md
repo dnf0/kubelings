@@ -16,19 +16,19 @@ In Kubernetes, **Service Mesh, eBPF & Cilium** is reconciled through declarative
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-    │                        Linux Kernel                         │
-    │  ┌───────────────────────────────────────────────────────┐  │
-    │  │                   eBPF Hook Programs                  │  │
-    │  │  • L3/L4 Filtering (Fast Path Bypass iptables)        │  │
-    │  │  • L7 HTTP/gRPC Inspection via Envoy                  │  │
-    │  │  • Transparent WireGuard / IPsec Encryption           │  │
-    │  └───────────────────────────────────────────────────────┘  │
-    └─────────────────────────────┬───────────────────────────────┘
-                                  │ Hubble Telemetry Stream
-                                  ▼
-    ┌─────────────────────────────────────────────────────────────┐
-    │                 Hubble Observability UI                     │
-    └─────────────────────────────────────────────────────────────┘
+│                        Linux Kernel                         │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │                   eBPF Hook Programs                  │  │
+│  │  • L3/L4 Filtering (Fast Path Bypass iptables)        │  │
+│  │  • L7 HTTP/gRPC Inspection via Envoy                  │  │
+│  │  • Transparent WireGuard / IPsec Encryption           │  │
+│  └───────────────────────────────────────────────────────┘  │
+└─────────────────────────────┬───────────────────────────────┘
+                              │ Hubble Telemetry Stream
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                 Hubble Observability UI                     │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

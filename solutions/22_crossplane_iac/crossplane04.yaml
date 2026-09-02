@@ -1,5 +1,6 @@
 # Solution: crossplane04.yaml
 # Topic: Crossplane - Developer Self-Service Claims and Connection Secrets
+# Reference Guide: https://dnf0.github.io/kubelings/guides/22-crossplane-iac/
 
 apiVersion: database.kubelings.io/v1alpha1
 kind: PostgreSQLInstance

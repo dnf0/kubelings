@@ -16,18 +16,18 @@ In Kubernetes, **Ingress & Gateway API** is reconciled through declarative state
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-    │                        Internet                             │
-    └─────────────────────────────┬───────────────────────────────┘
-                                  │ HTTPS (Port 443 / TLS)
-                                  ▼
-    ┌─────────────────────────────────────────────────────────────┐
-    │          Ingress Controller (NGINX / Envoy / Traefik)       │
-    └──────────────┬──────────────────────────────┬───────────────┘
-                   │ /api/*                       │ /static/*
-                   ▼                              ▼
-    ┌─────────────────────────────┐┌──────────────────────────────┐
-    │ Service: `api-service:80`   ││ Service: `static-service:80` │
-    └─────────────────────────────┘└──────────────────────────────┘
+│                        Internet                             │
+└─────────────────────────────┬───────────────────────────────┘
+                              │ HTTPS (Port 443 / TLS)
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│          Ingress Controller (NGINX / Envoy / Traefik)       │
+└──────────────┬──────────────────────────────┬───────────────┘
+               │ /api/*                       │ /static/*
+               ▼                              ▼
+┌─────────────────────────────┐┌──────────────────────────────┐
+│ Service: `api-service:80`   ││ Service: `static-service:80` │
+└─────────────────────────────┘└──────────────────────────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

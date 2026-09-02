@@ -16,19 +16,19 @@ In Kubernetes, **Hardware Acceleration: NVIDIA MIG, Apple Silicon GPU & DRA** is
 
 ```text
 ┌───────────────────────────┐
-    │     Pod Specification     │ ──► References `ResourceClaim`
-    └─────────────┬─────────────┘
-                  │
-                  ▼
-    ┌───────────────────────────┐
-    │       ResourceClaim       │ ◄── Requests Specific Device Attributes
-    │  (DRA: GPU, TPU, FPGA)    │     (e.g., 20GB VRAM, NVLink Mesh)
-    └─────────────┬─────────────┘
-                  │ Dynamic Driver Allocation
-                  ▼
-    ┌───────────────────────────┐
-    │   DRA Node Driver Plugin  │ ──► Configures Hardware & Binds to Container
-    └───────────────────────────┘
+│     Pod Specification     │ ──► References `ResourceClaim`
+└─────────────┬─────────────┘
+              │
+              ▼
+┌───────────────────────────┐
+│       ResourceClaim       │ ◄── Requests Specific Device Attributes
+│  (DRA: GPU, TPU, FPGA)    │     (e.g., 20GB VRAM, NVLink Mesh)
+└─────────────┬─────────────┘
+              │ Dynamic Driver Allocation
+              ▼
+┌───────────────────────────┐
+│   DRA Node Driver Plugin  │ ──► Configures Hardware & Binds to Container
+└───────────────────────────┘
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

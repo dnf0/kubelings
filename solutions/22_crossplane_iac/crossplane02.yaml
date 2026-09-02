@@ -1,5 +1,6 @@
 # Solution: crossplane02.yaml
 # Topic: Crossplane - Composition and Field Path Transforms
+# Reference Guide: https://dnf0.github.io/kubelings/guides/22-crossplane-iac/
 
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition

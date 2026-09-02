@@ -1,5 +1,6 @@
 # Exercise: exercises/10_lifecycle_probes/health02.yaml
 # Topic: Readiness Probes
+# Reference Guide: https://dnf0.github.io/kubelings/guides/10-lifecycle-probes/
 #
 # Context & Why:
 # While liveness probes control container restarts, readiness probes govern network routing.

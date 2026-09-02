@@ -1,5 +1,6 @@
 # Exercise: exercises/04_storage/storage01.yaml
 # Topic: Volume Types (emptyDir & hostPath)
+# Reference Guide: https://dnf0.github.io/kubelings/guides/04-storage/
 #
 # Context & Why:
 # Storage volumes in Kubernetes outlive container restarts within a Pod. Two common node-local volume types are:

@@ -1,5 +1,6 @@
 # Exercise: tetragon01.yaml
 # Topic: eBPF Observability - Tetragon TracingPolicy Process Execution Auditing
+# Reference Guide: https://dnf0.github.io/kubelings/guides/23-ebpf-tetragon/
 #
 # Context & Why:
 # Cilium Tetragon is an eBPF-based security observability and runtime enforcement platform.

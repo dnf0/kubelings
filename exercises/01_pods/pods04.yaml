@@ -1,5 +1,6 @@
 # Exercise: exercises/01_pods/pods04.yaml
 # Topic: Resource Requests, Limits & Quality of Service (QoS) Classes
+# Reference Guide: https://dnf0.github.io/kubelings/guides/01-pods/
 #
 # Context & Why:
 # Resource management is essential for multi-tenant cluster stability and workload packing.

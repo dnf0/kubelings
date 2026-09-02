@@ -1,5 +1,6 @@
 # Solution: solutions/24_kuberay_ml/ray01.yaml
 # Topic: RayCluster Core Architecture & Head Node
+# Reference Guide: https://dnf0.github.io/kubelings/guides/24-kuberay-ml/
 
 apiVersion: ray.io/v1
 kind: RayCluster

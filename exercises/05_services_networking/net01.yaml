@@ -1,5 +1,6 @@
 # Exercise: exercises/05_services_networking/net01.yaml
 # Topic: ClusterIP Services & Port Mapping
+# Reference Guide: https://dnf0.github.io/kubelings/guides/05-services-networking/
 #
 # Context & Why:
 # Pods in Kubernetes are ephemeral; when pods scale up, crash, or get rescheduled, their IP addresses

@@ -1,5 +1,6 @@
 # Exercise: exercises/08_security_rbac/rbac02.yaml
 # Topic: Roles & RoleBindings
+# Reference Guide: https://dnf0.github.io/kubelings/guides/08-security-rbac/
 #
 # Context & Why:
 # Kubernetes Role-Based Access Control (RBAC) enforces namespace-scoped authorization for users,

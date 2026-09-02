@@ -1,5 +1,6 @@
 # Exercise: tetragon02.yaml
 # Topic: eBPF Observability - Tetragon File and Token Access Monitoring
+# Reference Guide: https://dnf0.github.io/kubelings/guides/23-ebpf-tetragon/
 #
 # Context & Why:
 # Container credential exfiltration and unauthorized file tampering are among the most common

@@ -1,5 +1,6 @@
 # Exercise: exercises/13_troubleshooting/troubleshoot03.yaml
 # Topic: Debugging Pending Pods & Scheduling Failures
+# Reference Guide: https://dnf0.github.io/kubelings/guides/13-troubleshooting/
 #
 # Context & Why:
 # When a pod remains stuck in the `Pending` phase without assigned nodes (`spec.nodeName` is empty),

@@ -1,5 +1,6 @@
 # Solution: tetragon02.yaml
 # Topic: eBPF Observability - Tetragon File and Token Access Monitoring
+# Reference Guide: https://dnf0.github.io/kubelings/guides/23-ebpf-tetragon/
 
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy

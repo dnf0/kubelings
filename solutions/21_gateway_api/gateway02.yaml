@@ -1,5 +1,6 @@
 # Solution: gateway02.yaml
 # Topic: Gateway API - HTTPRoute Path Matching and Backend Routing
+# Reference Guide: https://dnf0.github.io/kubelings/guides/21-gateway-api/
 
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
