@@ -141,7 +141,7 @@ spec:
 
     **Diagnostic Triage Sequence:**
     1. Inspect Tetragon logs: `kubectl logs -n kube-system -l app.kubernetes.io/name=tetragon -c tetragon --tail=100`
-2. Stream live events: `tetra getevents --namespace <namespace>`
+    2. Stream live events: `tetra getevents --namespace <namespace>`
 
 
 ---

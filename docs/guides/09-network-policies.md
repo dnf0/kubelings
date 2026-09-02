@@ -148,8 +148,8 @@ spec:
 
     **Diagnostic Triage Sequence:**
     1. Verify CNI policy enforcement status.
-2. Temporarily test DNS with: `kubectl exec -it <pod> -- nslookup kubernetes.default`
-3. Verify ingress/egress port and namespaceSelector definitions.
+    2. Temporarily test DNS with: `kubectl exec -it <pod> -- nslookup kubernetes.default`
+    3. Verify ingress/egress port and namespaceSelector definitions.
 
 
 ---

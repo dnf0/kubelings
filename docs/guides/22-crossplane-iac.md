@@ -123,7 +123,7 @@ spec:
 
     **Diagnostic Triage Sequence:**
     1. Run `kubectl describe <managed-resource> <name>`
-2. Verify ProviderConfig status: `kubectl get providerconfigs`.
+    2. Verify ProviderConfig status: `kubectl get providerconfigs`.
 
 
 ---

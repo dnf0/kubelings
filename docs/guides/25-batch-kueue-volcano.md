@@ -137,7 +137,7 @@ spec:
 
     **Diagnostic Triage Sequence:**
     1. Inspect Kueue Workload: `kubectl get workloads -n <namespace>`
-2. Check ClusterQueue status: `kubectl describe clusterqueue <name>`
+    2. Check ClusterQueue status: `kubectl describe clusterqueue <name>`
 
 
 ---

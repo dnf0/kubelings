@@ -166,7 +166,7 @@ spec:
 
     **Diagnostic Triage Sequence:**
     1. Check registered CRDs: `kubectl get crds`
-2. Verify served API versions: `kubectl get crd <name> -o yaml`.
+    2. Verify served API versions: `kubectl get crd <name> -o yaml`.
 
 
 ---

@@ -353,6 +353,9 @@
             <div class="workspace-meta-left">
               <span id="pg-chapter-badge" class="chapter-badge">Chapter 01</span>
               <h2 id="pg-exercise-title" class="exercise-title">Loading exercise...</h2>
+              <a id="pg-doc-badge-link" class="playground-doc-link" href="../guides/01-pods/" target="_blank" rel="noopener noreferrer" title="Open Chapter Reference Guide in new tab">
+                <span>📖 Reference Guide ↗</span>
+              </a>
               <span id="pg-cluster-tag" class="cluster-tag" style="display:none;">Live Cluster</span>
             </div>
             <div class="workspace-meta-right">
@@ -444,6 +447,7 @@
       resetAllBtn: container.querySelector("#pg-btn-reset-all"),
       chapterBadge: container.querySelector("#pg-chapter-badge"),
       exerciseTitle: container.querySelector("#pg-exercise-title"),
+      docBadgeLink: container.querySelector("#pg-doc-badge-link"),
       clusterTag: container.querySelector("#pg-cluster-tag"),
       clusterBanner: container.querySelector("#pg-cluster-banner"),
       clusterBannerEx: container.querySelector("#pg-cluster-banner-ex"),
@@ -565,6 +569,8 @@
       const isExpanded = query ? true : state.expandedChapters.has(chapter.number);
       const isChapterComplete = chCompleted === chapterExercises.length && chapterExercises.length > 0;
 
+      const guideSlug = (CHAPTER_GUIDES[chapter.number] && CHAPTER_GUIDES[chapter.number].slug) || "01-pods";
+
       html += `
         <div class="chapter-group ${isExpanded ? "expanded" : ""}" data-chapter-num="${chapter.number}">
           <div class="chapter-header" data-toggle-chapter="${chapter.number}">
@@ -573,9 +579,12 @@
               <span class="chapter-num">${String(chapter.number).padStart(2, "0")}.</span>
               <span class="chapter-name" title="${escapeHtml(chapter.title)}">${escapeHtml(chapter.title)}</span>
             </div>
-            <span class="chapter-badge-count ${isChapterComplete ? "complete" : ""}">
-              ${chCompleted}/${chapterExercises.length} ${isChapterComplete ? "✓" : ""}
-            </span>
+            <div class="chapter-header-actions">
+              <a href="../guides/${guideSlug}/" target="_blank" rel="noopener noreferrer" class="chapter-guide-icon-link" title="Open Chapter ${chapter.number} Reference Guide in new tab" onclick="event.stopPropagation();">📖</a>
+              <span class="chapter-badge-count ${isChapterComplete ? "complete" : ""}">
+                ${chCompleted}/${chapterExercises.length} ${isChapterComplete ? "✓" : ""}
+              </span>
+            </div>
           </div>
           <div class="chapter-exercise-list">
       `;
@@ -682,6 +691,10 @@
     }
     if (state.elements.exerciseTitle) {
       state.elements.exerciseTitle.textContent = `${ex.id} — ${ex.title}`;
+    }
+    if (state.elements.docBadgeLink) {
+      state.elements.docBadgeLink.href = guideUrl;
+      state.elements.docBadgeLink.title = `Read Chapter ${String(chNum).padStart(2, "0")} Reference Guide: ${guideInfo.title} in new tab`;
     }
 
     // Update standalone top header link
@@ -1123,6 +1136,7 @@
       insertSpaces: true,
       renderWhitespace: "selection",
       folding: true,
+      links: true,
     });
 
     state.editor.onDidChangeModelContent(() => {
@@ -1147,6 +1161,7 @@
       renderSideBySide: true,
       minimap: { enabled: false },
       scrollBeyondLastLine: false,
+      links: true,
     });
   }
 

@@ -120,7 +120,7 @@ spec:
 
     **Diagnostic Triage Sequence:**
     1. Review base build output: `kubectl kustomize base`
-2. Verify `namePrefix` or `nameSuffix` has not modified the target name prior to patching.
+    2. Verify `namePrefix` or `nameSuffix` has not modified the target name prior to patching.
 
 
 ---

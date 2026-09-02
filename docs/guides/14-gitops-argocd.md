@@ -153,8 +153,8 @@ spec:
 
     **Diagnostic Triage Sequence:**
     1. Inspect sync status in ArgoCD CLI: `argocd app get <app-name>`
-2. Trigger manual sync with diff: `argocd app sync <app-name> --dry-run`
-3. Check controller logs: `kubectl logs -n argocd -l app.kubernetes.io/name=argocd-application-controller`
+    2. Trigger manual sync with diff: `argocd app sync <app-name> --dry-run`
+    3. Check controller logs: `kubectl logs -n argocd -l app.kubernetes.io/name=argocd-application-controller`
 
 
 ---

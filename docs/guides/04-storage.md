@@ -156,15 +156,15 @@ spec:
 
     **Diagnostic Triage Sequence:**
     1. Run `kubectl describe pvc <name>`
-2. Verify StorageClass existence: `kubectl get storageclass`
-3. Check CSI controller logs in `kube-system`.
+    2. Verify StorageClass existence: `kubectl get storageclass`
+    3. Check CSI controller logs in `kube-system`.
 
 ??? failure "Multi-Attach Error (`VolumeAttachment` Deadlock)"
     **Root Cause:** Previous Pod on another node holds the read-write block lease.
 
     **Diagnostic Triage Sequence:**
     1. Find attaching pod: `kubectl get volumeattachments`
-2. Verify old pod termination on failing node.
+    2. Verify old pod termination on failing node.
 
 
 ---

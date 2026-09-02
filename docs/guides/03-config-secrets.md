@@ -137,7 +137,7 @@ data:
 
     **Diagnostic Triage Sequence:**
     1. Run `kubectl describe pod <name>` and inspect the exact missing key.
-2. Check namespace: `kubectl get configmap,secret -n <namespace>`.
+    2. Check namespace: `kubectl get configmap,secret -n <namespace>`.
 
 ??? failure "Live ConfigMap Update Not Reflected in Pod"
     **Root Cause:** ConfigMaps injected as environment variables are static and require pod restart; volume mounts take up to kubelet sync period (default ~60s).

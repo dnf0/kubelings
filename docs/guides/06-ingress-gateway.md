@@ -160,7 +160,7 @@ spec:
 
     **Diagnostic Triage Sequence:**
     1. Verify Ingress rules: `kubectl describe ingress <name>`
-2. Verify Ingress Controller logs: `kubectl logs -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx`
+    2. Verify Ingress Controller logs: `kubectl logs -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx`
 
 ??? failure "Ingress `502 Bad Gateway`"
     **Root Cause:** Target backend Service or Pod is offline or failing health probes.

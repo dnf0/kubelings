@@ -156,7 +156,7 @@ spec:
 
     **Diagnostic Triage Sequence:**
     1. Test authorization: `kubectl auth can-i create deployments --as=system:serviceaccount:production:deployment-manager -n production`
-2. Inspect RoleBinding subjects and roleRef matching.
+    2. Inspect RoleBinding subjects and roleRef matching.
 
 
 ---

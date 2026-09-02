@@ -145,12 +145,12 @@ spec:
 
     **Diagnostic Triage Sequence:**
     ```bash
-# Stream live drops in namespace
-hubble observe --namespace finance --verdict DROPPED
-
-# Trace HTTP status codes
-hubble observe --namespace finance --protocol http
-```
+    # Stream live drops in namespace
+    hubble observe --namespace finance --verdict DROPPED
+    
+    # Trace HTTP status codes
+    hubble observe --namespace finance --protocol http
+    ```
 
 
 ---

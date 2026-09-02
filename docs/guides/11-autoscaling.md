@@ -154,8 +154,8 @@ spec:
 
     **Diagnostic Triage Sequence:**
     1. Verify Metrics Server: `kubectl get apiservices | grep metrics`
-2. Verify Pod metrics: `kubectl top pods`
-3. Check HPA conditions: `kubectl describe hpa <name>`
+    2. Verify Pod metrics: `kubectl top pods`
+    3. Check HPA conditions: `kubectl describe hpa <name>`
 
 
 ---

@@ -147,7 +147,7 @@ webhooks:
 
     **Diagnostic Triage Sequence:**
     1. Inspect webhook server logs: `kubectl logs -n <namespace> -l app=<webhook-name>`
-2. Temporarily switch `failurePolicy: Ignore` to restore cluster operations during emergencies.
+    2. Temporarily switch `failurePolicy: Ignore` to restore cluster operations during emergencies.
 
 
 ---

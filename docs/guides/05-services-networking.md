@@ -121,15 +121,15 @@ spec:
 
     **Diagnostic Triage Sequence:**
     1. Check matching endpoints: `kubectl get endpoints <service-name>`
-2. Verify Pod labels: `kubectl get pods --show-labels`
-3. Verify container port binding: `kubectl get pods -o jsonpath='{.items[*].spec.containers[*].ports}'`
+    2. Verify Pod labels: `kubectl get pods --show-labels`
+    3. Verify container port binding: `kubectl get pods -o jsonpath='{.items[*].spec.containers[*].ports}'`
 
 ??? failure "CoreDNS Name Resolution Failure"
     **Root Cause:** DNS lookup fails for `service.namespace.svc.cluster.local`.
 
     **Diagnostic Triage Sequence:**
     1. Test from inside cluster: `kubectl run curl --rm -it --image=curlimages/curl -- nslookup <service-name>`
-2. Check CoreDNS pods: `kubectl get pods -n kube-system -l k8s-app=kube-dns`.
+    2. Check CoreDNS pods: `kubectl get pods -n kube-system -l k8s-app=kube-dns`.
 
 
 ---

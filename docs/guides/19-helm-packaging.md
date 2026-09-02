@@ -147,7 +147,7 @@ spec:
 
     **Diagnostic Triage Sequence:**
     1. Run template debug: `helm template my-release ./my-chart --debug`
-2. Use `default` or `required` filters to handle optional fields safely.
+    2. Use `default` or `required` filters to handle optional fields safely.
 
 
 ---

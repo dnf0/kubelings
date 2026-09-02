@@ -133,7 +133,7 @@ spec:
 
     **Diagnostic Triage Sequence:**
     1. Inspect claim state: `kubectl describe resourceclaim <name>`
-2. Check DRA driver plugin daemonset: `kubectl get pods -n kube-system -l app=nvidia-dra-driver-kubelet-plugin`
+    2. Check DRA driver plugin daemonset: `kubectl get pods -n kube-system -l app=nvidia-dra-driver-kubelet-plugin`
 
 
 ---

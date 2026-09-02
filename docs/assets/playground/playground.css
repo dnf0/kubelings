@@ -481,6 +481,61 @@
   color: var(--pg-text);
 }
 
+.playground-doc-link {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(2, 132, 199, 0.12);
+  color: #0284c7;
+  border: 1px solid rgba(2, 132, 199, 0.28);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.playground-doc-link:hover {
+  background: rgba(2, 132, 199, 0.22);
+  color: #0369a1;
+  border-color: #0284c7;
+}
+
+[data-md-color-scheme="slate"] .playground-doc-link {
+  background: rgba(137, 180, 250, 0.15);
+  color: #89b4fa;
+  border-color: rgba(137, 180, 250, 0.3);
+}
+
+[data-md-color-scheme="slate"] .playground-doc-link:hover {
+  background: rgba(137, 180, 250, 0.25);
+  color: #b4befe;
+}
+
+.chapter-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chapter-guide-icon-link {
+  font-size: 12px;
+  text-decoration: none;
+  opacity: 0.6;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.chapter-guide-icon-link:hover {
+  opacity: 1;
+  background: var(--pg-btn-hover);
+  transform: scale(1.1);
+}
+
 .cluster-tag {
   font-size: 11px;
   font-weight: 600;

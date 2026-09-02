@@ -161,8 +161,8 @@ spec:
 
     **Diagnostic Triage Sequence:**
     1. Inspect scheduling failures: `kubectl describe pod <name>`
-2. Review node taints: `kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints`
-3. Review node labels: `kubectl get nodes --show-labels`
+    2. Review node taints: `kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints`
+    3. Review node labels: `kubectl get nodes --show-labels`
 
 
 ---

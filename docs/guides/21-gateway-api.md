@@ -162,7 +162,7 @@ spec:
 
     **Diagnostic Triage Sequence:**
     1. Check HTTPRoute status: `kubectl describe httproute <name> -n <namespace>`
-2. Verify Gateway listener conditions: `kubectl describe gateway <name> -n <namespace>`.
+    2. Verify Gateway listener conditions: `kubectl describe gateway <name> -n <namespace>`.
 
 
 ---

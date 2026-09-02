@@ -129,7 +129,7 @@ isolation:
 
     **Diagnostic Triage Sequence:**
     1. Inspect quota usage: `kubectl describe resourcequota -n <tenant-namespace>`
-2. Delete orphaned pods or scale down unused deployments.
+    2. Delete orphaned pods or scale down unused deployments.
 
 
 ---

@@ -152,14 +152,14 @@ spec:
 
     **Diagnostic Triage Sequence:**
     1. Run `kubectl describe pod <name>` and inspect `Events`.
-2. Check probe response manually: `kubectl exec -it <name> -- wget -qO- http://localhost:8080/healthz`.
+    2. Check probe response manually: `kubectl exec -it <name> -- wget -qO- http://localhost:8080/healthz`.
 
 ??? failure "Pod Running but Service Not Serving Traffic"
     **Root Cause:** Readiness probe is failing, causing Pod exclusion from Endpoints.
 
     **Diagnostic Triage Sequence:**
     1. Check endpoint membership: `kubectl get endpoints <service-name>`
-2. Check readiness status in `kubectl describe pod <name>`.
+    2. Check readiness status in `kubectl describe pod <name>`.
 
 
 ---

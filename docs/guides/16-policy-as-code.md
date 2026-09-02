@@ -152,8 +152,8 @@ spec:
 
     **Diagnostic Triage Sequence:**
     1. Review the exact error message returned by `kubectl`.
-2. Check Kyverno PolicyReports: `kubectl get policyreports -A`
-3. Check Gatekeeper constraints: `kubectl get constraints`
+    2. Check Kyverno PolicyReports: `kubectl get policyreports -A`
+    3. Check Gatekeeper constraints: `kubectl get constraints`
 
 
 ---

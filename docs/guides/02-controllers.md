@@ -165,15 +165,15 @@ spec:
 
     **Diagnostic Triage Sequence:**
     1. View rollout status: `kubectl rollout status deployment/<name>`
-2. Inspect rollout history: `kubectl rollout history deployment/<name>`
-3. Roll back immediately: `kubectl rollout undo deployment/<name>`
+    2. Inspect rollout history: `kubectl rollout history deployment/<name>`
+    3. Roll back immediately: `kubectl rollout undo deployment/<name>`
 
 ??? failure "StatefulSet Pod Stuck Terminating"
     **Root Cause:** Volume detach/attach cycle locked or node unready.
 
     **Diagnostic Triage Sequence:**
     1. Check PV status: `kubectl get pvc -l app=<name>`
-2. Inspect node status: `kubectl describe node <node>`
+    2. Inspect node status: `kubectl describe node <node>`
 
 
 ---

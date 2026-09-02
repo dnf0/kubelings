@@ -119,18 +119,18 @@ spec:
 
     **Diagnostic Triage Sequence:**
     ```bash
-# 1. Identify failing resources
-kubectl get pods -A -o wide --sort-by=.status.startTime
-
-# 2. Inspect events & container state
-kubectl describe pod <pod-name>
-
-# 3. Read previous container crash logs
-kubectl logs <pod-name> -c <container> --previous --tail=100
-
-# 4. Check cluster-wide chronological warning events
-kubectl get events -A --field-selector type=Warning --sort-by=.metadata.creationTimestamp
-```
+    # 1. Identify failing resources
+    kubectl get pods -A -o wide --sort-by=.status.startTime
+    
+    # 2. Inspect events & container state
+    kubectl describe pod <pod-name>
+    
+    # 3. Read previous container crash logs
+    kubectl logs <pod-name> -c <container> --previous --tail=100
+    
+    # 4. Check cluster-wide chronological warning events
+    kubectl get events -A --field-selector type=Warning --sort-by=.metadata.creationTimestamp
+    ```
 
 
 ---

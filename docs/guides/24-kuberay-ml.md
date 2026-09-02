@@ -153,7 +153,7 @@ spec:
 
     **Diagnostic Triage Sequence:**
     1. Inspect Head logs: `kubectl logs <head-pod-name> -c ray-head`
-2. Inspect Worker logs: `kubectl logs <worker-pod-name> -c ray-worker`
+    2. Inspect Worker logs: `kubectl logs <worker-pod-name> -c ray-worker`
 
 
 ---

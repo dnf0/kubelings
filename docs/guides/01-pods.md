@@ -180,22 +180,22 @@ spec:
 
     **Diagnostic Triage Sequence:**
     1. Inspect exit code: `kubectl get pod <name> -o jsonpath='{.status.containerStatuses[*].state.terminated}'`
-2. Check previous container logs: `kubectl logs <name> -c <container> --previous`
-3. Verify entrypoint args and required environment variables.
+    2. Check previous container logs: `kubectl logs <name> -c <container> --previous`
+    3. Verify entrypoint args and required environment variables.
 
 ??? failure "`OOMKilled` (Exit Code 137)"
     **Root Cause:** Container exceeded its memory limit cgroup.
 
     **Diagnostic Triage Sequence:**
     1. Run `kubectl describe pod <name>` and look for `Last State: Terminated / Reason: OOMKilled`.
-2. Increase `resources.limits.memory` or profile application heap memory consumption.
+    2. Increase `resources.limits.memory` or profile application heap memory consumption.
 
 ??? failure "`Pending` (Scheduling Failure)"
     **Root Cause:** Scheduler cannot find a node meeting CPU/memory/taint requirements.
 
     **Diagnostic Triage Sequence:**
     1. Inspect scheduling events: `kubectl describe pod <name>`
-2. Review cluster capacity: `kubectl describe nodes | grep -A 8 'Allocated resources'`.
+    2. Review cluster capacity: `kubectl describe nodes | grep -A 8 'Allocated resources'`.
 
 
 ---

@@ -3338,11 +3338,12 @@ for chapter in manifest.chapters:
     # Build troubleshooting markdown
     troubleshoot_md_list = []
     for failure_title, failure_cause, triage_steps in data["troubleshooting"]:
+        indented_steps = "\n    ".join(triage_steps.strip().split("\n"))
         troubleshoot_md_list.append(f"""??? failure "{failure_title}"
     **Root Cause:** {failure_cause}
 
     **Diagnostic Triage Sequence:**
-    {triage_steps}
+    {indented_steps}
 """)
     troubleshoot_md = "\n".join(troubleshoot_md_list)
 
