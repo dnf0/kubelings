@@ -619,6 +619,18 @@
     KubelingsStorage.state.lastActiveExerciseId = exerciseId;
     KubelingsStorage.persist();
 
+    // Update browser URL query parameter for shareable deep-linking
+    if (typeof window !== "undefined" && window.history && window.history.replaceState) {
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set("exercise", exerciseId);
+        url.searchParams.delete("chapter");
+        window.history.replaceState({}, "", url.toString());
+      } catch (e) {
+        // Ignore if running under restricted iframe origin
+      }
+    }
+
     // Auto-expand current chapter
     if (ex.chapter_number) {
       state.expandedChapters.add(ex.chapter_number);
@@ -1313,7 +1325,27 @@
       state.bundle = await loadBundle();
       KubelingsStorage.init(state.bundle);
 
-      const startExId = KubelingsStorage.state.lastActiveExerciseId || "pods01";
+      let startExId = KubelingsStorage.state.lastActiveExerciseId || "pods01";
+      if (typeof window !== "undefined" && window.location && window.location.search) {
+        try {
+          const urlParams = new URLSearchParams(window.location.search);
+          const paramExercise = urlParams.get("exercise");
+          const paramChapter = urlParams.get("chapter");
+
+          if (paramExercise && state.bundle.exercises[paramExercise]) {
+            startExId = paramExercise;
+          } else if (paramChapter) {
+            const chNum = parseInt(paramChapter, 10);
+            const ch = state.bundle.chapters.find((c) => c.number === chNum);
+            if (ch && ch.exercise_ids && ch.exercise_ids.length > 0) {
+              startExId = ch.exercise_ids[0];
+            }
+          }
+        } catch (e) {
+          // Ignore parameter parse issues
+        }
+      }
+
       state.currentExerciseId = state.bundle.exercises[startExId] ? startExId : "pods01";
 
       updateProgressUI();
