@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build script to bundle Kubelings validator, models, and curated showcase exercises
+"""Build script to bundle Kubelings validator, models, chapters, and all exercises
 
 into a single JSON asset for the Pyodide WebAssembly browser playground.
 """
@@ -16,25 +16,11 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from kubelings import __version__
-from kubelings.manifest import get_exercise_by_name
-
-SHOWCASE_EXERCISE_IDS = [
-    "pods01",
-    "ctrl01",
-    "config01",
-    "storage01",
-    "sched01",
-    "netpol01",
-    "autoscale01",
-    "gitops01",
-    "gateway01",
-    "ray01",
-    "accel02",
-]
+from kubelings.manifest import get_manifest
 
 
 def build_bundle(repo_root: Path | None = None) -> dict[str, Any]:
-    """Extract validator code, models, and showcase exercises into a bundle dictionary."""
+    """Extract validator code, models, chapters, and all exercises into a bundle dictionary."""
     if repo_root is None:
         repo_root = Path(__file__).resolve().parent.parent
 
@@ -49,40 +35,56 @@ def build_bundle(repo_root: Path | None = None) -> dict[str, Any]:
     validator_code = validator_path.read_text(encoding="utf-8")
     models_code = models_path.read_text(encoding="utf-8")
 
+    manifest = get_manifest()
+
+    chapters_data: list[dict[str, Any]] = []
     exercises_data: dict[str, Any] = {}
 
-    for ex_id in SHOWCASE_EXERCISE_IDS:
-        manifest_ex = get_exercise_by_name(ex_id)
-        if not manifest_ex:
-            raise ValueError(f"Showcase exercise '{ex_id}' not found in curriculum manifest.")
+    for chapter in manifest.chapters:
+        ch_exercise_ids = [ex.name for ex in chapter.exercises]
+        chapters_data.append(
+            {
+                "number": chapter.number,
+                "name": chapter.name,
+                "title": chapter.title,
+                "description": chapter.description,
+                "exercise_ids": ch_exercise_ids,
+            }
+        )
 
-        starter_path = repo_root / manifest_ex.file_path
-        solution_path = repo_root / manifest_ex.solution_path
+        for manifest_ex in chapter.exercises:
+            starter_path = repo_root / manifest_ex.file_path
+            solution_path = repo_root / manifest_ex.solution_path
 
-        if not starter_path.exists():
-            raise FileNotFoundError(f"Starter exercise file not found at {starter_path}")
-        if not solution_path.exists():
-            raise FileNotFoundError(f"Solution exercise file not found at {solution_path}")
+            if not starter_path.exists():
+                raise FileNotFoundError(f"Starter exercise file not found at {starter_path}")
+            if not solution_path.exists():
+                raise FileNotFoundError(f"Solution exercise file not found at {solution_path}")
 
-        starter_code = starter_path.read_text(encoding="utf-8")
-        solution_code = solution_path.read_text(encoding="utf-8")
+            starter_code = starter_path.read_text(encoding="utf-8")
+            solution_code = solution_path.read_text(encoding="utf-8")
 
-        exercises_data[ex_id] = {
-            "id": manifest_ex.name,
-            "title": manifest_ex.title,
-            "chapter": manifest_ex.chapter_name,
-            "filename": manifest_ex.file_path.name,
-            "topic": manifest_ex.title,
-            "hints": manifest_ex.hints,
-            "starter_code": starter_code,
-            "solution_code": solution_code,
-        }
+            exercises_data[manifest_ex.name] = {
+                "id": manifest_ex.name,
+                "title": manifest_ex.title,
+                "chapter": manifest_ex.chapter_name,
+                "chapter_number": chapter.number,
+                "chapter_title": chapter.title,
+                "filename": manifest_ex.file_path.name,
+                "hints": manifest_ex.hints,
+                "requires_cluster": manifest_ex.requires_cluster,
+                "starter_code": starter_code,
+                "solution_code": solution_code,
+            }
 
     return {
         "version": __version__,
         "validator_code": validator_code,
         "models_code": models_code,
+        "chapters": chapters_data,
         "exercises": exercises_data,
+        "total_chapters": len(chapters_data),
+        "total_exercises": len(exercises_data),
     }
 
 
@@ -110,7 +112,7 @@ def main() -> None:
     bundle = build_bundle(repo_root)
     out_file.write_text(json.dumps(bundle, indent=2), encoding="utf-8")
     print(
-        f"✓ Successfully generated playground bundle with {len(bundle['exercises'])} exercises at {out_file}"
+        f"✓ Successfully generated playground bundle with {len(bundle['chapters'])} chapters and {len(bundle['exercises'])} exercises at {out_file}"
     )
 
 

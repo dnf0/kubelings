@@ -11,7 +11,8 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from kubelings import __version__
-from scripts.build_playground_bundle import SHOWCASE_EXERCISE_IDS, build_bundle  # noqa: E402
+from kubelings.manifest import get_manifest
+from scripts.build_playground_bundle import build_bundle  # noqa: E402
 
 
 def test_playground_bundle_generation(tmp_path: Path):
@@ -32,44 +33,48 @@ def test_playground_bundle_generation(tmp_path: Path):
     assert data["version"] == __version__
     assert "validator_code" in data
     assert "models_code" in data
+    assert "chapters" in data
     assert "exercises" in data
 
-    # Verify 11 flagship showcase exercises
-    expected_ids = [
-        "pods01",
-        "ctrl01",
-        "config01",
-        "storage01",
-        "sched01",
-        "netpol01",
-        "autoscale01",
-        "gitops01",
-        "gateway01",
-        "ray01",
-        "accel02",
-    ]
-    assert expected_ids == SHOWCASE_EXERCISE_IDS
+    manifest = get_manifest()
+    assert len(data["chapters"]) == len(manifest.chapters)
+    assert len(data["exercises"]) == len(manifest.all_exercises)
+    assert len(data["exercises"]) == 114
+    assert len(data["chapters"]) == 26
 
-    for ex_id in expected_ids:
-        assert ex_id in data["exercises"], f"Missing exercise {ex_id}"
-        ex = data["exercises"][ex_id]
-        assert "title" in ex
-        assert "chapter" in ex
-        assert "starter_code" in ex
-        assert "solution_code" in ex
-        assert "hints" in ex
-        assert len(ex["hints"]) >= 2
+    for chapter in data["chapters"]:
+        assert "number" in chapter
+        assert "name" in chapter
+        assert "title" in chapter
+        assert "description" in chapter
+        assert "exercise_ids" in chapter
+        assert len(chapter["exercise_ids"]) > 0
+
+    for ex in manifest.all_exercises:
+        assert ex.name in data["exercises"], f"Missing exercise {ex.name}"
+        item = data["exercises"][ex.name]
+        assert item["id"] == ex.name
+        assert item["title"] == ex.title
+        assert item["chapter"] == ex.chapter_name
+        assert "starter_code" in item
+        assert "solution_code" in item
+        assert "hints" in item
+        assert "requires_cluster" in item
+        assert item["starter_code"].strip() != ""
+        assert item["solution_code"].strip() != ""
 
 
 def test_build_bundle_direct():
     bundle = build_bundle(REPO_ROOT)
     assert bundle["version"] == __version__
-    assert len(bundle["exercises"]) == 11
+    assert len(bundle["chapters"]) == 26
+    assert len(bundle["exercises"]) == 114
     assert "class ManifestValidationError" in bundle["validator_code"]
     assert "class Exercise" in bundle["models_code"]
 
-    for ex_id in SHOWCASE_EXERCISE_IDS:
-        ex = bundle["exercises"][ex_id]
-        assert ex["starter_code"].strip() != ""
-        assert ex["solution_code"].strip() != ""
-        assert len(ex["hints"]) >= 2
+    manifest = get_manifest()
+    for ex in manifest.all_exercises:
+        item = bundle["exercises"][ex.name]
+        assert item["starter_code"].strip() != ""
+        assert item["solution_code"].strip() != ""
+        assert isinstance(item["hints"], list)
