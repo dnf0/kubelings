@@ -8,6 +8,12 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`netpol01`**: Default Deny Network Policy →](../playground/index.html?exercise=netpol01)
+    - [**`netpol02`**: Ingress Traffic Filtering →](../playground/index.html?exercise=netpol02)
+    - [**`netpol03`**: Egress Traffic & DNS Access →](../playground/index.html?exercise=netpol03)
+    - [**`netpol04`**: Named Ports & IPBlock CIDR Exceptions →](../playground/index.html?exercise=netpol04)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -160,7 +166,7 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`netpol01`** | Default Deny Network Policy | [`../playground/index.html?exercise=netpol01`](../playground/index.html?exercise=netpol01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=netpol01){ .md-button .md-button--primary } |
-| **`netpol02`** | Ingress Traffic Filtering | [`../playground/index.html?exercise=netpol02`](../playground/index.html?exercise=netpol02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=netpol02){ .md-button .md-button--primary } |
-| **`netpol03`** | Egress Traffic & DNS Access | [`../playground/index.html?exercise=netpol03`](../playground/index.html?exercise=netpol03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=netpol03){ .md-button .md-button--primary } |
-| **`netpol04`** | Named Ports & IPBlock CIDR Exceptions | [`../playground/index.html?exercise=netpol04`](../playground/index.html?exercise=netpol04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=netpol04){ .md-button .md-button--primary } |
+| **`netpol01`** | Default Deny Network Policy | [`../playground/index.html?exercise=netpol01`](../playground/index.html?exercise=netpol01) | [**⚡ Solve `netpol01` in Playground →**](../playground/index.html?exercise=netpol01){ .md-button .md-button--primary } |
+| **`netpol02`** | Ingress Traffic Filtering | [`../playground/index.html?exercise=netpol02`](../playground/index.html?exercise=netpol02) | [**⚡ Solve `netpol02` in Playground →**](../playground/index.html?exercise=netpol02){ .md-button .md-button--primary } |
+| **`netpol03`** | Egress Traffic & DNS Access | [`../playground/index.html?exercise=netpol03`](../playground/index.html?exercise=netpol03) | [**⚡ Solve `netpol03` in Playground →**](../playground/index.html?exercise=netpol03){ .md-button .md-button--primary } |
+| **`netpol04`** | Named Ports & IPBlock CIDR Exceptions | [`../playground/index.html?exercise=netpol04`](../playground/index.html?exercise=netpol04) | [**⚡ Solve `netpol04` in Playground →**](../playground/index.html?exercise=netpol04){ .md-button .md-button--primary } |

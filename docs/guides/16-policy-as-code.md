@@ -8,6 +8,12 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`policy01`**: Kyverno ClusterPolicy for Required Labels →](../playground/index.html?exercise=policy01)
+    - [**`policy02`**: Kyverno Mutating Policy for Security Defaults →](../playground/index.html?exercise=policy02)
+    - [**`policy03`**: Kyverno Generate Policy for Default Deny NetworkPolicy →](../playground/index.html?exercise=policy03)
+    - [**`policy04`**: OPA Gatekeeper ConstraintTemplate & Constraint →](../playground/index.html?exercise=policy04)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -164,7 +170,7 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`policy01`** | Kyverno ClusterPolicy for Required Labels | [`../playground/index.html?exercise=policy01`](../playground/index.html?exercise=policy01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=policy01){ .md-button .md-button--primary } |
-| **`policy02`** | Kyverno Mutating Policy for Security Defaults | [`../playground/index.html?exercise=policy02`](../playground/index.html?exercise=policy02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=policy02){ .md-button .md-button--primary } |
-| **`policy03`** | Kyverno Generate Policy for Default Deny NetworkPolicy | [`../playground/index.html?exercise=policy03`](../playground/index.html?exercise=policy03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=policy03){ .md-button .md-button--primary } |
-| **`policy04`** | OPA Gatekeeper ConstraintTemplate & Constraint | [`../playground/index.html?exercise=policy04`](../playground/index.html?exercise=policy04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=policy04){ .md-button .md-button--primary } |
+| **`policy01`** | Kyverno ClusterPolicy for Required Labels | [`../playground/index.html?exercise=policy01`](../playground/index.html?exercise=policy01) | [**⚡ Solve `policy01` in Playground →**](../playground/index.html?exercise=policy01){ .md-button .md-button--primary } |
+| **`policy02`** | Kyverno Mutating Policy for Security Defaults | [`../playground/index.html?exercise=policy02`](../playground/index.html?exercise=policy02) | [**⚡ Solve `policy02` in Playground →**](../playground/index.html?exercise=policy02){ .md-button .md-button--primary } |
+| **`policy03`** | Kyverno Generate Policy for Default Deny NetworkPolicy | [`../playground/index.html?exercise=policy03`](../playground/index.html?exercise=policy03) | [**⚡ Solve `policy03` in Playground →**](../playground/index.html?exercise=policy03){ .md-button .md-button--primary } |
+| **`policy04`** | OPA Gatekeeper ConstraintTemplate & Constraint | [`../playground/index.html?exercise=policy04`](../playground/index.html?exercise=policy04) | [**⚡ Solve `policy04` in Playground →**](../playground/index.html?exercise=policy04){ .md-button .md-button--primary } |

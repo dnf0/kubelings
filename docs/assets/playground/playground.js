@@ -351,7 +351,7 @@
           <!-- Exercise Breadcrumb & Top Bar -->
           <div class="workspace-top-bar">
             <div class="workspace-meta-left">
-              <span id="pg-chapter-badge" class="chapter-badge">Chapter 01</span>
+              <a id="pg-chapter-badge" class="chapter-badge chapter-badge-link" href="../guides/01-pods/" target="_blank" rel="noopener noreferrer" title="Click to open Chapter 01 Reference Guide">Chapter 01: Core Workloads & Pods ↗</a>
               <h2 id="pg-exercise-title" class="exercise-title">Loading exercise...</h2>
               <a id="pg-doc-badge-link" class="playground-doc-link" href="../guides/01-pods/" target="_blank" rel="noopener noreferrer" title="Open Chapter Reference Guide in new tab">
                 <span>📖 Reference Guide ↗</span>
@@ -687,13 +687,16 @@
     const guideUrl = `../guides/${guideInfo.slug}/`;
 
     if (state.elements.chapterBadge) {
-      state.elements.chapterBadge.textContent = `Chapter ${String(chNum).padStart(2, "0")}: ${ex.chapter_title || ex.chapter}`;
+      state.elements.chapterBadge.innerHTML = `Chapter ${String(chNum).padStart(2, "0")}: ${escapeHtml(ex.chapter_title || ex.chapter)} <span style="opacity:0.75;font-size:10px;">↗</span>`;
+      state.elements.chapterBadge.href = guideUrl;
+      state.elements.chapterBadge.title = `Click to open Chapter ${String(chNum).padStart(2, "0")} Reference Guide: ${guideInfo.title} in new tab`;
     }
     if (state.elements.exerciseTitle) {
       state.elements.exerciseTitle.textContent = `${ex.id} — ${ex.title}`;
     }
     if (state.elements.docBadgeLink) {
       state.elements.docBadgeLink.href = guideUrl;
+      state.elements.docBadgeLink.innerHTML = `<span>📖 Chapter ${String(chNum).padStart(2, "0")} Docs ↗</span>`;
       state.elements.docBadgeLink.title = `Read Chapter ${String(chNum).padStart(2, "0")} Reference Guide: ${guideInfo.title} in new tab`;
     }
 

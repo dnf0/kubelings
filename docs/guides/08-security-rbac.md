@@ -8,6 +8,13 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`rbac01`**: ServiceAccounts & Token Management →](../playground/index.html?exercise=rbac01)
+    - [**`rbac02`**: Roles & RoleBindings →](../playground/index.html?exercise=rbac02)
+    - [**`rbac03`**: ClusterRoles & ClusterRoleBindings →](../playground/index.html?exercise=rbac03)
+    - [**`rbac04`**: Pod & Container SecurityContext →](../playground/index.html?exercise=rbac04)
+    - [**`rbac05`**: Pod Security Standards (PSS/PSA) →](../playground/index.html?exercise=rbac05)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -167,8 +174,8 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`rbac01`** | ServiceAccounts & Token Management | [`../playground/index.html?exercise=rbac01`](../playground/index.html?exercise=rbac01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=rbac01){ .md-button .md-button--primary } |
-| **`rbac02`** | Roles & RoleBindings | [`../playground/index.html?exercise=rbac02`](../playground/index.html?exercise=rbac02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=rbac02){ .md-button .md-button--primary } |
-| **`rbac03`** | ClusterRoles & ClusterRoleBindings | [`../playground/index.html?exercise=rbac03`](../playground/index.html?exercise=rbac03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=rbac03){ .md-button .md-button--primary } |
-| **`rbac04`** | Pod & Container SecurityContext | [`../playground/index.html?exercise=rbac04`](../playground/index.html?exercise=rbac04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=rbac04){ .md-button .md-button--primary } |
-| **`rbac05`** | Pod Security Standards (PSS/PSA) | [`../playground/index.html?exercise=rbac05`](../playground/index.html?exercise=rbac05) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=rbac05){ .md-button .md-button--primary } |
+| **`rbac01`** | ServiceAccounts & Token Management | [`../playground/index.html?exercise=rbac01`](../playground/index.html?exercise=rbac01) | [**⚡ Solve `rbac01` in Playground →**](../playground/index.html?exercise=rbac01){ .md-button .md-button--primary } |
+| **`rbac02`** | Roles & RoleBindings | [`../playground/index.html?exercise=rbac02`](../playground/index.html?exercise=rbac02) | [**⚡ Solve `rbac02` in Playground →**](../playground/index.html?exercise=rbac02){ .md-button .md-button--primary } |
+| **`rbac03`** | ClusterRoles & ClusterRoleBindings | [`../playground/index.html?exercise=rbac03`](../playground/index.html?exercise=rbac03) | [**⚡ Solve `rbac03` in Playground →**](../playground/index.html?exercise=rbac03){ .md-button .md-button--primary } |
+| **`rbac04`** | Pod & Container SecurityContext | [`../playground/index.html?exercise=rbac04`](../playground/index.html?exercise=rbac04) | [**⚡ Solve `rbac04` in Playground →**](../playground/index.html?exercise=rbac04){ .md-button .md-button--primary } |
+| **`rbac05`** | Pod Security Standards (PSS/PSA) | [`../playground/index.html?exercise=rbac05`](../playground/index.html?exercise=rbac05) | [**⚡ Solve `rbac05` in Playground →**](../playground/index.html?exercise=rbac05){ .md-button .md-button--primary } |

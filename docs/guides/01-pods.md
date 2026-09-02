@@ -8,6 +8,14 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`pods01`**: First Pod Manifest & Spec →](../playground/index.html?exercise=pods01)
+    - [**`pods02`**: Multi-Container Pods & Sidecar Pattern →](../playground/index.html?exercise=pods02)
+    - [**`pods03`**: Init Containers for Initialization →](../playground/index.html?exercise=pods03)
+    - [**`pods04`**: Resource Requests, Limits & QoS →](../playground/index.html?exercise=pods04)
+    - [**`pods05`**: Downward API & Env Variables →](../playground/index.html?exercise=pods05)
+    - [**`pods06`**: Pod Disruption Budgets & Static Pods →](../playground/index.html?exercise=pods06)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -206,9 +214,9 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`pods01`** | First Pod Manifest & Spec | [`../playground/index.html?exercise=pods01`](../playground/index.html?exercise=pods01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=pods01){ .md-button .md-button--primary } |
-| **`pods02`** | Multi-Container Pods & Sidecar Pattern | [`../playground/index.html?exercise=pods02`](../playground/index.html?exercise=pods02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=pods02){ .md-button .md-button--primary } |
-| **`pods03`** | Init Containers for Initialization | [`../playground/index.html?exercise=pods03`](../playground/index.html?exercise=pods03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=pods03){ .md-button .md-button--primary } |
-| **`pods04`** | Resource Requests, Limits & QoS | [`../playground/index.html?exercise=pods04`](../playground/index.html?exercise=pods04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=pods04){ .md-button .md-button--primary } |
-| **`pods05`** | Downward API & Env Variables | [`../playground/index.html?exercise=pods05`](../playground/index.html?exercise=pods05) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=pods05){ .md-button .md-button--primary } |
-| **`pods06`** | Pod Disruption Budgets & Static Pods | [`../playground/index.html?exercise=pods06`](../playground/index.html?exercise=pods06) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=pods06){ .md-button .md-button--primary } |
+| **`pods01`** | First Pod Manifest & Spec | [`../playground/index.html?exercise=pods01`](../playground/index.html?exercise=pods01) | [**⚡ Solve `pods01` in Playground →**](../playground/index.html?exercise=pods01){ .md-button .md-button--primary } |
+| **`pods02`** | Multi-Container Pods & Sidecar Pattern | [`../playground/index.html?exercise=pods02`](../playground/index.html?exercise=pods02) | [**⚡ Solve `pods02` in Playground →**](../playground/index.html?exercise=pods02){ .md-button .md-button--primary } |
+| **`pods03`** | Init Containers for Initialization | [`../playground/index.html?exercise=pods03`](../playground/index.html?exercise=pods03) | [**⚡ Solve `pods03` in Playground →**](../playground/index.html?exercise=pods03){ .md-button .md-button--primary } |
+| **`pods04`** | Resource Requests, Limits & QoS | [`../playground/index.html?exercise=pods04`](../playground/index.html?exercise=pods04) | [**⚡ Solve `pods04` in Playground →**](../playground/index.html?exercise=pods04){ .md-button .md-button--primary } |
+| **`pods05`** | Downward API & Env Variables | [`../playground/index.html?exercise=pods05`](../playground/index.html?exercise=pods05) | [**⚡ Solve `pods05` in Playground →**](../playground/index.html?exercise=pods05){ .md-button .md-button--primary } |
+| **`pods06`** | Pod Disruption Budgets & Static Pods | [`../playground/index.html?exercise=pods06`](../playground/index.html?exercise=pods06) | [**⚡ Solve `pods06` in Playground →**](../playground/index.html?exercise=pods06){ .md-button .md-button--primary } |

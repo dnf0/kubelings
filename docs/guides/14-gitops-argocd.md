@@ -8,6 +8,12 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`gitops01`**: ArgoCD Application CRD & Sync Policies →](../playground/index.html?exercise=gitops01)
+    - [**`gitops02`**: ArgoCD ApplicationSet Matrix Generator →](../playground/index.html?exercise=gitops02)
+    - [**`gitops03`**: Sync Windows, ServerSideApply & Retry Backoff →](../playground/index.html?exercise=gitops03)
+    - [**`gitops04`**: Progressive Delivery with Argo Rollouts →](../playground/index.html?exercise=gitops04)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -165,7 +171,7 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`gitops01`** | ArgoCD Application CRD & Sync Policies | [`../playground/index.html?exercise=gitops01`](../playground/index.html?exercise=gitops01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=gitops01){ .md-button .md-button--primary } |
-| **`gitops02`** | ArgoCD ApplicationSet Matrix Generator | [`../playground/index.html?exercise=gitops02`](../playground/index.html?exercise=gitops02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=gitops02){ .md-button .md-button--primary } |
-| **`gitops03`** | Sync Windows, ServerSideApply & Retry Backoff | [`../playground/index.html?exercise=gitops03`](../playground/index.html?exercise=gitops03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=gitops03){ .md-button .md-button--primary } |
-| **`gitops04`** | Progressive Delivery with Argo Rollouts | [`../playground/index.html?exercise=gitops04`](../playground/index.html?exercise=gitops04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=gitops04){ .md-button .md-button--primary } |
+| **`gitops01`** | ArgoCD Application CRD & Sync Policies | [`../playground/index.html?exercise=gitops01`](../playground/index.html?exercise=gitops01) | [**⚡ Solve `gitops01` in Playground →**](../playground/index.html?exercise=gitops01){ .md-button .md-button--primary } |
+| **`gitops02`** | ArgoCD ApplicationSet Matrix Generator | [`../playground/index.html?exercise=gitops02`](../playground/index.html?exercise=gitops02) | [**⚡ Solve `gitops02` in Playground →**](../playground/index.html?exercise=gitops02){ .md-button .md-button--primary } |
+| **`gitops03`** | Sync Windows, ServerSideApply & Retry Backoff | [`../playground/index.html?exercise=gitops03`](../playground/index.html?exercise=gitops03) | [**⚡ Solve `gitops03` in Playground →**](../playground/index.html?exercise=gitops03){ .md-button .md-button--primary } |
+| **`gitops04`** | Progressive Delivery with Argo Rollouts | [`../playground/index.html?exercise=gitops04`](../playground/index.html?exercise=gitops04) | [**⚡ Solve `gitops04` in Playground →**](../playground/index.html?exercise=gitops04){ .md-button .md-button--primary } |

@@ -8,6 +8,12 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`accel01`**: NVIDIA MIG Slicing & Partitioning →](../playground/index.html?exercise=accel01)
+    - [**`accel02`**: Apple Silicon GPU & Metal MPS Acceleration →](../playground/index.html?exercise=accel02)
+    - [**`accel03`**: Dynamic Resource Allocation (DRA) Standard →](../playground/index.html?exercise=accel03)
+    - [**`accel04`**: Production vLLM LLM Inference Server →](../playground/index.html?exercise=accel04)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -144,7 +150,7 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`accel01`** | NVIDIA MIG Slicing & Partitioning | [`../playground/index.html?exercise=accel01`](../playground/index.html?exercise=accel01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=accel01){ .md-button .md-button--primary } |
-| **`accel02`** | Apple Silicon GPU & Metal MPS Acceleration | [`../playground/index.html?exercise=accel02`](../playground/index.html?exercise=accel02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=accel02){ .md-button .md-button--primary } |
-| **`accel03`** | Dynamic Resource Allocation (DRA) Standard | [`../playground/index.html?exercise=accel03`](../playground/index.html?exercise=accel03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=accel03){ .md-button .md-button--primary } |
-| **`accel04`** | Production vLLM LLM Inference Server | [`../playground/index.html?exercise=accel04`](../playground/index.html?exercise=accel04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=accel04){ .md-button .md-button--primary } |
+| **`accel01`** | NVIDIA MIG Slicing & Partitioning | [`../playground/index.html?exercise=accel01`](../playground/index.html?exercise=accel01) | [**⚡ Solve `accel01` in Playground →**](../playground/index.html?exercise=accel01){ .md-button .md-button--primary } |
+| **`accel02`** | Apple Silicon GPU & Metal MPS Acceleration | [`../playground/index.html?exercise=accel02`](../playground/index.html?exercise=accel02) | [**⚡ Solve `accel02` in Playground →**](../playground/index.html?exercise=accel02){ .md-button .md-button--primary } |
+| **`accel03`** | Dynamic Resource Allocation (DRA) Standard | [`../playground/index.html?exercise=accel03`](../playground/index.html?exercise=accel03) | [**⚡ Solve `accel03` in Playground →**](../playground/index.html?exercise=accel03){ .md-button .md-button--primary } |
+| **`accel04`** | Production vLLM LLM Inference Server | [`../playground/index.html?exercise=accel04`](../playground/index.html?exercise=accel04) | [**⚡ Solve `accel04` in Playground →**](../playground/index.html?exercise=accel04){ .md-button .md-button--primary } |

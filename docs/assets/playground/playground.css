@@ -472,6 +472,39 @@
   background: var(--pg-btn-bg);
   color: var(--pg-text-muted);
   border: 1px solid var(--pg-border);
+  text-decoration: none;
+}
+
+.chapter-badge-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(2, 132, 199, 0.08);
+  color: #0284c7;
+  border: 1px solid rgba(2, 132, 199, 0.25);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chapter-badge-link:hover {
+  background: rgba(2, 132, 199, 0.2);
+  color: #0369a1;
+  border-color: #0284c7;
+  transform: translateY(-1px);
+}
+
+[data-md-color-scheme="slate"] .chapter-badge-link,
+html[data-theme="dark"] .chapter-badge-link {
+  background: rgba(137, 180, 250, 0.12);
+  color: #89b4fa;
+  border-color: rgba(137, 180, 250, 0.3);
+}
+
+[data-md-color-scheme="slate"] .chapter-badge-link:hover,
+html[data-theme="dark"] .chapter-badge-link:hover {
+  background: rgba(137, 180, 250, 0.25);
+  color: #b4befe;
+  border-color: #89b4fa;
 }
 
 .exercise-title {

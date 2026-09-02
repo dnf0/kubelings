@@ -8,6 +8,12 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`helm01`**: Helm Chart.yaml Metadata & Dependencies →](../playground/index.html?exercise=helm01)
+    - [**`helm02`**: Helm Go Templating & Named Helpers (_helpers.tpl) →](../playground/index.html?exercise=helm02)
+    - [**`helm03`**: Helm values.schema.json Validation Schema →](../playground/index.html?exercise=helm03)
+    - [**`helm04`**: Helm Subcharts & Global Values →](../playground/index.html?exercise=helm04)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -158,7 +164,7 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`helm01`** | Helm Chart.yaml Metadata & Dependencies | [`../playground/index.html?exercise=helm01`](../playground/index.html?exercise=helm01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=helm01){ .md-button .md-button--primary } |
-| **`helm02`** | Helm Go Templating & Named Helpers (_helpers.tpl) | [`../playground/index.html?exercise=helm02`](../playground/index.html?exercise=helm02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=helm02){ .md-button .md-button--primary } |
-| **`helm03`** | Helm values.schema.json Validation Schema | [`../playground/index.html?exercise=helm03`](../playground/index.html?exercise=helm03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=helm03){ .md-button .md-button--primary } |
-| **`helm04`** | Helm Subcharts & Global Values | [`../playground/index.html?exercise=helm04`](../playground/index.html?exercise=helm04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=helm04){ .md-button .md-button--primary } |
+| **`helm01`** | Helm Chart.yaml Metadata & Dependencies | [`../playground/index.html?exercise=helm01`](../playground/index.html?exercise=helm01) | [**⚡ Solve `helm01` in Playground →**](../playground/index.html?exercise=helm01){ .md-button .md-button--primary } |
+| **`helm02`** | Helm Go Templating & Named Helpers (_helpers.tpl) | [`../playground/index.html?exercise=helm02`](../playground/index.html?exercise=helm02) | [**⚡ Solve `helm02` in Playground →**](../playground/index.html?exercise=helm02){ .md-button .md-button--primary } |
+| **`helm03`** | Helm values.schema.json Validation Schema | [`../playground/index.html?exercise=helm03`](../playground/index.html?exercise=helm03) | [**⚡ Solve `helm03` in Playground →**](../playground/index.html?exercise=helm03){ .md-button .md-button--primary } |
+| **`helm04`** | Helm Subcharts & Global Values | [`../playground/index.html?exercise=helm04`](../playground/index.html?exercise=helm04) | [**⚡ Solve `helm04` in Playground →**](../playground/index.html?exercise=helm04){ .md-button .md-button--primary } |

@@ -8,6 +8,13 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`config01`**: ConfigMaps as Environment Variables →](../playground/index.html?exercise=config01)
+    - [**`config02`**: ConfigMaps Mounted as Volumes →](../playground/index.html?exercise=config02)
+    - [**`config03`**: Secrets & Base64 Encoding →](../playground/index.html?exercise=config03)
+    - [**`config04`**: Secret Volume Mounts & Permissions →](../playground/index.html?exercise=config04)
+    - [**`config05`**: Immutable ConfigMaps and Secrets →](../playground/index.html?exercise=config05)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -154,8 +161,8 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`config01`** | ConfigMaps as Environment Variables | [`../playground/index.html?exercise=config01`](../playground/index.html?exercise=config01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=config01){ .md-button .md-button--primary } |
-| **`config02`** | ConfigMaps Mounted as Volumes | [`../playground/index.html?exercise=config02`](../playground/index.html?exercise=config02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=config02){ .md-button .md-button--primary } |
-| **`config03`** | Secrets & Base64 Encoding | [`../playground/index.html?exercise=config03`](../playground/index.html?exercise=config03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=config03){ .md-button .md-button--primary } |
-| **`config04`** | Secret Volume Mounts & Permissions | [`../playground/index.html?exercise=config04`](../playground/index.html?exercise=config04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=config04){ .md-button .md-button--primary } |
-| **`config05`** | Immutable ConfigMaps and Secrets | [`../playground/index.html?exercise=config05`](../playground/index.html?exercise=config05) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=config05){ .md-button .md-button--primary } |
+| **`config01`** | ConfigMaps as Environment Variables | [`../playground/index.html?exercise=config01`](../playground/index.html?exercise=config01) | [**⚡ Solve `config01` in Playground →**](../playground/index.html?exercise=config01){ .md-button .md-button--primary } |
+| **`config02`** | ConfigMaps Mounted as Volumes | [`../playground/index.html?exercise=config02`](../playground/index.html?exercise=config02) | [**⚡ Solve `config02` in Playground →**](../playground/index.html?exercise=config02){ .md-button .md-button--primary } |
+| **`config03`** | Secrets & Base64 Encoding | [`../playground/index.html?exercise=config03`](../playground/index.html?exercise=config03) | [**⚡ Solve `config03` in Playground →**](../playground/index.html?exercise=config03){ .md-button .md-button--primary } |
+| **`config04`** | Secret Volume Mounts & Permissions | [`../playground/index.html?exercise=config04`](../playground/index.html?exercise=config04) | [**⚡ Solve `config04` in Playground →**](../playground/index.html?exercise=config04){ .md-button .md-button--primary } |
+| **`config05`** | Immutable ConfigMaps and Secrets | [`../playground/index.html?exercise=config05`](../playground/index.html?exercise=config05) | [**⚡ Solve `config05` in Playground →**](../playground/index.html?exercise=config05){ .md-button .md-button--primary } |

@@ -8,6 +8,14 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`ctrl01`**: ReplicaSets & Label Selectors →](../playground/index.html?exercise=ctrl01)
+    - [**`ctrl02`**: Deployments & Rolling Updates →](../playground/index.html?exercise=ctrl02)
+    - [**`ctrl03`**: Deployment Rollbacks & Revision History →](../playground/index.html?exercise=ctrl03)
+    - [**`ctrl04`**: StatefulSets & Stable Network IDs →](../playground/index.html?exercise=ctrl04)
+    - [**`ctrl05`**: DaemonSets for Node-Level Daemons →](../playground/index.html?exercise=ctrl05)
+    - [**`ctrl06`**: Jobs & CronJobs →](../playground/index.html?exercise=ctrl06)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -184,9 +192,9 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`ctrl01`** | ReplicaSets & Label Selectors | [`../playground/index.html?exercise=ctrl01`](../playground/index.html?exercise=ctrl01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=ctrl01){ .md-button .md-button--primary } |
-| **`ctrl02`** | Deployments & Rolling Updates | [`../playground/index.html?exercise=ctrl02`](../playground/index.html?exercise=ctrl02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=ctrl02){ .md-button .md-button--primary } |
-| **`ctrl03`** | Deployment Rollbacks & Revision History | [`../playground/index.html?exercise=ctrl03`](../playground/index.html?exercise=ctrl03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=ctrl03){ .md-button .md-button--primary } |
-| **`ctrl04`** | StatefulSets & Stable Network IDs | [`../playground/index.html?exercise=ctrl04`](../playground/index.html?exercise=ctrl04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=ctrl04){ .md-button .md-button--primary } |
-| **`ctrl05`** | DaemonSets for Node-Level Daemons | [`../playground/index.html?exercise=ctrl05`](../playground/index.html?exercise=ctrl05) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=ctrl05){ .md-button .md-button--primary } |
-| **`ctrl06`** | Jobs & CronJobs | [`../playground/index.html?exercise=ctrl06`](../playground/index.html?exercise=ctrl06) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=ctrl06){ .md-button .md-button--primary } |
+| **`ctrl01`** | ReplicaSets & Label Selectors | [`../playground/index.html?exercise=ctrl01`](../playground/index.html?exercise=ctrl01) | [**⚡ Solve `ctrl01` in Playground →**](../playground/index.html?exercise=ctrl01){ .md-button .md-button--primary } |
+| **`ctrl02`** | Deployments & Rolling Updates | [`../playground/index.html?exercise=ctrl02`](../playground/index.html?exercise=ctrl02) | [**⚡ Solve `ctrl02` in Playground →**](../playground/index.html?exercise=ctrl02){ .md-button .md-button--primary } |
+| **`ctrl03`** | Deployment Rollbacks & Revision History | [`../playground/index.html?exercise=ctrl03`](../playground/index.html?exercise=ctrl03) | [**⚡ Solve `ctrl03` in Playground →**](../playground/index.html?exercise=ctrl03){ .md-button .md-button--primary } |
+| **`ctrl04`** | StatefulSets & Stable Network IDs | [`../playground/index.html?exercise=ctrl04`](../playground/index.html?exercise=ctrl04) | [**⚡ Solve `ctrl04` in Playground →**](../playground/index.html?exercise=ctrl04){ .md-button .md-button--primary } |
+| **`ctrl05`** | DaemonSets for Node-Level Daemons | [`../playground/index.html?exercise=ctrl05`](../playground/index.html?exercise=ctrl05) | [**⚡ Solve `ctrl05` in Playground →**](../playground/index.html?exercise=ctrl05){ .md-button .md-button--primary } |
+| **`ctrl06`** | Jobs & CronJobs | [`../playground/index.html?exercise=ctrl06`](../playground/index.html?exercise=ctrl06) | [**⚡ Solve `ctrl06` in Playground →**](../playground/index.html?exercise=ctrl06){ .md-button .md-button--primary } |

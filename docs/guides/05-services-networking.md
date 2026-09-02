@@ -8,6 +8,13 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`net01`**: ClusterIP Services & Port Mapping →](../playground/index.html?exercise=net01)
+    - [**`net02`**: Headless Services & Stateful Addressing →](../playground/index.html?exercise=net02)
+    - [**`net03`**: NodePort & LoadBalancer Service Types →](../playground/index.html?exercise=net03)
+    - [**`net04`**: CoreDNS Internal Service Resolution →](../playground/index.html?exercise=net04)
+    - [**`net05`**: ExternalName Services & Manual Endpoints →](../playground/index.html?exercise=net05)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -140,8 +147,8 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`net01`** | ClusterIP Services & Port Mapping | [`../playground/index.html?exercise=net01`](../playground/index.html?exercise=net01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=net01){ .md-button .md-button--primary } |
-| **`net02`** | Headless Services & Stateful Addressing | [`../playground/index.html?exercise=net02`](../playground/index.html?exercise=net02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=net02){ .md-button .md-button--primary } |
-| **`net03`** | NodePort & LoadBalancer Service Types | [`../playground/index.html?exercise=net03`](../playground/index.html?exercise=net03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=net03){ .md-button .md-button--primary } |
-| **`net04`** | CoreDNS Internal Service Resolution | [`../playground/index.html?exercise=net04`](../playground/index.html?exercise=net04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=net04){ .md-button .md-button--primary } |
-| **`net05`** | ExternalName Services & Manual Endpoints | [`../playground/index.html?exercise=net05`](../playground/index.html?exercise=net05) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=net05){ .md-button .md-button--primary } |
+| **`net01`** | ClusterIP Services & Port Mapping | [`../playground/index.html?exercise=net01`](../playground/index.html?exercise=net01) | [**⚡ Solve `net01` in Playground →**](../playground/index.html?exercise=net01){ .md-button .md-button--primary } |
+| **`net02`** | Headless Services & Stateful Addressing | [`../playground/index.html?exercise=net02`](../playground/index.html?exercise=net02) | [**⚡ Solve `net02` in Playground →**](../playground/index.html?exercise=net02){ .md-button .md-button--primary } |
+| **`net03`** | NodePort & LoadBalancer Service Types | [`../playground/index.html?exercise=net03`](../playground/index.html?exercise=net03) | [**⚡ Solve `net03` in Playground →**](../playground/index.html?exercise=net03){ .md-button .md-button--primary } |
+| **`net04`** | CoreDNS Internal Service Resolution | [`../playground/index.html?exercise=net04`](../playground/index.html?exercise=net04) | [**⚡ Solve `net04` in Playground →**](../playground/index.html?exercise=net04){ .md-button .md-button--primary } |
+| **`net05`** | ExternalName Services & Manual Endpoints | [`../playground/index.html?exercise=net05`](../playground/index.html?exercise=net05) | [**⚡ Solve `net05` in Playground →**](../playground/index.html?exercise=net05){ .md-button .md-button--primary } |

@@ -8,6 +8,12 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`kueue01`**: Kueue ResourceFlavor & ClusterQueue Cohort Borrowing →](../playground/index.html?exercise=kueue01)
+    - [**`kueue02`**: Kueue LocalQueue & Suspended Workload Gating →](../playground/index.html?exercise=kueue02)
+    - [**`volcano01`**: Volcano Gang Scheduling & Deadlock Prevention →](../playground/index.html?exercise=volcano01)
+    - [**`volcano02`**: Volcano Queue & Fair-Share Scheduling →](../playground/index.html?exercise=volcano02)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -148,7 +154,7 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`kueue01`** | Kueue ResourceFlavor & ClusterQueue Cohort Borrowing | [`../playground/index.html?exercise=kueue01`](../playground/index.html?exercise=kueue01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=kueue01){ .md-button .md-button--primary } |
-| **`kueue02`** | Kueue LocalQueue & Suspended Workload Gating | [`../playground/index.html?exercise=kueue02`](../playground/index.html?exercise=kueue02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=kueue02){ .md-button .md-button--primary } |
-| **`volcano01`** | Volcano Gang Scheduling & Deadlock Prevention | [`../playground/index.html?exercise=volcano01`](../playground/index.html?exercise=volcano01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=volcano01){ .md-button .md-button--primary } |
-| **`volcano02`** | Volcano Queue & Fair-Share Scheduling | [`../playground/index.html?exercise=volcano02`](../playground/index.html?exercise=volcano02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=volcano02){ .md-button .md-button--primary } |
+| **`kueue01`** | Kueue ResourceFlavor & ClusterQueue Cohort Borrowing | [`../playground/index.html?exercise=kueue01`](../playground/index.html?exercise=kueue01) | [**⚡ Solve `kueue01` in Playground →**](../playground/index.html?exercise=kueue01){ .md-button .md-button--primary } |
+| **`kueue02`** | Kueue LocalQueue & Suspended Workload Gating | [`../playground/index.html?exercise=kueue02`](../playground/index.html?exercise=kueue02) | [**⚡ Solve `kueue02` in Playground →**](../playground/index.html?exercise=kueue02){ .md-button .md-button--primary } |
+| **`volcano01`** | Volcano Gang Scheduling & Deadlock Prevention | [`../playground/index.html?exercise=volcano01`](../playground/index.html?exercise=volcano01) | [**⚡ Solve `volcano01` in Playground →**](../playground/index.html?exercise=volcano01){ .md-button .md-button--primary } |
+| **`volcano02`** | Volcano Queue & Fair-Share Scheduling | [`../playground/index.html?exercise=volcano02`](../playground/index.html?exercise=volcano02) | [**⚡ Solve `volcano02` in Playground →**](../playground/index.html?exercise=volcano02){ .md-button .md-button--primary } |

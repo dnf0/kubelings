@@ -8,6 +8,12 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`gateway01`**: GatewayClass and Gateway Declaration →](../playground/index.html?exercise=gateway01)
+    - [**`gateway02`**: HTTPRoute Path & Header-Based Routing →](../playground/index.html?exercise=gateway02)
+    - [**`gateway03`**: Canary Traffic Splitting & URL Rewriting →](../playground/index.html?exercise=gateway03)
+    - [**`gateway04`**: Cross-Namespace Security with ReferenceGrant →](../playground/index.html?exercise=gateway04)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -173,7 +179,7 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`gateway01`** | GatewayClass and Gateway Declaration | [`../playground/index.html?exercise=gateway01`](../playground/index.html?exercise=gateway01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=gateway01){ .md-button .md-button--primary } |
-| **`gateway02`** | HTTPRoute Path & Header-Based Routing | [`../playground/index.html?exercise=gateway02`](../playground/index.html?exercise=gateway02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=gateway02){ .md-button .md-button--primary } |
-| **`gateway03`** | Canary Traffic Splitting & URL Rewriting | [`../playground/index.html?exercise=gateway03`](../playground/index.html?exercise=gateway03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=gateway03){ .md-button .md-button--primary } |
-| **`gateway04`** | Cross-Namespace Security with ReferenceGrant | [`../playground/index.html?exercise=gateway04`](../playground/index.html?exercise=gateway04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=gateway04){ .md-button .md-button--primary } |
+| **`gateway01`** | GatewayClass and Gateway Declaration | [`../playground/index.html?exercise=gateway01`](../playground/index.html?exercise=gateway01) | [**⚡ Solve `gateway01` in Playground →**](../playground/index.html?exercise=gateway01){ .md-button .md-button--primary } |
+| **`gateway02`** | HTTPRoute Path & Header-Based Routing | [`../playground/index.html?exercise=gateway02`](../playground/index.html?exercise=gateway02) | [**⚡ Solve `gateway02` in Playground →**](../playground/index.html?exercise=gateway02){ .md-button .md-button--primary } |
+| **`gateway03`** | Canary Traffic Splitting & URL Rewriting | [`../playground/index.html?exercise=gateway03`](../playground/index.html?exercise=gateway03) | [**⚡ Solve `gateway03` in Playground →**](../playground/index.html?exercise=gateway03){ .md-button .md-button--primary } |
+| **`gateway04`** | Cross-Namespace Security with ReferenceGrant | [`../playground/index.html?exercise=gateway04`](../playground/index.html?exercise=gateway04) | [**⚡ Solve `gateway04` in Playground →**](../playground/index.html?exercise=gateway04){ .md-button .md-button--primary } |

@@ -8,6 +8,13 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`sched01`**: Node Placement (nodeName & nodeSelector) →](../playground/index.html?exercise=sched01)
+    - [**`sched02`**: Node Affinity & Constraints →](../playground/index.html?exercise=sched02)
+    - [**`sched03`**: Pod Affinity & Pod Anti-Affinity →](../playground/index.html?exercise=sched03)
+    - [**`sched04`**: Taints and Tolerations →](../playground/index.html?exercise=sched04)
+    - [**`sched05`**: Topology Spread Constraints →](../playground/index.html?exercise=sched05)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -173,8 +180,8 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`sched01`** | Node Placement (nodeName & nodeSelector) | [`../playground/index.html?exercise=sched01`](../playground/index.html?exercise=sched01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=sched01){ .md-button .md-button--primary } |
-| **`sched02`** | Node Affinity & Constraints | [`../playground/index.html?exercise=sched02`](../playground/index.html?exercise=sched02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=sched02){ .md-button .md-button--primary } |
-| **`sched03`** | Pod Affinity & Pod Anti-Affinity | [`../playground/index.html?exercise=sched03`](../playground/index.html?exercise=sched03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=sched03){ .md-button .md-button--primary } |
-| **`sched04`** | Taints and Tolerations | [`../playground/index.html?exercise=sched04`](../playground/index.html?exercise=sched04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=sched04){ .md-button .md-button--primary } |
-| **`sched05`** | Topology Spread Constraints | [`../playground/index.html?exercise=sched05`](../playground/index.html?exercise=sched05) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=sched05){ .md-button .md-button--primary } |
+| **`sched01`** | Node Placement (nodeName & nodeSelector) | [`../playground/index.html?exercise=sched01`](../playground/index.html?exercise=sched01) | [**⚡ Solve `sched01` in Playground →**](../playground/index.html?exercise=sched01){ .md-button .md-button--primary } |
+| **`sched02`** | Node Affinity & Constraints | [`../playground/index.html?exercise=sched02`](../playground/index.html?exercise=sched02) | [**⚡ Solve `sched02` in Playground →**](../playground/index.html?exercise=sched02){ .md-button .md-button--primary } |
+| **`sched03`** | Pod Affinity & Pod Anti-Affinity | [`../playground/index.html?exercise=sched03`](../playground/index.html?exercise=sched03) | [**⚡ Solve `sched03` in Playground →**](../playground/index.html?exercise=sched03){ .md-button .md-button--primary } |
+| **`sched04`** | Taints and Tolerations | [`../playground/index.html?exercise=sched04`](../playground/index.html?exercise=sched04) | [**⚡ Solve `sched04` in Playground →**](../playground/index.html?exercise=sched04){ .md-button .md-button--primary } |
+| **`sched05`** | Topology Spread Constraints | [`../playground/index.html?exercise=sched05`](../playground/index.html?exercise=sched05) | [**⚡ Solve `sched05` in Playground →**](../playground/index.html?exercise=sched05){ .md-button .md-button--primary } |

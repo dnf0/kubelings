@@ -3307,13 +3307,18 @@ for chapter in manifest.chapters:
     slug = data["slug"]
     guide_path = GUIDES_DIR / f"{slug}.md"
 
-    # Build bidirectional practice table
+    # Build bidirectional practice table and quick-links
     practice_rows = []
+    top_exercise_links = []
     for ex in chapter.exercises:
         practice_rows.append(
-            f"| **`{ex.name}`** | {ex.title} | [`../playground/index.html?exercise={ex.name}`](../playground/index.html?exercise={ex.name}) | [**⚡ Solve in Playground →**](../playground/index.html?exercise={ex.name}){{ .md-button .md-button--primary }} |"
+            f"| **`{ex.name}`** | {ex.title} | [`../playground/index.html?exercise={ex.name}`](../playground/index.html?exercise={ex.name}) | [**⚡ Solve `{ex.name}` in Playground →**](../playground/index.html?exercise={ex.name}){{ .md-button .md-button--primary }} |"
+        )
+        top_exercise_links.append(
+            f"- [**`{ex.name}`**: {ex.title} →](../playground/index.html?exercise={ex.name})"
         )
     practice_table = "\n".join(practice_rows)
+    top_exercise_list = "\n".join(top_exercise_links)
 
     # Build fields table
     fields_rows = []
@@ -3356,6 +3361,9 @@ for chapter in manifest.chapters:
 -   :material-rocket-launch: [**Launch Playground in Wasm →**](../playground/index.html?chapter={chapter.number}){{ .md-button .md-button--primary }}
 
 </div>
+
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+{textwrap.indent(top_exercise_list, '    ')}
 
 ---
 

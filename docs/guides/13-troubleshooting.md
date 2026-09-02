@@ -8,6 +8,13 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`troubleshoot01`**: Debugging CrashLoopBackOff & Exit Codes →](../playground/index.html?exercise=troubleshoot01)
+    - [**`troubleshoot02`**: Debugging ImagePullBackOff →](../playground/index.html?exercise=troubleshoot02)
+    - [**`troubleshoot03`**: Debugging Pending Pods & Scheduling Failures →](../playground/index.html?exercise=troubleshoot03)
+    - [**`troubleshoot04`**: ResourceQuotas & LimitRanges →](../playground/index.html?exercise=troubleshoot04)
+    - [**`troubleshoot05`**: Ephemeral Debug Containers & Event Triage →](../playground/index.html?exercise=troubleshoot05)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -141,8 +148,8 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`troubleshoot01`** | Debugging CrashLoopBackOff & Exit Codes | [`../playground/index.html?exercise=troubleshoot01`](../playground/index.html?exercise=troubleshoot01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=troubleshoot01){ .md-button .md-button--primary } |
-| **`troubleshoot02`** | Debugging ImagePullBackOff | [`../playground/index.html?exercise=troubleshoot02`](../playground/index.html?exercise=troubleshoot02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=troubleshoot02){ .md-button .md-button--primary } |
-| **`troubleshoot03`** | Debugging Pending Pods & Scheduling Failures | [`../playground/index.html?exercise=troubleshoot03`](../playground/index.html?exercise=troubleshoot03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=troubleshoot03){ .md-button .md-button--primary } |
-| **`troubleshoot04`** | ResourceQuotas & LimitRanges | [`../playground/index.html?exercise=troubleshoot04`](../playground/index.html?exercise=troubleshoot04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=troubleshoot04){ .md-button .md-button--primary } |
-| **`troubleshoot05`** | Ephemeral Debug Containers & Event Triage | [`../playground/index.html?exercise=troubleshoot05`](../playground/index.html?exercise=troubleshoot05) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=troubleshoot05){ .md-button .md-button--primary } |
+| **`troubleshoot01`** | Debugging CrashLoopBackOff & Exit Codes | [`../playground/index.html?exercise=troubleshoot01`](../playground/index.html?exercise=troubleshoot01) | [**⚡ Solve `troubleshoot01` in Playground →**](../playground/index.html?exercise=troubleshoot01){ .md-button .md-button--primary } |
+| **`troubleshoot02`** | Debugging ImagePullBackOff | [`../playground/index.html?exercise=troubleshoot02`](../playground/index.html?exercise=troubleshoot02) | [**⚡ Solve `troubleshoot02` in Playground →**](../playground/index.html?exercise=troubleshoot02){ .md-button .md-button--primary } |
+| **`troubleshoot03`** | Debugging Pending Pods & Scheduling Failures | [`../playground/index.html?exercise=troubleshoot03`](../playground/index.html?exercise=troubleshoot03) | [**⚡ Solve `troubleshoot03` in Playground →**](../playground/index.html?exercise=troubleshoot03){ .md-button .md-button--primary } |
+| **`troubleshoot04`** | ResourceQuotas & LimitRanges | [`../playground/index.html?exercise=troubleshoot04`](../playground/index.html?exercise=troubleshoot04) | [**⚡ Solve `troubleshoot04` in Playground →**](../playground/index.html?exercise=troubleshoot04){ .md-button .md-button--primary } |
+| **`troubleshoot05`** | Ephemeral Debug Containers & Event Triage | [`../playground/index.html?exercise=troubleshoot05`](../playground/index.html?exercise=troubleshoot05) | [**⚡ Solve `troubleshoot05` in Playground →**](../playground/index.html?exercise=troubleshoot05){ .md-button .md-button--primary } |

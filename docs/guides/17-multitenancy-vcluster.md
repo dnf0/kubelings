@@ -8,6 +8,12 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`tenant01`**: HNC Hierarchical Subnamespace Anchor →](../playground/index.html?exercise=tenant01)
+    - [**`tenant02`**: Tenant ResourceQuotas and LimitRanges →](../playground/index.html?exercise=tenant02)
+    - [**`tenant03`**: Virtual Cluster (vcluster) Control Plane →](../playground/index.html?exercise=tenant03)
+    - [**`tenant04`**: Multi-Tenant Network Isolation & Egress Filtering →](../playground/index.html?exercise=tenant04)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -140,7 +146,7 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`tenant01`** | HNC Hierarchical Subnamespace Anchor | [`../playground/index.html?exercise=tenant01`](../playground/index.html?exercise=tenant01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=tenant01){ .md-button .md-button--primary } |
-| **`tenant02`** | Tenant ResourceQuotas and LimitRanges | [`../playground/index.html?exercise=tenant02`](../playground/index.html?exercise=tenant02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=tenant02){ .md-button .md-button--primary } |
-| **`tenant03`** | Virtual Cluster (vcluster) Control Plane | [`../playground/index.html?exercise=tenant03`](../playground/index.html?exercise=tenant03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=tenant03){ .md-button .md-button--primary } |
-| **`tenant04`** | Multi-Tenant Network Isolation & Egress Filtering | [`../playground/index.html?exercise=tenant04`](../playground/index.html?exercise=tenant04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=tenant04){ .md-button .md-button--primary } |
+| **`tenant01`** | HNC Hierarchical Subnamespace Anchor | [`../playground/index.html?exercise=tenant01`](../playground/index.html?exercise=tenant01) | [**⚡ Solve `tenant01` in Playground →**](../playground/index.html?exercise=tenant01){ .md-button .md-button--primary } |
+| **`tenant02`** | Tenant ResourceQuotas and LimitRanges | [`../playground/index.html?exercise=tenant02`](../playground/index.html?exercise=tenant02) | [**⚡ Solve `tenant02` in Playground →**](../playground/index.html?exercise=tenant02){ .md-button .md-button--primary } |
+| **`tenant03`** | Virtual Cluster (vcluster) Control Plane | [`../playground/index.html?exercise=tenant03`](../playground/index.html?exercise=tenant03) | [**⚡ Solve `tenant03` in Playground →**](../playground/index.html?exercise=tenant03){ .md-button .md-button--primary } |
+| **`tenant04`** | Multi-Tenant Network Isolation & Egress Filtering | [`../playground/index.html?exercise=tenant04`](../playground/index.html?exercise=tenant04) | [**⚡ Solve `tenant04` in Playground →**](../playground/index.html?exercise=tenant04){ .md-button .md-button--primary } |

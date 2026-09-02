@@ -8,6 +8,12 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`health01`**: Liveness Probes →](../playground/index.html?exercise=health01)
+    - [**`health02`**: Readiness Probes →](../playground/index.html?exercise=health02)
+    - [**`health03`**: Startup Probes →](../playground/index.html?exercise=health03)
+    - [**`health04`**: Lifecycle Hooks & Graceful Shutdown →](../playground/index.html?exercise=health04)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -170,7 +176,7 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`health01`** | Liveness Probes | [`../playground/index.html?exercise=health01`](../playground/index.html?exercise=health01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=health01){ .md-button .md-button--primary } |
-| **`health02`** | Readiness Probes | [`../playground/index.html?exercise=health02`](../playground/index.html?exercise=health02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=health02){ .md-button .md-button--primary } |
-| **`health03`** | Startup Probes | [`../playground/index.html?exercise=health03`](../playground/index.html?exercise=health03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=health03){ .md-button .md-button--primary } |
-| **`health04`** | Lifecycle Hooks & Graceful Shutdown | [`../playground/index.html?exercise=health04`](../playground/index.html?exercise=health04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=health04){ .md-button .md-button--primary } |
+| **`health01`** | Liveness Probes | [`../playground/index.html?exercise=health01`](../playground/index.html?exercise=health01) | [**⚡ Solve `health01` in Playground →**](../playground/index.html?exercise=health01){ .md-button .md-button--primary } |
+| **`health02`** | Readiness Probes | [`../playground/index.html?exercise=health02`](../playground/index.html?exercise=health02) | [**⚡ Solve `health02` in Playground →**](../playground/index.html?exercise=health02){ .md-button .md-button--primary } |
+| **`health03`** | Startup Probes | [`../playground/index.html?exercise=health03`](../playground/index.html?exercise=health03) | [**⚡ Solve `health03` in Playground →**](../playground/index.html?exercise=health03){ .md-button .md-button--primary } |
+| **`health04`** | Lifecycle Hooks & Graceful Shutdown | [`../playground/index.html?exercise=health04`](../playground/index.html?exercise=health04) | [**⚡ Solve `health04` in Playground →**](../playground/index.html?exercise=health04){ .md-button .md-button--primary } |

@@ -8,6 +8,12 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`crd01`**: CustomResourceDefinition (CRD) Schema →](../playground/index.html?exercise=crd01)
+    - [**`crd02`**: CRD Subresources & Printer Columns →](../playground/index.html?exercise=crd02)
+    - [**`crd03`**: Python Kubernetes Operator Loop →](../playground/index.html?exercise=crd03)
+    - [**`crd04`**: Dynamic Admission Webhooks →](../playground/index.html?exercise=crd04)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -177,7 +183,7 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`crd01`** | CustomResourceDefinition (CRD) Schema | [`../playground/index.html?exercise=crd01`](../playground/index.html?exercise=crd01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=crd01){ .md-button .md-button--primary } |
-| **`crd02`** | CRD Subresources & Printer Columns | [`../playground/index.html?exercise=crd02`](../playground/index.html?exercise=crd02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=crd02){ .md-button .md-button--primary } |
-| **`crd03`** | Python Kubernetes Operator Loop | [`../playground/index.html?exercise=crd03`](../playground/index.html?exercise=crd03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=crd03){ .md-button .md-button--primary } |
-| **`crd04`** | Dynamic Admission Webhooks | [`../playground/index.html?exercise=crd04`](../playground/index.html?exercise=crd04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=crd04){ .md-button .md-button--primary } |
+| **`crd01`** | CustomResourceDefinition (CRD) Schema | [`../playground/index.html?exercise=crd01`](../playground/index.html?exercise=crd01) | [**⚡ Solve `crd01` in Playground →**](../playground/index.html?exercise=crd01){ .md-button .md-button--primary } |
+| **`crd02`** | CRD Subresources & Printer Columns | [`../playground/index.html?exercise=crd02`](../playground/index.html?exercise=crd02) | [**⚡ Solve `crd02` in Playground →**](../playground/index.html?exercise=crd02){ .md-button .md-button--primary } |
+| **`crd03`** | Python Kubernetes Operator Loop | [`../playground/index.html?exercise=crd03`](../playground/index.html?exercise=crd03) | [**⚡ Solve `crd03` in Playground →**](../playground/index.html?exercise=crd03){ .md-button .md-button--primary } |
+| **`crd04`** | Dynamic Admission Webhooks | [`../playground/index.html?exercise=crd04`](../playground/index.html?exercise=crd04) | [**⚡ Solve `crd04` in Playground →**](../playground/index.html?exercise=crd04){ .md-button .md-button--primary } |

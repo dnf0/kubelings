@@ -8,6 +8,12 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`kustomize01`**: Kustomize Base Manifests & Metadata Transformations →](../playground/index.html?exercise=kustomize01)
+    - [**`kustomize02`**: Kustomize ConfigMap & Secret Generators →](../playground/index.html?exercise=kustomize02)
+    - [**`kustomize03`**: Kustomize Strategic Merge & JSON6902 Target Patches →](../playground/index.html?exercise=kustomize03)
+    - [**`kustomize04`**: Kustomize Multi-Environment Overlays & Image Transforms →](../playground/index.html?exercise=kustomize04)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -131,7 +137,7 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`kustomize01`** | Kustomize Base Manifests & Metadata Transformations | [`../playground/index.html?exercise=kustomize01`](../playground/index.html?exercise=kustomize01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=kustomize01){ .md-button .md-button--primary } |
-| **`kustomize02`** | Kustomize ConfigMap & Secret Generators | [`../playground/index.html?exercise=kustomize02`](../playground/index.html?exercise=kustomize02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=kustomize02){ .md-button .md-button--primary } |
-| **`kustomize03`** | Kustomize Strategic Merge & JSON6902 Target Patches | [`../playground/index.html?exercise=kustomize03`](../playground/index.html?exercise=kustomize03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=kustomize03){ .md-button .md-button--primary } |
-| **`kustomize04`** | Kustomize Multi-Environment Overlays & Image Transforms | [`../playground/index.html?exercise=kustomize04`](../playground/index.html?exercise=kustomize04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=kustomize04){ .md-button .md-button--primary } |
+| **`kustomize01`** | Kustomize Base Manifests & Metadata Transformations | [`../playground/index.html?exercise=kustomize01`](../playground/index.html?exercise=kustomize01) | [**⚡ Solve `kustomize01` in Playground →**](../playground/index.html?exercise=kustomize01){ .md-button .md-button--primary } |
+| **`kustomize02`** | Kustomize ConfigMap & Secret Generators | [`../playground/index.html?exercise=kustomize02`](../playground/index.html?exercise=kustomize02) | [**⚡ Solve `kustomize02` in Playground →**](../playground/index.html?exercise=kustomize02){ .md-button .md-button--primary } |
+| **`kustomize03`** | Kustomize Strategic Merge & JSON6902 Target Patches | [`../playground/index.html?exercise=kustomize03`](../playground/index.html?exercise=kustomize03) | [**⚡ Solve `kustomize03` in Playground →**](../playground/index.html?exercise=kustomize03){ .md-button .md-button--primary } |
+| **`kustomize04`** | Kustomize Multi-Environment Overlays & Image Transforms | [`../playground/index.html?exercise=kustomize04`](../playground/index.html?exercise=kustomize04) | [**⚡ Solve `kustomize04` in Playground →**](../playground/index.html?exercise=kustomize04){ .md-button .md-button--primary } |

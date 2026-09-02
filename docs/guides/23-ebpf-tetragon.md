@@ -8,6 +8,12 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`tetragon01`**: Process Execution Tracing with sys_execve →](../playground/index.html?exercise=tetragon01)
+    - [**`tetragon02`**: Sensitive File & Credential Access Auditing →](../playground/index.html?exercise=tetragon02)
+    - [**`tetragon03`**: Real-Time Kernel Sigkill Enforcement →](../playground/index.html?exercise=tetragon03)
+    - [**`tetragon04`**: eBPF TCP Socket & Network Egress Observability →](../playground/index.html?exercise=tetragon04)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -152,7 +158,7 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`tetragon01`** | Process Execution Tracing with sys_execve | [`../playground/index.html?exercise=tetragon01`](../playground/index.html?exercise=tetragon01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=tetragon01){ .md-button .md-button--primary } |
-| **`tetragon02`** | Sensitive File & Credential Access Auditing | [`../playground/index.html?exercise=tetragon02`](../playground/index.html?exercise=tetragon02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=tetragon02){ .md-button .md-button--primary } |
-| **`tetragon03`** | Real-Time Kernel Sigkill Enforcement | [`../playground/index.html?exercise=tetragon03`](../playground/index.html?exercise=tetragon03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=tetragon03){ .md-button .md-button--primary } |
-| **`tetragon04`** | eBPF TCP Socket & Network Egress Observability | [`../playground/index.html?exercise=tetragon04`](../playground/index.html?exercise=tetragon04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=tetragon04){ .md-button .md-button--primary } |
+| **`tetragon01`** | Process Execution Tracing with sys_execve | [`../playground/index.html?exercise=tetragon01`](../playground/index.html?exercise=tetragon01) | [**⚡ Solve `tetragon01` in Playground →**](../playground/index.html?exercise=tetragon01){ .md-button .md-button--primary } |
+| **`tetragon02`** | Sensitive File & Credential Access Auditing | [`../playground/index.html?exercise=tetragon02`](../playground/index.html?exercise=tetragon02) | [**⚡ Solve `tetragon02` in Playground →**](../playground/index.html?exercise=tetragon02){ .md-button .md-button--primary } |
+| **`tetragon03`** | Real-Time Kernel Sigkill Enforcement | [`../playground/index.html?exercise=tetragon03`](../playground/index.html?exercise=tetragon03) | [**⚡ Solve `tetragon03` in Playground →**](../playground/index.html?exercise=tetragon03){ .md-button .md-button--primary } |
+| **`tetragon04`** | eBPF TCP Socket & Network Egress Observability | [`../playground/index.html?exercise=tetragon04`](../playground/index.html?exercise=tetragon04) | [**⚡ Solve `tetragon04` in Playground →**](../playground/index.html?exercise=tetragon04){ .md-button .md-button--primary } |

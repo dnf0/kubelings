@@ -8,6 +8,13 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`storage01`**: Volume Types (emptyDir & hostPath) →](../playground/index.html?exercise=storage01)
+    - [**`storage02`**: PersistentVolumes & PersistentVolumeClaims →](../playground/index.html?exercise=storage02)
+    - [**`storage03`**: Access Modes & Reclaim Policies →](../playground/index.html?exercise=storage03)
+    - [**`storage04`**: StorageClasses & Dynamic Provisioning →](../playground/index.html?exercise=storage04)
+    - [**`storage05`**: Volume Snapshots & Volume Expansion →](../playground/index.html?exercise=storage05)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -175,8 +182,8 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`storage01`** | Volume Types (emptyDir & hostPath) | [`../playground/index.html?exercise=storage01`](../playground/index.html?exercise=storage01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=storage01){ .md-button .md-button--primary } |
-| **`storage02`** | PersistentVolumes & PersistentVolumeClaims | [`../playground/index.html?exercise=storage02`](../playground/index.html?exercise=storage02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=storage02){ .md-button .md-button--primary } |
-| **`storage03`** | Access Modes & Reclaim Policies | [`../playground/index.html?exercise=storage03`](../playground/index.html?exercise=storage03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=storage03){ .md-button .md-button--primary } |
-| **`storage04`** | StorageClasses & Dynamic Provisioning | [`../playground/index.html?exercise=storage04`](../playground/index.html?exercise=storage04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=storage04){ .md-button .md-button--primary } |
-| **`storage05`** | Volume Snapshots & Volume Expansion | [`../playground/index.html?exercise=storage05`](../playground/index.html?exercise=storage05) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=storage05){ .md-button .md-button--primary } |
+| **`storage01`** | Volume Types (emptyDir & hostPath) | [`../playground/index.html?exercise=storage01`](../playground/index.html?exercise=storage01) | [**⚡ Solve `storage01` in Playground →**](../playground/index.html?exercise=storage01){ .md-button .md-button--primary } |
+| **`storage02`** | PersistentVolumes & PersistentVolumeClaims | [`../playground/index.html?exercise=storage02`](../playground/index.html?exercise=storage02) | [**⚡ Solve `storage02` in Playground →**](../playground/index.html?exercise=storage02){ .md-button .md-button--primary } |
+| **`storage03`** | Access Modes & Reclaim Policies | [`../playground/index.html?exercise=storage03`](../playground/index.html?exercise=storage03) | [**⚡ Solve `storage03` in Playground →**](../playground/index.html?exercise=storage03){ .md-button .md-button--primary } |
+| **`storage04`** | StorageClasses & Dynamic Provisioning | [`../playground/index.html?exercise=storage04`](../playground/index.html?exercise=storage04) | [**⚡ Solve `storage04` in Playground →**](../playground/index.html?exercise=storage04){ .md-button .md-button--primary } |
+| **`storage05`** | Volume Snapshots & Volume Expansion | [`../playground/index.html?exercise=storage05`](../playground/index.html?exercise=storage05) | [**⚡ Solve `storage05` in Playground →**](../playground/index.html?exercise=storage05){ .md-button .md-button--primary } |

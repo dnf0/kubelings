@@ -8,6 +8,12 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`ray01`**: RayCluster Core Architecture & Head Node →](../playground/index.html?exercise=ray01)
+    - [**`ray02`**: Heterogeneous Worker Pools & Autoscaling →](../playground/index.html?exercise=ray02)
+    - [**`ray03`**: RayJob for Distributed Batch Fine-Tuning →](../playground/index.html?exercise=ray03)
+    - [**`ray04`**: RayService for Production LLM Serving →](../playground/index.html?exercise=ray04)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -164,7 +170,7 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`ray01`** | RayCluster Core Architecture & Head Node | [`../playground/index.html?exercise=ray01`](../playground/index.html?exercise=ray01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=ray01){ .md-button .md-button--primary } |
-| **`ray02`** | Heterogeneous Worker Pools & Autoscaling | [`../playground/index.html?exercise=ray02`](../playground/index.html?exercise=ray02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=ray02){ .md-button .md-button--primary } |
-| **`ray03`** | RayJob for Distributed Batch Fine-Tuning | [`../playground/index.html?exercise=ray03`](../playground/index.html?exercise=ray03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=ray03){ .md-button .md-button--primary } |
-| **`ray04`** | RayService for Production LLM Serving | [`../playground/index.html?exercise=ray04`](../playground/index.html?exercise=ray04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=ray04){ .md-button .md-button--primary } |
+| **`ray01`** | RayCluster Core Architecture & Head Node | [`../playground/index.html?exercise=ray01`](../playground/index.html?exercise=ray01) | [**⚡ Solve `ray01` in Playground →**](../playground/index.html?exercise=ray01){ .md-button .md-button--primary } |
+| **`ray02`** | Heterogeneous Worker Pools & Autoscaling | [`../playground/index.html?exercise=ray02`](../playground/index.html?exercise=ray02) | [**⚡ Solve `ray02` in Playground →**](../playground/index.html?exercise=ray02){ .md-button .md-button--primary } |
+| **`ray03`** | RayJob for Distributed Batch Fine-Tuning | [`../playground/index.html?exercise=ray03`](../playground/index.html?exercise=ray03) | [**⚡ Solve `ray03` in Playground →**](../playground/index.html?exercise=ray03){ .md-button .md-button--primary } |
+| **`ray04`** | RayService for Production LLM Serving | [`../playground/index.html?exercise=ray04`](../playground/index.html?exercise=ray04) | [**⚡ Solve `ray04` in Playground →**](../playground/index.html?exercise=ray04){ .md-button .md-button--primary } |

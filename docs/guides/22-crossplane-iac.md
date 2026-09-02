@@ -8,6 +8,12 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`crossplane01`**: CompositeResourceDefinition (XRD) Schema →](../playground/index.html?exercise=crossplane01)
+    - [**`crossplane02`**: Composition and Field Path Transforms →](../playground/index.html?exercise=crossplane02)
+    - [**`crossplane03`**: ProviderConfig and Resource Deletion Policies →](../playground/index.html?exercise=crossplane03)
+    - [**`crossplane04`**: Developer Self-Service Claims & Connection Secrets →](../playground/index.html?exercise=crossplane04)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -134,7 +140,7 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`crossplane01`** | CompositeResourceDefinition (XRD) Schema | [`../playground/index.html?exercise=crossplane01`](../playground/index.html?exercise=crossplane01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=crossplane01){ .md-button .md-button--primary } |
-| **`crossplane02`** | Composition and Field Path Transforms | [`../playground/index.html?exercise=crossplane02`](../playground/index.html?exercise=crossplane02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=crossplane02){ .md-button .md-button--primary } |
-| **`crossplane03`** | ProviderConfig and Resource Deletion Policies | [`../playground/index.html?exercise=crossplane03`](../playground/index.html?exercise=crossplane03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=crossplane03){ .md-button .md-button--primary } |
-| **`crossplane04`** | Developer Self-Service Claims & Connection Secrets | [`../playground/index.html?exercise=crossplane04`](../playground/index.html?exercise=crossplane04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=crossplane04){ .md-button .md-button--primary } |
+| **`crossplane01`** | CompositeResourceDefinition (XRD) Schema | [`../playground/index.html?exercise=crossplane01`](../playground/index.html?exercise=crossplane01) | [**⚡ Solve `crossplane01` in Playground →**](../playground/index.html?exercise=crossplane01){ .md-button .md-button--primary } |
+| **`crossplane02`** | Composition and Field Path Transforms | [`../playground/index.html?exercise=crossplane02`](../playground/index.html?exercise=crossplane02) | [**⚡ Solve `crossplane02` in Playground →**](../playground/index.html?exercise=crossplane02){ .md-button .md-button--primary } |
+| **`crossplane03`** | ProviderConfig and Resource Deletion Policies | [`../playground/index.html?exercise=crossplane03`](../playground/index.html?exercise=crossplane03) | [**⚡ Solve `crossplane03` in Playground →**](../playground/index.html?exercise=crossplane03){ .md-button .md-button--primary } |
+| **`crossplane04`** | Developer Self-Service Claims & Connection Secrets | [`../playground/index.html?exercise=crossplane04`](../playground/index.html?exercise=crossplane04) | [**⚡ Solve `crossplane04` in Playground →**](../playground/index.html?exercise=crossplane04){ .md-button .md-button--primary } |

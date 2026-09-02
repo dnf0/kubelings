@@ -8,6 +8,12 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`autoscale01`**: Horizontal Pod Autoscaler (HPA v2) →](../playground/index.html?exercise=autoscale01)
+    - [**`autoscale02`**: HPA Custom Scaling Behavior →](../playground/index.html?exercise=autoscale02)
+    - [**`autoscale03`**: Vertical Pod Autoscaler (VPA) →](../playground/index.html?exercise=autoscale03)
+    - [**`autoscale04`**: Event-Driven Autoscaling (KEDA) →](../playground/index.html?exercise=autoscale04)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -166,7 +172,7 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`autoscale01`** | Horizontal Pod Autoscaler (HPA v2) | [`../playground/index.html?exercise=autoscale01`](../playground/index.html?exercise=autoscale01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=autoscale01){ .md-button .md-button--primary } |
-| **`autoscale02`** | HPA Custom Scaling Behavior | [`../playground/index.html?exercise=autoscale02`](../playground/index.html?exercise=autoscale02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=autoscale02){ .md-button .md-button--primary } |
-| **`autoscale03`** | Vertical Pod Autoscaler (VPA) | [`../playground/index.html?exercise=autoscale03`](../playground/index.html?exercise=autoscale03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=autoscale03){ .md-button .md-button--primary } |
-| **`autoscale04`** | Event-Driven Autoscaling (KEDA) | [`../playground/index.html?exercise=autoscale04`](../playground/index.html?exercise=autoscale04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=autoscale04){ .md-button .md-button--primary } |
+| **`autoscale01`** | Horizontal Pod Autoscaler (HPA v2) | [`../playground/index.html?exercise=autoscale01`](../playground/index.html?exercise=autoscale01) | [**⚡ Solve `autoscale01` in Playground →**](../playground/index.html?exercise=autoscale01){ .md-button .md-button--primary } |
+| **`autoscale02`** | HPA Custom Scaling Behavior | [`../playground/index.html?exercise=autoscale02`](../playground/index.html?exercise=autoscale02) | [**⚡ Solve `autoscale02` in Playground →**](../playground/index.html?exercise=autoscale02){ .md-button .md-button--primary } |
+| **`autoscale03`** | Vertical Pod Autoscaler (VPA) | [`../playground/index.html?exercise=autoscale03`](../playground/index.html?exercise=autoscale03) | [**⚡ Solve `autoscale03` in Playground →**](../playground/index.html?exercise=autoscale03){ .md-button .md-button--primary } |
+| **`autoscale04`** | Event-Driven Autoscaling (KEDA) | [`../playground/index.html?exercise=autoscale04`](../playground/index.html?exercise=autoscale04) | [**⚡ Solve `autoscale04` in Playground →**](../playground/index.html?exercise=autoscale04){ .md-button .md-button--primary } |

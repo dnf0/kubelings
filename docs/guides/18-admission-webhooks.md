@@ -8,6 +8,12 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`webhook01`**: MutatingWebhookConfiguration Manifest →](../playground/index.html?exercise=webhook01)
+    - [**`webhook02`**: ValidatingWebhookConfiguration Manifest →](../playground/index.html?exercise=webhook02)
+    - [**`webhook03`**: Dynamic Sidecar Injection AdmissionReview Response →](../playground/index.html?exercise=webhook03)
+    - [**`webhook04`**: CRD Webhook Conversion Strategy →](../playground/index.html?exercise=webhook04)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -158,7 +164,7 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`webhook01`** | MutatingWebhookConfiguration Manifest | [`../playground/index.html?exercise=webhook01`](../playground/index.html?exercise=webhook01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=webhook01){ .md-button .md-button--primary } |
-| **`webhook02`** | ValidatingWebhookConfiguration Manifest | [`../playground/index.html?exercise=webhook02`](../playground/index.html?exercise=webhook02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=webhook02){ .md-button .md-button--primary } |
-| **`webhook03`** | Dynamic Sidecar Injection AdmissionReview Response | [`../playground/index.html?exercise=webhook03`](../playground/index.html?exercise=webhook03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=webhook03){ .md-button .md-button--primary } |
-| **`webhook04`** | CRD Webhook Conversion Strategy | [`../playground/index.html?exercise=webhook04`](../playground/index.html?exercise=webhook04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=webhook04){ .md-button .md-button--primary } |
+| **`webhook01`** | MutatingWebhookConfiguration Manifest | [`../playground/index.html?exercise=webhook01`](../playground/index.html?exercise=webhook01) | [**⚡ Solve `webhook01` in Playground →**](../playground/index.html?exercise=webhook01){ .md-button .md-button--primary } |
+| **`webhook02`** | ValidatingWebhookConfiguration Manifest | [`../playground/index.html?exercise=webhook02`](../playground/index.html?exercise=webhook02) | [**⚡ Solve `webhook02` in Playground →**](../playground/index.html?exercise=webhook02){ .md-button .md-button--primary } |
+| **`webhook03`** | Dynamic Sidecar Injection AdmissionReview Response | [`../playground/index.html?exercise=webhook03`](../playground/index.html?exercise=webhook03) | [**⚡ Solve `webhook03` in Playground →**](../playground/index.html?exercise=webhook03){ .md-button .md-button--primary } |
+| **`webhook04`** | CRD Webhook Conversion Strategy | [`../playground/index.html?exercise=webhook04`](../playground/index.html?exercise=webhook04) | [**⚡ Solve `webhook04` in Playground →**](../playground/index.html?exercise=webhook04){ .md-button .md-button--primary } |

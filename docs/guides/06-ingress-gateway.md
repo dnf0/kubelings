@@ -8,6 +8,12 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`ingress01`**: Ingress Host & Path Routing →](../playground/index.html?exercise=ingress01)
+    - [**`ingress02`**: Ingress TLS Termination →](../playground/index.html?exercise=ingress02)
+    - [**`ingress03`**: Ingress Annotations & Rewrites →](../playground/index.html?exercise=ingress03)
+    - [**`ingress04`**: Gateway API Fundamentals →](../playground/index.html?exercise=ingress04)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -177,7 +183,7 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`ingress01`** | Ingress Host & Path Routing | [`../playground/index.html?exercise=ingress01`](../playground/index.html?exercise=ingress01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=ingress01){ .md-button .md-button--primary } |
-| **`ingress02`** | Ingress TLS Termination | [`../playground/index.html?exercise=ingress02`](../playground/index.html?exercise=ingress02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=ingress02){ .md-button .md-button--primary } |
-| **`ingress03`** | Ingress Annotations & Rewrites | [`../playground/index.html?exercise=ingress03`](../playground/index.html?exercise=ingress03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=ingress03){ .md-button .md-button--primary } |
-| **`ingress04`** | Gateway API Fundamentals | [`../playground/index.html?exercise=ingress04`](../playground/index.html?exercise=ingress04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=ingress04){ .md-button .md-button--primary } |
+| **`ingress01`** | Ingress Host & Path Routing | [`../playground/index.html?exercise=ingress01`](../playground/index.html?exercise=ingress01) | [**⚡ Solve `ingress01` in Playground →**](../playground/index.html?exercise=ingress01){ .md-button .md-button--primary } |
+| **`ingress02`** | Ingress TLS Termination | [`../playground/index.html?exercise=ingress02`](../playground/index.html?exercise=ingress02) | [**⚡ Solve `ingress02` in Playground →**](../playground/index.html?exercise=ingress02){ .md-button .md-button--primary } |
+| **`ingress03`** | Ingress Annotations & Rewrites | [`../playground/index.html?exercise=ingress03`](../playground/index.html?exercise=ingress03) | [**⚡ Solve `ingress03` in Playground →**](../playground/index.html?exercise=ingress03){ .md-button .md-button--primary } |
+| **`ingress04`** | Gateway API Fundamentals | [`../playground/index.html?exercise=ingress04`](../playground/index.html?exercise=ingress04) | [**⚡ Solve `ingress04` in Playground →**](../playground/index.html?exercise=ingress04){ .md-button .md-button--primary } |

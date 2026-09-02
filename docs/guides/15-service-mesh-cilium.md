@@ -8,6 +8,12 @@
 
 </div>
 
+!!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
+    - [**`mesh01`**: Cilium L7 HTTP Filtering & Routing →](../playground/index.html?exercise=mesh01)
+    - [**`mesh02`**: Strict Mutual TLS & PeerAuthentication →](../playground/index.html?exercise=mesh02)
+    - [**`mesh03`**: CiliumClusterwideNetworkPolicy with DNS FQDN Egress →](../playground/index.html?exercise=mesh03)
+    - [**`mesh04`**: Hubble Observability & OpenTelemetry Tracing →](../playground/index.html?exercise=mesh04)
+
 ---
 
 ## 1. Architectural Overview & Control Plane Mechanics
@@ -161,7 +167,7 @@ Practice concepts from this chapter directly in the interactive WebAssembly sand
 
 | Exercise ID | Challenge Description | Direct Link | Action |
 | :--- | :--- | :--- | :--- |
-| **`mesh01`** | Cilium L7 HTTP Filtering & Routing | [`../playground/index.html?exercise=mesh01`](../playground/index.html?exercise=mesh01) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=mesh01){ .md-button .md-button--primary } |
-| **`mesh02`** | Strict Mutual TLS & PeerAuthentication | [`../playground/index.html?exercise=mesh02`](../playground/index.html?exercise=mesh02) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=mesh02){ .md-button .md-button--primary } |
-| **`mesh03`** | CiliumClusterwideNetworkPolicy with DNS FQDN Egress | [`../playground/index.html?exercise=mesh03`](../playground/index.html?exercise=mesh03) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=mesh03){ .md-button .md-button--primary } |
-| **`mesh04`** | Hubble Observability & OpenTelemetry Tracing | [`../playground/index.html?exercise=mesh04`](../playground/index.html?exercise=mesh04) | [**⚡ Solve in Playground →**](../playground/index.html?exercise=mesh04){ .md-button .md-button--primary } |
+| **`mesh01`** | Cilium L7 HTTP Filtering & Routing | [`../playground/index.html?exercise=mesh01`](../playground/index.html?exercise=mesh01) | [**⚡ Solve `mesh01` in Playground →**](../playground/index.html?exercise=mesh01){ .md-button .md-button--primary } |
+| **`mesh02`** | Strict Mutual TLS & PeerAuthentication | [`../playground/index.html?exercise=mesh02`](../playground/index.html?exercise=mesh02) | [**⚡ Solve `mesh02` in Playground →**](../playground/index.html?exercise=mesh02){ .md-button .md-button--primary } |
+| **`mesh03`** | CiliumClusterwideNetworkPolicy with DNS FQDN Egress | [`../playground/index.html?exercise=mesh03`](../playground/index.html?exercise=mesh03) | [**⚡ Solve `mesh03` in Playground →**](../playground/index.html?exercise=mesh03){ .md-button .md-button--primary } |
+| **`mesh04`** | Hubble Observability & OpenTelemetry Tracing | [`../playground/index.html?exercise=mesh04`](../playground/index.html?exercise=mesh04) | [**⚡ Solve `mesh04` in Playground →**](../playground/index.html?exercise=mesh04){ .md-button .md-button--primary } |
