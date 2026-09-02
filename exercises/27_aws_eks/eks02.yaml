@@ -1,0 +1,41 @@
+# Exercise: exercises/27_aws_eks/eks02.yaml
+# Topic: AWS Load Balancer Controller & ALB Ingress
+# Reference Guide: https://dnf0.github.io/kubelings/guides/27-aws-eks/
+#
+# Context & Why:
+# The AWS Load Balancer Controller reconciles Kubernetes Ingress resources by dynamically
+# provisioning AWS Application Load Balancers (ALB) and Network Load Balancers (NLB).
+#
+# Using target-type 'ip' allows the ALB to route traffic directly to individual Pod IP addresses
+# over the AWS VPC CNI, completely bypassing NodePort translation and reducing network latency.
+#
+# Task:
+# Configure the Ingress manifest below to expose an API service via an internet-facing AWS ALB:
+# 1. Set 'apiVersion' to 'networking.k8s.io/v1' and 'kind' to 'Ingress'.
+# 2. Set 'metadata.name' to 'alb-ingress' in namespace 'default'.
+# 3. Add annotation 'alb.ingress.kubernetes.io/scheme: internet-facing'.
+# 4. Add annotation 'alb.ingress.kubernetes.io/target-type: ip'.
+# 5. Set 'spec.ingressClassName' to 'alb'.
+# 6. Route host 'api.example.com' with prefix '/' to service 'api-service' on port 8080.
+
+apiVersion: ???
+kind: ???
+metadata:
+  name: ???
+  namespace: default
+  annotations:
+    alb.ingress.kubernetes.io/scheme: ???
+    alb.ingress.kubernetes.io/target-type: ???
+spec:
+  ingressClassName: ???
+  rules:
+    - host: ???
+      http:
+        paths:
+          - path: ???
+            pathType: Prefix
+            backend:
+              service:
+                name: ???
+                port:
+                  number: 0

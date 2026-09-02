@@ -1,0 +1,13 @@
+apiVersion: vpcresources.k8s.aws/v1alpha1
+kind: SecurityGroupPolicy
+metadata:
+  name: payment-sg-policy
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: payment-gateway
+  securityGroups:
+    groupIds:
+      - sg-0123456789abcdef0
+      - sg-0987654321fedcba0

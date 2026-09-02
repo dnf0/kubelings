@@ -1,0 +1,57 @@
+# Exercise: exercises/27_aws_eks/eks04.yaml
+# Topic: Karpenter NodePool & EC2NodeClass Autoscaling
+# Reference Guide: https://dnf0.github.io/kubelings/guides/27-aws-eks/
+#
+# Context & Why:
+# Karpenter is a flexible, high-performance Kubernetes node autoscaler built for AWS.
+# Unlike traditional Cluster Autoscaler which relies on static EC2 Auto Scaling Groups (ASGs),
+# Karpenter evaluates unschedulable pod requirements in real-time and launches right-sized EC2
+# instances directly via AWS Fleet APIs in seconds.
+#
+# Task:
+# Author a Karpenter `NodePool` and corresponding `EC2NodeClass` for AWS spot and on-demand compute:
+# 1. In Document 1, define a `NodePool` named 'default-pool' with 'apiVersion: karpenter.sh/v1'.
+# 2. Reference nodeClassRef kind 'EC2NodeClass' and name 'default-nodeclass'.
+# 3. Add requirements for 'karpenter.sh/capacity-type' (operator 'In', values 'spot', 'on-demand')
+#    and 'karpenter.k8s.aws/instance-family' (operator 'In', values 'c6i', 'c7i', 'm6i').
+# 4. Set 'spec.limits.cpu' to '100' and 'limits.memory' to '400Gi'.
+# 5. In Document 2, define an `EC2NodeClass` named 'default-nodeclass' with 'apiVersion: karpenter.k8s.aws/v1'.
+# 6. Set 'amiFamily: AL2023', 'role: KarpenterNodeRole-my-cluster', and specify subnetSelectorTerms and securityGroupSelectorTerms.
+
+apiVersion: ???
+kind: NodePool
+metadata:
+  name: ???
+spec:
+  template:
+    spec:
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: ???
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: ???
+          values:
+            - ???
+        - key: karpenter.k8s.aws/instance-family
+          operator: ???
+          values:
+            - ???
+  limits:
+    cpu: ???
+    memory: ???
+---
+apiVersion: ???
+kind: EC2NodeClass
+metadata:
+  name: ???
+spec:
+  amiFamily: ???
+  role: ???
+  subnetSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: my-cluster
+  securityGroupSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: my-cluster

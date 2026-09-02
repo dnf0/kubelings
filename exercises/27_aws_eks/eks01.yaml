@@ -1,0 +1,42 @@
+# Exercise: exercises/27_aws_eks/eks01.yaml
+# Topic: EKS Pod Identity & IAM Roles for Service Accounts (IRSA)
+# Reference Guide: https://dnf0.github.io/kubelings/guides/27-aws-eks/
+#
+# Context & Why:
+# In AWS Elastic Kubernetes Service (EKS), workloads require secure, least-privilege access
+# to AWS APIs (such as S3, DynamoDB, Secrets Manager) without hardcoding static AWS access keys
+# into Pods or granting broad IAM permissions to underlying EC2 worker nodes.
+#
+# IAM Roles for Service Accounts (IRSA) and EKS Pod Identity solve this:
+# - IRSA establishes an OpenID Connect (OIDC) federated trust between EKS and AWS IAM.
+# - The ServiceAccount is annotated with `eks.amazonaws.com/role-arn`.
+# - The EKS Pod mutating webhook projects an AWS STS web identity token into the Pod.
+# - The AWS SDK in the container automatically assumes the IAM role and rotates temporary STS credentials.
+#
+# Task:
+# Configure the ServiceAccount and Pod below to establish IRSA access to AWS APIs:
+# 1. In the ServiceAccount 's3-reader-sa', set 'apiVersion' to 'v1' and 'kind' to 'ServiceAccount'.
+# 2. Add annotation 'eks.amazonaws.com/role-arn' set to 'arn:aws:iam::123456789012:role/s3-reader-role'.
+# 3. In the Pod 's3-worker-pod', set 'apiVersion' to 'v1' and 'kind' to 'Pod'.
+# 4. Set 'spec.serviceAccountName' to 's3-reader-sa'.
+# 5. Define container 'worker' using image 'amazon/aws-cli:latest' with command '["aws", "s3", "ls"]'.
+
+apiVersion: ???
+kind: ???
+metadata:
+  name: s3-reader-sa
+  namespace: default
+  annotations:
+    eks.amazonaws.com/role-arn: ???
+---
+apiVersion: ???
+kind: ???
+metadata:
+  name: s3-worker-pod
+  namespace: default
+spec:
+  serviceAccountName: ???
+  containers:
+    - name: ???
+      image: ???
+      command: ???

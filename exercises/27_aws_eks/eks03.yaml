@@ -1,0 +1,31 @@
+# Exercise: exercises/27_aws_eks/eks03.yaml
+# Topic: AWS VPC CNI Security Groups for Pods
+# Reference Guide: https://dnf0.github.io/kubelings/guides/27-aws-eks/
+#
+# Context & Why:
+# In multi-tier AWS enterprise architectures (e.g. PCI-DSS, HIPAA), database access must often be
+# restricted to specific AWS Security Groups rather than open cluster-wide subnets.
+#
+# With AWS VPC CNI Security Groups for Pods, you can attach AWS EC2 Security Groups directly
+# to individual Pod network interfaces (branch ENIs) using a `SecurityGroupPolicy` CRD.
+#
+# Task:
+# Author a `SecurityGroupPolicy` CRD to attach AWS Security Groups to payment gateway pods:
+# 1. Set 'apiVersion' to 'vpcresources.k8s.aws/v1alpha1' and 'kind' to 'SecurityGroupPolicy'.
+# 2. Set 'metadata.name' to 'payment-sg-policy' in namespace 'default'.
+# 3. Under 'spec.podSelector.matchLabels', match 'app: payment-gateway'.
+# 4. Under 'spec.securityGroups.groupIds', specify 'sg-0123456789abcdef0' and 'sg-0987654321fedcba0'.
+
+apiVersion: ???
+kind: ???
+metadata:
+  name: ???
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: ???
+  securityGroups:
+    groupIds:
+      - ???
+      - ???
