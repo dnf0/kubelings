@@ -1,3 +1,9 @@
+---
+hide:
+  - navigation
+  - toc
+---
+
 # ☸️ Interactive WebAssembly Learning Platform
 
 > **Zero installation, 100% client-side execution.** Practice and master Kubernetes manifests directly in your browser across the complete 114-exercise curriculum.
