@@ -20,22 +20,36 @@
 
 In Kubernetes, **Infrastructure as Data with Crossplane** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌───────────────────────────┐
-│     Application Dev       │ ──► Declares Composite Resource Claim (XRC)
-└─────────────┬─────────────┘
-              │
-              ▼
-┌───────────────────────────┐
-│        Composition        │ ◄── Platform Team Blueprint
-└─────────────┬─────────────┘
-              │ Composes Managed Resources (MR)
-      ┌───────┴───────┐
-      ▼               ▼
-┌───────────┐   ┌───────────┐
-│  AWS RDS  │   │  AWS S3   │ ◄── External Cloud Providers
-│  Instance │   │  Bucket   │
-└───────────┘   └───────────┘
+```mermaid
+flowchart TD
+    subgraph DevClaim["Application Developer Layer"]
+        XRC["CompositeResourceClaim (XRC)<br/><code>kind: PostgreSQLInstance</code><br/><i>storageGB: 50, tier: production</i>"]
+    end
+
+    subgraph ControlPlaneEngine["Crossplane Composition Engine"]
+        XR["Composite Resource (XR)<br/><code>kind: XPostgreSQLInstance</code>"]
+        COMP["Composition<br/><i>Pipeline: AWS RDS Instance + SecurityGroup + Subnet</i>"]
+        XRD["CompositeResourceDefinition (XRD)<br/><i>Defines OpenAPI Schema & Types</i>"]
+
+        XRC -->|Binds to| XR
+        XRD -->|Validates| XR
+        XR -->|Executes| COMP
+    end
+
+    subgraph ProviderLayer["Crossplane Provider Pods (Cloud APIs)"]
+        PROV_AWS["Provider AWS / GCP / Azure"]
+        MR_DB["Managed Resource: RDSInstance"]
+        MR_SG["Managed Resource: SecurityGroup"]
+
+        COMP --> PROV_AWS
+        PROV_AWS --> MR_DB
+        PROV_AWS --> MR_SG
+    end
+
+    subgraph RealCloud["External Cloud Infrastructure"]
+        CLOUD_RDS[("AWS RDS Multi-AZ Postgres Database")]
+        MR_DB -->|Provisions via AWS API| CLOUD_RDS
+    end
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

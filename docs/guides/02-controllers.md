@@ -22,20 +22,39 @@
 
 In Kubernetes, **Controllers & Replication** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌───────────────────────────┐
-│     Deployment Controller │
-└─────────────┬─────────────┘
-              │ Manages ReplicaSets (Rollouts, Revisions)
-              ▼
-┌───────────────────────────┐
-│         ReplicaSet        │
-└─────────────┬─────────────┘
-              │ Maintains Desired Spec Replicas
-              ▼
-┌───────────┐   ┌───────────┐   ┌───────────┐
-│  Pod 1    │   │  Pod 2    │   │  Pod 3    │
-└───────────┘   └───────────┘   └───────────┘
+```mermaid
+flowchart TD
+    subgraph ControlLoop["kube-controller-manager"]
+        DC["Deployment Controller<br/><i>Watches Deployments</i>"]
+        RC["ReplicaSet Controller<br/><i>Maintains Spec.Replicas</i>"]
+        SC["StatefulSet Controller<br/><i>Ordinal Index & PVCs</i>"]
+        JC["Job Controller<br/><i>Run-to-Completion</i>"]
+    end
+
+    subgraph StateStore["Control Plane State"]
+        API["kube-apiserver"]
+        ETCD[("etcd Cluster")]
+        API <--> ETCD
+    end
+
+    subgraph DeploymentRevisions["RollingUpdate Reconciler"]
+        RS1["ReplicaSet (v1 Revision)<br/><i>Scaled 3 ➔ 0</i>"]
+        RS2["ReplicaSet (v2 Revision)<br/><i>Scaled 0 ➔ 3</i>"]
+    end
+
+    subgraph PodInstances["Pod Fleet on Worker Nodes"]
+        P1["Pod: api-v2-0 (Running)"]
+        P2["Pod: api-v2-1 (Running)"]
+        P3["Pod: api-v2-2 (Running)"]
+    end
+
+    DC -->|Sync Desired Spec| API
+    API -->|Reconcile Loop| RC
+    RC -->|Manages| RS1
+    RC -->|Manages| RS2
+    RS2 -->|Spawns| P1
+    RS2 -->|Spawns| P2
+    RS2 -->|Spawns| P3
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

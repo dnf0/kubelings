@@ -20,21 +20,29 @@
 
 In Kubernetes, **Network Policies & Traffic Segmentation** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌─────────────────────────────────────────────────────────────┐
-│                     Frontend Namespace                      │
-│   [ Frontend Pod ] ──(Port 5432 TCP)───┐                    │
-└────────────────────────────────────────┼────────────────────┘
-                                         │ Allowed Ingress
-                                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│                     Database Namespace                      │
-│   ┌─────────────────────────────────────────────────────┐   │
-│   │           NetworkPolicy: Allow-From-Frontend        │   │
-│   │   [ PostgreSQL Pod (Port 5432) ]                    │   │
-│   │   Default Deny All Other Ingress / Egress           │   │
-│   └─────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph IngressSource["Traffic Sources"]
+        SRC_APP["Frontend Pod (app=frontend)"]
+        SRC_EXT["External IP (192.168.1.0/24)"]
+        SRC_ROGUE["Untrusted Pod (app=untrusted)"]
+    end
+
+    subgraph PolicyEngine["CNI Datapath Firewall (eBPF / iptables)"]
+        NETPOL["NetworkPolicy: <code>db-netpol</code><br/><i>podSelector: app=database</i><br/><i>policyTypes: [Ingress, Egress]</i>"]
+        ALLOW_RULE["Ingress Rules:<br/>- from: [podSelector: app=frontend]<br/>- ports: [5432/TCP]"]
+        DENY_ALL["Default-Deny Isolation Barrier"]
+        NETPOL --> ALLOW_RULE
+        NETPOL --> DENY_ALL
+    end
+
+    subgraph ProtectedWorkload["Isolated Database Pod"]
+        DB["Target Pod: <code>app=database</code><br/><i>Port 5432 (Postgres)</i>"]
+    end
+
+    SRC_APP -->|Allowed (Matches Selector & Port)| DB
+    SRC_EXT -->|Blocked (CIDR Not Whitelisted)| DENY_ALL
+    SRC_ROGUE -->|Dropped by Kernel Datapath| DENY_ALL
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

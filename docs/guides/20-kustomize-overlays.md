@@ -20,18 +20,31 @@
 
 In Kubernetes, **Declarative Customization with Kustomize** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌───────────────────────────┐
-│     Base Configuration    │ ◄── Common Deployment, Service, Config
-│    (`base/kustomization`) │
-└─────────────┬─────────────┘
-              │ Inherited by Environments
-      ┌───────┴───────┐
-      ▼               ▼
-┌───────────┐   ┌───────────┐
-│  Dev      │   │  Prod     │ ◄── Strategic Merge Patches,
-│  Overlay  │   │  Overlay  │     Replica Count, Name Prefixes
-└───────────┘   └───────────┘
+```mermaid
+flowchart LR
+    subgraph BaseLayer["Base Configuration (Dry, Reusable)"]
+        BASE_K["base/kustomization.yaml"]
+        BASE_RES["base/deployment.yaml<br/>base/service.yaml"]
+        BASE_RES --> BASE_K
+    end
+
+    subgraph OverlayLayer["Environment Overlays"]
+        DEV_K["overlays/dev/kustomization.yaml<br/><i>replicas: 1, debug: true</i>"]
+        PROD_K["overlays/prod/kustomization.yaml<br/><i>replicas: 10, namePrefix: prod-</i>"]
+
+        BASE_K --> DEV_K
+        BASE_K --> PROD_K
+    end
+
+    subgraph BuildEngine["Kustomize Processing Engine"]
+        ENGINE["Strategic Merge & JSON 6902 Patch Engine<br/><code>kustomize build overlays/prod</code>"]
+        PROD_K --> ENGINE
+    end
+
+    subgraph OutputManifests["Target Declarative Manifests"]
+        FINAL_YAML["Production Declarative Manifests<br/><i>(Prefixes, Patches, Hash-suffixed ConfigMaps)</i>"]
+        ENGINE --> FINAL_YAML
+    end
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

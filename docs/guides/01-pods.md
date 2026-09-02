@@ -22,23 +22,35 @@
 
 In Kubernetes, **Kubernetes Core Workloads & Pods** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌─────────────────────────────────────────────────────────────┐
-│                         Kubelet                             │
-│  ┌─────────────────┐             ┌───────────────────────┐  │
-│  │  Init Container │             │  Main App Container   │  │
-│  │  (runs to exit) │ ──(Shared)─►│  (nginx / python)     │  │
-│  └────────┬────────┘   Volumes   └───────────┬───────────┘  │
-│           │                                  │              │
-│           ▼                                  ▼              │
-│     [ emptyDir / ]                     [ emptyDir / ]       │
-│     [ ConfigMap  ]                     [ Secret     ]       │
-│                                              ▲              │
-│                                  ┌───────────┴───────────┐  │
-│                                  │   Sidecar Container   │  │
-│                                  │   (fluent-bit / proxy)│  │
-│                                  └───────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph ControlPlane["Control Plane (API & Scheduling)"]
+        API["kube-apiserver<br/><code>v1/pods</code>"]
+        ETCD[("etcd Storage")]
+        SCHED["kube-scheduler<br/><i>Filters & Scores Nodes</i>"]
+        API <--> ETCD
+        SCHED -->|Assigns Node| API
+    end
+
+    subgraph WorkerNode["Worker Node (kubelet & Runtime)"]
+        KUBELET["kubelet.service<br/><i>Sync Loop & PLEG</i>"]
+        CRI["CRI Engine (containerd / CRI-O)<br/><i>Cgroups & Namespaces</i>"]
+
+        subgraph PodSandbox["Pod Sandbox Network & IPC"]
+            INIT["Init Container<br/><i>(runs sequentially to exit 0)</i>"]
+            MAIN["Main Container<br/><i>(app: web-server)</i>"]
+            SIDECAR["Sidecar Container<br/><i>(proxy / log-shipper)</i>"]
+            VOL[("Shared Volume<br/><i>emptyDir / ConfigMap / Secret</i>")]
+        end
+    end
+
+    API -->|Watch Event| KUBELET
+    KUBELET -->|gRPC CRI API| CRI
+    CRI --> INIT
+    INIT -.->|Exit 0 Success| MAIN
+    INIT -.->|Exit 0 Success| SIDECAR
+    MAIN <-->|Mount| VOL
+    SIDECAR <-->|Mount| VOL
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

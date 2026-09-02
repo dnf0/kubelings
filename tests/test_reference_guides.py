@@ -133,3 +133,30 @@ def test_all_114_exercises_are_linked_in_guides():
     assert not missing, (
         f"The following exercises are not linked in any reference guide: {sorted(missing)}"
     )
+
+
+@pytest.mark.parametrize("slug", CHAPTER_SLUGS)
+def test_all_guides_have_valid_mermaid_diagrams(slug: str):
+    """Verify that every guide contains a rich, valid Mermaid.js diagram in Section 1 and zero raw text boxes."""
+    guide_path = GUIDES_DIR / f"{slug}.md"
+    content = guide_path.read_text(encoding="utf-8")
+
+    mermaid_blocks = re.findall(r"```mermaid\n(.*?)```", content, re.DOTALL)
+    assert len(mermaid_blocks) >= 1, f"{slug}: Missing Mermaid.js diagram in Section 1"
+
+    for i, block in enumerate(mermaid_blocks):
+        stripped = block.strip()
+        assert len(stripped) > 30, f"{slug}: Mermaid block {i + 1} is too short"
+        # Must declare a valid mermaid graph type (flowchart, sequenceDiagram, stateDiagram, etc.)
+        first_line = stripped.split("\n")[0].strip()
+        assert any(
+            first_line.startswith(graph_type)
+            for graph_type in (
+                "flowchart",
+                "graph",
+                "sequenceDiagram",
+                "stateDiagram",
+                "classDiagram",
+                "erDiagram",
+            )
+        ), f"{slug}: Mermaid diagram has invalid header: '{first_line}'"

@@ -21,19 +21,22 @@
 
 In Kubernetes, **Observability, Debugging & Production Troubleshooting** is reconciled through declarative state loops managed by the control plane:
 
-```text
-Troubleshooting Decision Flowchart
-┌───────────────────────────┐
-│     Pod Not Working?      │
-└─────────────┬─────────────┘
-              │
-  ┌───────────┴───────────┐
-  ▼                       ▼
-[ Status: Pending ]     [ Status: CrashLoopBackOff ]
-  │                       │
-  ├─► Insufficient CPU    ├─► Check logs: `kubectl logs --previous`
-  ├─► Missing PV / Secret ├─► Inspect Exit Code (137 = OOMKilled)
-  └─► Node Taint Mismatch └─► Check ConfigMap / Env Vars
+```mermaid
+flowchart TD
+    START(["🚨 Pod Failure Detected"]) --> STATUS{"Check Pod Phase"}
+
+    STATUS -->|Pending| PEND{"Node Assignment Issue?"}
+    PEND -->|Insufficient CPU/Memory| FIX_CAP["Scale Cluster Nodes / Reduce Resource Requests"]
+    PEND -->|Node Affinity / Taint Conflict| FIX_TAINT["Add Toleration or Fix Node Labels"]
+
+    STATUS -->|CrashLoopBackOff| CRASH{"Exit Code Analysis"}
+    CRASH -->|Exit 137 (SIGKILL)| OOM["OOMKilled: Increase container memory limit"]
+    CRASH -->|Exit 1 / 2| LOGS["Inspect <code>kubectl logs -p &lt;pod&gt;</code> for runtime exceptions"]
+    CRASH -->|Exit 127 / 128| IMG["ImagePullBackOff / Missing Binary or Entrypoint"]
+
+    STATUS -->|Running but No Traffic| READY{"Readiness Check"}
+    READY -->|Ready: False| PROBE["Fix failing Readiness Probe / Backend Health endpoint"]
+    READY -->|Ready: True| NET["Verify Service Selector matches Pod Labels & EndpointSlice"]
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

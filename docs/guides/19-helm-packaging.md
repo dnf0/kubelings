@@ -20,24 +20,31 @@
 
 In Kubernetes, **Package Management with Helm** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌───────────────────────────┐      ┌───────────────────────────┐
-│     Chart.yaml            │      │       values.yaml         │
-│  (Metadata, Dependencies) │      │  (User Config Overrides)  │
-└─────────────┬─────────────┘      └─────────────┬─────────────┘
-              │                                  │
-              ▼                                  ▼
-┌─────────────────────────────────────────────────────────────┐
-│                Helm Template Rendering Engine               │
-│  • Evaluates Go Templates (`templates/deployment.yaml`)     │
-│  • Applies Helper Functions (`_helpers.tpl`)                │
-│  • Validates OpenAPI values schema (`values.schema.json`)   │
-└─────────────────────────────┬───────────────────────────────┘
-                              │ Fully Rendered Kubernetes Manifests
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                      Kubernetes Cluster                     │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart LR
+    subgraph HelmClient["Developer / CI Pipeline"]
+        CLI["Helm CLI (<code>helm upgrade --install</code>)"]
+        CHART["Helm Chart Directory<br/><code>Chart.yaml</code><br/><code>values.yaml</code><br/><code>templates/*.yaml</code>"]
+        VALUES["Override Values (<code>--values prod.yaml</code>)"]
+
+        CHART --> CLI
+        VALUES --> CLI
+    end
+
+    subgraph TemplateEngine["Template Rendering Engine"]
+        RENDER["Go Template Engine + Sprig Functions<br/><i>Generates Pure Kubernetes YAML</i>"]
+        CLI --> RENDER
+    end
+
+    subgraph ClusterStorage["Target Kubernetes Cluster"]
+        API["kube-apiserver"]
+        RELEASE_SECRET["Secret: <code>sh.helm.release.v1.my-app.v3</code><br/><i>(Compressed Release Metadata & History)</i>"]
+        LIVE_RES["Deployed Workloads (Deployment, Service, Ingress)"]
+
+        RENDER -->|Reconcile & Apply| API
+        API --> RELEASE_SECRET
+        API --> LIVE_RES
+    end
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

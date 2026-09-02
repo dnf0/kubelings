@@ -21,21 +21,33 @@
 
 In Kubernetes, **Configuration & Secret Management** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌─────────────────────────────────────────────────────────────┐
-│                      Kubernetes API                         │
-│   ┌────────────────────┐          ┌─────────────────────┐   │
-│   │  ConfigMap (Plain) │          │ Secret (Base64/KMS) │   │
-│   └─────────┬──────────┘          └──────────┬──────────┘   │
-└─────────────┼────────────────────────────────┼──────────────┘
-              │                                │
-              ▼ Mounted as Files / Env Vars    ▼
-┌─────────────────────────────────────────────────────────────┐
-│                         Pod Spec                            │
-│  • envFrom: configMapRef / secretRef                        │
-│  • volumes.configMap -> /etc/config                         │
-│  • volumes.secret    -> /etc/secrets (tmpfs memory)         │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart LR
+    subgraph ControlPlane["Kubernetes API & Encryption"]
+        CM["ConfigMap<br/><code>v1/ConfigMaps</code><br/><i>Key-Value Config</i>"]
+        SEC["Secret<br/><code>v1/Secrets</code><br/><i>KMS Envelope Decryption</i>"]
+        API["kube-apiserver"]
+        CM --> API
+        SEC --> API
+    end
+
+    subgraph KubeletProjection["Kubelet Projection Engine"]
+        VOL_ENG["Volume Manager<br/><i>Atomic Symlink Swap</i>"]
+        ENV_ENG["Process Env Injector<br/><i>Startup Freeze</i>"]
+    end
+
+    subgraph PodSandbox["Application Pod"]
+        APP_PROC["App Runtime Container<br/><i>Process PID 1</i>"]
+        SYMLINK[("Mounted Directory: <code>/etc/config</code><br/><code>..data -> ..2026_09_02</code><br/><i>(Live Dynamic Updates)</i>")]
+        ENV_VARS["Environment Variables<br/><code>DATABASE_URL</code><br/><i>(Static until restart)</i>"]
+    end
+
+    API -->|Watch / Mount| VOL_ENG
+    API -->|Pod Spec Spec.Env| ENV_ENG
+    VOL_ENG -->|Mounts atomic symlink| SYMLINK
+    ENV_ENG -->|Injects at boot| ENV_VARS
+    SYMLINK -->|File Read| APP_PROC
+    ENV_VARS -->|Process Env| APP_PROC
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

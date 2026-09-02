@@ -20,20 +20,30 @@
 
 In Kubernetes, **GitOps Continuous Delivery with ArgoCD** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌───────────────────────────┐
-│     Git Repository        │ ◄── Single Source of Truth (Git Commit / PR)
-└─────────────┬─────────────┘
-              │ ArgoCD Repo Server Polls / Webhook
-              ▼
-┌───────────────────────────┐
-│  ArgoCD Application Ctrl  │ ◄── Compares Git Desired State vs Cluster Live State
-└─────────────┬─────────────┘
-              │ Auto-Sync & Self-Healing Reconciliation
-              ▼
-┌───────────────────────────┐
-│    Kubernetes Cluster     │ ──► [ Deployments, Services, ConfigMaps ]
-└───────────────────────────┘
+```mermaid
+flowchart LR
+    subgraph GitRepo["Source of Truth (Git)"]
+        GIT["Git Repository<br/><code>main branch</code><br/><i>(Kustomize / Helm Manifests)</i>"]
+    end
+
+    subgraph ArgoCDControl["ArgoCD Control Plane"]
+        REPO_SRV["Repo Server<br/><i>Renders YAML Manifests</i>"]
+        APP_CTRL["Application Controller<br/><i>Reconciler & Health Evaluator</i>"]
+        SERVER["ArgoCD API / Web UI"]
+
+        GIT -->|Webhook / 3m Polling| REPO_SRV
+        REPO_SRV --> APP_CTRL
+        APP_CTRL <--> SERVER
+    end
+
+    subgraph TargetCluster["Live Kubernetes Cluster"]
+        API["kube-apiserver"]
+        LIVE_RES["Live Resources<br/><i>Deployments, Services, ConfigMaps</i>"]
+
+        APP_CTRL -->|Compare Desired vs Live State| API
+        API --> LIVE_RES
+        APP_CTRL -->|Auto-Sync & Self-Heal Drift| API
+    end
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

@@ -21,21 +21,30 @@
 
 In Kubernetes, **Storage & Persistent Volumes** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌───────────────────────────┐
-│       StorageClass        │ ◄── Provisioner (CSI: EBS/NFS/Ceph)
-└─────────────┬─────────────┘
-              │ Dynamic Provisioning
-              ▼
-┌───────────────────────────┐         Binding (1-to-1)       ┌───────────────────────────┐
-│     PersistentVolume      │ ◄────────────────────────────► │  PersistentVolumeClaim    │
-│  (Cluster-Scoped Storage) │                                │  (Namespace-Scoped Claim) │
-└───────────────────────────┘                                └─────────────┬─────────────┘
-                                                                           │ Mounted into
-                                                                           ▼
-                                                             ┌───────────────────────────┐
-                                                             │       Pod VolumeMount     │
-                                                             └───────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph StorageControlPlane["Dynamic CSI Provisioning Loop"]
+        PVC["PersistentVolumeClaim<br/><i>(User Storage Request)</i>"]
+        SC["StorageClass<br/><i>Provisioner: ebs.csi.aws.com</i>"]
+        CSI_PROV["csi-provisioner<br/><i>External Controller</i>"]
+        PV["PersistentVolume<br/><i>Bound (ReadWriteOnce)</i>"]
+        PVC -->|References| SC
+        SC -->|Triggers| CSI_PROV
+        CSI_PROV -->|Provisions Block Device| PV
+        PV -.->|Binds to| PVC
+    end
+
+    subgraph NodeAttachment["Worker Node Attachment & Mount"]
+        KUBELET["kubelet Volume Manager"]
+        CSI_NODE["CSI Node Plugin Daemon<br/><i>(Format & Mount ext4/xfs)</i>"]
+        TARGET_DIR[("Target Path<br/><code>/var/lib/kubelet/pods/UID/volumes</code>")]
+        CONTAINER["App Container<br/><code>/var/lib/data</code>"]
+    end
+
+    PVC -->|Scheduled Pod| KUBELET
+    KUBELET -->|NodePublishVolume gRPC| CSI_NODE
+    CSI_NODE -->|Mounts Block Storage| TARGET_DIR
+    TARGET_DIR -->|Bind Mount| CONTAINER
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

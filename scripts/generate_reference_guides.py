@@ -16,22 +16,34 @@ CHAPTER_DATA = {
         "slug": "01-pods",
         "api_groups": "`v1` &bull; `Pod`, `PodDisruptionBudget`",
         "diagram": """
-    ┌─────────────────────────────────────────────────────────────┐
-    │                         Kubelet                             │
-    │  ┌─────────────────┐             ┌───────────────────────┐  │
-    │  │  Init Container │             │  Main App Container   │  │
-    │  │  (runs to exit) │ ──(Shared)─►│  (nginx / python)     │  │
-    │  └────────┬────────┘   Volumes   └───────────┬───────────┘  │
-    │           │                                  │              │
-    │           ▼                                  ▼              │
-    │     [ emptyDir / ]                     [ emptyDir / ]       │
-    │     [ ConfigMap  ]                     [ Secret     ]       │
-    │                                              ▲              │
-    │                                  ┌───────────┴───────────┐  │
-    │                                  │   Sidecar Container   │  │
-    │                                  │   (fluent-bit / proxy)│  │
-    │                                  └───────────────────────┘  │
-    └─────────────────────────────────────────────────────────────┘
+flowchart TD
+    subgraph ControlPlane["Control Plane (API & Scheduling)"]
+        API["kube-apiserver<br/><code>v1/pods</code>"]
+        ETCD[("etcd Storage")]
+        SCHED["kube-scheduler<br/><i>Filters & Scores Nodes</i>"]
+        API <--> ETCD
+        SCHED -->|Assigns Node| API
+    end
+
+    subgraph WorkerNode["Worker Node (kubelet & Runtime)"]
+        KUBELET["kubelet.service<br/><i>Sync Loop & PLEG</i>"]
+        CRI["CRI Engine (containerd / CRI-O)<br/><i>Cgroups & Namespaces</i>"]
+
+        subgraph PodSandbox["Pod Sandbox Network & IPC"]
+            INIT["Init Container<br/><i>(runs sequentially to exit 0)</i>"]
+            MAIN["Main Container<br/><i>(app: web-server)</i>"]
+            SIDECAR["Sidecar Container<br/><i>(proxy / log-shipper)</i>"]
+            VOL[("Shared Volume<br/><i>emptyDir / ConfigMap / Secret</i>")]
+        end
+    end
+
+    API -->|Watch Event| KUBELET
+    KUBELET -->|gRPC CRI API| CRI
+    CRI --> INIT
+    INIT -.->|Exit 0 Success| MAIN
+    INIT -.->|Exit 0 Success| SIDECAR
+    MAIN <-->|Mount| VOL
+    SIDECAR <-->|Mount| VOL
 """,
         "primary_manifest": """apiVersion: v1
 kind: Pod
@@ -188,19 +200,38 @@ spec:
         "slug": "02-controllers",
         "api_groups": "`apps/v1`, `batch/v1` &bull; `Deployment`, `StatefulSet`, `DaemonSet`, `Job`, `CronJob`",
         "diagram": """
-    ┌───────────────────────────┐
-    │     Deployment Controller │
-    └─────────────┬─────────────┘
-                  │ Manages ReplicaSets (Rollouts, Revisions)
-                  ▼
-    ┌───────────────────────────┐
-    │         ReplicaSet        │
-    └─────────────┬─────────────┘
-                  │ Maintains Desired Spec Replicas
-                  ▼
-    ┌───────────┐   ┌───────────┐   ┌───────────┐
-    │  Pod 1    │   │  Pod 2    │   │  Pod 3    │
-    └───────────┘   └───────────┘   └───────────┘
+flowchart TD
+    subgraph ControlLoop["kube-controller-manager"]
+        DC["Deployment Controller<br/><i>Watches Deployments</i>"]
+        RC["ReplicaSet Controller<br/><i>Maintains Spec.Replicas</i>"]
+        SC["StatefulSet Controller<br/><i>Ordinal Index & PVCs</i>"]
+        JC["Job Controller<br/><i>Run-to-Completion</i>"]
+    end
+
+    subgraph StateStore["Control Plane State"]
+        API["kube-apiserver"]
+        ETCD[("etcd Cluster")]
+        API <--> ETCD
+    end
+
+    subgraph DeploymentRevisions["RollingUpdate Reconciler"]
+        RS1["ReplicaSet (v1 Revision)<br/><i>Scaled 3 ➔ 0</i>"]
+        RS2["ReplicaSet (v2 Revision)<br/><i>Scaled 0 ➔ 3</i>"]
+    end
+
+    subgraph PodInstances["Pod Fleet on Worker Nodes"]
+        P1["Pod: api-v2-0 (Running)"]
+        P2["Pod: api-v2-1 (Running)"]
+        P3["Pod: api-v2-2 (Running)"]
+    end
+
+    DC -->|Sync Desired Spec| API
+    API -->|Reconcile Loop| RC
+    RC -->|Manages| RS1
+    RC -->|Manages| RS2
+    RS2 -->|Spawns| P1
+    RS2 -->|Spawns| P2
+    RS2 -->|Spawns| P3
 """,
         "primary_manifest": """apiVersion: apps/v1
 kind: Deployment
@@ -336,20 +367,32 @@ spec:
         "slug": "03-config-secrets",
         "api_groups": "`v1` &bull; `ConfigMap`, `Secret`",
         "diagram": """
-    ┌─────────────────────────────────────────────────────────────┐
-    │                      Kubernetes API                         │
-    │   ┌────────────────────┐          ┌─────────────────────┐   │
-    │   │  ConfigMap (Plain) │          │ Secret (Base64/KMS) │   │
-    │   └─────────┬──────────┘          └──────────┬──────────┘   │
-    └─────────────┼────────────────────────────────┼──────────────┘
-                  │                                │
-                  ▼ Mounted as Files / Env Vars    ▼
-    ┌─────────────────────────────────────────────────────────────┐
-    │                         Pod Spec                            │
-    │  • envFrom: configMapRef / secretRef                        │
-    │  • volumes.configMap -> /etc/config                         │
-    │  • volumes.secret    -> /etc/secrets (tmpfs memory)         │
-    └─────────────────────────────────────────────────────────────┘
+flowchart LR
+    subgraph ControlPlane["Kubernetes API & Encryption"]
+        CM["ConfigMap<br/><code>v1/ConfigMaps</code><br/><i>Key-Value Config</i>"]
+        SEC["Secret<br/><code>v1/Secrets</code><br/><i>KMS Envelope Decryption</i>"]
+        API["kube-apiserver"]
+        CM --> API
+        SEC --> API
+    end
+
+    subgraph KubeletProjection["Kubelet Projection Engine"]
+        VOL_ENG["Volume Manager<br/><i>Atomic Symlink Swap</i>"]
+        ENV_ENG["Process Env Injector<br/><i>Startup Freeze</i>"]
+    end
+
+    subgraph PodSandbox["Application Pod"]
+        APP_PROC["App Runtime Container<br/><i>Process PID 1</i>"]
+        SYMLINK[("Mounted Directory: <code>/etc/config</code><br/><code>..data -> ..2026_09_02</code><br/><i>(Live Dynamic Updates)</i>")]
+        ENV_VARS["Environment Variables<br/><code>DATABASE_URL</code><br/><i>(Static until restart)</i>"]
+    end
+
+    API -->|Watch / Mount| VOL_ENG
+    API -->|Pod Spec Spec.Env| ENV_ENG
+    VOL_ENG -->|Mounts atomic symlink| SYMLINK
+    ENV_ENG -->|Injects at boot| ENV_VARS
+    SYMLINK -->|File Read| APP_PROC
+    ENV_VARS -->|Process Env| APP_PROC
 """,
         "primary_manifest": """apiVersion: v1
 kind: ConfigMap
@@ -456,20 +499,29 @@ data:
         "slug": "04-storage",
         "api_groups": "`v1`, `storage.k8s.io/v1` &bull; `PersistentVolume`, `PersistentVolumeClaim`, `StorageClass`",
         "diagram": """
-    ┌───────────────────────────┐
-    │       StorageClass        │ ◄── Provisioner (CSI: EBS/NFS/Ceph)
-    └─────────────┬─────────────┘
-                  │ Dynamic Provisioning
-                  ▼
-    ┌───────────────────────────┐         Binding (1-to-1)       ┌───────────────────────────┐
-    │     PersistentVolume      │ ◄────────────────────────────► │  PersistentVolumeClaim    │
-    │  (Cluster-Scoped Storage) │                                │  (Namespace-Scoped Claim) │
-    └───────────────────────────┘                                └─────────────┬─────────────┘
-                                                                               │ Mounted into
-                                                                               ▼
-                                                                 ┌───────────────────────────┐
-                                                                 │       Pod VolumeMount     │
-                                                                 └───────────────────────────┘
+flowchart TD
+    subgraph StorageControlPlane["Dynamic CSI Provisioning Loop"]
+        PVC["PersistentVolumeClaim<br/><i>(User Storage Request)</i>"]
+        SC["StorageClass<br/><i>Provisioner: ebs.csi.aws.com</i>"]
+        CSI_PROV["csi-provisioner<br/><i>External Controller</i>"]
+        PV["PersistentVolume<br/><i>Bound (ReadWriteOnce)</i>"]
+        PVC -->|References| SC
+        SC -->|Triggers| CSI_PROV
+        CSI_PROV -->|Provisions Block Device| PV
+        PV -.->|Binds to| PVC
+    end
+
+    subgraph NodeAttachment["Worker Node Attachment & Mount"]
+        KUBELET["kubelet Volume Manager"]
+        CSI_NODE["CSI Node Plugin Daemon<br/><i>(Format & Mount ext4/xfs)</i>"]
+        TARGET_DIR[("Target Path<br/><code>/var/lib/kubelet/pods/UID/volumes</code>")]
+        CONTAINER["App Container<br/><code>/var/lib/data</code>"]
+    end
+
+    PVC -->|Scheduled Pod| KUBELET
+    KUBELET -->|NodePublishVolume gRPC| CSI_NODE
+    CSI_NODE -->|Mounts Block Storage| TARGET_DIR
+    TARGET_DIR -->|Bind Mount| CONTAINER
 """,
         "primary_manifest": """apiVersion: storage.k8s.io/v1
 kind: StorageClass
@@ -595,20 +647,30 @@ spec:
         "slug": "05-services-networking",
         "api_groups": "`v1`, `discovery.k8s.io/v1` &bull; `Service`, `EndpointSlice`",
         "diagram": """
-    ┌───────────────────────────┐
-    │     Client / Ingress      │
-    └─────────────┬─────────────┘
-                  │ DNS: `api.default.svc.cluster.local`
-                  ▼
-    ┌───────────────────────────┐
-    │   Service (ClusterIP)     │ ◄── Virtual IP (iptables / IPVS / eBPF)
-    └─────────────┬─────────────┘
-                  │ EndpointSlice Controller
-                  ▼
-    ┌───────────────────────────┐
-    │       EndpointSlice       │ ──► [ 10.244.1.12:8080 (Pod A) ]
-    │   (List of Healthy IPs)   │ ──► [ 10.244.2.45:8080 (Pod B) ]
-    └───────────────────────────┘
+flowchart TD
+    subgraph ClientLayer["Client Pods & External Traffic"]
+        CLIENT["Client Pod<br/><code>10.244.1.15</code>"]
+        DNS["CoreDNS<br/><code>service.namespace.svc.cluster.local</code>"]
+        CLIENT -->|1. Resolve DNS| DNS
+        DNS -->|2. Returns ClusterIP 10.96.0.10| CLIENT
+    end
+
+    subgraph ServiceRouting["Kernel Datapath (kube-proxy)"]
+        VIP["Service VIP: <code>10.96.0.10:80</code><br/><i>(iptables PREROUTING / IPVS)</i>"]
+        EPS["EndpointSlice Controller<br/><i>Tracks healthy Pod IPs</i>"]
+        VIP <-->|Watches| EPS
+    end
+
+    subgraph TargetPods["Backend Pod Endpoints (Direct Pod CNI IPs)"]
+        POD1["Pod A: <code>10.244.2.40:8080</code><br/><i>(Ready)</i>"]
+        POD2["Pod B: <code>10.244.3.82:8080</code><br/><i>(Ready)</i>"]
+        POD3["Pod C: <code>10.244.1.99:8080</code><br/><i>(Ready)</i>"]
+    end
+
+    CLIENT -->|3. TCP SYN to VIP| VIP
+    VIP -->|DNAT Packet Load Balance| POD1
+    VIP -->|DNAT Packet Load Balance| POD2
+    VIP -->|DNAT Packet Load Balance| POD3
 """,
         "primary_manifest": """apiVersion: v1
 kind: Service
@@ -699,19 +761,36 @@ spec:
         "slug": "06-ingress-gateway",
         "api_groups": "`networking.k8s.io/v1` &bull; `Ingress`, `IngressClass`",
         "diagram": """
-    ┌─────────────────────────────────────────────────────────────┐
-    │                        Internet                             │
-    └─────────────────────────────┬───────────────────────────────┘
-                                  │ HTTPS (Port 443 / TLS)
-                                  ▼
-    ┌─────────────────────────────────────────────────────────────┐
-    │          Ingress Controller (NGINX / Envoy / Traefik)       │
-    └──────────────┬──────────────────────────────┬───────────────┘
-                   │ /api/*                       │ /static/*
-                   ▼                              ▼
-    ┌─────────────────────────────┐┌──────────────────────────────┐
-    │ Service: `api-service:80`   ││ Service: `static-service:80` │
-    └─────────────────────────────┘└──────────────────────────────┘
+flowchart TD
+    subgraph Internet["Public Traffic & Edge Clients"]
+        USER["Browser / HTTPS Client"]
+        DNS["Public DNS (*.example.com)"]
+        USER -->|1. DNS Lookup| DNS
+    end
+
+    subgraph EdgeLoadBalancer["L4 Cloud Load Balancer / VIP"]
+        LB["Cloud Load Balancer (NLB / ALB)<br/><i>Public IP: 203.0.113.50</i>"]
+        USER -->|2. TLS SNI Traffic| LB
+    end
+
+    subgraph IngressLayer["Ingress Controller (Envoy / NGINX)"]
+        ING_POD["Ingress Controller Pods"]
+        ING_RES["Ingress Resource Rules<br/><code>Host: api.example.com</code><br/><code>Path: /v1 -> svc-api</code>"]
+        ING_RES -->|Configures Routing Table| ING_POD
+        LB -->|Routes to NodePort/HostPort| ING_POD
+    end
+
+    subgraph ClusterServices["Internal Cluster Microservices"]
+        SVC1["Service: svc-api<br/><code>Port 80</code>"]
+        SVC2["Service: svc-web<br/><code>Port 80</code>"]
+        EP1["Backend Pods: <code>api-fleet</code>"]
+        EP2["Backend Pods: <code>web-fleet</code>"]
+
+        ING_POD -->|Reverse Proxy /v1/*| SVC1
+        ING_POD -->|Reverse Proxy /*| SVC2
+        SVC1 --> EP1
+        SVC2 --> EP2
+    end
 """,
         "primary_manifest": """apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -842,16 +921,32 @@ spec:
         "slug": "07-scheduling",
         "api_groups": "`v1` &bull; `Pod`, `Node`",
         "diagram": """
-    ┌───────────────────────────┐
-    │      kube-scheduler       │
-    └─────────────┬─────────────┘
-                  │ 1. Filtering (Tolerations, NodeSelector, Affinity)
-                  │ 2. Scoring (Topology Spread, Resource Packing)
-                  ▼
-    ┌───────────────────────────┬───────────────────────────┐
-    │  Zone: us-east-1a         │  Zone: us-east-1b         │
-    │  [ Node A ] [ Node B ]    │  [ Node C ] [ Node D ]    │
-    └───────────────────────────┴───────────────────────────┘
+flowchart TD
+    subgraph APIQueue["Scheduling Queue"]
+        POD["Unscheduled Pod<br/><code>spec.nodeName: null</code>"]
+        QUEUE["ActiveQ / BackoffQ"]
+        POD --> QUEUE
+    end
+
+    subgraph SchedulerCore["kube-scheduler Pipeline"]
+        FILTER["1. Filter Phase (Predicates)<br/><i>NodeResourcesFit, NodeAffinity, Taints</i>"]
+        SCORE["2. Score Phase (Priorities)<br/><i>ImageLocality, NodeResourcesBalancedAllocation</i>"]
+        RESERVE["3. Reserve & Permit Phase<br/><i>Lock Capacity, Delay for Webhooks</i>"]
+        BIND["4. PreBind & Bind Phase<br/><i>Post Binding object to API</i>"]
+
+        QUEUE --> FILTER
+        FILTER -->|Eligible Nodes| SCORE
+        SCORE -->|Highest Ranked Node| RESERVE
+        RESERVE --> BIND
+    end
+
+    subgraph WorkerCluster["Cluster Worker Nodes"]
+        N1["Node 1 (Score: 82)"]
+        N2["Node 2 (Score: 98 - Winner)"]
+        N3["Node 3 (Tainted: NoSchedule)"]
+
+        BIND -->|Sets spec.nodeName = Node-2| N2
+    end
 """,
         "primary_manifest": """apiVersion: apps/v1
 kind: Deployment
@@ -981,19 +1076,31 @@ spec:
         "slug": "08-security-rbac",
         "api_groups": "`rbac.authorization.k8s.io/v1`, `v1` &bull; `Role`, `ClusterRole`, `RoleBinding`, `ServiceAccount`",
         "diagram": """
-    ┌───────────────────────────┐
-    │      ServiceAccount       │ ◄── Injected into Pod JWT Token
-    └─────────────┬─────────────┘
-                  │ Bound via RoleBinding
-                  ▼
-    ┌───────────────────────────┐
-    │     Role / ClusterRole    │ ◄── Rules: apiGroups, resources, verbs
-    └─────────────┬─────────────┘
-                  │ Authorizes
-                  ▼
-    ┌───────────────────────────┐
-    │       kube-apiserver      │ ──► [ GET /api/v1/namespaces/default/pods ] ✓
-    └───────────────────────────┘
+flowchart LR
+    subgraph ClientAuth["1. Authentication (AuthN)"]
+        REQ["API Request (curl/kubectl)"]
+        AUTHN{"AuthN Engine<br/><i>X.509 Certs, OIDC Bearer, ServiceAccount Tokens</i>"}
+        REQ --> AUTHN
+    end
+
+    subgraph RBACAuthz["2. Authorization (AuthZ)"]
+        AUTHZ{"RBAC Engine<br/><i>API Groups, Resources, Verbs</i>"}
+        CRB["ClusterRoleBinding / RoleBinding"]
+        CR["ClusterRole / Role Rules<br/><code>verbs: [get, list, watch]</code>"]
+        AUTHN -->|Authenticated User/Group| AUTHZ
+        CRB --> AUTHZ
+        CR --> CRB
+    end
+
+    subgraph AdmissionControl["3. Admission & Policy"]
+        ADM{"Admission Controllers<br/><i>PodSecurity Standards (Restricted), Mutating/Validating</i>"}
+        AUTHZ -->|Authorized| ADM
+    end
+
+    subgraph ClusterPersistence["4. Execution"]
+        ETCD[("etcd Storage")]
+        ADM -->|Allowed| ETCD
+    end
 """,
         "primary_manifest": """apiVersion: v1
 kind: ServiceAccount
@@ -1115,20 +1222,28 @@ spec:
         "slug": "09-network-policies",
         "api_groups": "`networking.k8s.io/v1` &bull; `NetworkPolicy`",
         "diagram": """
-    ┌─────────────────────────────────────────────────────────────┐
-    │                     Frontend Namespace                      │
-    │   [ Frontend Pod ] ──(Port 5432 TCP)───┐                    │
-    └────────────────────────────────────────┼────────────────────┘
-                                             │ Allowed Ingress
-                                             ▼
-    ┌─────────────────────────────────────────────────────────────┐
-    │                     Database Namespace                      │
-    │   ┌─────────────────────────────────────────────────────┐   │
-    │   │           NetworkPolicy: Allow-From-Frontend        │   │
-    │   │   [ PostgreSQL Pod (Port 5432) ]                    │   │
-    │   │   Default Deny All Other Ingress / Egress           │   │
-    │   └─────────────────────────────────────────────────────┘   │
-    └─────────────────────────────────────────────────────────────┘
+flowchart TD
+    subgraph IngressSource["Traffic Sources"]
+        SRC_APP["Frontend Pod (app=frontend)"]
+        SRC_EXT["External IP (192.168.1.0/24)"]
+        SRC_ROGUE["Untrusted Pod (app=untrusted)"]
+    end
+
+    subgraph PolicyEngine["CNI Datapath Firewall (eBPF / iptables)"]
+        NETPOL["NetworkPolicy: <code>db-netpol</code><br/><i>podSelector: app=database</i><br/><i>policyTypes: [Ingress, Egress]</i>"]
+        ALLOW_RULE["Ingress Rules:<br/>- from: [podSelector: app=frontend]<br/>- ports: [5432/TCP]"]
+        DENY_ALL["Default-Deny Isolation Barrier"]
+        NETPOL --> ALLOW_RULE
+        NETPOL --> DENY_ALL
+    end
+
+    subgraph ProtectedWorkload["Isolated Database Pod"]
+        DB["Target Pod: <code>app=database</code><br/><i>Port 5432 (Postgres)</i>"]
+    end
+
+    SRC_APP -->|Allowed (Matches Selector & Port)| DB
+    SRC_EXT -->|Blocked (CIDR Not Whitelisted)| DENY_ALL
+    SRC_ROGUE -->|Dropped by Kernel Datapath| DENY_ALL
 """,
         "primary_manifest": """apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -1241,20 +1356,32 @@ spec:
         "slug": "10-lifecycle-probes",
         "api_groups": "`v1` &bull; `Pod`",
         "diagram": """
-    Container Startup
-           │
-           ▼
-    ┌─────────────────────────┐
-    │      Startup Probe      │ ──(Fails)──► Kubelet Restarts Container
-    └────────────┬────────────┘
-                 │ (Passes)
-                 ▼
-    ┌─────────────────────────┐          ┌─────────────────────────┐
-    │     Liveness Probe      │ ──Fail──►│ Kubelet Restarts Cont.  │
-    └─────────────────────────┘          └─────────────────────────┘
-    ┌─────────────────────────┐          ┌─────────────────────────┐
-    │     Readiness Probe     │ ──Fail──►│ Remove from Endpoints   │
-    └─────────────────────────┘          └─────────────────────────┘
+flowchart TD
+    subgraph ContainerBoot["Container Startup Phase"]
+        BOOT["Container Spawns (PID 1)"]
+        STARTUP{"Startup Probe<br/><i>failureThreshold: 30, period: 10s</i>"}
+        BOOT --> STARTUP
+    end
+
+    subgraph ActiveMonitoring["Operational Lifecycle Probes"]
+        LIVENESS{"Liveness Probe<br/><i>(Is process deadlocked?)</i>"}
+        READINESS{"Readiness Probe<br/><i>(Can process accept traffic?)</i>"}
+    end
+
+    subgraph EnforcementActions["Kubelet & Networking Actions"]
+        RESTART["Kubelet kills container<br/><i>(CrashLoopBackOff trigger)</i>"]
+        ADD_EP["EndpointSlice includes Pod IP<br/><i>(Receives Service Traffic)</i>"]
+        REMOVE_EP["EndpointSlice removes Pod IP<br/><i>(Traffic Diverted)</i>"]
+    end
+
+    STARTUP -->|Passes| LIVENESS
+    STARTUP -->|Passes| READINESS
+    STARTUP -->|Fails 30x| RESTART
+
+    LIVENESS -->|Fails threshold| RESTART
+    LIVENESS -->|Healthy| READINESS
+    READINESS -->|Success (Ready=True)| ADD_EP
+    READINESS -->|Failure (Ready=False)| REMOVE_EP
 """,
         "primary_manifest": """apiVersion: v1
 kind: Pod
@@ -1380,19 +1507,31 @@ spec:
         "slug": "11-autoscaling",
         "api_groups": "`autoscaling/v2`, `keda.sh/v1alpha1` &bull; `HorizontalPodAutoscaler`, `ScaledObject`",
         "diagram": """
-    ┌───────────────────────────┐
-    │    Metrics Server / KEDA  │ ◄── CPU, Memory, SQS, Kafka Lag
-    └─────────────┬─────────────┘
-                  │ Evaluates Target vs Current Metric
-                  ▼
-    ┌───────────────────────────┐
-    │            HPA            │ ──► Scales Deployment Replicas (2 ──► 10)
-    └─────────────┬─────────────┘
-                  │
-                  ▼
-    ┌───────────────────────────┐
-    │     Cluster Autoscaler    │ ──► Provisions Additional Cloud Nodes
-    └───────────────────────────┘
+flowchart TD
+    subgraph MetricsSource["Metrics Collection Pipeline"]
+        KSM["kube-state-metrics / cAdvisor"]
+        PROM["Prometheus / Datadog"]
+        METRICS_API["Custom Metrics API (k8s.io/metrics)"]
+        KSM --> METRICS_API
+        PROM --> METRICS_API
+    end
+
+    subgraph HorizontalScaling["Pod Autoscaling (HPA)"]
+        HPA["HPA Controller (15s Sync Period)<br/><code>Target: CPU 75%, Custom RPS 500</code>"]
+        METRICS_API -->|Query Live Utilization| HPA
+        DEPLOY["Deployment Controller<br/><i>Updates spec.replicas (3 ➔ 12)</i>"]
+        HPA -->|Desired Replicas Calculation| DEPLOY
+    end
+
+    subgraph NodeAutoscaling["Cluster Capacity Autoscaling"]
+        PENDING["Pods in Pending State (Insufficient CPU/Mem)"]
+        KARPENTER["Karpenter / Cluster Autoscaler"]
+        CLOUD["Cloud Provider (EC2 / GCE Instance Fleet)"]
+
+        DEPLOY -->|Surge Pods| PENDING
+        PENDING -->|Triggers Scaling Event| KARPENTER
+        KARPENTER -->|Provisions Right-Sized Node| CLOUD
+    end
 """,
         "primary_manifest": """apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
@@ -1512,20 +1651,33 @@ spec:
         "slug": "12-crds-and-operators",
         "api_groups": "`apiextensions.k8s.io/v1` &bull; `CustomResourceDefinition`",
         "diagram": """
-    ┌───────────────────────────┐
-    │ CustomResourceDefinition  │ ◄── Registers `Foo` Kind in API Server
-    └─────────────┬─────────────┘
-                  │ OpenAPI v3 Validation Schema
-                  ▼
-    ┌───────────────────────────┐         Watches & Reconciles    ┌───────────────────────────┐
-    │   Custom Resource (CR)    │ ◄─────────────────────────────► │   Custom Operator Pod     │
-    │   (Kind: DatabaseCluster) │                                 │   (Reconciliation Loop)   │
-    └───────────────────────────┘                                 └─────────────┬─────────────┘
-                                                                                │ Creates & Manages
-                                                                                ▼
-                                                                  ┌───────────────────────────┐
-                                                                  │ Pods, PVCs, StatefulSets  │
-                                                                  └───────────────────────────┘
+flowchart TD
+    subgraph OpenAPIValidation["1. Schema Registration"]
+        CRD["CustomResourceDefinition (CRD)<br/><code>group: database.example.com</code><br/><code>kind: PostgreSQLCluster</code>"]
+        APISERVER["kube-apiserver<br/><i>OpenAPI v3 Validation & Storage</i>"]
+        CRD --> APISERVER
+    end
+
+    subgraph OperatorEngine["2. Operator Controller Loop (Kopf / Kube-rs)"]
+        INFORMER["SharedInformer & Reflector<br/><i>List-Watch Local Cache</i>"]
+        QUEUE["WorkQueue (RateLimitingQueue)"]
+        RECONCILER["Reconciliation Function (Python / Go)<br/><code>def reconcile(spec, status):</code>"]
+
+        APISERVER -->|Watch Events (ADD, UPDATE, DEL)| INFORMER
+        INFORMER --> QUEUE
+        QUEUE --> RECONCILER
+    end
+
+    subgraph ManagedResources["3. Actuation & Status"]
+        STATEFULSET["Managed StatefulSets & PVCs"]
+        SERVICE["Managed ClusterIP & Secrets"]
+        STATUS["Update <code>.status.conditions</code>"]
+
+        RECONCILER -->|Creates/Updates| STATEFULSET
+        RECONCILER -->|Creates/Updates| SERVICE
+        RECONCILER -->|Reports State| STATUS
+        STATUS --> APISERVER
+    end
 """,
         "primary_manifest": """apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
@@ -1656,18 +1808,21 @@ spec:
         "slug": "13-troubleshooting",
         "api_groups": "`v1` &bull; `Pod`, `Event`, `Node`",
         "diagram": """
-    Troubleshooting Decision Flowchart
-    ┌───────────────────────────┐
-    │     Pod Not Working?      │
-    └─────────────┬─────────────┘
-                  │
-      ┌───────────┴───────────┐
-      ▼                       ▼
-    [ Status: Pending ]     [ Status: CrashLoopBackOff ]
-      │                       │
-      ├─► Insufficient CPU    ├─► Check logs: `kubectl logs --previous`
-      ├─► Missing PV / Secret ├─► Inspect Exit Code (137 = OOMKilled)
-      └─► Node Taint Mismatch └─► Check ConfigMap / Env Vars
+flowchart TD
+    START(["🚨 Pod Failure Detected"]) --> STATUS{"Check Pod Phase"}
+
+    STATUS -->|Pending| PEND{"Node Assignment Issue?"}
+    PEND -->|Insufficient CPU/Memory| FIX_CAP["Scale Cluster Nodes / Reduce Resource Requests"]
+    PEND -->|Node Affinity / Taint Conflict| FIX_TAINT["Add Toleration or Fix Node Labels"]
+
+    STATUS -->|CrashLoopBackOff| CRASH{"Exit Code Analysis"}
+    CRASH -->|Exit 137 (SIGKILL)| OOM["OOMKilled: Increase container memory limit"]
+    CRASH -->|Exit 1 / 2| LOGS["Inspect <code>kubectl logs -p &lt;pod&gt;</code> for runtime exceptions"]
+    CRASH -->|Exit 127 / 128| IMG["ImagePullBackOff / Missing Binary or Entrypoint"]
+
+    STATUS -->|Running but No Traffic| READY{"Readiness Check"}
+    READY -->|Ready: False| PROBE["Fix failing Readiness Probe / Backend Health endpoint"]
+    READY -->|Ready: True| NET["Verify Service Selector matches Pod Labels & EndpointSlice"]
 """,
         "primary_manifest": """apiVersion: v1
 kind: Pod
@@ -1749,19 +1904,29 @@ spec:
         "slug": "14-gitops-argocd",
         "api_groups": "`argoproj.io/v1alpha1` &bull; `Application`, `ApplicationSet`, `Rollout`",
         "diagram": """
-    ┌───────────────────────────┐
-    │     Git Repository        │ ◄── Single Source of Truth (Git Commit / PR)
-    └─────────────┬─────────────┘
-                  │ ArgoCD Repo Server Polls / Webhook
-                  ▼
-    ┌───────────────────────────┐
-    │  ArgoCD Application Ctrl  │ ◄── Compares Git Desired State vs Cluster Live State
-    └─────────────┬─────────────┘
-                  │ Auto-Sync & Self-Healing Reconciliation
-                  ▼
-    ┌───────────────────────────┐
-    │    Kubernetes Cluster     │ ──► [ Deployments, Services, ConfigMaps ]
-    └───────────────────────────┘
+flowchart LR
+    subgraph GitRepo["Source of Truth (Git)"]
+        GIT["Git Repository<br/><code>main branch</code><br/><i>(Kustomize / Helm Manifests)</i>"]
+    end
+
+    subgraph ArgoCDControl["ArgoCD Control Plane"]
+        REPO_SRV["Repo Server<br/><i>Renders YAML Manifests</i>"]
+        APP_CTRL["Application Controller<br/><i>Reconciler & Health Evaluator</i>"]
+        SERVER["ArgoCD API / Web UI"]
+
+        GIT -->|Webhook / 3m Polling| REPO_SRV
+        REPO_SRV --> APP_CTRL
+        APP_CTRL <--> SERVER
+    end
+
+    subgraph TargetCluster["Live Kubernetes Cluster"]
+        API["kube-apiserver"]
+        LIVE_RES["Live Resources<br/><i>Deployments, Services, ConfigMaps</i>"]
+
+        APP_CTRL -->|Compare Desired vs Live State| API
+        API --> LIVE_RES
+        APP_CTRL -->|Auto-Sync & Self-Heal Drift| API
+    end
 """,
         "primary_manifest": """apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -1880,20 +2045,34 @@ spec:
         "slug": "15-service-mesh-cilium",
         "api_groups": "`cilium.io/v2` &bull; `CiliumNetworkPolicy`, `CiliumClusterwideNetworkPolicy`",
         "diagram": """
-    ┌─────────────────────────────────────────────────────────────┐
-    │                        Linux Kernel                         │
-    │  ┌───────────────────────────────────────────────────────┐  │
-    │  │                   eBPF Hook Programs                  │  │
-    │  │  • L3/L4 Filtering (Fast Path Bypass iptables)        │  │
-    │  │  • L7 HTTP/gRPC Inspection via Envoy                  │  │
-    │  │  • Transparent WireGuard / IPsec Encryption           │  │
-    │  └───────────────────────────────────────────────────────┘  │
-    └─────────────────────────────┬───────────────────────────────┘
-                                  │ Hubble Telemetry Stream
-                                  ▼
-    ┌─────────────────────────────────────────────────────────────┐
-    │                 Hubble Observability UI                     │
-    └─────────────────────────────────────────────────────────────┘
+flowchart TD
+    subgraph LinuxKernel["Linux Kernel Datapath (eBPF Socket Layer)"]
+        SOCKOPS["BPF sockops (Socket-level bypass)"]
+        TC_BPF["Traffic Control BPF (tc-bpf routing)"]
+    end
+
+    subgraph CiliumAgent["Cilium Daemon (Per-Node DaemonSet)"]
+        CILIUM_CORE["Cilium Agent Engine<br/><i>Compiles & Attaches eBPF Programs</i>"]
+        HUBBLE["Hubble L7 Observability Server"]
+        ENVOY["Embedded Envoy Proxy<br/><i>(Sidecarless L7 Filtering & mTLS)</i>"]
+        CILIUM_CORE --> SOCKOPS
+        CILIUM_CORE --> TC_BPF
+        CILIUM_CORE --> HUBBLE
+        CILIUM_CORE --> ENVOY
+    end
+
+    subgraph PodA["Pod A (Client)"]
+        APP_A["Application Container A"]
+    end
+
+    subgraph PodB["Pod B (Service)"]
+        APP_B["Application Container B"]
+    end
+
+    APP_A -->|Direct Socket Write| SOCKOPS
+    SOCKOPS -->|WireGuard / IPsec Encryption| TC_BPF
+    TC_BPF -->|Direct Socket Read| APP_B
+    SOCKOPS -.->|L7 Policy / Trace| HUBBLE
 """,
         "primary_manifest": """apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
@@ -2003,16 +2182,32 @@ spec:
         "slug": "16-policy-as-code",
         "api_groups": "`kyverno.io/v1`, `templates.gatekeeper.sh/v1` &bull; `ClusterPolicy`, `ConstraintTemplate`",
         "diagram": """
-    ┌───────────────────────────┐
-    │     User / CI Pipeline    │ ──(kubectl apply)──► kube-apiserver
-    └───────────────────────────┘                            │
-                                                             ▼ Admission Phase
-    ┌─────────────────────────────────────────────────────────────┐
-    │            Policy Engine (Kyverno / Gatekeeper)             │
-    │  • Validate: Block privileged containers, enforce non-root  │
-    │  • Mutate: Auto-inject default securityContext & labels     │
-    │  • Generate: Auto-create NetworkPolicies on new Namespaces  │
-    └─────────────────────────────────────────────────────────────┘
+flowchart TD
+    subgraph APIPipeline["API Admission Request Pipeline"]
+        REQ["Admission Request (e.g. Create Pod)"]
+        APISERVER["kube-apiserver Admission Pipeline"]
+        REQ --> APISERVER
+    end
+
+    subgraph PolicyEngine["Kyverno / OPA Gatekeeper Engine"]
+        MUTATE["1. Mutate Phase<br/><i>(Inject securityContext, labels, sidecars)</i>"]
+        GENERATE["2. Generate Phase<br/><i>(Create default NetworkPolicies, Quotas)</i>"]
+        VALIDATE["3. Validate Phase<br/><i>(Enforce readOnlyRootFilesystem, nonRoot)</i>"]
+        VERIFY["4. Verify Images<br/><i>(Cosign Sigstore crypto verification)</i>"]
+
+        APISERVER -->|AdmissionReview Webhook| MUTATE
+        MUTATE --> GENERATE
+        GENERATE --> VALIDATE
+        VALIDATE --> VERIFY
+    end
+
+    subgraph DecisionOutcome["Admission Verdict"]
+        ALLOW["✅ 200 OK: Object Persisted to etcd"]
+        DENY["❌ 403 Forbidden: Policy Violation Message Returned"]
+
+        VERIFY -->|Passes All Checks| ALLOW
+        VALIDATE -->|Rule Violation (Enforce Mode)| DENY
+    end
 """,
         "primary_manifest": """apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -2133,19 +2328,32 @@ spec:
         "slug": "17-multitenancy-vcluster",
         "api_groups": "`v1`, `hnc.x-k8s.io/v1alpha2` &bull; `ResourceQuota`, `LimitRange`, `HierarchyConfiguration`",
         "diagram": """
-    ┌─────────────────────────────────────────────────────────────┐
-    │                      Host K8s Cluster                       │
-    │  ┌───────────────────────────────────────────────────────┐  │
-    │  │               Tenant Namespace: `team-alpha`          │  │
-    │  │  ┌─────────────────────────────────────────────────┐  │  │
-    │  │  │              vcluster Control Plane             │  │  │
-    │  │  │   (Virtual API Server + SQLite/k3s / Syncer)    │  │  │
-    │  │  └────────────────────────┬────────────────────────┘  │  │
-    │  │                           │ Synced Workload Pods      │  │
-    │  │                           ▼                           │  │
-    │  │  [ Pod A (synced) ] [ Pod B (synced) ] [ Secret ]     │  │
-    │  └───────────────────────────────────────────────────────┘  │
-    └─────────────────────────────────────────────────────────────┘
+flowchart TD
+    subgraph TenantSandbox["Tenant A Virtual Control Plane (vcluster)"]
+        V_API["Virtual kube-apiserver (k3s / k8s)"]
+        V_ETCD[("Virtual SQLite / etcd<br/><i>(Isolates CRDs, Namespaces, ClusterRoles)</i>")]
+        V_SYNC["Syncer Process<br/><i>(Translates Virtual Pods ➔ Host Pods)</i>"]
+
+        V_API <--> V_ETCD
+        V_API --> V_SYNC
+    end
+
+    subgraph HostCluster["Host Physical Kubernetes Cluster"]
+        HOST_API["Host kube-apiserver"]
+        HOST_NS["Tenant Namespace: <code>tenant-a-prod</code>"]
+        RESOURCE_QUOTA["ResourceQuota & LimitRange Enforcement"]
+
+        V_SYNC -->|Creates Workloads in Host NS| HOST_API
+        HOST_API --> HOST_NS
+        HOST_NS --> RESOURCE_QUOTA
+    end
+
+    subgraph WorkerNodes["Shared Physical Worker Nodes"]
+        POD1["Host Pod: <code>tenant-a-web-x8f9</code>"]
+        POD2["Host Pod: <code>tenant-a-db-z2a1</code>"]
+        HOST_NS --> POD1
+        HOST_NS --> POD2
+    end
 """,
         "primary_manifest": """apiVersion: v1
 kind: ResourceQuota
@@ -2240,19 +2448,30 @@ isolation:
         "slug": "18-admission-webhooks",
         "api_groups": "`admissionregistration.k8s.io/v1` &bull; `MutatingWebhookConfiguration`, `ValidatingWebhookConfiguration`",
         "diagram": """
-    API Request ──► [ Authentication ] ──► [ Authorization ]
-                                                   │
-                                                   ▼
-    [ Mutating Webhooks ] ◄── Calls Webhook Service (Modifies Spec)
-           │
-           ▼
-    [ Schema Validation ]
-           │
-           ▼
-    [ Validating Webhooks ] ◄── Calls Webhook Service (Accept / Deny)
-           │
-           ▼
-    [ Persist to etcd ]
+flowchart TD
+    subgraph APIServerPipeline["kube-apiserver Admission Processing"]
+        REQ["kubectl / API Request"]
+        MUTATING["1. Mutating Admission Webhook Phase<br/><i>(Sequential Invocations)</i>"]
+        SCHEMA["2. Object Schema Validation & Immutability"]
+        VALIDATING["3. Validating Admission Webhook Phase<br/><i>(Parallel Invocations)</i>"]
+        PERSIST[("etcd Storage")]
+
+        REQ --> MUTATING
+        MUTATING --> SCHEMA
+        SCHEMA --> VALIDATING
+        VALIDATING --> PERSIST
+    end
+
+    subgraph WebhookServices["Webhook Servers (mTLS Secured)"]
+        MUT_HOOK["Mutating Webhook Pod<br/><i>(Patches JSON: Add Vault Sidecar)</i>"]
+        VAL_HOOK["Validating Webhook Pod<br/><i>(Rejects Missing Resource Limits)</i>"]
+
+        MUTATING -->|POST AdmissionReview| MUT_HOOK
+        MUT_HOOK -->|Returns JSONPatch| MUTATING
+
+        VALIDATING -->|POST AdmissionReview| VAL_HOOK
+        VAL_HOOK -->|Allowed: true/false| VALIDATING
+    end
 """,
         "primary_manifest": """apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
@@ -2365,23 +2584,30 @@ webhooks:
         "slug": "19-helm-packaging",
         "api_groups": "`helm.sh` &bull; `Chart.yaml`, `values.yaml`, `templates/*.yaml`",
         "diagram": """
-    ┌───────────────────────────┐      ┌───────────────────────────┐
-    │     Chart.yaml            │      │       values.yaml         │
-    │  (Metadata, Dependencies) │      │  (User Config Overrides)  │
-    └─────────────┬─────────────┘      └─────────────┬─────────────┘
-                  │                                  │
-                  ▼                                  ▼
-    ┌─────────────────────────────────────────────────────────────┐
-    │                Helm Template Rendering Engine               │
-    │  • Evaluates Go Templates (`templates/deployment.yaml`)     │
-    │  • Applies Helper Functions (`_helpers.tpl`)                │
-    │  • Validates OpenAPI values schema (`values.schema.json`)   │
-    └─────────────────────────────┬───────────────────────────────┘
-                                  │ Fully Rendered Kubernetes Manifests
-                                  ▼
-    ┌─────────────────────────────────────────────────────────────┐
-    │                      Kubernetes Cluster                     │
-    └─────────────────────────────────────────────────────────────┘
+flowchart LR
+    subgraph HelmClient["Developer / CI Pipeline"]
+        CLI["Helm CLI (<code>helm upgrade --install</code>)"]
+        CHART["Helm Chart Directory<br/><code>Chart.yaml</code><br/><code>values.yaml</code><br/><code>templates/*.yaml</code>"]
+        VALUES["Override Values (<code>--values prod.yaml</code>)"]
+
+        CHART --> CLI
+        VALUES --> CLI
+    end
+
+    subgraph TemplateEngine["Template Rendering Engine"]
+        RENDER["Go Template Engine + Sprig Functions<br/><i>Generates Pure Kubernetes YAML</i>"]
+        CLI --> RENDER
+    end
+
+    subgraph ClusterStorage["Target Kubernetes Cluster"]
+        API["kube-apiserver"]
+        RELEASE_SECRET["Secret: <code>sh.helm.release.v1.my-app.v3</code><br/><i>(Compressed Release Metadata & History)</i>"]
+        LIVE_RES["Deployed Workloads (Deployment, Service, Ingress)"]
+
+        RENDER -->|Reconcile & Apply| API
+        API --> RELEASE_SECRET
+        API --> LIVE_RES
+    end
 """,
         "primary_manifest": """# Chart.yaml
 apiVersion: v2
@@ -2490,17 +2716,30 @@ spec:
         "slug": "20-kustomize-overlays",
         "api_groups": "`kustomize.config.k8s.io/v1beta1` &bull; `Kustomization`",
         "diagram": """
-    ┌───────────────────────────┐
-    │     Base Configuration    │ ◄── Common Deployment, Service, Config
-    │    (`base/kustomization`) │
-    └─────────────┬─────────────┘
-                  │ Inherited by Environments
-          ┌───────┴───────┐
-          ▼               ▼
-    ┌───────────┐   ┌───────────┐
-    │  Dev      │   │  Prod     │ ◄── Strategic Merge Patches,
-    │  Overlay  │   │  Overlay  │     Replica Count, Name Prefixes
-    └───────────┘   └───────────┘
+flowchart LR
+    subgraph BaseLayer["Base Configuration (Dry, Reusable)"]
+        BASE_K["base/kustomization.yaml"]
+        BASE_RES["base/deployment.yaml<br/>base/service.yaml"]
+        BASE_RES --> BASE_K
+    end
+
+    subgraph OverlayLayer["Environment Overlays"]
+        DEV_K["overlays/dev/kustomization.yaml<br/><i>replicas: 1, debug: true</i>"]
+        PROD_K["overlays/prod/kustomization.yaml<br/><i>replicas: 10, namePrefix: prod-</i>"]
+
+        BASE_K --> DEV_K
+        BASE_K --> PROD_K
+    end
+
+    subgraph BuildEngine["Kustomize Processing Engine"]
+        ENGINE["Strategic Merge & JSON 6902 Patch Engine<br/><code>kustomize build overlays/prod</code>"]
+        PROD_K --> ENGINE
+    end
+
+    subgraph OutputManifests["Target Declarative Manifests"]
+        FINAL_YAML["Production Declarative Manifests<br/><i>(Prefixes, Patches, Hash-suffixed ConfigMaps)</i>"]
+        ENGINE --> FINAL_YAML
+    end
 """,
         "primary_manifest": """apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -2588,27 +2827,28 @@ spec:
         "slug": "21-gateway-api",
         "api_groups": "`gateway.networking.k8s.io/v1` &bull; `GatewayClass`, `Gateway`, `HTTPRoute`, `ReferenceGrant`",
         "diagram": """
-    ┌───────────────────────────┐
-    │     Cluster Operator      │ ──► Manages GatewayClass & Gateway (Infrastructure)
-    └─────────────┬─────────────┘
-                  │
-                  ▼
-    ┌───────────────────────────┐
-    │          Gateway          │ ◄── Listens on Port 80/443 (Shared VIP)
-    └─────────────┬─────────────┘
-                  │ Attaches Routes (Role-Oriented)
-                  ▼
-    ┌───────────────────────────┐
-    │  Application Developer    │ ──► Manages HTTPRoute (80% / 20% Traffic Split)
-    │  (HTTPRoute / GRPCRoute)  │
-    └─────────────┬─────────────┘
-                  │ Routes Traffic to Services
-          ┌───────┴───────┐
-          ▼               ▼
-    ┌───────────┐   ┌───────────┐
-    │ Service A │   │ Service B │
-    │   (80%)   │   │   (20%)   │
-    └───────────┘   └───────────┘
+flowchart TD
+    subgraph InfrastructureLayer["Infrastructure Role (Cloud / Platform Admin)"]
+        GC["GatewayClass: <code>envoy-gateway-class</code><br/><i>Controller: envoyproxy.io/gateway-controller</i>"]
+    end
+
+    subgraph ClusterOpsLayer["Cluster Operator Role (Site Ops)"]
+        GW["Gateway: <code>prod-gateway</code><br/><i>Listeners: 80 (HTTP), 443 (HTTPS SNI)</i><br/><i>Addresses: 198.51.100.20</i>"]
+        GC -->|Instantiates| GW
+    end
+
+    subgraph AppDevLayer["Application Developer Role (Team Services)"]
+        HTTP_ROUTE["HTTPRoute: <code>store-routes</code><br/><i>Host: store.example.com</i><br/><i>Matches: /cart -> cart-svc, /items -> item-svc</i>"]
+        GW -->|Attaches via AllowedRoutes| HTTP_ROUTE
+    end
+
+    subgraph BackendWorkloads["Target Service Endpoints"]
+        CART_SVC["Service: cart-svc (Weight: 90)"]
+        CANARY_SVC["Service: cart-canary-svc (Weight: 10)"]
+
+        HTTP_ROUTE -->|Traffic Splitting| CART_SVC
+        HTTP_ROUTE -->|Traffic Splitting| CANARY_SVC
+    end
 """,
         "primary_manifest": """apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
@@ -2728,21 +2968,35 @@ spec:
         "slug": "22-crossplane-iac",
         "api_groups": "`apiextensions.crossplane.io/v1`, `pkg.crossplane.io/v1` &bull; `CompositeResourceDefinition`, `Composition`",
         "diagram": """
-    ┌───────────────────────────┐
-    │     Application Dev       │ ──► Declares Composite Resource Claim (XRC)
-    └─────────────┬─────────────┘
-                  │
-                  ▼
-    ┌───────────────────────────┐
-    │        Composition        │ ◄── Platform Team Blueprint
-    └─────────────┬─────────────┘
-                  │ Composes Managed Resources (MR)
-          ┌───────┴───────┐
-          ▼               ▼
-    ┌───────────┐   ┌───────────┐
-    │  AWS RDS  │   │  AWS S3   │ ◄── External Cloud Providers
-    │  Instance │   │  Bucket   │
-    └───────────┘   └───────────┘
+flowchart TD
+    subgraph DevClaim["Application Developer Layer"]
+        XRC["CompositeResourceClaim (XRC)<br/><code>kind: PostgreSQLInstance</code><br/><i>storageGB: 50, tier: production</i>"]
+    end
+
+    subgraph ControlPlaneEngine["Crossplane Composition Engine"]
+        XR["Composite Resource (XR)<br/><code>kind: XPostgreSQLInstance</code>"]
+        COMP["Composition<br/><i>Pipeline: AWS RDS Instance + SecurityGroup + Subnet</i>"]
+        XRD["CompositeResourceDefinition (XRD)<br/><i>Defines OpenAPI Schema & Types</i>"]
+
+        XRC -->|Binds to| XR
+        XRD -->|Validates| XR
+        XR -->|Executes| COMP
+    end
+
+    subgraph ProviderLayer["Crossplane Provider Pods (Cloud APIs)"]
+        PROV_AWS["Provider AWS / GCP / Azure"]
+        MR_DB["Managed Resource: RDSInstance"]
+        MR_SG["Managed Resource: SecurityGroup"]
+
+        COMP --> PROV_AWS
+        PROV_AWS --> MR_DB
+        PROV_AWS --> MR_SG
+    end
+
+    subgraph RealCloud["External Cloud Infrastructure"]
+        CLOUD_RDS[("AWS RDS Multi-AZ Postgres Database")]
+        MR_DB -->|Provisions via AWS API| CLOUD_RDS
+    end
 """,
         "primary_manifest": """apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
@@ -2829,20 +3083,30 @@ spec:
         "slug": "23-ebpf-tetragon",
         "api_groups": "`cilium.io/v1alpha1` &bull; `TracingPolicy`, `TracingPolicyNamespaced`",
         "diagram": """
-    ┌─────────────────────────────────────────────────────────────┐
-    │                         Linux Kernel                        │
-    │  System Calls: `sys_execve`, `sys_openat`, `sys_socket`     │
-    │  ┌───────────────────────────────────────────────────────┐  │
-    │  │             Tetragon eBPF In-Kernel Probe             │  │
-    │  │  • Real-time Process Ancestry & Namespace Tracing     │  │
-    │  │  • In-Kernel Kill Action (Synchronous SIGKILL)        │  │
-    │  └───────────────────────────────────────────────────────┘  │
-    └─────────────────────────────┬───────────────────────────────┘
-                                  │ JSON Security Event Log
-                                  ▼
-    ┌─────────────────────────────────────────────────────────────┐
-    │                 SIEM / Alerting Pipeline                    │
-    └─────────────────────────────────────────────────────────────┘
+flowchart TD
+    subgraph LinuxKernel["Linux Kernel Events (eBPF Sensors)"]
+        KPROBE["kprobe: sys_execve (Process execution)"]
+        TRACE["tracepoint: sys_enter_connect (Network sockets)"]
+        LSM["BPF LSM: security_file_open (Filesystem access)"]
+    end
+
+    subgraph TetragonDaemon["Tetragon Daemon (Per-Node DaemonSet)"]
+        TET_AGENT["Tetragon Agent (Go Engine)<br/><i>Compiles & Loads BPF Programs</i>"]
+        CRD_POLICY["TracingPolicy CRD<br/><i>Rules: Kill on /etc/shadow read or namespace escape</i>"]
+
+        CRD_POLICY --> TET_AGENT
+        TET_AGENT --> KPROBE
+        TET_AGENT --> TRACE
+        TET_AGENT --> LSM
+    end
+
+    subgraph Enforcement["Real-Time Security Enforcement & Telemetry"]
+        SIGKILL["Kernel SIGKILL (Terminates Malicious Process Instantaneously)"]
+        JSON_LOGS["Structured JSON Security Log Stream (/var/log/tetragon/events.json)"]
+
+        LSM -->|Policy Violation: Action=Sigkill| SIGKILL
+        TET_AGENT --> JSON_LOGS
+    end
 """,
         "primary_manifest": """apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
@@ -2944,20 +3208,28 @@ spec:
         "slug": "24-kuberay-ml",
         "api_groups": "`ray.io/v1` &bull; `RayCluster`, `RayJob`, `RayService`",
         "diagram": """
-    ┌─────────────────────────────────────────────────────────────┐
-    │                     RayCluster Topology                     │
-    │  ┌───────────────────────────────────────────────────────┐  │
-    │  │                  Ray Head Node Pod                    │  │
-    │  │  (GCS Metadata Store, Dashboard, Global Scheduler)   │  │
-    │  └──────────────────────────┬────────────────────────────┘  │
-    │                             │ Distributed Tasks & Actors    │
-    │              ┌──────────────┴──────────────┐                │
-    │              ▼                             ▼                │
-    │  ┌───────────────────────┐     ┌───────────────────────┐    │
-    │  │   Ray Worker Pod 1    │     │   Ray Worker Pod 2    │    │
-    │  │   (GPU Worker Group)  │     │   (CPU Worker Group)  │    │
-    │  └───────────────────────┘     └───────────────────────┘    │
-    └─────────────────────────────────────────────────────────────┘
+flowchart TD
+    subgraph OperatorLayer["KubeRay Operator"]
+        RAY_CR["RayCluster CRD<br/><i>rayVersion: 2.35.0, workers: 8, gpus: 1</i>"]
+        OPERATOR["KubeRay Controller<br/><i>Reconciles Head & Worker Fleets</i>"]
+        RAY_CR --> OPERATOR
+    end
+
+    subgraph RayClusterArchitecture["Ray Distributed Cluster Architecture"]
+        RAY_HEAD["Ray Head Pod<br/>- Global Control Store (GCS)<br/>- Ray API Server & Dashboard: 8265<br/>- Cluster Autoscaler"]
+
+        subgraph WorkerFleet["Ray Worker Pods (GPU / TPU Nodes)"]
+            W1["Ray Worker 1<br/>- Plasma Shared Memory (Object Store)<br/>- Raylet Execution Daemon<br/>- PyTorch DDP Worker (GPU 0)"]
+            W2["Ray Worker 2<br/>- Plasma Shared Memory (Object Store)<br/>- Raylet Execution Daemon<br/>- PyTorch DDP Worker (GPU 1)"]
+        end
+
+        OPERATOR -->|Creates| RAY_HEAD
+        OPERATOR -->|Creates| W1
+        OPERATOR -->|Creates| W2
+        RAY_HEAD <-->|gRPC Heartbeat & Task Scheduling| W1
+        RAY_HEAD <-->|gRPC Heartbeat & Task Scheduling| W2
+        W1 <-->|NCCL Direct GPU-to-GPU Tensor Exchange| W2
+    end
 """,
         "primary_manifest": """apiVersion: ray.io/v1
 kind: RayCluster
@@ -3075,21 +3347,37 @@ spec:
         "slug": "25-batch-kueue-volcano",
         "api_groups": "`kueue.x-k8s.io/v1beta1`, `scheduling.volcano.sh/v1beta1` &bull; `ClusterQueue`, `LocalQueue`, `PodGroup`",
         "diagram": """
-    ┌───────────────────────────┐
-    │   User Submitted Jobs     │ ──► [ LocalQueue (Namespace A) ]
-    └───────────────────────────┘                     │
-                                                      ▼
-    ┌─────────────────────────────────────────────────────────────┐
-    │                      ClusterQueue                           │
-    │  • Cohort Borrowing (Shares idle capacity between teams)    │
-    │  • Preemption & Fair-Share Scheduling                       │
-    └─────────────────────────────┬───────────────────────────────┘
-                                  │ Admits Workload
-                                  ▼
-    ┌─────────────────────────────────────────────────────────────┐
-    │          Gang Scheduling (Volcano / Coscheduling)           │
-    │          [ All N Pods Scheduled Simultaneously or None ]   │
-    └─────────────────────────────────────────────────────────────┘
+flowchart TD
+    subgraph BatchSubmissions["Batch Job Submissions"]
+        JOB1["Batch Job A (16 Pods - Gang All-or-Nothing)"]
+        JOB2["Batch Job B (32 Pods - High Priority)"]
+    end
+
+    subgraph KueueAdmission["Kueue Quota & Workload Admission Layer"]
+        WORKLOAD["Kueue Workload Controller"]
+        CLUSTER_QUEUE["ClusterQueue: <code>ml-training-queue</code><br/><i>Cohort Quota: 64 GPUs, BorrowingLimit: 16</i>"]
+        RES_FLAVOR["ResourceFlavor: <code>nvidia-a100-gpu</code>"]
+
+        JOB1 --> WORKLOAD
+        JOB2 --> WORKLOAD
+        WORKLOAD --> CLUSTER_QUEUE
+        CLUSTER_QUEUE --> RES_FLAVOR
+    end
+
+    subgraph VolcanoScheduler["Volcano Gang Scheduler Pipeline"]
+        PG["PodGroup Controller<br/><i>minMember: 16 (Prevents Deadlocks)</i>"]
+        PLUGINS["Volcano Plugins:<br/>- <code>gang</code> (All or None)<br/>- <code>drf</code> (Dominant Resource Fairness)<br/>- <code>binpack</code> (Dense packing)"]
+
+        CLUSTER_QUEUE -->|Admitted| PG
+        PG --> PLUGINS
+    end
+
+    subgraph ComputeNodes["Worker Nodes Placement"]
+        N1["Node 1 (4 GPUs Allocated)"]
+        N2["Node 2 (4 GPUs Allocated)"]
+        PLUGINS --> N1
+        PLUGINS --> N2
+    end
 """,
         "primary_manifest": """apiVersion: kueue.x-k8s.io/v1beta1
 kind: ClusterQueue
@@ -3190,20 +3478,36 @@ spec:
         "slug": "26-hardware-acceleration-dra",
         "api_groups": "`resource.k8s.io/v1alpha3` &bull; `ResourceClaim`, `ResourceClaimTemplate`, `DeviceClass`",
         "diagram": """
-    ┌───────────────────────────┐
-    │     Pod Specification     │ ──► References `ResourceClaim`
-    └─────────────┬─────────────┘
-                  │
-                  ▼
-    ┌───────────────────────────┐
-    │       ResourceClaim       │ ◄── Requests Specific Device Attributes
-    │  (DRA: GPU, TPU, FPGA)    │     (e.g., 20GB VRAM, NVLink Mesh)
-    └─────────────┬─────────────┘
-                  │ Dynamic Driver Allocation
-                  ▼
-    ┌───────────────────────────┐
-    │   DRA Node Driver Plugin  │ ──► Configures Hardware & Binds to Container
-    └───────────────────────────┘
+flowchart TD
+    subgraph WorkloadClaim["Workload Specification"]
+        POD["AI Inference Pod<br/><code>resourceClaims: [model-gpu]</code>"]
+        CLAIM_TMP["ResourceClaimTemplate<br/><i>deviceClassName: gpu.nvidia.com</i><br/><i>CEL: device.memory >= 80Gi && device.mig == true</i>"]
+        POD --> CLAIM_TMP
+    end
+
+    subgraph ControlPlaneDRA["Dynamic Resource Allocation (DRA) Controller"]
+        DRA_CTRL["DRA Central Allocator Loop"]
+        CLAIM["ResourceClaim (Bound to Specific Device ID)"]
+        CLAIM_TMP --> DRA_CTRL
+        DRA_CTRL --> CLAIM
+    end
+
+    subgraph NodePlugin["Worker Node CDI Device Plugin"]
+        KUBELET["kubelet.service"]
+        DRA_PLUGIN["NVIDIA DRA Driver Plugin (DaemonSet)"]
+        CDI["Container Device Interface (CDI)<br/><code>/var/run/cdi/nvidia.yaml</code>"]
+
+        CLAIM --> KUBELET
+        KUBELET <-->|gRPC NodePrepareResources| DRA_PLUGIN
+        DRA_PLUGIN --> CDI
+    end
+
+    subgraph HardwareExecution["Container Hardware Sandbox"]
+        CONTAINER["App Container (TensorRT / vLLM)"]
+        PHYS_GPU[("NVIDIA H100 GPU (NVLink / MIG Instance)")]
+        CDI -->|Mounts Device Nodes & Driver Libs| CONTAINER
+        CONTAINER <-->|Direct PCIe / DMA Access| PHYS_GPU
+    end
 """,
         "primary_manifest": """apiVersion: resource.k8s.io/v1alpha3
 kind: ResourceClaim
@@ -3363,7 +3667,7 @@ for chapter in manifest.chapters:
 </div>
 
 !!! tip "⚡ Interactive Problems in this Chapter (Click to solve in Playground)"
-{textwrap.indent(top_exercise_list, '    ')}
+{textwrap.indent(top_exercise_list, "    ")}
 
 ---
 
@@ -3371,7 +3675,7 @@ for chapter in manifest.chapters:
 
 In Kubernetes, **{chapter.title}** is reconciled through declarative state loops managed by the control plane:
 
-```text
+```mermaid
 {textwrap.dedent(data["diagram"]).strip()}
 ```
 

@@ -20,21 +20,31 @@
 
 In Kubernetes, **Kernel-Level Security & Observability with eBPF Tetragon** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌─────────────────────────────────────────────────────────────┐
-│                         Linux Kernel                        │
-│  System Calls: `sys_execve`, `sys_openat`, `sys_socket`     │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │             Tetragon eBPF In-Kernel Probe             │  │
-│  │  • Real-time Process Ancestry & Namespace Tracing     │  │
-│  │  • In-Kernel Kill Action (Synchronous SIGKILL)        │  │
-│  └───────────────────────────────────────────────────────┘  │
-└─────────────────────────────┬───────────────────────────────┘
-                              │ JSON Security Event Log
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                 SIEM / Alerting Pipeline                    │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph LinuxKernel["Linux Kernel Events (eBPF Sensors)"]
+        KPROBE["kprobe: sys_execve (Process execution)"]
+        TRACE["tracepoint: sys_enter_connect (Network sockets)"]
+        LSM["BPF LSM: security_file_open (Filesystem access)"]
+    end
+
+    subgraph TetragonDaemon["Tetragon Daemon (Per-Node DaemonSet)"]
+        TET_AGENT["Tetragon Agent (Go Engine)<br/><i>Compiles & Loads BPF Programs</i>"]
+        CRD_POLICY["TracingPolicy CRD<br/><i>Rules: Kill on /etc/shadow read or namespace escape</i>"]
+
+        CRD_POLICY --> TET_AGENT
+        TET_AGENT --> KPROBE
+        TET_AGENT --> TRACE
+        TET_AGENT --> LSM
+    end
+
+    subgraph Enforcement["Real-Time Security Enforcement & Telemetry"]
+        SIGKILL["Kernel SIGKILL (Terminates Malicious Process Instantaneously)"]
+        JSON_LOGS["Structured JSON Security Log Stream (/var/log/tetragon/events.json)"]
+
+        LSM -->|Policy Violation: Action=Sigkill| SIGKILL
+        TET_AGENT --> JSON_LOGS
+    end
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

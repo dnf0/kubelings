@@ -20,21 +20,34 @@
 
 In Kubernetes, **Custom Resources, CRDs & Operators** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌───────────────────────────┐
-│ CustomResourceDefinition  │ ◄── Registers `Foo` Kind in API Server
-└─────────────┬─────────────┘
-              │ OpenAPI v3 Validation Schema
-              ▼
-┌───────────────────────────┐         Watches & Reconciles    ┌───────────────────────────┐
-│   Custom Resource (CR)    │ ◄─────────────────────────────► │   Custom Operator Pod     │
-│   (Kind: DatabaseCluster) │                                 │   (Reconciliation Loop)   │
-└───────────────────────────┘                                 └─────────────┬─────────────┘
-                                                                            │ Creates & Manages
-                                                                            ▼
-                                                              ┌───────────────────────────┐
-                                                              │ Pods, PVCs, StatefulSets  │
-                                                              └───────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph OpenAPIValidation["1. Schema Registration"]
+        CRD["CustomResourceDefinition (CRD)<br/><code>group: database.example.com</code><br/><code>kind: PostgreSQLCluster</code>"]
+        APISERVER["kube-apiserver<br/><i>OpenAPI v3 Validation & Storage</i>"]
+        CRD --> APISERVER
+    end
+
+    subgraph OperatorEngine["2. Operator Controller Loop (Kopf / Kube-rs)"]
+        INFORMER["SharedInformer & Reflector<br/><i>List-Watch Local Cache</i>"]
+        QUEUE["WorkQueue (RateLimitingQueue)"]
+        RECONCILER["Reconciliation Function (Python / Go)<br/><code>def reconcile(spec, status):</code>"]
+
+        APISERVER -->|Watch Events (ADD, UPDATE, DEL)| INFORMER
+        INFORMER --> QUEUE
+        QUEUE --> RECONCILER
+    end
+
+    subgraph ManagedResources["3. Actuation & Status"]
+        STATEFULSET["Managed StatefulSets & PVCs"]
+        SERVICE["Managed ClusterIP & Secrets"]
+        STATUS["Update <code>.status.conditions</code>"]
+
+        RECONCILER -->|Creates/Updates| STATEFULSET
+        RECONCILER -->|Creates/Updates| SERVICE
+        RECONCILER -->|Reports State| STATUS
+        STATUS --> APISERVER
+    end
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

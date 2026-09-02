@@ -21,17 +21,33 @@
 
 In Kubernetes, **Scheduling, Affinity & Advanced Placement** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌───────────────────────────┐
-│      kube-scheduler       │
-└─────────────┬─────────────┘
-              │ 1. Filtering (Tolerations, NodeSelector, Affinity)
-              │ 2. Scoring (Topology Spread, Resource Packing)
-              ▼
-┌───────────────────────────┬───────────────────────────┐
-│  Zone: us-east-1a         │  Zone: us-east-1b         │
-│  [ Node A ] [ Node B ]    │  [ Node C ] [ Node D ]    │
-└───────────────────────────┴───────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph APIQueue["Scheduling Queue"]
+        POD["Unscheduled Pod<br/><code>spec.nodeName: null</code>"]
+        QUEUE["ActiveQ / BackoffQ"]
+        POD --> QUEUE
+    end
+
+    subgraph SchedulerCore["kube-scheduler Pipeline"]
+        FILTER["1. Filter Phase (Predicates)<br/><i>NodeResourcesFit, NodeAffinity, Taints</i>"]
+        SCORE["2. Score Phase (Priorities)<br/><i>ImageLocality, NodeResourcesBalancedAllocation</i>"]
+        RESERVE["3. Reserve & Permit Phase<br/><i>Lock Capacity, Delay for Webhooks</i>"]
+        BIND["4. PreBind & Bind Phase<br/><i>Post Binding object to API</i>"]
+
+        QUEUE --> FILTER
+        FILTER -->|Eligible Nodes| SCORE
+        SCORE -->|Highest Ranked Node| RESERVE
+        RESERVE --> BIND
+    end
+
+    subgraph WorkerCluster["Cluster Worker Nodes"]
+        N1["Node 1 (Score: 82)"]
+        N2["Node 2 (Score: 98 - Winner)"]
+        N3["Node 3 (Tainted: NoSchedule)"]
+
+        BIND -->|Sets spec.nodeName = Node-2| N2
+    end
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

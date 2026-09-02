@@ -20,21 +20,33 @@
 
 In Kubernetes, **Health Checking, Probes & Lifecycle** is reconciled through declarative state loops managed by the control plane:
 
-```text
-Container Startup
-       │
-       ▼
-┌─────────────────────────┐
-│      Startup Probe      │ ──(Fails)──► Kubelet Restarts Container
-└────────────┬────────────┘
-             │ (Passes)
-             ▼
-┌─────────────────────────┐          ┌─────────────────────────┐
-│     Liveness Probe      │ ──Fail──►│ Kubelet Restarts Cont.  │
-└─────────────────────────┘          └─────────────────────────┘
-┌─────────────────────────┐          ┌─────────────────────────┐
-│     Readiness Probe     │ ──Fail──►│ Remove from Endpoints   │
-└─────────────────────────┘          └─────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph ContainerBoot["Container Startup Phase"]
+        BOOT["Container Spawns (PID 1)"]
+        STARTUP{"Startup Probe<br/><i>failureThreshold: 30, period: 10s</i>"}
+        BOOT --> STARTUP
+    end
+
+    subgraph ActiveMonitoring["Operational Lifecycle Probes"]
+        LIVENESS{"Liveness Probe<br/><i>(Is process deadlocked?)</i>"}
+        READINESS{"Readiness Probe<br/><i>(Can process accept traffic?)</i>"}
+    end
+
+    subgraph EnforcementActions["Kubelet & Networking Actions"]
+        RESTART["Kubelet kills container<br/><i>(CrashLoopBackOff trigger)</i>"]
+        ADD_EP["EndpointSlice includes Pod IP<br/><i>(Receives Service Traffic)</i>"]
+        REMOVE_EP["EndpointSlice removes Pod IP<br/><i>(Traffic Diverted)</i>"]
+    end
+
+    STARTUP -->|Passes| LIVENESS
+    STARTUP -->|Passes| READINESS
+    STARTUP -->|Fails 30x| RESTART
+
+    LIVENESS -->|Fails threshold| RESTART
+    LIVENESS -->|Healthy| READINESS
+    READINESS -->|Success (Ready=True)| ADD_EP
+    READINESS -->|Failure (Ready=False)| REMOVE_EP
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

@@ -21,21 +21,31 @@
 
 In Kubernetes, **Services & Networking** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌───────────────────────────┐
-│     Client / Ingress      │
-└─────────────┬─────────────┘
-              │ DNS: `api.default.svc.cluster.local`
-              ▼
-┌───────────────────────────┐
-│   Service (ClusterIP)     │ ◄── Virtual IP (iptables / IPVS / eBPF)
-└─────────────┬─────────────┘
-              │ EndpointSlice Controller
-              ▼
-┌───────────────────────────┐
-│       EndpointSlice       │ ──► [ 10.244.1.12:8080 (Pod A) ]
-│   (List of Healthy IPs)   │ ──► [ 10.244.2.45:8080 (Pod B) ]
-└───────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph ClientLayer["Client Pods & External Traffic"]
+        CLIENT["Client Pod<br/><code>10.244.1.15</code>"]
+        DNS["CoreDNS<br/><code>service.namespace.svc.cluster.local</code>"]
+        CLIENT -->|1. Resolve DNS| DNS
+        DNS -->|2. Returns ClusterIP 10.96.0.10| CLIENT
+    end
+
+    subgraph ServiceRouting["Kernel Datapath (kube-proxy)"]
+        VIP["Service VIP: <code>10.96.0.10:80</code><br/><i>(iptables PREROUTING / IPVS)</i>"]
+        EPS["EndpointSlice Controller<br/><i>Tracks healthy Pod IPs</i>"]
+        VIP <-->|Watches| EPS
+    end
+
+    subgraph TargetPods["Backend Pod Endpoints (Direct Pod CNI IPs)"]
+        POD1["Pod A: <code>10.244.2.40:8080</code><br/><i>(Ready)</i>"]
+        POD2["Pod B: <code>10.244.3.82:8080</code><br/><i>(Ready)</i>"]
+        POD3["Pod C: <code>10.244.1.99:8080</code><br/><i>(Ready)</i>"]
+    end
+
+    CLIENT -->|3. TCP SYN to VIP| VIP
+    VIP -->|DNAT Packet Load Balance| POD1
+    VIP -->|DNAT Packet Load Balance| POD2
+    VIP -->|DNAT Packet Load Balance| POD3
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

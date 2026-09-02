@@ -20,21 +20,35 @@
 
 In Kubernetes, **Service Mesh, eBPF & Cilium** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌─────────────────────────────────────────────────────────────┐
-│                        Linux Kernel                         │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │                   eBPF Hook Programs                  │  │
-│  │  • L3/L4 Filtering (Fast Path Bypass iptables)        │  │
-│  │  • L7 HTTP/gRPC Inspection via Envoy                  │  │
-│  │  • Transparent WireGuard / IPsec Encryption           │  │
-│  └───────────────────────────────────────────────────────┘  │
-└─────────────────────────────┬───────────────────────────────┘
-                              │ Hubble Telemetry Stream
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                 Hubble Observability UI                     │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph LinuxKernel["Linux Kernel Datapath (eBPF Socket Layer)"]
+        SOCKOPS["BPF sockops (Socket-level bypass)"]
+        TC_BPF["Traffic Control BPF (tc-bpf routing)"]
+    end
+
+    subgraph CiliumAgent["Cilium Daemon (Per-Node DaemonSet)"]
+        CILIUM_CORE["Cilium Agent Engine<br/><i>Compiles & Attaches eBPF Programs</i>"]
+        HUBBLE["Hubble L7 Observability Server"]
+        ENVOY["Embedded Envoy Proxy<br/><i>(Sidecarless L7 Filtering & mTLS)</i>"]
+        CILIUM_CORE --> SOCKOPS
+        CILIUM_CORE --> TC_BPF
+        CILIUM_CORE --> HUBBLE
+        CILIUM_CORE --> ENVOY
+    end
+
+    subgraph PodA["Pod A (Client)"]
+        APP_A["Application Container A"]
+    end
+
+    subgraph PodB["Pod B (Service)"]
+        APP_B["Application Container B"]
+    end
+
+    APP_A -->|Direct Socket Write| SOCKOPS
+    SOCKOPS -->|WireGuard / IPsec Encryption| TC_BPF
+    TC_BPF -->|Direct Socket Read| APP_B
+    SOCKOPS -.->|L7 Policy / Trace| HUBBLE
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

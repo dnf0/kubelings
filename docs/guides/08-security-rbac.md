@@ -21,20 +21,32 @@
 
 In Kubernetes, **Security, RBAC & Service Accounts** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌───────────────────────────┐
-│      ServiceAccount       │ ◄── Injected into Pod JWT Token
-└─────────────┬─────────────┘
-              │ Bound via RoleBinding
-              ▼
-┌───────────────────────────┐
-│     Role / ClusterRole    │ ◄── Rules: apiGroups, resources, verbs
-└─────────────┬─────────────┘
-              │ Authorizes
-              ▼
-┌───────────────────────────┐
-│       kube-apiserver      │ ──► [ GET /api/v1/namespaces/default/pods ] ✓
-└───────────────────────────┘
+```mermaid
+flowchart LR
+    subgraph ClientAuth["1. Authentication (AuthN)"]
+        REQ["API Request (curl/kubectl)"]
+        AUTHN{"AuthN Engine<br/><i>X.509 Certs, OIDC Bearer, ServiceAccount Tokens</i>"}
+        REQ --> AUTHN
+    end
+
+    subgraph RBACAuthz["2. Authorization (AuthZ)"]
+        AUTHZ{"RBAC Engine<br/><i>API Groups, Resources, Verbs</i>"}
+        CRB["ClusterRoleBinding / RoleBinding"]
+        CR["ClusterRole / Role Rules<br/><code>verbs: [get, list, watch]</code>"]
+        AUTHN -->|Authenticated User/Group| AUTHZ
+        CRB --> AUTHZ
+        CR --> CRB
+    end
+
+    subgraph AdmissionControl["3. Admission & Policy"]
+        ADM{"Admission Controllers<br/><i>PodSecurity Standards (Restricted), Mutating/Validating</i>"}
+        AUTHZ -->|Authorized| ADM
+    end
+
+    subgraph ClusterPersistence["4. Execution"]
+        ETCD[("etcd Storage")]
+        ADM -->|Allowed| ETCD
+    end
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

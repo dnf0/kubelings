@@ -20,28 +20,29 @@
 
 In Kubernetes, **Next-Gen Traffic Routing with Kubernetes Gateway API** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌───────────────────────────┐
-│     Cluster Operator      │ ──► Manages GatewayClass & Gateway (Infrastructure)
-└─────────────┬─────────────┘
-              │
-              ▼
-┌───────────────────────────┐
-│          Gateway          │ ◄── Listens on Port 80/443 (Shared VIP)
-└─────────────┬─────────────┘
-              │ Attaches Routes (Role-Oriented)
-              ▼
-┌───────────────────────────┐
-│  Application Developer    │ ──► Manages HTTPRoute (80% / 20% Traffic Split)
-│  (HTTPRoute / GRPCRoute)  │
-└─────────────┬─────────────┘
-              │ Routes Traffic to Services
-      ┌───────┴───────┐
-      ▼               ▼
-┌───────────┐   ┌───────────┐
-│ Service A │   │ Service B │
-│   (80%)   │   │   (20%)   │
-└───────────┘   └───────────┘
+```mermaid
+flowchart TD
+    subgraph InfrastructureLayer["Infrastructure Role (Cloud / Platform Admin)"]
+        GC["GatewayClass: <code>envoy-gateway-class</code><br/><i>Controller: envoyproxy.io/gateway-controller</i>"]
+    end
+
+    subgraph ClusterOpsLayer["Cluster Operator Role (Site Ops)"]
+        GW["Gateway: <code>prod-gateway</code><br/><i>Listeners: 80 (HTTP), 443 (HTTPS SNI)</i><br/><i>Addresses: 198.51.100.20</i>"]
+        GC -->|Instantiates| GW
+    end
+
+    subgraph AppDevLayer["Application Developer Role (Team Services)"]
+        HTTP_ROUTE["HTTPRoute: <code>store-routes</code><br/><i>Host: store.example.com</i><br/><i>Matches: /cart -> cart-svc, /items -> item-svc</i>"]
+        GW -->|Attaches via AllowedRoutes| HTTP_ROUTE
+    end
+
+    subgraph BackendWorkloads["Target Service Endpoints"]
+        CART_SVC["Service: cart-svc (Weight: 90)"]
+        CANARY_SVC["Service: cart-canary-svc (Weight: 10)"]
+
+        HTTP_ROUTE -->|Traffic Splitting| CART_SVC
+        HTTP_ROUTE -->|Traffic Splitting| CANARY_SVC
+    end
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

@@ -20,20 +20,37 @@
 
 In Kubernetes, **Ingress & Gateway API** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌─────────────────────────────────────────────────────────────┐
-│                        Internet                             │
-└─────────────────────────────┬───────────────────────────────┘
-                              │ HTTPS (Port 443 / TLS)
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│          Ingress Controller (NGINX / Envoy / Traefik)       │
-└──────────────┬──────────────────────────────┬───────────────┘
-               │ /api/*                       │ /static/*
-               ▼                              ▼
-┌─────────────────────────────┐┌──────────────────────────────┐
-│ Service: `api-service:80`   ││ Service: `static-service:80` │
-└─────────────────────────────┘└──────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph Internet["Public Traffic & Edge Clients"]
+        USER["Browser / HTTPS Client"]
+        DNS["Public DNS (*.example.com)"]
+        USER -->|1. DNS Lookup| DNS
+    end
+
+    subgraph EdgeLoadBalancer["L4 Cloud Load Balancer / VIP"]
+        LB["Cloud Load Balancer (NLB / ALB)<br/><i>Public IP: 203.0.113.50</i>"]
+        USER -->|2. TLS SNI Traffic| LB
+    end
+
+    subgraph IngressLayer["Ingress Controller (Envoy / NGINX)"]
+        ING_POD["Ingress Controller Pods"]
+        ING_RES["Ingress Resource Rules<br/><code>Host: api.example.com</code><br/><code>Path: /v1 -> svc-api</code>"]
+        ING_RES -->|Configures Routing Table| ING_POD
+        LB -->|Routes to NodePort/HostPort| ING_POD
+    end
+
+    subgraph ClusterServices["Internal Cluster Microservices"]
+        SVC1["Service: svc-api<br/><code>Port 80</code>"]
+        SVC2["Service: svc-web<br/><code>Port 80</code>"]
+        EP1["Backend Pods: <code>api-fleet</code>"]
+        EP2["Backend Pods: <code>web-fleet</code>"]
+
+        ING_POD -->|Reverse Proxy /v1/*| SVC1
+        ING_POD -->|Reverse Proxy /*| SVC2
+        SVC1 --> EP1
+        SVC2 --> EP2
+    end
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

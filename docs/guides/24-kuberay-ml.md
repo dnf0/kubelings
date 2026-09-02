@@ -20,21 +20,29 @@
 
 In Kubernetes, **Distributed AI & ML Orchestration with KubeRay** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌─────────────────────────────────────────────────────────────┐
-│                     RayCluster Topology                     │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │                  Ray Head Node Pod                    │  │
-│  │  (GCS Metadata Store, Dashboard, Global Scheduler)   │  │
-│  └──────────────────────────┬────────────────────────────┘  │
-│                             │ Distributed Tasks & Actors    │
-│              ┌──────────────┴──────────────┐                │
-│              ▼                             ▼                │
-│  ┌───────────────────────┐     ┌───────────────────────┐    │
-│  │   Ray Worker Pod 1    │     │   Ray Worker Pod 2    │    │
-│  │   (GPU Worker Group)  │     │   (CPU Worker Group)  │    │
-│  └───────────────────────┘     └───────────────────────┘    │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph OperatorLayer["KubeRay Operator"]
+        RAY_CR["RayCluster CRD<br/><i>rayVersion: 2.35.0, workers: 8, gpus: 1</i>"]
+        OPERATOR["KubeRay Controller<br/><i>Reconciles Head & Worker Fleets</i>"]
+        RAY_CR --> OPERATOR
+    end
+
+    subgraph RayClusterArchitecture["Ray Distributed Cluster Architecture"]
+        RAY_HEAD["Ray Head Pod<br/>- Global Control Store (GCS)<br/>- Ray API Server & Dashboard: 8265<br/>- Cluster Autoscaler"]
+
+        subgraph WorkerFleet["Ray Worker Pods (GPU / TPU Nodes)"]
+            W1["Ray Worker 1<br/>- Plasma Shared Memory (Object Store)<br/>- Raylet Execution Daemon<br/>- PyTorch DDP Worker (GPU 0)"]
+            W2["Ray Worker 2<br/>- Plasma Shared Memory (Object Store)<br/>- Raylet Execution Daemon<br/>- PyTorch DDP Worker (GPU 1)"]
+        end
+
+        OPERATOR -->|Creates| RAY_HEAD
+        OPERATOR -->|Creates| W1
+        OPERATOR -->|Creates| W2
+        RAY_HEAD <-->|gRPC Heartbeat & Task Scheduling| W1
+        RAY_HEAD <-->|gRPC Heartbeat & Task Scheduling| W2
+        W1 <-->|NCCL Direct GPU-to-GPU Tensor Exchange| W2
+    end
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

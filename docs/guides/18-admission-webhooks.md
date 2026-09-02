@@ -20,20 +20,31 @@
 
 In Kubernetes, **Advanced Admission Webhooks** is reconciled through declarative state loops managed by the control plane:
 
-```text
-API Request ──► [ Authentication ] ──► [ Authorization ]
-                                               │
-                                               ▼
-[ Mutating Webhooks ] ◄── Calls Webhook Service (Modifies Spec)
-       │
-       ▼
-[ Schema Validation ]
-       │
-       ▼
-[ Validating Webhooks ] ◄── Calls Webhook Service (Accept / Deny)
-       │
-       ▼
-[ Persist to etcd ]
+```mermaid
+flowchart TD
+    subgraph APIServerPipeline["kube-apiserver Admission Processing"]
+        REQ["kubectl / API Request"]
+        MUTATING["1. Mutating Admission Webhook Phase<br/><i>(Sequential Invocations)</i>"]
+        SCHEMA["2. Object Schema Validation & Immutability"]
+        VALIDATING["3. Validating Admission Webhook Phase<br/><i>(Parallel Invocations)</i>"]
+        PERSIST[("etcd Storage")]
+
+        REQ --> MUTATING
+        MUTATING --> SCHEMA
+        SCHEMA --> VALIDATING
+        VALIDATING --> PERSIST
+    end
+
+    subgraph WebhookServices["Webhook Servers (mTLS Secured)"]
+        MUT_HOOK["Mutating Webhook Pod<br/><i>(Patches JSON: Add Vault Sidecar)</i>"]
+        VAL_HOOK["Validating Webhook Pod<br/><i>(Rejects Missing Resource Limits)</i>"]
+
+        MUTATING -->|POST AdmissionReview| MUT_HOOK
+        MUT_HOOK -->|Returns JSONPatch| MUTATING
+
+        VALIDATING -->|POST AdmissionReview| VAL_HOOK
+        VAL_HOOK -->|Allowed: true/false| VALIDATING
+    end
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

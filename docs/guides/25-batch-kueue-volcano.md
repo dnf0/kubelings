@@ -20,22 +20,38 @@
 
 In Kubernetes, **AI Batch Scheduling & Queuing with Kueue and Volcano** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌───────────────────────────┐
-│   User Submitted Jobs     │ ──► [ LocalQueue (Namespace A) ]
-└───────────────────────────┘                     │
-                                                  ▼
-┌─────────────────────────────────────────────────────────────┐
-│                      ClusterQueue                           │
-│  • Cohort Borrowing (Shares idle capacity between teams)    │
-│  • Preemption & Fair-Share Scheduling                       │
-└─────────────────────────────┬───────────────────────────────┘
-                              │ Admits Workload
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│          Gang Scheduling (Volcano / Coscheduling)           │
-│          [ All N Pods Scheduled Simultaneously or None ]   │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph BatchSubmissions["Batch Job Submissions"]
+        JOB1["Batch Job A (16 Pods - Gang All-or-Nothing)"]
+        JOB2["Batch Job B (32 Pods - High Priority)"]
+    end
+
+    subgraph KueueAdmission["Kueue Quota & Workload Admission Layer"]
+        WORKLOAD["Kueue Workload Controller"]
+        CLUSTER_QUEUE["ClusterQueue: <code>ml-training-queue</code><br/><i>Cohort Quota: 64 GPUs, BorrowingLimit: 16</i>"]
+        RES_FLAVOR["ResourceFlavor: <code>nvidia-a100-gpu</code>"]
+
+        JOB1 --> WORKLOAD
+        JOB2 --> WORKLOAD
+        WORKLOAD --> CLUSTER_QUEUE
+        CLUSTER_QUEUE --> RES_FLAVOR
+    end
+
+    subgraph VolcanoScheduler["Volcano Gang Scheduler Pipeline"]
+        PG["PodGroup Controller<br/><i>minMember: 16 (Prevents Deadlocks)</i>"]
+        PLUGINS["Volcano Plugins:<br/>- <code>gang</code> (All or None)<br/>- <code>drf</code> (Dominant Resource Fairness)<br/>- <code>binpack</code> (Dense packing)"]
+
+        CLUSTER_QUEUE -->|Admitted| PG
+        PG --> PLUGINS
+    end
+
+    subgraph ComputeNodes["Worker Nodes Placement"]
+        N1["Node 1 (4 GPUs Allocated)"]
+        N2["Node 2 (4 GPUs Allocated)"]
+        PLUGINS --> N1
+        PLUGINS --> N2
+    end
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

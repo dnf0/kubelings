@@ -20,21 +20,37 @@
 
 In Kubernetes, **Hardware Acceleration: NVIDIA MIG, Apple Silicon GPU & DRA** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌───────────────────────────┐
-│     Pod Specification     │ ──► References `ResourceClaim`
-└─────────────┬─────────────┘
-              │
-              ▼
-┌───────────────────────────┐
-│       ResourceClaim       │ ◄── Requests Specific Device Attributes
-│  (DRA: GPU, TPU, FPGA)    │     (e.g., 20GB VRAM, NVLink Mesh)
-└─────────────┬─────────────┘
-              │ Dynamic Driver Allocation
-              ▼
-┌───────────────────────────┐
-│   DRA Node Driver Plugin  │ ──► Configures Hardware & Binds to Container
-└───────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph WorkloadClaim["Workload Specification"]
+        POD["AI Inference Pod<br/><code>resourceClaims: [model-gpu]</code>"]
+        CLAIM_TMP["ResourceClaimTemplate<br/><i>deviceClassName: gpu.nvidia.com</i><br/><i>CEL: device.memory >= 80Gi && device.mig == true</i>"]
+        POD --> CLAIM_TMP
+    end
+
+    subgraph ControlPlaneDRA["Dynamic Resource Allocation (DRA) Controller"]
+        DRA_CTRL["DRA Central Allocator Loop"]
+        CLAIM["ResourceClaim (Bound to Specific Device ID)"]
+        CLAIM_TMP --> DRA_CTRL
+        DRA_CTRL --> CLAIM
+    end
+
+    subgraph NodePlugin["Worker Node CDI Device Plugin"]
+        KUBELET["kubelet.service"]
+        DRA_PLUGIN["NVIDIA DRA Driver Plugin (DaemonSet)"]
+        CDI["Container Device Interface (CDI)<br/><code>/var/run/cdi/nvidia.yaml</code>"]
+
+        CLAIM --> KUBELET
+        KUBELET <-->|gRPC NodePrepareResources| DRA_PLUGIN
+        DRA_PLUGIN --> CDI
+    end
+
+    subgraph HardwareExecution["Container Hardware Sandbox"]
+        CONTAINER["App Container (TensorRT / vLLM)"]
+        PHYS_GPU[("NVIDIA H100 GPU (NVLink / MIG Instance)")]
+        CDI -->|Mounts Device Nodes & Driver Libs| CONTAINER
+        CONTAINER <-->|Direct PCIe / DMA Access| PHYS_GPU
+    end
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

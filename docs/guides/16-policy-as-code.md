@@ -20,17 +20,33 @@
 
 In Kubernetes, **Policy as Code (Kyverno & Gatekeeper)** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌───────────────────────────┐
-│     User / CI Pipeline    │ ──(kubectl apply)──► kube-apiserver
-└───────────────────────────┘                            │
-                                                         ▼ Admission Phase
-┌─────────────────────────────────────────────────────────────┐
-│            Policy Engine (Kyverno / Gatekeeper)             │
-│  • Validate: Block privileged containers, enforce non-root  │
-│  • Mutate: Auto-inject default securityContext & labels     │
-│  • Generate: Auto-create NetworkPolicies on new Namespaces  │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph APIPipeline["API Admission Request Pipeline"]
+        REQ["Admission Request (e.g. Create Pod)"]
+        APISERVER["kube-apiserver Admission Pipeline"]
+        REQ --> APISERVER
+    end
+
+    subgraph PolicyEngine["Kyverno / OPA Gatekeeper Engine"]
+        MUTATE["1. Mutate Phase<br/><i>(Inject securityContext, labels, sidecars)</i>"]
+        GENERATE["2. Generate Phase<br/><i>(Create default NetworkPolicies, Quotas)</i>"]
+        VALIDATE["3. Validate Phase<br/><i>(Enforce readOnlyRootFilesystem, nonRoot)</i>"]
+        VERIFY["4. Verify Images<br/><i>(Cosign Sigstore crypto verification)</i>"]
+
+        APISERVER -->|AdmissionReview Webhook| MUTATE
+        MUTATE --> GENERATE
+        GENERATE --> VALIDATE
+        VALIDATE --> VERIFY
+    end
+
+    subgraph DecisionOutcome["Admission Verdict"]
+        ALLOW["✅ 200 OK: Object Persisted to etcd"]
+        DENY["❌ 403 Forbidden: Policy Violation Message Returned"]
+
+        VERIFY -->|Passes All Checks| ALLOW
+        VALIDATE -->|Rule Violation (Enforce Mode)| DENY
+    end
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

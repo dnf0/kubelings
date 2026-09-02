@@ -20,20 +20,32 @@
 
 In Kubernetes, **Autoscaling (HPA, VPA, KEDA)** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌───────────────────────────┐
-│    Metrics Server / KEDA  │ ◄── CPU, Memory, SQS, Kafka Lag
-└─────────────┬─────────────┘
-              │ Evaluates Target vs Current Metric
-              ▼
-┌───────────────────────────┐
-│            HPA            │ ──► Scales Deployment Replicas (2 ──► 10)
-└─────────────┬─────────────┘
-              │
-              ▼
-┌───────────────────────────┐
-│     Cluster Autoscaler    │ ──► Provisions Additional Cloud Nodes
-└───────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph MetricsSource["Metrics Collection Pipeline"]
+        KSM["kube-state-metrics / cAdvisor"]
+        PROM["Prometheus / Datadog"]
+        METRICS_API["Custom Metrics API (k8s.io/metrics)"]
+        KSM --> METRICS_API
+        PROM --> METRICS_API
+    end
+
+    subgraph HorizontalScaling["Pod Autoscaling (HPA)"]
+        HPA["HPA Controller (15s Sync Period)<br/><code>Target: CPU 75%, Custom RPS 500</code>"]
+        METRICS_API -->|Query Live Utilization| HPA
+        DEPLOY["Deployment Controller<br/><i>Updates spec.replicas (3 ➔ 12)</i>"]
+        HPA -->|Desired Replicas Calculation| DEPLOY
+    end
+
+    subgraph NodeAutoscaling["Cluster Capacity Autoscaling"]
+        PENDING["Pods in Pending State (Insufficient CPU/Mem)"]
+        KARPENTER["Karpenter / Cluster Autoscaler"]
+        CLOUD["Cloud Provider (EC2 / GCE Instance Fleet)"]
+
+        DEPLOY -->|Surge Pods| PENDING
+        PENDING -->|Triggers Scaling Event| KARPENTER
+        KARPENTER -->|Provisions Right-Sized Node| CLOUD
+    end
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.

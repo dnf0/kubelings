@@ -20,20 +20,33 @@
 
 In Kubernetes, **Multi-Tenancy & Virtual Clusters** is reconciled through declarative state loops managed by the control plane:
 
-```text
-┌─────────────────────────────────────────────────────────────┐
-│                      Host K8s Cluster                       │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │               Tenant Namespace: `team-alpha`          │  │
-│  │  ┌─────────────────────────────────────────────────┐  │  │
-│  │  │              vcluster Control Plane             │  │  │
-│  │  │   (Virtual API Server + SQLite/k3s / Syncer)    │  │  │
-│  │  └────────────────────────┬────────────────────────┘  │  │
-│  │                           │ Synced Workload Pods      │  │
-│  │                           ▼                           │  │
-│  │  [ Pod A (synced) ] [ Pod B (synced) ] [ Secret ]     │  │
-│  └───────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph TenantSandbox["Tenant A Virtual Control Plane (vcluster)"]
+        V_API["Virtual kube-apiserver (k3s / k8s)"]
+        V_ETCD[("Virtual SQLite / etcd<br/><i>(Isolates CRDs, Namespaces, ClusterRoles)</i>")]
+        V_SYNC["Syncer Process<br/><i>(Translates Virtual Pods ➔ Host Pods)</i>"]
+
+        V_API <--> V_ETCD
+        V_API --> V_SYNC
+    end
+
+    subgraph HostCluster["Host Physical Kubernetes Cluster"]
+        HOST_API["Host kube-apiserver"]
+        HOST_NS["Tenant Namespace: <code>tenant-a-prod</code>"]
+        RESOURCE_QUOTA["ResourceQuota & LimitRange Enforcement"]
+
+        V_SYNC -->|Creates Workloads in Host NS| HOST_API
+        HOST_API --> HOST_NS
+        HOST_NS --> RESOURCE_QUOTA
+    end
+
+    subgraph WorkerNodes["Shared Physical Worker Nodes"]
+        POD1["Host Pod: <code>tenant-a-web-x8f9</code>"]
+        POD2["Host Pod: <code>tenant-a-db-z2a1</code>"]
+        HOST_NS --> POD1
+        HOST_NS --> POD2
+    end
 ```
 
 When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
