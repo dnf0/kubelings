@@ -840,6 +840,30 @@
    Fullscreen Mode & Full-Bleed Container Overrides
    ========================================================================== */
 
+/* Native HTML5 Fullscreen pseudo-class */
+.kubelings-playground:fullscreen,
+.kubelings-playground:-webkit-full-screen {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  background: var(--pg-card-bg) !important;
+  z-index: 2147483647 !important;
+}
+
+.kubelings-playground:fullscreen .playground-split-layout,
+.kubelings-playground:-webkit-full-screen .playground-split-layout {
+  height: 100vh !important;
+  max-height: 100vh !important;
+  border-radius: 0 !important;
+}
+
+/* CSS Fallback Fullscreen class */
 .kubelings-playground.is-fullscreen {
   position: fixed !important;
   inset: 0 !important;
@@ -848,8 +872,9 @@
   max-height: 100vh !important;
   margin: 0 !important;
   border-radius: 0 !important;
-  z-index: 999999 !important;
+  z-index: 2147483647 !important;
   box-shadow: none !important;
+  background: var(--pg-card-bg) !important;
 }
 
 .kubelings-playground.is-fullscreen .playground-split-layout {
@@ -858,9 +883,18 @@
   border-radius: 0 !important;
 }
 
-/* Full bleed width inside MkDocs Material container */
+/* Full bleed width overrides inside MkDocs Material theme */
+body:has(#kubelings-playground) .md-main__inner,
+body:has(#kubelings-playground) .md-grid,
+body:has(#kubelings-playground) .md-content,
+body:has(#kubelings-playground) .md-content__inner,
+body:has(#kubelings-playground) .md-typeset,
 .md-content:has(#kubelings-playground),
 .md-typeset:has(#kubelings-playground) {
   max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  width: 100% !important;
 }
+
 
