@@ -331,6 +331,7 @@
                 <button id="pg-prev-btn" class="nav-btn" title="Previous Exercise (Alt+Left)">← Prev</button>
                 <button id="pg-next-btn" class="nav-btn" title="Next Exercise (Alt+Right)">Next →</button>
               </div>
+              <button id="pg-fullscreen-btn" class="nav-btn" title="Toggle Fullscreen (F11)">⛶ Fullscreen</button>
               <div id="playground-status" class="playground-status-pill status-loading" title="WebAssembly Engine Status">
                 <span class="status-dot"></span>
                 <span class="status-text">⚡ Starting Python Wasm...</span>
@@ -414,6 +415,7 @@
       clusterBannerEx: container.querySelector("#pg-cluster-banner-ex"),
       prevBtn: container.querySelector("#pg-prev-btn"),
       nextBtn: container.querySelector("#pg-next-btn"),
+      fullscreenBtn: container.querySelector("#pg-fullscreen-btn"),
       status: container.querySelector("#playground-status"),
       statusText: container.querySelector("#playground-status .status-text"),
       runBtn: container.querySelector("#playground-run-btn"),
@@ -1188,6 +1190,25 @@
       });
     }
 
+    function toggleFullscreen() {
+      const container = state.container;
+      if (!container) return;
+
+      const isFs = container.classList.toggle("is-fullscreen");
+      if (state.elements.fullscreenBtn) {
+        state.elements.fullscreenBtn.textContent = isFs ? "✕ Exit Fullscreen" : "⛶ Fullscreen";
+      }
+
+      setTimeout(() => {
+        if (state.editor) state.editor.layout();
+        if (state.diffEditor) state.diffEditor.layout();
+      }, 50);
+    }
+
+    if (state.elements.fullscreenBtn) {
+      state.elements.fullscreenBtn.addEventListener("click", toggleFullscreen);
+    }
+
     // Keyboard shortcuts
     document.addEventListener("keydown", (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
@@ -1199,6 +1220,11 @@
       } else if (e.altKey && e.key === "ArrowRight") {
         e.preventDefault();
         goToNextExercise();
+      } else if (e.key === "F11") {
+        e.preventDefault();
+        toggleFullscreen();
+      } else if (e.key === "Escape" && state.container && state.container.classList.contains("is-fullscreen")) {
+        toggleFullscreen();
       }
     });
 
