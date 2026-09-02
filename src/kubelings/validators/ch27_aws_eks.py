@@ -65,9 +65,7 @@ def validate_eks03(manifest: Any, raw_yaml: str = "") -> None:
     passed, errors = validate_manifest_text(raw_yaml, "eks03")
     assert passed, f"SecurityGroupPolicy manifest validation failed: {errors}"
     assert manifest["kind"] == "SecurityGroupPolicy", "Kind must be 'SecurityGroupPolicy'"
-    assert manifest["metadata"]["name"] == "payment-sg-policy", (
-        "Name must be 'payment-sg-policy'"
-    )
+    assert manifest["metadata"]["name"] == "payment-sg-policy", "Name must be 'payment-sg-policy'"
     pod_sel = manifest["spec"]["podSelector"]["matchLabels"]
     assert pod_sel.get("app") == "payment-gateway", (
         "podSelector.matchLabels must specify 'app: payment-gateway'"

@@ -13,7 +13,9 @@ def validate_eso01(manifest: Any, raw_yaml: str = "") -> None:
     passed, errors = validate_manifest_text(raw_yaml, "eso01")
     assert passed, f"External Secrets manifest validation failed: {errors}"
     docs = manifest if isinstance(manifest, list) else [manifest]
-    assert len(docs) == 2, "Manifest must define exactly 2 documents (SecretStore and ExternalSecret)"
+    assert len(docs) == 2, (
+        "Manifest must define exactly 2 documents (SecretStore and ExternalSecret)"
+    )
 
     store_doc = next((d for d in docs if d.get("kind") == "SecretStore"), None)
     assert store_doc is not None, "Missing SecretStore document"
@@ -62,7 +64,9 @@ def validate_vault01(manifest: Any, raw_yaml: str = "") -> None:
     assert (
         annotations.get("vault.hashicorp.com/agent-inject-secret-database-config")
         == "secret/data/billing/db"
-    ), "Annotation 'vault.hashicorp.com/agent-inject-secret-database-config' must be 'secret/data/billing/db'"
+    ), (
+        "Annotation 'vault.hashicorp.com/agent-inject-secret-database-config' must be 'secret/data/billing/db'"
+    )
     assert manifest["spec"].get("serviceAccountName") == "billing-service-sa", (
         "Pod spec.serviceAccountName must be 'billing-service-sa'"
     )
@@ -82,9 +86,9 @@ def validate_gov01(manifest: Any, raw_yaml: str = "") -> None:
     matrix = manifest["spec"]["generators"][0]["matrix"]
     cluster_gen = next((g for g in matrix["generators"] if "clusters" in g), None)
     assert cluster_gen is not None, "Matrix generator must include clusters generator"
-    assert (
-        cluster_gen["clusters"]["selector"]["matchLabels"].get("tier") == "production"
-    ), "Cluster selector must match 'tier: production'"
+    assert cluster_gen["clusters"]["selector"]["matchLabels"].get("tier") == "production", (
+        "Cluster selector must match 'tier: production'"
+    )
     git_gen = next((g for g in matrix["generators"] if "git" in g), None)
     assert git_gen is not None, "Matrix generator must include git generator"
     assert "monitoring/*" in [d.get("path") for d in git_gen["git"]["directories"]], (

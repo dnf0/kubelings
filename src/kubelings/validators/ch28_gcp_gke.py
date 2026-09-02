@@ -22,7 +22,9 @@ def validate_gke01(manifest: Any, raw_yaml: str = "") -> None:
     assert (
         annotations.get("iam.gke.io/gcp-service-account")
         == "bq-sync@my-gcp-project.iam.gserviceaccount.com"
-    ), "ServiceAccount must have annotation 'iam.gke.io/gcp-service-account: bq-sync@my-gcp-project.iam.gserviceaccount.com'"
+    ), (
+        "ServiceAccount must have annotation 'iam.gke.io/gcp-service-account: bq-sync@my-gcp-project.iam.gserviceaccount.com'"
+    )
 
     pod_doc = next((d for d in docs if d.get("kind") == "Pod"), None)
     assert pod_doc is not None, "Missing Pod document"

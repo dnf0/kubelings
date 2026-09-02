@@ -1,4 +1,3 @@
-
 import pytest
 
 from kubelings.models import Exercise
