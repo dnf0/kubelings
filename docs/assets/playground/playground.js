@@ -11,6 +11,35 @@
 
   const STORAGE_KEY = "kubelings_learning_state_v1";
 
+  const CHAPTER_GUIDES = {
+    1: { slug: "01-pods", title: "Core Workloads & Pods" },
+    2: { slug: "02-controllers", title: "Controllers & Replication" },
+    3: { slug: "03-config-secrets", title: "Configuration & Secrets" },
+    4: { slug: "04-storage", title: "Storage & Persistence" },
+    5: { slug: "05-services-networking", title: "Services & Networking" },
+    6: { slug: "06-ingress-gateway", title: "Ingress & Edge Routing" },
+    7: { slug: "07-scheduling", title: "Scheduling & Affinity" },
+    8: { slug: "08-security-rbac", title: "Security & RBAC" },
+    9: { slug: "09-network-policies", title: "Network Policies" },
+    10: { slug: "10-lifecycle-probes", title: "Lifecycle & Health Probes" },
+    11: { slug: "11-autoscaling", title: "Autoscaling & Scaling Policies" },
+    12: { slug: "12-crds-and-operators", title: "CRDs & Operators" },
+    13: { slug: "13-troubleshooting", title: "Incident Troubleshooting" },
+    14: { slug: "14-gitops-argocd", title: "GitOps & ArgoCD" },
+    15: { slug: "15-service-mesh-cilium", title: "Service Mesh & Cilium eBPF" },
+    16: { slug: "16-policy-as-code", title: "Policy as Code & Governance" },
+    17: { slug: "17-multitenancy-vcluster", title: "Multi-Tenancy & Virtual Clusters" },
+    18: { slug: "18-admission-webhooks", title: "Admission Webhooks" },
+    19: { slug: "19-helm-packaging", title: "Helm Packaging & Templating" },
+    20: { slug: "20-kustomize-overlays", title: "Kustomize Overlays" },
+    21: { slug: "21-gateway-api", title: "Gateway API & Traffic Routing" },
+    22: { slug: "22-crossplane-iac", title: "Crossplane & Infrastructure as Data" },
+    23: { slug: "23-ebpf-tetragon", title: "eBPF Security Observability & Tetragon" },
+    24: { slug: "24-kuberay-ml", title: "Distributed AI & KubeRay" },
+    25: { slug: "25-batch-kueue-volcano", title: "Batch AI Queuing & Volcano" },
+    26: { slug: "26-hardware-acceleration-dra", title: "Hardware Acceleration & DRA" },
+  };
+
   /**
    * ==========================================================================
    * KubelingsStorage: Client-Side Progress & Working Code Persistence
@@ -358,6 +387,11 @@
               <span class="btn-icon">🔍</span>
               <span class="diff-label">Compare Solution</span>
             </button>
+            <a id="playground-guide-btn" class="playground-btn playground-btn-guide" href="../guides/01-pods/" target="_blank" rel="noopener noreferrer" title="Open Chapter Reference Guide in new tab">
+              <span class="btn-icon">📖</span>
+              <span id="pg-guide-btn-text">Reference Guide</span>
+              <span style="font-size: 10px; opacity: 0.7;">↗</span>
+            </a>
           </div>
 
           <!-- Live Cluster Notification Banner -->
@@ -424,6 +458,8 @@
       hintLabel: container.querySelector("#playground-hint-btn .hint-label"),
       diffBtn: container.querySelector("#playground-diff-btn"),
       diffLabel: container.querySelector("#playground-diff-btn .diff-label"),
+      guideBtn: container.querySelector("#playground-guide-btn"),
+      guideBtnText: container.querySelector("#pg-guide-btn-text"),
       hintsCard: container.querySelector("#playground-hints"),
       workspace: container.querySelector(".playground-workspace"),
       editorContainer: container.querySelector("#playground-editor"),
@@ -637,11 +673,34 @@
     }
 
     // Update Header
+    const chNum = ex.chapter_number || 1;
+    const guideInfo = CHAPTER_GUIDES[chNum] || { slug: "01-pods", title: "Reference Guide" };
+    const guideUrl = `../guides/${guideInfo.slug}/`;
+
     if (state.elements.chapterBadge) {
-      state.elements.chapterBadge.textContent = `Chapter ${String(ex.chapter_number || 1).padStart(2, "0")}: ${ex.chapter_title || ex.chapter}`;
+      state.elements.chapterBadge.textContent = `Chapter ${String(chNum).padStart(2, "0")}: ${ex.chapter_title || ex.chapter}`;
     }
     if (state.elements.exerciseTitle) {
       state.elements.exerciseTitle.textContent = `${ex.id} — ${ex.title}`;
+    }
+
+    // Update standalone top header link
+    const headerGuideBtn = document.getElementById("btn-chapter-guide");
+    const headerGuideText = document.getElementById("btn-chapter-guide-text");
+    if (headerGuideBtn) {
+      headerGuideBtn.href = guideUrl;
+    }
+    if (headerGuideText) {
+      headerGuideText.textContent = `Guide: Ch ${String(chNum).padStart(2, "0")}`;
+    }
+
+    // Update in-editor exercise bar guide button
+    if (state.elements.guideBtn) {
+      state.elements.guideBtn.href = guideUrl;
+      state.elements.guideBtn.title = `Read Chapter ${chNum} Reference Guide: ${guideInfo.title} in new tab`;
+    }
+    if (state.elements.guideBtnText) {
+      state.elements.guideBtnText.textContent = `Ch ${String(chNum).padStart(2, "0")} Guide`;
     }
 
     // Live cluster banners
@@ -752,6 +811,17 @@
         </div>
       `;
     }
+
+    const chNum = (ex && ex.chapter_number) || 1;
+    const guideInfo = CHAPTER_GUIDES[chNum] || { slug: "01-pods", title: "Reference Guide" };
+    html += `
+      <div class="playground-hint-item" style="border-top: 1px dashed rgba(255,255,255,0.15); margin-top: 6px; padding-top: 6px;">
+        <span class="playground-hint-badge" style="background: rgba(14,165,233,0.2); color: #38bdf8;">📖 Guide</span>
+        <span class="playground-hint-text">
+          Need full architecture diagrams and schema tables? <a href="../guides/${guideInfo.slug}/" target="_blank" rel="noopener noreferrer" style="color: #38bdf8; text-decoration: underline; font-weight: 600;">Open Chapter ${String(chNum).padStart(2, "0")} Reference Guide (${escapeHtml(guideInfo.title)}) ↗</a>
+        </span>
+      </div>
+    `;
     card.innerHTML = html;
 
     if (label) {
@@ -939,7 +1009,10 @@
       } else if (result.output) {
         outputHtml += `<span class="term-dim">${escapeHtml(result.output)}</span>\n`;
       }
-      outputHtml += `<span class="term-dim">Tip: Check hints with 💡 Reveal Hint or compare against the reference solution with 🔍 Compare Solution.</span>`;
+      const ex = state.bundle && state.bundle.exercises[result.exerciseId];
+      const chNum = (ex && ex.chapter_number) || 1;
+      const guideInfo = CHAPTER_GUIDES[chNum] || { slug: "01-pods", title: "Reference Guide" };
+      outputHtml += `<span class="term-dim">💡 Tip: Reveal hints (💡), compare solution (🔍), or review the <a href="../guides/${guideInfo.slug}/" target="_blank" rel="noopener noreferrer" style="color:#38bdf8;text-decoration:underline;font-weight:600;">Chapter ${String(chNum).padStart(2, "0")} Reference Guide ↗</a> for schemas & triage steps.</span>`;
       outEl.innerHTML = outputHtml;
     }
 
