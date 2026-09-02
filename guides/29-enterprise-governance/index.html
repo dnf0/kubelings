@@ -12,13 +12,13 @@
         <meta name="author" content="Daniel Fisher">
       
       
-        <link rel="canonical" href="https://dnf0.github.io/kubelings/guides/03-config-secrets/">
+        <link rel="canonical" href="https://dnf0.github.io/kubelings/guides/29-enterprise-governance/">
       
       
-        <link rel="prev" href="../02-controllers/">
+        <link rel="prev" href="../28-gcp-gke/">
       
       
-        <link rel="next" href="../04-storage/">
+        <link rel="next" href="../../contributing/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>03. Config & Secrets - Kubelings</title>
+        <title>29. Enterprise Multi-Account Governance - Kubelings</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#chapter-03-configuration-secret-management" class="md-skip">
+        <a href="#chapter-29-enterprise-multi-account-governance-secrets" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              03. Config & Secrets
+              29. Enterprise Multi-Account Governance
             
           </span>
         </div>
@@ -342,8 +342,6 @@
       
   
   
-    
-  
   
   
     
@@ -356,11 +354,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
           <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
@@ -381,7 +379,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -452,37 +450,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    03. Config & Secrets
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../03-config-secrets/" class="md-nav__link">
         
   
   
@@ -498,137 +469,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#1-architectural-overview-control-plane-mechanics" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Architectural Overview &amp; Control Plane Mechanics
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-annotated-production-yaml-anatomy-field-reference" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Annotated Production YAML Anatomy &amp; Field Reference
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="2. Annotated Production YAML Anatomy &amp; Field Reference">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#key-field-schema-reference" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Key Field Schema Reference
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-real-world-architectural-patterns" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Real-World Architectural Patterns
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="3. Real-World Architectural Patterns">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#projected-volume-config-injection" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Projected Volume Config Injection
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#immutable-configuration-pattern" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Immutable Configuration Pattern
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-production-hardening-operational-governance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Production Hardening &amp; Operational Governance
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-failure-modes-diagnostic-triage-tree" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Failure Modes &amp; Diagnostic Triage Tree
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#6-interactive-practice-matrix" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. Interactive Practice Matrix
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1525,8 +1365,10 @@
       
   
   
+    
   
   
+  
     
     
     
@@ -1537,11 +1379,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
         
           
           <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
@@ -1562,7 +1404,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1633,10 +1475,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../29-enterprise-governance/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    29. Enterprise Multi-Account Governance
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1652,6 +1521,137 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-architectural-overview-control-plane-mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Architectural Overview &amp; Control Plane Mechanics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-annotated-production-yaml-anatomy-field-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Annotated Production YAML Anatomy &amp; Field Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Annotated Production YAML Anatomy &amp; Field Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-field-schema-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Field Schema Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-real-world-architectural-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Real-World Architectural Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Real-World Architectural Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hashicorp-vault-agent-sidecar-pod-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HashiCorp Vault Agent Sidecar Pod Injection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#argocd-applicationset-multi-cluster-matrix-generator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ArgoCD ApplicationSet Multi-Cluster Matrix Generator
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-production-hardening-operational-governance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Production Hardening &amp; Operational Governance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-failure-modes-diagnostic-triage-tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Failure Modes &amp; Diagnostic Triage Tree
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-interactive-practice-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Interactive Practice Matrix
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1769,10 +1769,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#projected-volume-config-injection" class="md-nav__link">
+  <a href="#hashicorp-vault-agent-sidecar-pod-injection" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Projected Volume Config Injection
+        HashiCorp Vault Agent Sidecar Pod Injection
       
     </span>
   </a>
@@ -1780,10 +1780,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#immutable-configuration-pattern" class="md-nav__link">
+  <a href="#argocd-applicationset-multi-cluster-matrix-generator" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Immutable Configuration Pattern
+        ArgoCD ApplicationSet Multi-Cluster Matrix Generator
       
     </span>
   </a>
@@ -1848,84 +1848,91 @@
   
 
 
-<h1 id="chapter-03-configuration-secret-management">Chapter 03: Configuration &amp; Secret Management</h1>
+<h1 id="chapter-29-enterprise-multi-account-governance-secrets">Chapter 29: Enterprise Multi-Account Governance &amp; Secrets</h1>
 <div class="grid cards" markdown>
 
--   :material-school: **Topic Focus** &bull; ConfigMaps, Secrets, In-Memory Mounts, and Immutability
--   :material-api: **Primary APIs** &bull; `v1` &bull; `ConfigMap`, `Secret`
--   :material-rocket-launch: [**Launch Playground in Wasm →**](../playground/index.html?chapter=3){ .md-button .md-button--primary }
+-   :material-school: **Topic Focus** &bull; AWS Control Tower, External Secrets Operator, HashiCorp Vault, and ArgoCD ApplicationSets
+-   :material-api: **Primary APIs** &bull; `external-secrets.io/v1beta1` &bull; `argoproj.io/v1alpha1` &bull; `vault.hashicorp.com` &bull; `ResourceQuota`
+-   :material-rocket-launch: [**Launch Playground in Wasm →**](../playground/index.html?chapter=29){ .md-button .md-button--primary }
 
 </div>
 
 <div class="admonition tip">
 <p class="admonition-title">⚡ Interactive Problems in this Chapter (Click to solve in Playground)</p>
 <ul>
-<li><a href="../../playground/?exercise=config01"><strong><code>config01</code></strong>: ConfigMaps as Environment Variables →</a></li>
-<li><a href="../../playground/?exercise=config02"><strong><code>config02</code></strong>: ConfigMaps Mounted as Volumes →</a></li>
-<li><a href="../../playground/?exercise=config03"><strong><code>config03</code></strong>: Secrets &amp; Base64 Encoding →</a></li>
-<li><a href="../../playground/?exercise=config04"><strong><code>config04</code></strong>: Secret Volume Mounts &amp; Permissions →</a></li>
-<li><a href="../../playground/?exercise=config05"><strong><code>config05</code></strong>: Immutable ConfigMaps and Secrets →</a></li>
+<li><a href="../../playground/?exercise=eso01"><strong><code>eso01</code></strong>: External Secrets Operator SecretStore &amp; ExternalSecret →</a></li>
+<li><a href="../../playground/?exercise=vault01"><strong><code>vault01</code></strong>: HashiCorp Vault Agent Sidecar Injector →</a></li>
+<li><a href="../../playground/?exercise=gov01"><strong><code>gov01</code></strong>: ArgoCD ApplicationSet Multi-Cluster Matrix Generator →</a></li>
+<li><a href="../../playground/?exercise=gov02"><strong><code>gov02</code></strong>: Multi-Tenant Namespace Quotas &amp; Security Policies →</a></li>
 </ul>
 </div>
 <hr />
 <h2 id="1-architectural-overview-control-plane-mechanics">1. Architectural Overview &amp; Control Plane Mechanics</h2>
-<p>In Kubernetes, <strong>Configuration &amp; Secret Management</strong> is reconciled through declarative state loops managed by the control plane:</p>
-<pre class="mermaid"><code>flowchart LR
-    subgraph ControlPlane["Kubernetes API &amp; Encryption"]
-        CM["ConfigMap&lt;br/&gt;&lt;code&gt;v1/ConfigMaps&lt;/code&gt;&lt;br/&gt;&lt;i&gt;Key-Value Config&lt;/i&gt;"]
-        SEC["Secret&lt;br/&gt;&lt;code&gt;v1/Secrets&lt;/code&gt;&lt;br/&gt;&lt;i&gt;KMS Envelope Decryption&lt;/i&gt;"]
-        API["kube-apiserver"]
-        CM --&gt; API
-        SEC --&gt; API
+<p>In Kubernetes, <strong>Enterprise Multi-Account Governance &amp; Secrets</strong> is reconciled through declarative state loops managed by the control plane:</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph Enterprise_Landing_Zone["Enterprise Multi-Account Cloud Architecture (Control Tower)"]
+        MANAGEMENT["AWS / GCP Management Org"]
+        SECRET_VAULT["HashiCorp Vault / AWS Secrets Manager"]
+        GIT_REPO[("GitOps Platform Baseline Repo&lt;br/&gt;(Git / GitHub)")]
     end
 
-    subgraph KubeletProjection["Kubelet Projection Engine"]
-        VOL_ENG["Volume Manager&lt;br/&gt;&lt;i&gt;Atomic Symlink Swap&lt;/i&gt;"]
-        ENV_ENG["Process Env Injector&lt;br/&gt;&lt;i&gt;Startup Freeze&lt;/i&gt;"]
+    subgraph Hub_Cluster["Platform Operations &amp; Fleet Management (Hub Cluster)"]
+        ARGOCD["ArgoCD ApplicationSet Controller"]
+        MATRIX["Matrix Generator (Clusters x Directories)"]
+        ARGOCD --&gt; MATRIX
+        GIT_REPO --&gt; MATRIX
     end
 
-    subgraph PodSandbox["Application Pod"]
-        APP_PROC["App Runtime Container&lt;br/&gt;&lt;i&gt;Process PID 1&lt;/i&gt;"]
-        SYMLINK[("Mounted Directory: &lt;code&gt;/etc/config&lt;/code&gt;&lt;br/&gt;&lt;code&gt;..data -&gt; ..2026_09_02&lt;/code&gt;&lt;br/&gt;&lt;i&gt;(Live Dynamic Updates)&lt;/i&gt;")]
-        ENV_VARS["Environment Variables&lt;br/&gt;&lt;code&gt;DATABASE_URL&lt;/code&gt;&lt;br/&gt;&lt;i&gt;(Static until restart)&lt;/i&gt;"]
+    subgraph Spoke_Cluster["Spoke Tenant Cluster (Production EKS / GKE)"]
+        subgraph Tenant_Namespace["Tenant Namespace (Restricted PSA)"]
+            QUOTA["ResourceQuota &amp; LimitRange"]
+            APP_POD["Application Pod"]
+            VAULT_AGENT["Vault Agent Sidecar Injector"]
+            ESO["External Secrets Operator (ESO)"]
+            K8S_SECRET["Materialized Kubernetes Secret"]
+
+            VAULT_AGENT --&gt;|Injects In-Memory Secret| APP_POD
+            ESO --&gt;|Syncs SecretStore| K8S_SECRET
+            K8S_SECRET --&gt; APP_POD
+            QUOTA --&gt;|Enforces Compute Capping| APP_POD
+        end
     end
 
-    API --&gt;|Watch / Mount| VOL_ENG
-    API --&gt;|Pod Spec Spec.Env| ENV_ENG
-    VOL_ENG --&gt;|Mounts atomic symlink| SYMLINK
-    ENV_ENG --&gt;|Injects at boot| ENV_VARS
-    SYMLINK --&gt;|File Read| APP_PROC
-    ENV_VARS --&gt;|Process Env| APP_PROC</code></pre>
+    MATRIX --&gt;|Instantiates Applications| Spoke_Cluster
+    SECRET_VAULT --&gt;|Secure Dynamic Lease| VAULT_AGENT
+    SECRET_VAULT --&gt;|Reconciles Remote Keys| ESO</code></pre>
 <p>When resources in this chapter are submitted, the <code>kube-apiserver</code> validates the OpenAPI v3 schema, stores state in <code>etcd</code>, and triggers the responsible controllers or node daemons to reconcile actual cluster state.</p>
 <hr />
 <h2 id="2-annotated-production-yaml-anatomy-field-reference">2. Annotated Production YAML Anatomy &amp; Field Reference</h2>
 <p>Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:</p>
-<div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">external-secrets.io/v1beta1</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SecretStore</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nt">metadata</span><span class="p">:</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app-config</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aws-secrets-store</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="nt">data</span><span class="p">:</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">  </span><span class="nt">APP_ENV</span><span class="p">:</span><span class="w"> </span><span class="s">"production"</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">  </span><span class="nt">LOG_LEVEL</span><span class="p">:</span><span class="w"> </span><span class="s">"info"</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">  </span><span class="nt">nginx.conf</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">    </span><span class="no">events { worker_connections 1024; }</span>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">    </span><span class="no">http {</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">      </span><span class="no">server {</span>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">        </span><span class="no">listen 80;</span>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">        </span><span class="no">location / { return 200 "OK"; }</span>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">      </span><span class="no">}</span>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">    </span><span class="no">}</span>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="nn">---</span>
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Secret</span>
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="nt">metadata</span><span class="p">:</span>
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app-secrets</span>
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Opaque</span>
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="nt">stringData</span><span class="p">:</span>
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="w">  </span><span class="nt">DB_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="s">"super-secure-production-password"</span>
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="w">  </span><span class="nt">API_KEY</span><span class="p">:</span><span class="w"> </span><span class="s">"secret-token-xyz-123"</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="nt">spec</span><span class="p">:</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">  </span><span class="nt">provider</span><span class="p">:</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="nt">aws</span><span class="p">:</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">      </span><span class="nt">service</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SecretsManager</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">      </span><span class="nt">region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">us-east-1</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="nn">---</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">external-secrets.io/v1beta1</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ExternalSecret</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="nt">metadata</span><span class="p">:</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app-db-credentials</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="nt">spec</span><span class="p">:</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">  </span><span class="nt">refreshInterval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1h</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">  </span><span class="nt">secretStoreRef</span><span class="p">:</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aws-secrets-store</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SecretStore</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="w">  </span><span class="nt">target</span><span class="p">:</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db-credentials-secret</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="w">    </span><span class="nt">creationPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Owner</span>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="w">  </span><span class="nt">data</span><span class="p">:</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">secretKey</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">password</span>
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="w">      </span><span class="nt">remoteRef</span><span class="p">:</span>
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a><span class="w">        </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prod/rds/app-password</span>
 </span></code></pre></div>
 <h3 id="key-field-schema-reference">Key Field Schema Reference</h3>
 <table>
@@ -1938,78 +1945,97 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><code>data</code> vs <code>stringData</code></td>
-<td style="text-align: left;"><code>Map</code></td>
-<td style="text-align: left;"><code>data</code> expects base64 encoded strings; <code>stringData</code> accepts raw text and is auto-encoded on write.</td>
+<td style="text-align: left;"><code>SecretStore</code> &amp; <code>ExternalSecret</code></td>
+<td style="text-align: left;"><code>CRD (</code>external-secrets.io<code>)</code></td>
+<td style="text-align: left;">Synchronizes secrets from external cloud key-vaults (AWS Secrets Manager, GCP Secret Manager) into Kubernetes Secrets.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>immutable: true</code></td>
-<td style="text-align: left;"><code>Boolean</code></td>
-<td style="text-align: left;">Protects against accidental config modification and reduces kube-apiserver watch load.</td>
+<td style="text-align: left;"><code>vault.hashicorp.com/agent-inject</code></td>
+<td style="text-align: left;"><code>Annotation</code></td>
+<td style="text-align: left;">Enables Vault sidecar injection to deliver secrets to containers via ephemeral in-memory volumes.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>envFrom.configMapRef</code></td>
-<td style="text-align: left;"><code>Object</code></td>
-<td style="text-align: left;">Exposes all key-value pairs in a ConfigMap as individual container environment variables.</td>
+<td style="text-align: left;"><code>ApplicationSet</code></td>
+<td style="text-align: left;"><code>CRD (</code>argoproj.io<code>)</code></td>
+<td style="text-align: left;">Automates multi-cluster and multi-tenant GitOps deployments using matrix/cluster generators across cloud fleets.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ResourceQuota</code> &amp; <code>LimitRange</code></td>
+<td style="text-align: left;"><code>Core APIs</code></td>
+<td style="text-align: left;">Enforces strict boundaries on aggregate compute usage and container sizing across multi-tenant namespaces.</td>
 </tr>
 </tbody>
 </table>
 <hr />
 <h2 id="3-real-world-architectural-patterns">3. Real-World Architectural Patterns</h2>
-<h3 id="projected-volume-config-injection">Projected Volume Config Injection</h3>
+<h3 id="hashicorp-vault-agent-sidecar-pod-injection">HashiCorp Vault Agent Sidecar Pod Injection</h3>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nt">metadata</span><span class="p">:</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">projected-config-pod</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nt">spec</span><span class="p">:</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="nt">containers</span><span class="p">:</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">alpine:3.20</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"sh"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"-c"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"ls</span><span class="nv"> </span><span class="s">-la</span><span class="nv"> </span><span class="s">/etc/config</span><span class="nv"> </span><span class="s">&amp;&amp;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600"</span><span class="p p-Indicator">]</span>
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="nt">volumeMounts</span><span class="p">:</span>
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config-bundle</span>
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">      </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/config</span>
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">      </span><span class="nt">readOnly</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">  </span><span class="nt">volumes</span><span class="p">:</span>
-</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config-bundle</span>
-</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">    </span><span class="nt">projected</span><span class="p">:</span>
-</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">      </span><span class="nt">sources</span><span class="p">:</span>
-</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">configMap</span><span class="p">:</span>
-</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app-config</span>
-</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">secret</span><span class="p">:</span>
-</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app-secrets</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secure-billing-service</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="nt">vault.hashicorp.com/agent-inject</span><span class="p">:</span><span class="w"> </span><span class="s">"true"</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="nt">vault.hashicorp.com/role</span><span class="p">:</span><span class="w"> </span><span class="s">"billing-app-role"</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="nt">vault.hashicorp.com/agent-inject-secret-database-config</span><span class="p">:</span><span class="w"> </span><span class="s">"secret/data/billing/db"</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="nt">spec</span><span class="p">:</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">  </span><span class="nt">serviceAccountName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">billing-service-sa</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">  </span><span class="nt">containers</span><span class="p">:</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">billing-api</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">      </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">billing/app:v2.4</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">      </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"/app/server"</span><span class="p p-Indicator">]</span>
 </span></code></pre></div>
-<h3 id="immutable-configuration-pattern">Immutable Configuration Pattern</h3>
-<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
+<h3 id="argocd-applicationset-multi-cluster-matrix-generator">ArgoCD ApplicationSet Multi-Cluster Matrix Generator</h3>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">argoproj.io/v1alpha1</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ApplicationSet</span>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nt">metadata</span><span class="p">:</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">static-routing-table-v1</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="nt">immutable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="nt">data</span><span class="p">:</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">  </span><span class="nt">routes.json</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="no">{"/api/v1": "http://api-v1", "/api/v2": "http://api-v2"}</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fleet-baseline-monitoring</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">argocd</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="nt">spec</span><span class="p">:</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">  </span><span class="nt">generators</span><span class="p">:</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">matrix</span><span class="p">:</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">        </span><span class="nt">generators</span><span class="p">:</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">clusters</span><span class="p">:</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">              </span><span class="nt">selector</span><span class="p">:</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">                </span><span class="nt">matchLabels</span><span class="p">:</span>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">                  </span><span class="nt">tier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">production</span>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">git</span><span class="p">:</span>
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">              </span><span class="nt">repoURL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://github.com/enterprise/k8s-platform-baseline.git</span>
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">              </span><span class="nt">revision</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HEAD</span>
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">              </span><span class="nt">directories</span><span class="p">:</span>
+</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">monitoring/*</span>
+</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">  </span><span class="nt">template</span><span class="p">:</span>
+</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span>
+</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">"{{name}}-{{path.basename}}"</span>
+</span><span id="__span-2-22"><a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="w">    </span><span class="nt">spec</span><span class="p">:</span>
+</span><span id="__span-2-23"><a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="w">      </span><span class="nt">project</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+</span><span id="__span-2-24"><a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="w">      </span><span class="nt">source</span><span class="p">:</span>
+</span><span id="__span-2-25"><a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="w">        </span><span class="nt">repoURL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://github.com/enterprise/k8s-platform-baseline.git</span>
+</span><span id="__span-2-26"><a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="w">        </span><span class="nt">targetRevision</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HEAD</span>
+</span><span id="__span-2-27"><a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a><span class="w">        </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="s">"{{path}}"</span>
+</span><span id="__span-2-28"><a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="w">      </span><span class="nt">destination</span><span class="p">:</span>
+</span><span id="__span-2-29"><a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="w">        </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="s">"{{server}}"</span>
+</span><span id="__span-2-30"><a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a><span class="w">        </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">monitoring</span>
+</span><span id="__span-2-31"><a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a><span class="w">      </span><span class="nt">syncPolicy</span><span class="p">:</span>
+</span><span id="__span-2-32"><a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a><span class="w">        </span><span class="nt">automated</span><span class="p">:</span>
+</span><span id="__span-2-33"><a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a><span class="w">          </span><span class="nt">prune</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-2-34"><a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a><span class="w">          </span><span class="nt">selfHeal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </span></code></pre></div>
 <hr />
 <h2 id="4-production-hardening-operational-governance">4. Production Hardening &amp; Operational Governance</h2>
 <ul>
-<li>Store sensitive data exclusively in <code>Secret</code> resources backed by KMS envelope encryption or external vault integrations (External Secrets Operator).</li>
-<li>Set <code>immutable: true</code> on ConfigMaps and Secrets used with immutable deployment pipelines to eliminate drift.</li>
-<li>Always mount Secret volumes with <code>readOnly: true</code> to prevent unauthorized in-pod file manipulation.</li>
+<li>Never store plaintext or base64 secrets in Git; sync through External Secrets Operator or HashiCorp Vault.</li>
+<li>Standardize fleet-wide deployment using ArgoCD ApplicationSets to eliminate configuration drift across AWS/GCP accounts.</li>
+<li>Enforce strict Pod Security Admission (PSA restricted) and ResourceQuotas in all tenant namespaces.</li>
 </ul>
 <hr />
 <h2 id="5-failure-modes-diagnostic-triage-tree">5. Failure Modes &amp; Diagnostic Triage Tree</h2>
 <details class="failure">
-<summary><code>CreateContainerConfigError</code></summary>
-<p><strong>Root Cause:</strong> Referenced ConfigMap or Secret does not exist or key name is misspelled.</p>
+<summary><code>ExternalSecret SecretUpdateError</code></summary>
+<p><strong>Root Cause:</strong> The target cloud secret does not exist or the IAM role lacks <code>secretsmanager:GetSecretValue</code> permission.</p>
 <p><strong>Diagnostic Triage Sequence:</strong>
-1. Run <code>kubectl describe pod &lt;name&gt;</code> and inspect the exact missing key.
-2. Check namespace: <code>kubectl get configmap,secret -n &lt;namespace&gt;</code>.</p>
-</details>
-<details class="failure">
-<summary>Live ConfigMap Update Not Reflected in Pod</summary>
-<p><strong>Root Cause:</strong> ConfigMaps injected as environment variables are static and require pod restart; volume mounts take up to kubelet sync period (default ~60s).</p>
-<p><strong>Diagnostic Triage Sequence:</strong>
-1. Trigger rolling restart: <code>kubectl rollout restart deployment/&lt;name&gt;</code>.</p>
+1. Describe ExternalSecret status: <code>kubectl describe externalsecret &lt;name&gt;</code>
+2. Verify provider IAM role permissions and cloud secret name path.</p>
 </details>
 <hr />
 <h2 id="6-interactive-practice-matrix">6. Interactive Practice Matrix</h2>
@@ -2025,34 +2051,28 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><strong><code>config01</code></strong></td>
-<td style="text-align: left;">ConfigMaps as Environment Variables</td>
-<td style="text-align: left;"><a href="../../playground/?exercise=config01"><code>../playground/index.html?exercise=config01</code></a></td>
-<td style="text-align: left;"><a class="md-button md-button--primary" href="../../playground/?exercise=config01"><strong>⚡ Solve <code>config01</code> in Playground →</strong></a></td>
+<td style="text-align: left;"><strong><code>eso01</code></strong></td>
+<td style="text-align: left;">External Secrets Operator SecretStore &amp; ExternalSecret</td>
+<td style="text-align: left;"><a href="../../playground/?exercise=eso01"><code>../playground/index.html?exercise=eso01</code></a></td>
+<td style="text-align: left;"><a class="md-button md-button--primary" href="../../playground/?exercise=eso01"><strong>⚡ Solve <code>eso01</code> in Playground →</strong></a></td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong><code>config02</code></strong></td>
-<td style="text-align: left;">ConfigMaps Mounted as Volumes</td>
-<td style="text-align: left;"><a href="../../playground/?exercise=config02"><code>../playground/index.html?exercise=config02</code></a></td>
-<td style="text-align: left;"><a class="md-button md-button--primary" href="../../playground/?exercise=config02"><strong>⚡ Solve <code>config02</code> in Playground →</strong></a></td>
+<td style="text-align: left;"><strong><code>vault01</code></strong></td>
+<td style="text-align: left;">HashiCorp Vault Agent Sidecar Injector</td>
+<td style="text-align: left;"><a href="../../playground/?exercise=vault01"><code>../playground/index.html?exercise=vault01</code></a></td>
+<td style="text-align: left;"><a class="md-button md-button--primary" href="../../playground/?exercise=vault01"><strong>⚡ Solve <code>vault01</code> in Playground →</strong></a></td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong><code>config03</code></strong></td>
-<td style="text-align: left;">Secrets &amp; Base64 Encoding</td>
-<td style="text-align: left;"><a href="../../playground/?exercise=config03"><code>../playground/index.html?exercise=config03</code></a></td>
-<td style="text-align: left;"><a class="md-button md-button--primary" href="../../playground/?exercise=config03"><strong>⚡ Solve <code>config03</code> in Playground →</strong></a></td>
+<td style="text-align: left;"><strong><code>gov01</code></strong></td>
+<td style="text-align: left;">ArgoCD ApplicationSet Multi-Cluster Matrix Generator</td>
+<td style="text-align: left;"><a href="../../playground/?exercise=gov01"><code>../playground/index.html?exercise=gov01</code></a></td>
+<td style="text-align: left;"><a class="md-button md-button--primary" href="../../playground/?exercise=gov01"><strong>⚡ Solve <code>gov01</code> in Playground →</strong></a></td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong><code>config04</code></strong></td>
-<td style="text-align: left;">Secret Volume Mounts &amp; Permissions</td>
-<td style="text-align: left;"><a href="../../playground/?exercise=config04"><code>../playground/index.html?exercise=config04</code></a></td>
-<td style="text-align: left;"><a class="md-button md-button--primary" href="../../playground/?exercise=config04"><strong>⚡ Solve <code>config04</code> in Playground →</strong></a></td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong><code>config05</code></strong></td>
-<td style="text-align: left;">Immutable ConfigMaps and Secrets</td>
-<td style="text-align: left;"><a href="../../playground/?exercise=config05"><code>../playground/index.html?exercise=config05</code></a></td>
-<td style="text-align: left;"><a class="md-button md-button--primary" href="../../playground/?exercise=config05"><strong>⚡ Solve <code>config05</code> in Playground →</strong></a></td>
+<td style="text-align: left;"><strong><code>gov02</code></strong></td>
+<td style="text-align: left;">Multi-Tenant Namespace Quotas &amp; Security Policies</td>
+<td style="text-align: left;"><a href="../../playground/?exercise=gov02"><code>../playground/index.html?exercise=gov02</code></a></td>
+<td style="text-align: left;"><a class="md-button md-button--primary" href="../../playground/?exercise=gov02"><strong>⚡ Solve <code>gov02</code> in Playground →</strong></a></td>
 </tr>
 </tbody>
 </table>

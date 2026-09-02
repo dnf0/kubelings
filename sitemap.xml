@@ -129,6 +129,18 @@
          <lastmod>2026-09-02</lastmod>
     </url>
     <url>
+         <loc>https://dnf0.github.io/kubelings/guides/27-aws-eks/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/28-gcp-gke/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/29-enterprise-governance/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
          <loc>https://dnf0.github.io/kubelings/superpowers/plans/2026-08-26-kubelings-implementation/</loc>
          <lastmod>2026-09-02</lastmod>
     </url>
@@ -177,6 +189,10 @@
          <lastmod>2026-09-02</lastmod>
     </url>
     <url>
+         <loc>https://dnf0.github.io/kubelings/superpowers/plans/2026-09-02-cloud-and-enterprise-governance-chapters/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
          <loc>https://dnf0.github.io/kubelings/superpowers/plans/2026-09-02-full-browser-wasm-learning-platform/</loc>
          <lastmod>2026-09-02</lastmod>
     </url>
@@ -218,6 +234,10 @@
     </url>
     <url>
          <loc>https://dnf0.github.io/kubelings/superpowers/specs/2026-09-02-bidirectional-26-chapter-reference-manual-design/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/superpowers/specs/2026-09-02-cloud-and-enterprise-governance-chapters-design/</loc>
          <lastmod>2026-09-02</lastmod>
     </url>
     <url>

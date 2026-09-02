@@ -12,7 +12,7 @@
         <meta name="author" content="Daniel Fisher">
       
       
-        <link rel="canonical" href="https://dnf0.github.io/kubelings/superpowers/plans/2026-08-27-helm-kustomize-curriculum/">
+        <link rel="canonical" href="https://dnf0.github.io/kubelings/superpowers/plans/2026-09-02-cloud-and-enterprise-governance-chapters/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>Helm & Kustomize Curriculum Track (Chapters 19 & 20) Implementation Plan - Kubelings</title>
+        <title>AWS EKS, GCP GKE & Enterprise Governance Implementation Plan - Kubelings</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#helm-kustomize-curriculum-track-chapters-19-20-implementation-plan" class="md-skip">
+        <a href="#aws-eks-gcp-gke-enterprise-governance-implementation-plan" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Helm &amp; Kustomize Curriculum Track (Chapters 19 &amp; 20) Implementation Plan
+              AWS EKS, GCP GKE &amp; Enterprise Governance Implementation Plan
             
           </span>
         </div>
@@ -1554,68 +1554,96 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#task-1-chapter-19-helm-packaging-exercises-solutions" class="md-nav__link">
+  <a href="#global-constraints" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Task 1: Chapter 19 (Helm Packaging) Exercises &amp; Solutions
+        Global Constraints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Global Constraints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#task-1-update-curriculum-manifest-for-chapters-27-28-and-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 1: Update Curriculum Manifest for Chapters 27, 28, and 29
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#task-2-chapter-20-kustomize-overlays-exercises-solutions" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#task-2-scaffold-chapter-27-exercises-aws-eks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Task 2: Chapter 20 (Kustomize Overlays) Exercises &amp; Solutions
+        Task 2: Scaffold Chapter 27 Exercises (AWS EKS)
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#task-3-update-manifest-curriculum-engine" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#task-3-scaffold-chapter-28-exercises-gcp-gke" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Task 3: Update Manifest &amp; Curriculum Engine
+        Task 3: Scaffold Chapter 28 Exercises (GCP GKE)
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#task-4-unit-solution-testing-for-90-exercises" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#task-4-scaffold-chapter-29-exercises-enterprise-governance-secrets" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Task 4: Unit &amp; Solution Testing for 90 Exercises
+        Task 4: Scaffold Chapter 29 Exercises (Enterprise Governance &amp; Secrets)
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#task-5-documentation-syllabus-updates" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#task-5-implement-reference-manual-content-mermaid-diagrams-chapters-27-28-29" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Task 5: Documentation &amp; Syllabus Updates
+        Task 5: Implement Reference Manual Content &amp; Mermaid Diagrams (Chapters 27, 28 &amp; 29)
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#task-6-final-verification-knowledge-graph-rebuild-release" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#task-6-update-automated-verification-tests" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Task 6: Final Verification, Knowledge Graph Rebuild &amp; Release
+        Task 6: Update Automated Verification Tests
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-7-build-verification-merge-and-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 7: Build Verification, Merge, and Deployment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1639,67 +1667,213 @@
   
 
 
-<h1 id="helm-kustomize-curriculum-track-chapters-19-20-implementation-plan">Helm &amp; Kustomize Curriculum Track (Chapters 19 &amp; 20) Implementation Plan</h1>
+<h1 id="aws-eks-gcp-gke-enterprise-governance-implementation-plan">AWS EKS, GCP GKE &amp; Enterprise Governance Implementation Plan</h1>
 <blockquote>
-<p><strong>For agentic workers:</strong> REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (<code>- [ ]</code>) syntax for tracking.</p>
+<p><strong>For agentic workers:</strong> REQUIRED SUB-SKILL: Choose an execution mode:
+1. <code>superpowers:subagent-driven-development</code> (recommended for multi-agent reviews, backed by <code>SKILL.state</code> / <code>.agent-state/state.json</code>)
+2. <code>agent-rules:stateful-execution</code> (SKILL.state) (recommended for deterministic single-agent linear execution)
+3. <code>superpowers:executing-plans</code> (batch execution with manual checkpoints)
+Steps use checkbox (<code>- [ ]</code>) syntax for tracking.</p>
 </blockquote>
-<p><strong>Goal:</strong> Add Chapter 19 (Helm Packaging) and Chapter 20 (Kustomize Overlays) with 8 new exercises, expanding Kubelings to 20 chapters and 90 total exercises.</p>
-<p><strong>Architecture:</strong> Implement offline exercise evaluators in Python using YAML parsing and JSON Schema validation for Helm chart manifests, Go template helpers, values validation schemas, and Kustomize overlays. Register chapters in curriculum manifest and update tests and documentation.</p>
-<p><strong>Tech Stack:</strong> Python 3.10+, PyYAML, jsonschema, pytest, rich, typer, mkdocs-material.</p>
-<hr />
-<h3 id="task-1-chapter-19-helm-packaging-exercises-solutions">Task 1: Chapter 19 (Helm Packaging) Exercises &amp; Solutions</h3>
-<p><strong>Files:</strong>
-- Create: <code>exercises/19_helm_packaging/helm01.py</code> ... <code>helm04.py</code>
-- Create: <code>solutions/19_helm_packaging/helm01.py</code> ... <code>helm04.py</code></p>
+<p><strong>Goal:</strong> Expand the Kubelings learning curriculum to 29 chapters and 126 exercises by adding dedicated chapters for AWS EKS, GCP GKE, and Enterprise Multi-Account Governance (Control Tower, ESO, Vault, ArgoCD).</p>
+<p><strong>Architecture:</strong> Extend <code>kubelings/manifest.py</code> with 12 new exercise declarations across chapters 27-29. Scaffold all 12 exercise directories in <code>exercises/</code> with problem manifests, solutions, and hints. Author production-grade Mermaid.js architectural diagrams, YAML manifests, field tables, and troubleshooting trees in <code>scripts/generate_reference_guides.py</code>. Verify with pytest and deploy to GitHub Pages.</p>
+<p><strong>Tech Stack:</strong> Python 3.12, Pytest, Material for MkDocs, Mermaid.js, PyYAML, WebAssembly/Pyodide.</p>
+<h2 id="global-constraints">Global Constraints</h2>
 <ul>
-<li>[ ] <strong>Step 1: Create starter exercises and reference solutions for helm01 to helm04</strong></li>
-<li>[ ] <strong>Step 2: Commit Chapter 19 exercises and solutions</strong></li>
+<li>Total chapter count expands from 26 to 29.</li>
+<li>Total exercise count expands from 114 to 126.</li>
+<li>All 12 new exercises must have valid, complete <code>README.md</code>, <code>problem.yaml</code>, and <code>solution.yaml</code> files.</li>
+<li>All new reference guides must contain rich Mermaid.js diagrams in Section 1 and zero raw text boxes.</li>
+<li>Full pytest suite and strict MkDocs build must pass with 0 errors.</li>
 </ul>
 <hr />
-<h3 id="task-2-chapter-20-kustomize-overlays-exercises-solutions">Task 2: Chapter 20 (Kustomize Overlays) Exercises &amp; Solutions</h3>
+<h3 id="task-1-update-curriculum-manifest-for-chapters-27-28-and-29">Task 1: Update Curriculum Manifest for Chapters 27, 28, and 29</h3>
 <p><strong>Files:</strong>
-- Create: <code>exercises/20_kustomize_overlays/kustomize01.py</code> ... <code>kustomize04.py</code>
-- Create: <code>solutions/20_kustomize_overlays/kustomize01.py</code> ... <code>kustomize04.py</code></p>
+- Modify: <code>kubelings/manifest.py</code>
+- Test: <code>tests/test_manifest.py</code></p>
+<p><strong>Interfaces:</strong>
+- Consumes: Chapter and Exercise dataclasses from <code>kubelings.models</code>
+- Produces: <code>build_manifest()</code> returning 29 chapters and 126 exercises.</p>
 <ul>
-<li>[ ] <strong>Step 1: Create starter exercises and reference solutions for kustomize01 to kustomize04</strong></li>
-<li>[ ] <strong>Step 2: Commit Chapter 20 exercises and solutions</strong></li>
+<li>
+<p>[ ] <strong>Step 1: Add Chapter 27, 28, and 29 definitions to <code>manifest.py</code></strong>
+Define Chapter 27 (AWS EKS: <code>eks01</code>, <code>eks02</code>, <code>eks03</code>, <code>eks04</code>), Chapter 28 (GCP GKE: <code>gke01</code>, <code>gke02</code>, <code>gke03</code>, <code>gke04</code>), Chapter 29 (Enterprise Governance: <code>eso01</code>, <code>vault01</code>, <code>gov01</code>, <code>gov02</code>).</p>
+</li>
+<li>
+<p>[ ] <strong>Step 2: Run manifest tests to verify definitions</strong>
+Run <code>uv run pytest tests/test_manifest.py -v</code>.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 3: Commit</strong>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>add<span class="w"> </span>kubelings/manifest.py
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"feat(manifest): register chapters 27, 28, and 29 with 12 new exercises"</span>
+</span></code></pre></div></p>
+</li>
 </ul>
 <hr />
-<h3 id="task-3-update-manifest-curriculum-engine">Task 3: Update Manifest &amp; Curriculum Engine</h3>
+<h3 id="task-2-scaffold-chapter-27-exercises-aws-eks">Task 2: Scaffold Chapter 27 Exercises (AWS EKS)</h3>
 <p><strong>Files:</strong>
-- Modify: <code>src/kubelings/manifest.py</code></p>
+- Create: <code>exercises/27-aws-eks/eks01/{README.md, problem.yaml, solution.yaml}</code>
+- Create: <code>exercises/27-aws-eks/eks02/{README.md, problem.yaml, solution.yaml}</code>
+- Create: <code>exercises/27-aws-eks/eks03/{README.md, problem.yaml, solution.yaml}</code>
+- Create: <code>exercises/27-aws-eks/eks04/{README.md, problem.yaml, solution.yaml}</code>
+- Test: <code>tests/test_exercises.py</code></p>
 <ul>
-<li>[ ] <strong>Step 1: Add Chapters 19 and 20 with exercise definitions and hints in manifest.py</strong></li>
-<li>[ ] <strong>Step 2: Commit manifest updates</strong></li>
+<li>
+<p>[ ] <strong>Step 1: Create <code>eks01</code> (EKS Pod Identity &amp; IRSA)</strong>
+Author ServiceAccount with AWS IAM role annotation (<code>eks.amazonaws.com/role-arn</code>) and projected token volume.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 2: Create <code>eks02</code> (AWS Load Balancer Controller Ingress)</strong>
+Author Ingress with <code>alb.ingress.kubernetes.io/scheme: internet-facing</code> and <code>alb.ingress.kubernetes.io/target-type: ip</code>.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 3: Create <code>eks03</code> (VPC CNI Security Groups for Pods)</strong>
+Author <code>SecurityGroupPolicy</code> CRD binding AWS security groups to matching pod selectors.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 4: Create <code>eks04</code> (Karpenter AWS NodePool)</strong>
+Author Karpenter <code>NodePool</code> and <code>EC2NodeClass</code> for AWS spot and on-demand EC2 capacity.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 5: Run tests and commit</strong>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git<span class="w"> </span>add<span class="w"> </span>exercises/27-aws-eks/
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"feat(exercises): add chapter 27 AWS EKS exercises"</span>
+</span></code></pre></div></p>
+</li>
 </ul>
 <hr />
-<h3 id="task-4-unit-solution-testing-for-90-exercises">Task 4: Unit &amp; Solution Testing for 90 Exercises</h3>
+<h3 id="task-3-scaffold-chapter-28-exercises-gcp-gke">Task 3: Scaffold Chapter 28 Exercises (GCP GKE)</h3>
 <p><strong>Files:</strong>
-- Create: <code>tests/test_chapters_19_20.py</code>
+- Create: <code>exercises/28-gcp-gke/gke01/{README.md, problem.yaml, solution.yaml}</code>
+- Create: <code>exercises/28-gcp-gke/gke02/{README.md, problem.yaml, solution.yaml}</code>
+- Create: <code>exercises/28-gcp-gke/gke03/{README.md, problem.yaml, solution.yaml}</code>
+- Create: <code>exercises/28-gcp-gke/gke04/{README.md, problem.yaml, solution.yaml}</code>
+- Test: <code>tests/test_exercises.py</code></p>
+<ul>
+<li>
+<p>[ ] <strong>Step 1: Create <code>gke01</code> (GKE Workload Identity Federation)</strong>
+Author ServiceAccount with <code>iam.gke.io/gcp-service-account</code> annotation and pod identity binding.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 2: Create <code>gke02</code> (GKE Autopilot Workload Sizing)</strong>
+Author Deployment configured for Autopilot resource management with <code>autopilot.gke.io/compute-class: Performance</code>.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 3: Create <code>gke03</code> (GKE Gateway API &amp; Cloud Armor Policy)</strong>
+Author <code>GCPBackendPolicy</code> attaching a Cloud Armor security policy to a Gateway HTTPRoute backend.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 4: Create <code>gke04</code> (Config Connector StorageBucket)</strong>
+Author Google Cloud <code>StorageBucket</code> CRD (<code>storage.cnrm.cloud.google.com/v1beta1</code>) with uniform bucket-level access.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 5: Run tests and commit</strong>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>git<span class="w"> </span>add<span class="w"> </span>exercises/28-gcp-gke/
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"feat(exercises): add chapter 28 GCP GKE exercises"</span>
+</span></code></pre></div></p>
+</li>
+</ul>
+<hr />
+<h3 id="task-4-scaffold-chapter-29-exercises-enterprise-governance-secrets">Task 4: Scaffold Chapter 29 Exercises (Enterprise Governance &amp; Secrets)</h3>
+<p><strong>Files:</strong>
+- Create: <code>exercises/29-enterprise-governance/eso01/{README.md, problem.yaml, solution.yaml}</code>
+- Create: <code>exercises/29-enterprise-governance/vault01/{README.md, problem.yaml, solution.yaml}</code>
+- Create: <code>exercises/29-enterprise-governance/gov01/{README.md, problem.yaml, solution.yaml}</code>
+- Create: <code>exercises/29-enterprise-governance/gov02/{README.md, problem.yaml, solution.yaml}</code>
+- Test: <code>tests/test_exercises.py</code></p>
+<ul>
+<li>
+<p>[ ] <strong>Step 1: Create <code>eso01</code> (External Secrets Operator <code>SecretStore</code> &amp; <code>ExternalSecret</code>)</strong>
+Author <code>SecretStore</code> referencing AWS Secrets Manager / GCP Secret Manager and an <code>ExternalSecret</code> resource.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 2: Create <code>vault01</code> (HashiCorp Vault Agent Injector)</strong>
+Author Pod template with <code>vault.hashicorp.com/agent-inject: "true"</code> and credential templates.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 3: Create <code>gov01</code> (ArgoCD ApplicationSet Cluster Matrix)</strong>
+Author <code>ApplicationSet</code> with a <code>matrix</code> generator deploying cluster baselines across production environments.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 4: Create <code>gov02</code> (Multi-Account Security &amp; Resource Quotas)</strong>
+Author multi-tenant <code>ResourceQuota</code> and security constraints preventing privilege escalation.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 5: Run tests and commit</strong>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>git<span class="w"> </span>add<span class="w"> </span>exercises/29-enterprise-governance/
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"feat(exercises): add chapter 29 Enterprise Governance exercises"</span>
+</span></code></pre></div></p>
+</li>
+</ul>
+<hr />
+<h3 id="task-5-implement-reference-manual-content-mermaid-diagrams-chapters-27-28-29">Task 5: Implement Reference Manual Content &amp; Mermaid Diagrams (Chapters 27, 28 &amp; 29)</h3>
+<p><strong>Files:</strong>
+- Modify: <code>scripts/generate_reference_guides.py</code>
+- Modify: <code>mkdocs.yml</code>
+- Test: <code>uv run python scripts/generate_reference_guides.py</code></p>
+<ul>
+<li>
+<p>[ ] <strong>Step 1: Add Chapters 27, 28, and 29 data in <code>generate_reference_guides.py</code></strong>
+Include complete Mermaid diagrams, primary production YAML manifests, field schema tables, patterns, hardening checklists, and failure triage trees.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 2: Update <code>mkdocs.yml</code> navigation</strong>
+Add Chapter 27, 28, and 29 reference guides to the documentation navigation tree.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 3: Generate reference guides</strong>
+Run <code>uv run python scripts/generate_reference_guides.py</code> to generate <code>27-aws-eks.md</code>, <code>28-gcp-gke.md</code>, <code>29-enterprise-governance.md</code>, and update <code>syllabus.md</code>.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 4: Commit</strong>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>git<span class="w"> </span>add<span class="w"> </span>scripts/generate_reference_guides.py<span class="w"> </span>mkdocs.yml<span class="w"> </span>docs/guides/<span class="w"> </span>docs/syllabus.md
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"feat(docs): add comprehensive reference guides for chapters 27, 28, and 29"</span>
+</span></code></pre></div></p>
+</li>
+</ul>
+<hr />
+<h3 id="task-6-update-automated-verification-tests">Task 6: Update Automated Verification Tests</h3>
+<p><strong>Files:</strong>
+- Modify: <code>tests/test_reference_guides.py</code>
 - Modify: <code>tests/test_manifest.py</code>
-- Modify: <code>tests/test_solutions_and_exercises.py</code></p>
+- Test: <code>uv run pytest -q</code></p>
 <ul>
-<li>[ ] <strong>Step 1: Write test_chapters_19_20.py and update assertions to 20 chapters / 90 exercises</strong></li>
-<li>[ ] <strong>Step 2: Run pytest and verify 90/90 pass</strong></li>
-<li>[ ] <strong>Step 3: Commit test suite updates</strong></li>
+<li>
+<p>[ ] <strong>Step 1: Update chapter slugs and exercise count assertions in test files</strong>
+Include <code>27-aws-eks</code>, <code>28-gcp-gke</code>, <code>29-enterprise-governance</code> in <code>CHAPTER_SLUGS</code> and update total exercise count to 126.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 2: Run full test suite</strong>
+Run <code>uv run pytest -q</code> and verify all tests pass.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 3: Commit</strong>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>git<span class="w"> </span>add<span class="w"> </span>tests/
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"test: update test assertions for 29 chapters and 126 exercises"</span>
+</span></code></pre></div></p>
+</li>
 </ul>
 <hr />
-<h3 id="task-5-documentation-syllabus-updates">Task 5: Documentation &amp; Syllabus Updates</h3>
+<h3 id="task-7-build-verification-merge-and-deployment">Task 7: Build Verification, Merge, and Deployment</h3>
 <p><strong>Files:</strong>
-- Modify: <code>README.md</code>
-- Modify: <code>docs/syllabus.md</code>
-- Modify: <code>docs/index.md</code></p>
+- Test: <code>uv run mkdocs build --strict</code>
+- Test: <code>uv run ruff check .</code>
+- Test: <code>uv run pyright</code>
+- Run: <code>git push origin main</code></p>
 <ul>
-<li>[ ] <strong>Step 1: Update README and documentation pages with 20 chapters and 90 exercises</strong></li>
-<li>[ ] <strong>Step 2: Rebuild demo SVG and test MkDocs build</strong></li>
-<li>[ ] <strong>Step 3: Commit documentation updates</strong></li>
-</ul>
-<hr />
-<h3 id="task-6-final-verification-knowledge-graph-rebuild-release">Task 6: Final Verification, Knowledge Graph Rebuild &amp; Release</h3>
-<ul>
-<li>[ ] <strong>Step 1: Run ruff check, ruff format, pyright, pytest, and kubelings test</strong></li>
-<li>[ ] <strong>Step 2: Run graphify update . to rebuild knowledge graph</strong></li>
-<li>[ ] <strong>Step 3: Push to remote main and monitor CI/CD release</strong></li>
+<li>
+<p>[ ] <strong>Step 1: Run linting, typing, and strict docs build</strong>
+Ensure <code>uv run ruff check .</code>, <code>uv run pyright</code>, and <code>uv run mkdocs build --strict</code> pass with 0 errors.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 2: Push to <code>main</code></strong>
+Push to trigger the GitHub Actions <code>Deploy Documentation</code> workflow.</p>
+</li>
+<li>
+<p>[ ] <strong>Step 3: Verify live deployment</strong>
+Track workflow with <code>gh run watch</code> to confirm live deployment on GitHub Pages.</p>
+</li>
 </ul>
 
 

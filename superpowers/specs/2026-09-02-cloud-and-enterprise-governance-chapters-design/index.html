@@ -12,7 +12,7 @@
         <meta name="author" content="Daniel Fisher">
       
       
-        <link rel="canonical" href="https://dnf0.github.io/kubelings/superpowers/plans/2026-08-27-helm-kustomize-curriculum/">
+        <link rel="canonical" href="https://dnf0.github.io/kubelings/superpowers/specs/2026-09-02-cloud-and-enterprise-governance-chapters-design/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>Helm & Kustomize Curriculum Track (Chapters 19 & 20) Implementation Plan - Kubelings</title>
+        <title>Cloud-Native Hyperscalers & Enterprise Governance Curriculum Expansion Spec (Chapters 27, 28 & 29) - Kubelings</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#helm-kustomize-curriculum-track-chapters-19-20-implementation-plan" class="md-skip">
+        <a href="#cloud-native-hyperscalers-enterprise-governance-curriculum-expansion-spec-chapters-27-28-29" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Helm &amp; Kustomize Curriculum Track (Chapters 19 &amp; 20) Implementation Plan
+              Cloud-Native Hyperscalers &amp; Enterprise Governance Curriculum Expansion Spec (Chapters 27, 28 &amp; 29)
             
           </span>
         </div>
@@ -1554,10 +1554,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#task-1-chapter-19-helm-packaging-exercises-solutions" class="md-nav__link">
+  <a href="#1-overview-objective" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Task 1: Chapter 19 (Helm Packaging) Exercises &amp; Solutions
+        1. Overview &amp; Objective
       
     </span>
   </a>
@@ -1565,54 +1565,110 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#task-2-chapter-20-kustomize-overlays-exercises-solutions" class="md-nav__link">
+  <a href="#2-chapter-specifications-exercise-breakdown" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Task 2: Chapter 20 (Kustomize Overlays) Exercises &amp; Solutions
+        2. Chapter Specifications &amp; Exercise Breakdown
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Chapter Specifications &amp; Exercise Breakdown">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chapter-27-aws-eks-cloud-architecture-27-aws-eksmd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 27: AWS EKS &amp; Cloud Architecture (27-aws-eks.md)
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#task-3-update-manifest-curriculum-engine" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#chapter-28-google-cloud-gke-cloud-native-ecosystem-28-gcp-gkemd" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Task 3: Update Manifest &amp; Curriculum Engine
+        Chapter 28: Google Cloud GKE &amp; Cloud-Native Ecosystem (28-gcp-gke.md)
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#task-4-unit-solution-testing-for-90-exercises" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#chapter-29-enterprise-governance-multi-account-landing-zones-secret-management-29-enterprise-governancemd" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Task 4: Unit &amp; Solution Testing for 90 Exercises
+        Chapter 29: Enterprise Governance, Multi-Account Landing Zones &amp; Secret Management (29-enterprise-governance.md)
       
     </span>
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#task-5-documentation-syllabus-updates" class="md-nav__link">
+  <a href="#3-visual-architectural-mermaidjs-specifications" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Task 5: Documentation &amp; Syllabus Updates
+        3. Visual Architectural Mermaid.js Specifications
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Visual Architectural Mermaid.js Specifications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chapter-27-aws-eks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 27 (AWS EKS):
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#task-6-final-verification-knowledge-graph-rebuild-release" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#chapter-28-gcp-gke" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Task 6: Final Verification, Knowledge Graph Rebuild &amp; Release
+        Chapter 28 (GCP GKE):
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chapter-29-enterprise-governance-secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chapter 29 (Enterprise Governance &amp; Secrets):
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-verification-quality-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Verification &amp; Quality Gates
       
     </span>
   </a>
@@ -1639,68 +1695,177 @@
   
 
 
-<h1 id="helm-kustomize-curriculum-track-chapters-19-20-implementation-plan">Helm &amp; Kustomize Curriculum Track (Chapters 19 &amp; 20) Implementation Plan</h1>
-<blockquote>
-<p><strong>For agentic workers:</strong> REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (<code>- [ ]</code>) syntax for tracking.</p>
-</blockquote>
-<p><strong>Goal:</strong> Add Chapter 19 (Helm Packaging) and Chapter 20 (Kustomize Overlays) with 8 new exercises, expanding Kubelings to 20 chapters and 90 total exercises.</p>
-<p><strong>Architecture:</strong> Implement offline exercise evaluators in Python using YAML parsing and JSON Schema validation for Helm chart manifests, Go template helpers, values validation schemas, and Kustomize overlays. Register chapters in curriculum manifest and update tests and documentation.</p>
-<p><strong>Tech Stack:</strong> Python 3.10+, PyYAML, jsonschema, pytest, rich, typer, mkdocs-material.</p>
+<h1 id="cloud-native-hyperscalers-enterprise-governance-curriculum-expansion-spec-chapters-27-28-29">Cloud-Native Hyperscalers &amp; Enterprise Governance Curriculum Expansion Spec (Chapters 27, 28 &amp; 29)</h1>
+<h2 id="1-overview-objective">1. Overview &amp; Objective</h2>
+<p>This specification expands the Kubelings learning curriculum from 26 chapters (114 exercises) to <strong>29 chapters (126 exercises)</strong>, adding dedicated production tracks for:
+1. <strong>AWS Elastic Kubernetes Service (EKS)</strong> &amp; AWS cloud-native integrations.
+2. <strong>Google Kubernetes Engine (GKE)</strong> &amp; Google Cloud ecosystem.
+3. <strong>Enterprise Governance, Multi-Account Landing Zones &amp; Secret Management</strong> (AWS Control Tower, External Secrets Operator, HashiCorp Vault, ArgoCD ApplicationSets).</p>
+<p>Each new chapter includes:
+- 4 interactive WebAssembly-compatible exercises with validation criteria, hint systems, and real Kubernetes CRDs/APIs.
+- Comprehensive Reference Manual chapters in Material for MkDocs with responsive Mermaid.js diagrams, annotated YAML field references, architectural patterns, production hardening checklists, failure mode triage trees, and bidirectional playground links.</p>
 <hr />
-<h3 id="task-1-chapter-19-helm-packaging-exercises-solutions">Task 1: Chapter 19 (Helm Packaging) Exercises &amp; Solutions</h3>
-<p><strong>Files:</strong>
-- Create: <code>exercises/19_helm_packaging/helm01.py</code> ... <code>helm04.py</code>
-- Create: <code>solutions/19_helm_packaging/helm01.py</code> ... <code>helm04.py</code></p>
+<h2 id="2-chapter-specifications-exercise-breakdown">2. Chapter Specifications &amp; Exercise Breakdown</h2>
+<h3 id="chapter-27-aws-eks-cloud-architecture-27-aws-eksmd">Chapter 27: AWS EKS &amp; Cloud Architecture (<code>27-aws-eks.md</code>)</h3>
 <ul>
-<li>[ ] <strong>Step 1: Create starter exercises and reference solutions for helm01 to helm04</strong></li>
-<li>[ ] <strong>Step 2: Commit Chapter 19 exercises and solutions</strong></li>
+<li><strong>API Groups &amp; Domains</strong>: <code>eks.amazonaws.com</code>, <code>karpenter.sh/v1</code>, <code>networking.k8s.io</code>, <code>vpcresources.k8s.aws/v1alpha1</code>.</li>
+<li><strong>Primary Concepts</strong>:</li>
+<li>IAM Roles for Service Accounts (IRSA) vs. EKS Pod Identity.</li>
+<li>AWS Load Balancer Controller: Application Load Balancer (ALB) and Network Load Balancer (NLB) with <code>TargetGroupBinding</code>.</li>
+<li>AWS VPC CNI: Secondary ENI IP allocation, custom networking, and Security Groups for Pods (<code>SecurityGroupPolicy</code>).</li>
+<li>Karpenter: Just-in-time NodePool provisioning with AWS EC2 instance family selectors, spot interruption handling, and consolidation.</li>
+<li><strong>Interactive Exercises</strong>:</li>
+<li><code>eks01</code>: <strong>EKS Pod Identity &amp; IRSA</strong> — Configure a ServiceAccount with AWS IAM role annotations (<code>eks.amazonaws.com/role-arn</code>) and configure a Pod to consume AWS STS web identity token projection.</li>
+<li><code>eks02</code>: <strong>AWS Load Balancer Controller Ingress</strong> — Configure an Ingress with <code>alb.ingress.kubernetes.io/scheme: internet-facing</code>, target-type <code>ip</code>, and SSL certificate ARN annotations.</li>
+<li><code>eks03</code>: <strong>VPC CNI Security Groups per Pod</strong> — Create a <code>SecurityGroupPolicy</code> resource matching pod labels to bind dedicated AWS security groups directly to pod network interfaces.</li>
+<li><code>eks04</code>: <strong>Karpenter AWS NodePool</strong> — Author a Karpenter <code>NodePool</code> and <code>EC2NodeClass</code> declaring instance families (<code>c6i</code>, <code>c7i</code>, <code>m6i</code>), spot capacity type, and amiFamily <code>AL2023</code>.</li>
 </ul>
 <hr />
-<h3 id="task-2-chapter-20-kustomize-overlays-exercises-solutions">Task 2: Chapter 20 (Kustomize Overlays) Exercises &amp; Solutions</h3>
-<p><strong>Files:</strong>
-- Create: <code>exercises/20_kustomize_overlays/kustomize01.py</code> ... <code>kustomize04.py</code>
-- Create: <code>solutions/20_kustomize_overlays/kustomize01.py</code> ... <code>kustomize04.py</code></p>
+<h3 id="chapter-28-google-cloud-gke-cloud-native-ecosystem-28-gcp-gkemd">Chapter 28: Google Cloud GKE &amp; Cloud-Native Ecosystem (<code>28-gcp-gke.md</code>)</h3>
 <ul>
-<li>[ ] <strong>Step 1: Create starter exercises and reference solutions for kustomize01 to kustomize04</strong></li>
-<li>[ ] <strong>Step 2: Commit Chapter 20 exercises and solutions</strong></li>
+<li><strong>API Groups &amp; Domains</strong>: <code>gateway.networking.k8s.io</code>, <code>networking.gke.io/v1</code>, <code>core.cnrm.cloud.google.com/v1beta1</code>, <code>storage.cnrm.cloud.google.com/v1beta1</code>.</li>
+<li><strong>Primary Concepts</strong>:</li>
+<li>GKE Workload Identity Federation: Mapping Kubernetes ServiceAccounts to Google Cloud IAM ServiceAccounts (<code>iam.gke.io/gcp-service-account</code>).</li>
+<li>GKE Autopilot: Workload resource management, compute classes (<code>Performance</code>, <code>Scale-Out</code>), and burst allocations.</li>
+<li>GKE Gateway API &amp; Cloud Armor: Deploying multi-cluster Gateways with <code>GCPBackendPolicy</code> attaching Cloud Armor security policies and SSL certificates.</li>
+<li>Google Config Connector &amp; Anthos Config Sync: Managing Google Cloud infrastructure (e.g. Cloud Storage Buckets, Cloud SQL) declaratively via Kubernetes CRDs.</li>
+<li><strong>Interactive Exercises</strong>:</li>
+<li><code>gke01</code>: <strong>GKE Workload Identity Federation</strong> — Configure a Kubernetes ServiceAccount annotated with <code>iam.gke.io/gcp-service-account: app-sa@project.iam.gserviceaccount.com</code> and verify pod nodeSelector/identity binding.</li>
+<li><code>gke02</code>: <strong>GKE Autopilot Workload Sizing</strong> — Configure a deployment for GKE Autopilot specifying exact CPU/memory request boundaries and compute class annotations (<code>autopilot.gke.io/compute-class: Performance</code>).</li>
+<li><code>gke03</code>: <strong>GKE Gateway with Cloud Armor Policy</strong> — Define a <code>GCPBackendPolicy</code> CRD linking a Cloud Armor Edge Security Policy to a Gateway API <code>HTTPRoute</code> backend.</li>
+<li><code>gke04</code>: <strong>Config Connector Cloud Resource</strong> — Declare a Google Cloud <code>StorageBucket</code> CRD with storageClass <code>STANDARD</code>, uniformBucketLevelAccess, and deletionPolicy <code>Abandon</code>.</li>
 </ul>
 <hr />
-<h3 id="task-3-update-manifest-curriculum-engine">Task 3: Update Manifest &amp; Curriculum Engine</h3>
-<p><strong>Files:</strong>
-- Modify: <code>src/kubelings/manifest.py</code></p>
+<h3 id="chapter-29-enterprise-governance-multi-account-landing-zones-secret-management-29-enterprise-governancemd">Chapter 29: Enterprise Governance, Multi-Account Landing Zones &amp; Secret Management (<code>29-enterprise-governance.md</code>)</h3>
 <ul>
-<li>[ ] <strong>Step 1: Add Chapters 19 and 20 with exercise definitions and hints in manifest.py</strong></li>
-<li>[ ] <strong>Step 2: Commit manifest updates</strong></li>
+<li><strong>API Groups &amp; Domains</strong>: <code>external-secrets.io/v1beta1</code>, <code>argoproj.io/v1alpha1</code>, <code>vault.hashicorp.com</code>.</li>
+<li><strong>Primary Concepts</strong>:</li>
+<li>AWS Control Tower &amp; Multi-Account Landing Zones: Managing fleet clusters across development, staging, and audit accounts with Account Factory for Terraform (AFT).</li>
+<li>External Secrets Operator (ESO): Decoupling Kubernetes secrets from cluster storage by pulling directly from AWS Secrets Manager, GCP Secret Manager, or HashiCorp Vault via <code>SecretStore</code> and <code>ExternalSecret</code>.</li>
+<li>HashiCorp Vault Agent Injector: Sidecar-based mutual TLS credential injection (<code>vault.hashicorp.com/agent-inject: "true"</code>, <code>vault.hashicorp.com/role</code>) with automatic lease renewal.</li>
+<li>ArgoCD ApplicationSets: Multi-cluster continuous deployment using Cluster Matrix Generators to deploy consistent governance policies (Kyverno/OPA, Falco, ESO) across an entire organizational fleet.</li>
+<li><strong>Interactive Exercises</strong>:</li>
+<li><code>eso01</code>: <strong>External Secrets Operator Integration</strong> — Create a <code>SecretStore</code> referencing AWS Secrets Manager / GCP Secret Manager and an <code>ExternalSecret</code> that materializes a Kubernetes <code>Secret</code>.</li>
+<li><code>vault01</code>: <strong>HashiCorp Vault Agent Sidecar Injection</strong> — Configure Pod template annotations for the Vault Agent Injector to render dynamic database credentials to <code>/vault/secrets/db-creds</code>.</li>
+<li><code>gov01</code>: <strong>ArgoCD ApplicationSet Cluster Matrix</strong> — Author an <code>ApplicationSet</code> with a <code>matrix</code> generator targeting all clusters labeled <code>env: production</code> to deploy standard baseline monitoring.</li>
+<li><code>gov02</code>: <strong>Multi-Account Governance &amp; Policy Enforcement</strong> — Define strict namespace resource quotas and security constraints preventing cross-account privilege escalation.</li>
 </ul>
 <hr />
-<h3 id="task-4-unit-solution-testing-for-90-exercises">Task 4: Unit &amp; Solution Testing for 90 Exercises</h3>
-<p><strong>Files:</strong>
-- Create: <code>tests/test_chapters_19_20.py</code>
-- Modify: <code>tests/test_manifest.py</code>
-- Modify: <code>tests/test_solutions_and_exercises.py</code></p>
-<ul>
-<li>[ ] <strong>Step 1: Write test_chapters_19_20.py and update assertions to 20 chapters / 90 exercises</strong></li>
-<li>[ ] <strong>Step 2: Run pytest and verify 90/90 pass</strong></li>
-<li>[ ] <strong>Step 3: Commit test suite updates</strong></li>
-</ul>
+<h2 id="3-visual-architectural-mermaidjs-specifications">3. Visual Architectural Mermaid.js Specifications</h2>
+<h3 id="chapter-27-aws-eks">Chapter 27 (AWS EKS):</h3>
+<pre class="mermaid"><code>flowchart TD
+    subgraph EKSControlPlane["AWS EKS Control Plane"]
+        API["kube-apiserver"]
+        OIDC["EKS OpenID Connect (OIDC) Provider&lt;br/&gt;&lt;code&gt;oidc.eks.us-east-1.amazonaws.com/id/...&lt;/code&gt;"]
+        API --&gt; OIDC
+    end
+
+    subgraph AWSIAM["AWS IAM Security Layer"]
+        ROLE["IAM Role: &lt;code&gt;AppExecutionRole&lt;/code&gt;&lt;br/&gt;&lt;i&gt;Trust: oidc.eks:sub: system:serviceaccount:prod:app-sa&lt;/i&gt;"]
+        POLICY["IAM Policy: &lt;code&gt;S3ReadOnlyAccess&lt;/code&gt;"]
+        OIDC --&gt;|STS AssumeRoleWithWebIdentity| ROLE
+        ROLE --&gt; POLICY
+    end
+
+    subgraph WorkerFleet["EKS Worker Node &amp; Pod Datapath"]
+        POD["Pod: &lt;code&gt;api-server&lt;/code&gt;&lt;br/&gt;&lt;i&gt;SA: app-sa&lt;/i&gt;"]
+        VPC_CNI["AWS VPC CNI Plugin&lt;br/&gt;&lt;i&gt;Assigns secondary private IPv4 from Subnet ENI&lt;/i&gt;"]
+        SGP["SecurityGroupPolicy&lt;br/&gt;&lt;i&gt;Attaches AWS Security Group to Pod ENI&lt;/i&gt;"]
+        ALB_CTRL["AWS Load Balancer Controller&lt;br/&gt;&lt;i&gt;TargetGroupBinding ➔ AWS ALB/NLB&lt;/i&gt;"]
+
+        ROLE --&gt;|STS Projected Token (AWS_WEB_IDENTITY_TOKEN_FILE)| POD
+        POD &lt;--&gt; VPC_CNI
+        VPC_CNI &lt;--&gt; SGP
+        POD &lt;--&gt; ALB_CTRL
+    end
+
+    subgraph NodeProvisioner["Karpenter Node Autoscaling"]
+        NODEPOOL["Karpenter NodePool&lt;br/&gt;&lt;i&gt;EC2 Instance Families: c6i, c7i, m6i&lt;/i&gt;"]
+        EC2["AWS EC2 Spot/On-Demand Fleet"]
+        NODEPOOL --&gt;|Provisions in &amp;lt;60s| EC2
+    end</code></pre>
+<h3 id="chapter-28-gcp-gke">Chapter 28 (GCP GKE):</h3>
+<pre class="mermaid"><code>flowchart TD
+    subgraph GKEControlPlane["GKE Control Plane"]
+        GKE_API["GKE kube-apiserver"]
+        WI_POOL["Workload Identity Pool&lt;br/&gt;&lt;code&gt;PROJECT_ID.svc.id.goog&lt;/code&gt;"]
+        GKE_API --&gt; WI_POOL
+    end
+
+    subgraph GCPIAM["Google Cloud IAM Security"]
+        GCP_SA["Google Cloud Service Account (GSA)&lt;br/&gt;&lt;code&gt;app-gsa@project.iam.gserviceaccount.com&lt;/code&gt;"]
+        GCP_PERMS["IAM Roles (e.g. Storage Object Viewer, Cloud SQL Client)"]
+        WI_POOL --&gt;|Federated Token Exchange| GCP_SA
+        GCP_SA --&gt; GCP_PERMS
+    end
+
+    subgraph GKEAutopilot["GKE Autopilot / Standard Workloads"]
+        K8S_SA["K8s ServiceAccount: &lt;code&gt;app-ksa&lt;/code&gt;&lt;br/&gt;&lt;i&gt;Annotation: iam.gke.io/gcp-service-account: app-gsa&lt;/i&gt;"]
+        APP_POD["App Pod (Autopilot Sizing)&lt;br/&gt;&lt;i&gt;Resources: Requests=Limits auto-managed&lt;/i&gt;"]
+        GATEWAY["GKE Gateway (External HTTP/S)&lt;br/&gt;&lt;i&gt;Cloud Armor Security Policy Attached&lt;/i&gt;"]
+
+        K8S_SA --&gt;|Identity Binding| APP_POD
+        GCP_SA --&gt;|Authorizes Cloud API Access| APP_POD
+        GATEWAY --&gt; APP_POD
+    end
+
+    subgraph ConfigConnector["Config Connector Declarative GCP Resources"]
+        CC_BUCKET["StorageBucket CRD&lt;br/&gt;&lt;i&gt;kind: StorageBucket&lt;/i&gt;"]
+        GCS_BUCKET[("Google Cloud Storage (GCS) Bucket")]
+        CC_BUCKET --&gt;|Reconciles directly via GCP API| GCS_BUCKET
+    end</code></pre>
+<h3 id="chapter-29-enterprise-governance-secrets">Chapter 29 (Enterprise Governance &amp; Secrets):</h3>
+<pre class="mermaid"><code>flowchart TD
+    subgraph EnterpriseControl["AWS Control Tower / Multi-Account Landing Zone"]
+        ORG["AWS Organizations / GCP Folders"]
+        DEV_ACC["Development Account Cluster"]
+        PROD_ACC["Production Account Cluster"]
+        AUDIT_ACC["Audit &amp; Security Account"]
+        ORG --&gt; DEV_ACC
+        ORG --&gt; PROD_ACC
+        ORG --&gt; AUDIT_ACC
+    end
+
+    subgraph GitOpsFleet["ArgoCD Multi-Cluster Fleet Management"]
+        APP_SET["ArgoCD ApplicationSet&lt;br/&gt;&lt;i&gt;Matrix Generator (Clusters x Environments)&lt;/i&gt;"]
+        APP_SET --&gt;|Deploys Baselines| DEV_ACC
+        APP_SET --&gt;|Deploys Baselines| PROD_ACC
+    end
+
+    subgraph SecretFabric["Enterprise Secret Orchestration"]
+        VAULT["HashiCorp Vault / Cloud Secret Managers&lt;br/&gt;&lt;i&gt;(AWS Secrets Manager, GCP Secret Manager)&lt;/i&gt;"]
+
+        subgraph ClusterSecretEngine["Cluster Secret Automation"]
+            ESO["External Secrets Operator (ESO)&lt;br/&gt;&lt;i&gt;SecretStore ➔ ExternalSecret ➔ K8s Secret&lt;/i&gt;"]
+            VAULT_INJECT["Vault Agent Injector&lt;br/&gt;&lt;i&gt;Sidecar token rotation &amp; memory-only templates&lt;/i&gt;"]
+        end
+
+        VAULT --&gt; ESO
+        VAULT --&gt; VAULT_INJECT
+    end
+
+    subgraph AppConsumption["Application Layer"]
+        SEC_K8S[("Standard K8s Secret (Auto-Synced)")]
+        APP_CONTAINER["Enterprise Microservice Pod"]
+
+        ESO --&gt; SEC_K8S
+        SEC_K8S --&gt; APP_CONTAINER
+        VAULT_INJECT --&gt;|Mounted at /vault/secrets/| APP_CONTAINER
+    end</code></pre>
 <hr />
-<h3 id="task-5-documentation-syllabus-updates">Task 5: Documentation &amp; Syllabus Updates</h3>
-<p><strong>Files:</strong>
-- Modify: <code>README.md</code>
-- Modify: <code>docs/syllabus.md</code>
-- Modify: <code>docs/index.md</code></p>
-<ul>
-<li>[ ] <strong>Step 1: Update README and documentation pages with 20 chapters and 90 exercises</strong></li>
-<li>[ ] <strong>Step 2: Rebuild demo SVG and test MkDocs build</strong></li>
-<li>[ ] <strong>Step 3: Commit documentation updates</strong></li>
-</ul>
-<hr />
-<h3 id="task-6-final-verification-knowledge-graph-rebuild-release">Task 6: Final Verification, Knowledge Graph Rebuild &amp; Release</h3>
-<ul>
-<li>[ ] <strong>Step 1: Run ruff check, ruff format, pyright, pytest, and kubelings test</strong></li>
-<li>[ ] <strong>Step 2: Run graphify update . to rebuild knowledge graph</strong></li>
-<li>[ ] <strong>Step 3: Push to remote main and monitor CI/CD release</strong></li>
-</ul>
+<h2 id="4-verification-quality-gates">4. Verification &amp; Quality Gates</h2>
+<ol>
+<li><strong>Manifest Integrity</strong>:</li>
+<li><code>build_manifest()</code> produces 29 chapters and 126 exercises.</li>
+<li>All 126 exercises have corresponding directories in <code>exercises/</code> with valid YAML/test definitions.</li>
+<li><strong>Pytest Test Suite</strong>:</li>
+<li><code>tests/test_manifest.py</code> verifies all 126 exercises exist and are valid.</li>
+<li><code>tests/test_reference_guides.py</code> asserts all 29 guides exist, have valid Mermaid blocks, valid YAML manifests, and deep links.</li>
+<li><strong>Strict MkDocs Build</strong>:</li>
+<li><code>uv run mkdocs build --strict</code> builds the full 29-chapter documentation site with 0 errors.</li>
+<li><strong>GitOps &amp; Deployment</strong>:</li>
+<li>Automated CI builds, test passes, and GitHub Actions <code>Deploy Documentation</code> deploys live to GitHub Pages.</li>
+</ol>
 
 
 

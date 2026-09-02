@@ -12,13 +12,13 @@
         <meta name="author" content="Daniel Fisher">
       
       
-        <link rel="canonical" href="https://dnf0.github.io/kubelings/guides/03-config-secrets/">
+        <link rel="canonical" href="https://dnf0.github.io/kubelings/guides/27-aws-eks/">
       
       
-        <link rel="prev" href="../02-controllers/">
+        <link rel="prev" href="../26-hardware-acceleration-dra/">
       
       
-        <link rel="next" href="../04-storage/">
+        <link rel="next" href="../28-gcp-gke/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>03. Config & Secrets - Kubelings</title>
+        <title>27. AWS EKS & Cloud Architecture - Kubelings</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#chapter-03-configuration-secret-management" class="md-skip">
+        <a href="#chapter-27-aws-eks-cloud-architecture" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              03. Config & Secrets
+              27. AWS EKS & Cloud Architecture
             
           </span>
         </div>
@@ -342,8 +342,6 @@
       
   
   
-    
-  
   
   
     
@@ -356,11 +354,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
           <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
@@ -381,7 +379,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -452,37 +450,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    03. Config & Secrets
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../03-config-secrets/" class="md-nav__link">
         
   
   
@@ -498,137 +469,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#1-architectural-overview-control-plane-mechanics" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Architectural Overview &amp; Control Plane Mechanics
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-annotated-production-yaml-anatomy-field-reference" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Annotated Production YAML Anatomy &amp; Field Reference
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="2. Annotated Production YAML Anatomy &amp; Field Reference">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#key-field-schema-reference" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Key Field Schema Reference
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-real-world-architectural-patterns" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Real-World Architectural Patterns
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="3. Real-World Architectural Patterns">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#projected-volume-config-injection" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Projected Volume Config Injection
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#immutable-configuration-pattern" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Immutable Configuration Pattern
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-production-hardening-operational-governance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Production Hardening &amp; Operational Governance
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-failure-modes-diagnostic-triage-tree" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Failure Modes &amp; Diagnostic Triage Tree
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#6-interactive-practice-matrix" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. Interactive Practice Matrix
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1525,8 +1365,10 @@
       
   
   
+    
   
   
+  
     
     
     
@@ -1537,11 +1379,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
         
           
           <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
@@ -1562,7 +1404,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1577,10 +1419,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../27-aws-eks/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    27. AWS EKS & Cloud Architecture
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1596,6 +1465,137 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-architectural-overview-control-plane-mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Architectural Overview &amp; Control Plane Mechanics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-annotated-production-yaml-anatomy-field-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Annotated Production YAML Anatomy &amp; Field Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Annotated Production YAML Anatomy &amp; Field Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-field-schema-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Field Schema Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-real-world-architectural-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Real-World Architectural Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Real-World Architectural Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aws-vpc-cni-securitygrouppolicy-per-pod" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AWS VPC CNI SecurityGroupPolicy per Pod
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#karpenter-v1-nodepool-with-ec2nodeclass" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Karpenter v1 NodePool with EC2NodeClass
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-production-hardening-operational-governance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Production Hardening &amp; Operational Governance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-failure-modes-diagnostic-triage-tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Failure Modes &amp; Diagnostic Triage Tree
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-interactive-practice-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Interactive Practice Matrix
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1769,10 +1769,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#projected-volume-config-injection" class="md-nav__link">
+  <a href="#aws-vpc-cni-securitygrouppolicy-per-pod" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Projected Volume Config Injection
+        AWS VPC CNI SecurityGroupPolicy per Pod
       
     </span>
   </a>
@@ -1780,10 +1780,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#immutable-configuration-pattern" class="md-nav__link">
+  <a href="#karpenter-v1-nodepool-with-ec2nodeclass" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Immutable Configuration Pattern
+        Karpenter v1 NodePool with EC2NodeClass
       
     </span>
   </a>
@@ -1848,84 +1848,89 @@
   
 
 
-<h1 id="chapter-03-configuration-secret-management">Chapter 03: Configuration &amp; Secret Management</h1>
+<h1 id="chapter-27-aws-eks-cloud-architecture">Chapter 27: AWS EKS &amp; Cloud Architecture</h1>
 <div class="grid cards" markdown>
 
--   :material-school: **Topic Focus** &bull; ConfigMaps, Secrets, In-Memory Mounts, and Immutability
--   :material-api: **Primary APIs** &bull; `v1` &bull; `ConfigMap`, `Secret`
--   :material-rocket-launch: [**Launch Playground in Wasm →**](../playground/index.html?chapter=3){ .md-button .md-button--primary }
+-   :material-school: **Topic Focus** &bull; IRSA, EKS Pod Identity, AWS Load Balancer Controller, VPC CNI, and Karpenter
+-   :material-api: **Primary APIs** &bull; `vpcresources.k8s.aws/v1alpha1` &bull; `karpenter.sh/v1` &bull; `alb.ingress.kubernetes.io` &bull; `eks.amazonaws.com`
+-   :material-rocket-launch: [**Launch Playground in Wasm →**](../playground/index.html?chapter=27){ .md-button .md-button--primary }
 
 </div>
 
 <div class="admonition tip">
 <p class="admonition-title">⚡ Interactive Problems in this Chapter (Click to solve in Playground)</p>
 <ul>
-<li><a href="../../playground/?exercise=config01"><strong><code>config01</code></strong>: ConfigMaps as Environment Variables →</a></li>
-<li><a href="../../playground/?exercise=config02"><strong><code>config02</code></strong>: ConfigMaps Mounted as Volumes →</a></li>
-<li><a href="../../playground/?exercise=config03"><strong><code>config03</code></strong>: Secrets &amp; Base64 Encoding →</a></li>
-<li><a href="../../playground/?exercise=config04"><strong><code>config04</code></strong>: Secret Volume Mounts &amp; Permissions →</a></li>
-<li><a href="../../playground/?exercise=config05"><strong><code>config05</code></strong>: Immutable ConfigMaps and Secrets →</a></li>
+<li><a href="../../playground/?exercise=eks01"><strong><code>eks01</code></strong>: EKS Pod Identity &amp; IRSA ServiceAccounts →</a></li>
+<li><a href="../../playground/?exercise=eks02"><strong><code>eks02</code></strong>: AWS Load Balancer Controller &amp; ALB Ingress →</a></li>
+<li><a href="../../playground/?exercise=eks03"><strong><code>eks03</code></strong>: AWS VPC CNI Security Groups for Pods →</a></li>
+<li><a href="../../playground/?exercise=eks04"><strong><code>eks04</code></strong>: Karpenter NodePool &amp; EC2NodeClass →</a></li>
 </ul>
 </div>
 <hr />
 <h2 id="1-architectural-overview-control-plane-mechanics">1. Architectural Overview &amp; Control Plane Mechanics</h2>
-<p>In Kubernetes, <strong>Configuration &amp; Secret Management</strong> is reconciled through declarative state loops managed by the control plane:</p>
-<pre class="mermaid"><code>flowchart LR
-    subgraph ControlPlane["Kubernetes API &amp; Encryption"]
-        CM["ConfigMap&lt;br/&gt;&lt;code&gt;v1/ConfigMaps&lt;/code&gt;&lt;br/&gt;&lt;i&gt;Key-Value Config&lt;/i&gt;"]
-        SEC["Secret&lt;br/&gt;&lt;code&gt;v1/Secrets&lt;/code&gt;&lt;br/&gt;&lt;i&gt;KMS Envelope Decryption&lt;/i&gt;"]
-        API["kube-apiserver"]
-        CM --&gt; API
-        SEC --&gt; API
+<p>In Kubernetes, <strong>AWS EKS &amp; Cloud Architecture</strong> is reconciled through declarative state loops managed by the control plane:</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph IAM_ControlPlane["AWS IAM &amp; STS Control Plane"]
+        OIDC["EKS OIDC Provider"]
+        IAM_ROLE["AWS IAM Role&lt;br/&gt;&lt;code&gt;arn:aws:iam::123:role/s3-reader&lt;/code&gt;"]
+        STS["AWS Security Token Service (STS)"]
+        OIDC &lt;--&gt;|Federated Trust| IAM_ROLE
+        IAM_ROLE --&gt; STS
     end
 
-    subgraph KubeletProjection["Kubelet Projection Engine"]
-        VOL_ENG["Volume Manager&lt;br/&gt;&lt;i&gt;Atomic Symlink Swap&lt;/i&gt;"]
-        ENV_ENG["Process Env Injector&lt;br/&gt;&lt;i&gt;Startup Freeze&lt;/i&gt;"]
+    subgraph EKS_Cluster["Amazon EKS Cluster"]
+        K8S_SA["Kubernetes ServiceAccount&lt;br/&gt;&lt;code&gt;eks.amazonaws.com/role-arn&lt;/code&gt;"]
+        WEBHOOK["EKS Pod Mutating Webhook"]
+        POD["Application Pod (Worker)"]
+        K8S_SA --&gt; POD
+        WEBHOOK --&gt;|Injects AWS_WEB_IDENTITY_TOKEN_FILE| POD
     end
 
-    subgraph PodSandbox["Application Pod"]
-        APP_PROC["App Runtime Container&lt;br/&gt;&lt;i&gt;Process PID 1&lt;/i&gt;"]
-        SYMLINK[("Mounted Directory: &lt;code&gt;/etc/config&lt;/code&gt;&lt;br/&gt;&lt;code&gt;..data -&gt; ..2026_09_02&lt;/code&gt;&lt;br/&gt;&lt;i&gt;(Live Dynamic Updates)&lt;/i&gt;")]
-        ENV_VARS["Environment Variables&lt;br/&gt;&lt;code&gt;DATABASE_URL&lt;/code&gt;&lt;br/&gt;&lt;i&gt;(Static until restart)&lt;/i&gt;"]
+    subgraph AWS_VPC_Networking["AWS VPC &amp; Compute Subnets"]
+        ALB["AWS Application Load Balancer (ALB)"]
+        LBC["AWS Load Balancer Controller"]
+        KARPENTER["Karpenter Autoscaler"]
+        EC2["EC2 Instances (AL2023 / Spot Fleet)"]
+        LBC --&gt;|Provisions Target Groups (IP Mode)| ALB
+        ALB --&gt;|Direct Pod Routing| POD
+        KARPENTER --&gt;|Right-sized Nodes via Fleet API| EC2
     end
 
-    API --&gt;|Watch / Mount| VOL_ENG
-    API --&gt;|Pod Spec Spec.Env| ENV_ENG
-    VOL_ENG --&gt;|Mounts atomic symlink| SYMLINK
-    ENV_ENG --&gt;|Injects at boot| ENV_VARS
-    SYMLINK --&gt;|File Read| APP_PROC
-    ENV_VARS --&gt;|Process Env| APP_PROC</code></pre>
+    POD &lt;--&gt;|Assumes Role via Token| STS
+    POD &lt;--&gt;|Authorized API Calls| S3[("Amazon S3 / DynamoDB")]</code></pre>
 <p>When resources in this chapter are submitted, the <code>kube-apiserver</code> validates the OpenAPI v3 schema, stores state in <code>etcd</code>, and triggers the responsible controllers or node daemons to reconcile actual cluster state.</p>
 <hr />
 <h2 id="2-annotated-production-yaml-anatomy-field-reference">2. Annotated Production YAML Anatomy &amp; Field Reference</h2>
 <p>Below is a production-grade declarative manifest demonstrating field definitions and operational patterns:</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ServiceAccount</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nt">metadata</span><span class="p">:</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app-config</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">s3-reader-sa</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="nt">data</span><span class="p">:</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">  </span><span class="nt">APP_ENV</span><span class="p">:</span><span class="w"> </span><span class="s">"production"</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">  </span><span class="nt">LOG_LEVEL</span><span class="p">:</span><span class="w"> </span><span class="s">"info"</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">  </span><span class="nt">nginx.conf</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">    </span><span class="no">events { worker_connections 1024; }</span>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">    </span><span class="no">http {</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">      </span><span class="no">server {</span>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">        </span><span class="no">listen 80;</span>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">        </span><span class="no">location / { return 200 "OK"; }</span>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">      </span><span class="no">}</span>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">    </span><span class="no">}</span>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="nn">---</span>
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Secret</span>
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="nt">metadata</span><span class="p">:</span>
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app-secrets</span>
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Opaque</span>
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="nt">stringData</span><span class="p">:</span>
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="w">  </span><span class="nt">DB_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="s">"super-secure-production-password"</span>
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="w">  </span><span class="nt">API_KEY</span><span class="p">:</span><span class="w"> </span><span class="s">"secret-token-xyz-123"</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="nt">eks.amazonaws.com/role-arn</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arn:aws:iam::123456789012:role/s3-reader-role</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="nn">---</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">networking.k8s.io/v1</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ingress</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="nt">metadata</span><span class="p">:</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">alb-ingress</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">    </span><span class="nt">alb.ingress.kubernetes.io/scheme</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">internet-facing</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">    </span><span class="nt">alb.ingress.kubernetes.io/target-type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ip</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="nt">spec</span><span class="p">:</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">  </span><span class="nt">ingressClassName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">alb</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">  </span><span class="nt">rules</span><span class="p">:</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">api.example.com</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="w">      </span><span class="nt">http</span><span class="p">:</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="w">        </span><span class="nt">paths</span><span class="p">:</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="w">            </span><span class="nt">pathType</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Prefix</span>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="w">            </span><span class="nt">backend</span><span class="p">:</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="w">              </span><span class="nt">service</span><span class="p">:</span>
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="w">                </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">api-service</span>
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a><span class="w">                </span><span class="nt">port</span><span class="p">:</span>
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="w">                  </span><span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
 </span></code></pre></div>
 <h3 id="key-field-schema-reference">Key Field Schema Reference</h3>
 <table>
@@ -1938,78 +1943,82 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><code>data</code> vs <code>stringData</code></td>
-<td style="text-align: left;"><code>Map</code></td>
-<td style="text-align: left;"><code>data</code> expects base64 encoded strings; <code>stringData</code> accepts raw text and is auto-encoded on write.</td>
+<td style="text-align: left;"><code>eks.amazonaws.com/role-arn</code></td>
+<td style="text-align: left;"><code>Annotation</code></td>
+<td style="text-align: left;">Binds a Kubernetes ServiceAccount to an AWS IAM Role via IAM Roles for Service Accounts (IRSA).</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>immutable: true</code></td>
-<td style="text-align: left;"><code>Boolean</code></td>
-<td style="text-align: left;">Protects against accidental config modification and reduces kube-apiserver watch load.</td>
+<td style="text-align: left;"><code>alb.ingress.kubernetes.io/target-type</code></td>
+<td style="text-align: left;"><code>Annotation</code></td>
+<td style="text-align: left;">Specifies <code>ip</code> for direct Pod IP target routing bypassing NodePort, or <code>instance</code> for EC2 node ports.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>envFrom.configMapRef</code></td>
-<td style="text-align: left;"><code>Object</code></td>
-<td style="text-align: left;">Exposes all key-value pairs in a ConfigMap as individual container environment variables.</td>
+<td style="text-align: left;"><code>SecurityGroupPolicy</code></td>
+<td style="text-align: left;"><code>CRD (</code>vpcresources.k8s.aws<code>)</code></td>
+<td style="text-align: left;">Assigns AWS EC2 security groups directly to pods matching <code>podSelector</code> via branch ENIs.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>NodePool</code> &amp; <code>EC2NodeClass</code></td>
+<td style="text-align: left;"><code>CRD (</code>karpenter.sh/v1<code>)</code></td>
+<td style="text-align: left;">Configures declarative node provisioning, instance type filtering, spot/on-demand ratios, and AMI families.</td>
 </tr>
 </tbody>
 </table>
 <hr />
 <h2 id="3-real-world-architectural-patterns">3. Real-World Architectural Patterns</h2>
-<h3 id="projected-volume-config-injection">Projected Volume Config Injection</h3>
-<div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<h3 id="aws-vpc-cni-securitygrouppolicy-per-pod">AWS VPC CNI SecurityGroupPolicy per Pod</h3>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">vpcresources.k8s.aws/v1alpha1</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SecurityGroupPolicy</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nt">metadata</span><span class="p">:</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">projected-config-pod</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nt">spec</span><span class="p">:</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="nt">containers</span><span class="p">:</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">alpine:3.20</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"sh"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"-c"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"ls</span><span class="nv"> </span><span class="s">-la</span><span class="nv"> </span><span class="s">/etc/config</span><span class="nv"> </span><span class="s">&amp;&amp;</span><span class="nv"> </span><span class="s">sleep</span><span class="nv"> </span><span class="s">3600"</span><span class="p p-Indicator">]</span>
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="nt">volumeMounts</span><span class="p">:</span>
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config-bundle</span>
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">      </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/config</span>
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">      </span><span class="nt">readOnly</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">  </span><span class="nt">volumes</span><span class="p">:</span>
-</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config-bundle</span>
-</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">    </span><span class="nt">projected</span><span class="p">:</span>
-</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">      </span><span class="nt">sources</span><span class="p">:</span>
-</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">configMap</span><span class="p">:</span>
-</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app-config</span>
-</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">secret</span><span class="p">:</span>
-</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app-secrets</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">payment-sg-policy</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nt">spec</span><span class="p">:</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="nt">podSelector</span><span class="p">:</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">payment-gateway</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">  </span><span class="nt">securityGroups</span><span class="p">:</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="nt">groupIds</span><span class="p">:</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sg-0123456789abcdef0</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sg-0987654321fedcba0</span>
 </span></code></pre></div>
-<h3 id="immutable-configuration-pattern">Immutable Configuration Pattern</h3>
-<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
+<h3 id="karpenter-v1-nodepool-with-ec2nodeclass">Karpenter v1 NodePool with EC2NodeClass</h3>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">karpenter.sh/v1</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NodePool</span>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nt">metadata</span><span class="p">:</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">static-routing-table-v1</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="nt">immutable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="nt">data</span><span class="p">:</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">  </span><span class="nt">routes.json</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="no">{"/api/v1": "http://api-v1", "/api/v2": "http://api-v2"}</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default-pool</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="nt">spec</span><span class="p">:</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">  </span><span class="nt">template</span><span class="p">:</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="nt">spec</span><span class="p">:</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">      </span><span class="nt">nodeClassRef</span><span class="p">:</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">        </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">karpenter.k8s.aws</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">        </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EC2NodeClass</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default-nodeclass</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">      </span><span class="nt">requirements</span><span class="p">:</span>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">karpenter.sh/capacity-type</span>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">          </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">In</span>
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">          </span><span class="nt">values</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"spot"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"on-demand"</span><span class="p p-Indicator">]</span>
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">karpenter.k8s.aws/instance-family</span>
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">          </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">In</span>
+</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">          </span><span class="nt">values</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"c6i"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"c7i"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"m6i"</span><span class="p p-Indicator">]</span>
+</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">  </span><span class="nt">limits</span><span class="p">:</span>
+</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">    </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">"100"</span>
+</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">400Gi</span>
 </span></code></pre></div>
 <hr />
 <h2 id="4-production-hardening-operational-governance">4. Production Hardening &amp; Operational Governance</h2>
 <ul>
-<li>Store sensitive data exclusively in <code>Secret</code> resources backed by KMS envelope encryption or external vault integrations (External Secrets Operator).</li>
-<li>Set <code>immutable: true</code> on ConfigMaps and Secrets used with immutable deployment pipelines to eliminate drift.</li>
-<li>Always mount Secret volumes with <code>readOnly: true</code> to prevent unauthorized in-pod file manipulation.</li>
+<li>Use EKS Pod Identity or IRSA instead of static IAM credentials or broad EC2 instance profile roles.</li>
+<li>Deploy AWS Load Balancer Controller with target-type <code>ip</code> to minimize kube-proxy hop latency.</li>
+<li>Utilize Karpenter for rapid node provisioning and consolidate underutilized nodes automatically.</li>
 </ul>
 <hr />
 <h2 id="5-failure-modes-diagnostic-triage-tree">5. Failure Modes &amp; Diagnostic Triage Tree</h2>
 <details class="failure">
-<summary><code>CreateContainerConfigError</code></summary>
-<p><strong>Root Cause:</strong> Referenced ConfigMap or Secret does not exist or key name is misspelled.</p>
+<summary><code>WebIdentityErr: failed to retrieve credentials</code></summary>
+<p><strong>Root Cause:</strong> OIDC trust relationship on AWS IAM role is misconfigured or missing audience/subject claims.</p>
 <p><strong>Diagnostic Triage Sequence:</strong>
-1. Run <code>kubectl describe pod &lt;name&gt;</code> and inspect the exact missing key.
-2. Check namespace: <code>kubectl get configmap,secret -n &lt;namespace&gt;</code>.</p>
-</details>
-<details class="failure">
-<summary>Live ConfigMap Update Not Reflected in Pod</summary>
-<p><strong>Root Cause:</strong> ConfigMaps injected as environment variables are static and require pod restart; volume mounts take up to kubelet sync period (default ~60s).</p>
-<p><strong>Diagnostic Triage Sequence:</strong>
-1. Trigger rolling restart: <code>kubectl rollout restart deployment/&lt;name&gt;</code>.</p>
+1. Verify OIDC issuer URL: <code>aws eks describe-cluster --name &lt;cluster&gt; --query cluster.identity.oidc.issuer</code>
+2. Check IAM Trust Policy <code>StringEquals</code> matches <code>system:serviceaccount:&lt;namespace&gt;:&lt;serviceaccount&gt;</code>.</p>
 </details>
 <hr />
 <h2 id="6-interactive-practice-matrix">6. Interactive Practice Matrix</h2>
@@ -2025,34 +2034,28 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><strong><code>config01</code></strong></td>
-<td style="text-align: left;">ConfigMaps as Environment Variables</td>
-<td style="text-align: left;"><a href="../../playground/?exercise=config01"><code>../playground/index.html?exercise=config01</code></a></td>
-<td style="text-align: left;"><a class="md-button md-button--primary" href="../../playground/?exercise=config01"><strong>⚡ Solve <code>config01</code> in Playground →</strong></a></td>
+<td style="text-align: left;"><strong><code>eks01</code></strong></td>
+<td style="text-align: left;">EKS Pod Identity &amp; IRSA ServiceAccounts</td>
+<td style="text-align: left;"><a href="../../playground/?exercise=eks01"><code>../playground/index.html?exercise=eks01</code></a></td>
+<td style="text-align: left;"><a class="md-button md-button--primary" href="../../playground/?exercise=eks01"><strong>⚡ Solve <code>eks01</code> in Playground →</strong></a></td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong><code>config02</code></strong></td>
-<td style="text-align: left;">ConfigMaps Mounted as Volumes</td>
-<td style="text-align: left;"><a href="../../playground/?exercise=config02"><code>../playground/index.html?exercise=config02</code></a></td>
-<td style="text-align: left;"><a class="md-button md-button--primary" href="../../playground/?exercise=config02"><strong>⚡ Solve <code>config02</code> in Playground →</strong></a></td>
+<td style="text-align: left;"><strong><code>eks02</code></strong></td>
+<td style="text-align: left;">AWS Load Balancer Controller &amp; ALB Ingress</td>
+<td style="text-align: left;"><a href="../../playground/?exercise=eks02"><code>../playground/index.html?exercise=eks02</code></a></td>
+<td style="text-align: left;"><a class="md-button md-button--primary" href="../../playground/?exercise=eks02"><strong>⚡ Solve <code>eks02</code> in Playground →</strong></a></td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong><code>config03</code></strong></td>
-<td style="text-align: left;">Secrets &amp; Base64 Encoding</td>
-<td style="text-align: left;"><a href="../../playground/?exercise=config03"><code>../playground/index.html?exercise=config03</code></a></td>
-<td style="text-align: left;"><a class="md-button md-button--primary" href="../../playground/?exercise=config03"><strong>⚡ Solve <code>config03</code> in Playground →</strong></a></td>
+<td style="text-align: left;"><strong><code>eks03</code></strong></td>
+<td style="text-align: left;">AWS VPC CNI Security Groups for Pods</td>
+<td style="text-align: left;"><a href="../../playground/?exercise=eks03"><code>../playground/index.html?exercise=eks03</code></a></td>
+<td style="text-align: left;"><a class="md-button md-button--primary" href="../../playground/?exercise=eks03"><strong>⚡ Solve <code>eks03</code> in Playground →</strong></a></td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong><code>config04</code></strong></td>
-<td style="text-align: left;">Secret Volume Mounts &amp; Permissions</td>
-<td style="text-align: left;"><a href="../../playground/?exercise=config04"><code>../playground/index.html?exercise=config04</code></a></td>
-<td style="text-align: left;"><a class="md-button md-button--primary" href="../../playground/?exercise=config04"><strong>⚡ Solve <code>config04</code> in Playground →</strong></a></td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong><code>config05</code></strong></td>
-<td style="text-align: left;">Immutable ConfigMaps and Secrets</td>
-<td style="text-align: left;"><a href="../../playground/?exercise=config05"><code>../playground/index.html?exercise=config05</code></a></td>
-<td style="text-align: left;"><a class="md-button md-button--primary" href="../../playground/?exercise=config05"><strong>⚡ Solve <code>config05</code> in Playground →</strong></a></td>
+<td style="text-align: left;"><strong><code>eks04</code></strong></td>
+<td style="text-align: left;">Karpenter NodePool &amp; EC2NodeClass</td>
+<td style="text-align: left;"><a href="../../playground/?exercise=eks04"><code>../playground/index.html?exercise=eks04</code></a></td>
+<td style="text-align: left;"><a class="md-button md-button--primary" href="../../playground/?exercise=eks04"><strong>⚡ Solve <code>eks04</code> in Playground →</strong></a></td>
 </tr>
 </tbody>
 </table>
