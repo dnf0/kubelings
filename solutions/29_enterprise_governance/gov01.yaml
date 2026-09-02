@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: fleet-baseline-monitoring
+  namespace: argocd
+spec:
+  generators:
+    - matrix:
+        generators:
+          - clusters:
+              selector:
+                matchLabels:
+                  tier: production
+          - git:
+              repoURL: https://github.com/enterprise/k8s-platform-baseline.git
+              revision: HEAD
+              directories:
+                - path: monitoring/*
+  template:
+    metadata:
+      name: "{{name}}-{{path.basename}}"
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/enterprise/k8s-platform-baseline.git
+        targetRevision: HEAD
+        path: "{{path}}"
+      destination:
+        server: "{{server}}"
+        namespace: monitoring
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

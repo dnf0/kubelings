@@ -1,0 +1,47 @@
+# Exercise: exercises/29_enterprise_governance/gov02.yaml
+# Topic: Multi-Tenant Namespace Quotas & Guardrails
+# Reference Guide: https://dnf0.github.io/kubelings/guides/29-enterprise-governance/
+#
+# Context & Why:
+# In multi-tenant enterprise clusters, teams share physical nodes. Without strict resource quotas
+# and limit defaults, a single runaway application can consume all cluster CPU/memory or exhaust
+# storage pools, starving neighboring tenant services (noisy neighbor syndrome).
+#
+# Kubernetes provides `ResourceQuota` to cap aggregate namespace consumption and `LimitRange`
+# to enforce baseline requests and limits on every container created in the tenant namespace.
+#
+# Task:
+# Configure a `ResourceQuota` and `LimitRange` to isolate tenant namespace 'tenant-alpha':
+# 1. In Document 1, define `ResourceQuota` named 'tenant-compute-quota' in namespace 'tenant-alpha'.
+# 2. Under 'spec.hard', set 'requests.cpu: "16"', 'requests.memory: 64Gi', 'limits.cpu: "32"',
+#    'limits.memory: 128Gi', and 'persistentvolumeclaims: "10"'.
+# 3. In Document 2, define `LimitRange` named 'tenant-limits' in namespace 'tenant-alpha'.
+# 4. Under 'spec.limits[0]', set type 'Container', default 'cpu: "1"' / 'memory: 2Gi', and defaultRequest 'cpu: 250m' / 'memory: 512Mi'.
+
+apiVersion: ???
+kind: ResourceQuota
+metadata:
+  name: ???
+  namespace: tenant-alpha
+spec:
+  hard:
+    requests.cpu: ???
+    requests.memory: ???
+    limits.cpu: ???
+    limits.memory: ???
+    persistentvolumeclaims: ???
+---
+apiVersion: ???
+kind: LimitRange
+metadata:
+  name: ???
+  namespace: tenant-alpha
+spec:
+  limits:
+    - type: Container
+      default:
+        cpu: ???
+        memory: ???
+      defaultRequest:
+        cpu: ???
+        memory: ???

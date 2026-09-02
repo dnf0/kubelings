@@ -1,0 +1,58 @@
+# Exercise: exercises/29_enterprise_governance/gov01.yaml
+# Topic: ArgoCD ApplicationSet Multi-Cluster Matrix Generator
+# Reference Guide: https://dnf0.github.io/kubelings/guides/29-enterprise-governance/
+#
+# Context & Why:
+# When managing Kubernetes fleets across multi-account cloud landing zones (e.g. AWS Control Tower),
+# deploying platform baselines (such as Prometheus, Kyverno, Cilium) to dozens of clusters manually
+# leads to severe configuration drift.
+#
+# ArgoCD `ApplicationSet` solves this through automated templating:
+# - Matrix generators combine cluster targets with Git repository paths.
+# - Automatically instantiates, synchronizes, and self-heals `Application` CRDs for each target cluster.
+#
+# Task:
+# Author an `ApplicationSet` CRD deploying monitoring baselines across all production clusters:
+# 1. Set 'apiVersion' to 'argoproj.io/v1alpha1' and 'kind' to 'ApplicationSet'.
+# 2. Set 'metadata.name' to 'fleet-baseline-monitoring' in namespace 'argocd'.
+# 3. Under 'spec.generators[0].matrix.generators', define:
+#    - 'clusters.selector.matchLabels' matching 'tier: production'.
+#    - 'git.repoURL' set to 'https://github.com/enterprise/k8s-platform-baseline.git' with directories path 'monitoring/*'.
+# 4. In 'spec.template.metadata.name', use '{{name}}-{{path.basename}}'.
+# 5. In 'spec.template.spec.destination', set 'server: "{{server}}"' and 'namespace: monitoring'.
+# 6. Enable automated sync with 'prune: true' and 'selfHeal: true'.
+
+apiVersion: ???
+kind: ApplicationSet
+metadata:
+  name: ???
+  namespace: argocd
+spec:
+  generators:
+    - matrix:
+        generators:
+          - clusters:
+              selector:
+                matchLabels:
+                  tier: ???
+          - git:
+              repoURL: https://github.com/enterprise/k8s-platform-baseline.git
+              revision: HEAD
+              directories:
+                - path: ???
+  template:
+    metadata:
+      name: "{{name}}-{{path.basename}}"
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/enterprise/k8s-platform-baseline.git
+        targetRevision: HEAD
+        path: "{{path}}"
+      destination:
+        server: "{{server}}"
+        namespace: ???
+      syncPolicy:
+        automated:
+          prune: ???
+          selfHeal: ???

@@ -1,0 +1,37 @@
+# Exercise: exercises/29_enterprise_governance/vault01.yaml
+# Topic: HashiCorp Vault Agent Sidecar Injection
+# Reference Guide: https://dnf0.github.io/kubelings/guides/29-enterprise-governance/
+#
+# Context & Why:
+# The HashiCorp Vault Agent Injector uses a Kubernetes mutating admission webhook to automatically
+# inject a Vault Agent sidecar into application Pods.
+#
+# The agent handles mutual TLS authentication via the Kubernetes ServiceAccount token, renders
+# dynamic database credentials or TLS certificates in memory (`/vault/secrets/`), and automatically
+# renews leases before expiration without restarting the application container.
+#
+# Task:
+# Configure the Pod template annotations below to enable Vault Agent injection:
+# 1. Set 'apiVersion' to 'v1' and 'kind' to 'Pod'.
+# 2. Set 'metadata.name' to 'secure-billing-service' in namespace 'default'.
+# 3. Add annotation 'vault.hashicorp.com/agent-inject: "true"'.
+# 4. Add annotation 'vault.hashicorp.com/role: "billing-app-role"'.
+# 5. Add annotation 'vault.hashicorp.com/agent-inject-secret-database-config: "secret/data/billing/db"'.
+# 6. Set 'spec.serviceAccountName' to 'billing-service-sa'.
+# 7. Define container 'billing-api' using image 'billing/app:v2.4' with command '["/app/server"]'.
+
+apiVersion: ???
+kind: ???
+metadata:
+  name: ???
+  namespace: default
+  annotations:
+    vault.hashicorp.com/agent-inject: ???
+    vault.hashicorp.com/role: ???
+    vault.hashicorp.com/agent-inject-secret-database-config: ???
+spec:
+  serviceAccountName: ???
+  containers:
+    - name: ???
+      image: ???
+      command: ???

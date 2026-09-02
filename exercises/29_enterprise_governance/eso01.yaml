@@ -1,0 +1,49 @@
+# Exercise: exercises/29_enterprise_governance/eso01.yaml
+# Topic: External Secrets Operator (ESO) Multi-Cloud Secret Sync
+# Reference Guide: https://dnf0.github.io/kubelings/guides/29-enterprise-governance/
+#
+# Context & Why:
+# Storing plain base64 secrets in Git repositories is a critical security vulnerability.
+# In enterprise platform engineering, secrets are managed centrally in AWS Secrets Manager,
+# Google Secret Manager, Azure Key Vault, or HashiCorp Vault.
+#
+# External Secrets Operator (ESO) bridges this by syncing secrets from external providers
+# into native Kubernetes `Secret` objects using `SecretStore` and `ExternalSecret` CRDs.
+#
+# Task:
+# Configure a `SecretStore` and `ExternalSecret` to sync database credentials from AWS Secrets Manager:
+# 1. In Document 1, define `SecretStore` named 'aws-secrets-store' with 'apiVersion: external-secrets.io/v1beta1'.
+# 2. Under 'spec.provider.aws', set 'service: SecretsManager' and 'region: us-east-1'.
+# 3. In Document 2, define `ExternalSecret` named 'app-db-credentials' with 'apiVersion: external-secrets.io/v1beta1'.
+# 4. Set 'spec.refreshInterval' to '1h' and reference secretStoreRef name 'aws-secrets-store'.
+# 5. Under 'spec.target', set 'name: db-credentials-secret' and 'creationPolicy: Owner'.
+# 6. Map secretKey 'password' to remoteRef key 'prod/rds/app-password'.
+
+apiVersion: ???
+kind: SecretStore
+metadata:
+  name: ???
+  namespace: default
+spec:
+  provider:
+    aws:
+      service: ???
+      region: ???
+---
+apiVersion: ???
+kind: ExternalSecret
+metadata:
+  name: ???
+  namespace: default
+spec:
+  refreshInterval: ???
+  secretStoreRef:
+    name: ???
+    kind: SecretStore
+  target:
+    name: ???
+    creationPolicy: ???
+  data:
+    - secretKey: ???
+      remoteRef:
+        key: ???

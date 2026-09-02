@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secure-billing-service
+  namespace: default
+  annotations:
+    vault.hashicorp.com/agent-inject: "true"
+    vault.hashicorp.com/role: "billing-app-role"
+    vault.hashicorp.com/agent-inject-secret-database-config: "secret/data/billing/db"
+spec:
+  serviceAccountName: billing-service-sa
+  containers:
+    - name: billing-api
+      image: billing/app:v2.4
+      command: ["/app/server"]
