@@ -19,7 +19,7 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Security, RBAC & Service Accounts** is reconciled through declarative state loops managed by the control plane:
+In Kubernetes, **Security, RBAC & Service Accounts** is reconciled through declarative state loops managed by the control plane and node daemons:
 
 ```mermaid
 flowchart LR
@@ -49,7 +49,37 @@ flowchart LR
     end
 ```
 
-When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
+### 1.1 Architectural Flow & Lifecycle Walkthrough
+
+1. **Authentication (AuthN)**: A client initiates an HTTPS request to `kube-apiserver`. The server passes the request through configured authentication handlers in sequence:
+   - **X.509 Client Certificates**: Validates client certificate signatures against the cluster CA; extracts the Common Name (`CN`) as the Username and Organizational Units (`O`) as Groups.
+   - **OIDC Bearer Tokens**: Validates JSON Web Tokens (JWT) signed by an external identity provider (Okta, Keycloak, Dex) via public JWKS keys.
+   - **ServiceAccount Tokens**: Validates signed JWT service account tokens (`sub: system:serviceaccount:namespace:sa-name`) using RSA/ECDSA public keys.
+2. **Authorization (AuthZ)**: The authenticated subject (`User`, `Group`, or `ServiceAccount`) is evaluated by the RBAC Authorization Engine. The engine performs an in-memory lookup across:
+   - `Roles` & `RoleBindings` (scoped to specific namespaces).
+   - `ClusterRoles` & `ClusterRoleBindings` (cluster-wide or across all namespaces).
+   The engine matches the request API Group, Resource, Subresource, and Verb (`get`, `list`, `watch`, `create`, `delete`). If any rule matches, authorization is granted; if no rules match, the request is rejected with `403 Forbidden`.
+3. **Admission Control & Security Standards**: Authorized requests pass through Mutating and Validating Admission Webhooks and built-in Admission Controllers, including the **Pod Security Standards** engine (Privileged, Baseline, Restricted).
+4. **etcd Transaction**: If all validation and policy checks pass, the API server commits the state change to `etcd`.
+
+### 1.2 Serialization, Protocols & Communication Pathways
+
+- **JWT (JSON Web Signature RFC 7515)**: Projected ServiceAccount tokens and OIDC tokens are base64url-encoded signed JSON payloads containing standard claims (`iss`, `sub`, `aud`, `exp`, `nbf`).
+- **SubjectAccessReview JSON/Protobuf API**: Kubernetes API enabling external proxies to delegate authorization decisions by posting `authorization.k8s.io/v1 SubjectAccessReview` payloads to the API server.
+- **X.509 ASN.1 DER Encoding**: TLS transport client certificates encoded in standard ASN.1 Distinguished Encoding Rules format.
+
+### 1.3 Deep-Dive Component Breakdown
+
+- **AuthN Authenticator Pipeline**: Chain of pluggable Go authenticators (x509, Webhook, OIDC, TokenFile, ServiceAccountToken).
+- **RBAC Authorizer**: In-memory rule index indexing role rules by verb and resource group for sub-microsecond permission checks.
+- **Pod Security Admission (PSA)**: Built-in admission controller replacing legacy PSPs, evaluating Pod specifications against `privileged`, `baseline`, and `restricted` security profiles enforced via namespace labels.
+- **Projected Token Volume Driver**: Kubelet driver responsible for refreshing and rotating signed ServiceAccount JWT tokens mounted into `/var/run/secrets/kubernetes.io/serviceaccount/token` before expiration.
+
+### 1.4 Under-The-Hood Mechanics & Failure Modes
+
+- **Silent Token Expiration in Long-Running Daemons**: Legacy applications that cache the ServiceAccount token in memory on startup will encounter `401 Unauthorized` errors after the projected token rotates on disk (default 1-hour expiration) unless they re-read `/var/run/secrets/kubernetes.io/serviceaccount/token` dynamically.
+- **Privilege Escalation Prevention**: The RBAC engine blocks users from creating or updating Roles with permissions they do not personally possess, preventing unauthorized privilege escalation unless the user holds the explicit `escalate` verb.
+- **Over-Permissioned Wildcard Roles (`*`)**: Granting `apiGroups: ["*"]` and `resources: ["*"]` with `verbs: ["*"]` violates least privilege and exposes the entire cluster control plane to compromise if a single workload service account is leaked.
 
 ---
 

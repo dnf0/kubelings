@@ -18,7 +18,7 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Declarative Customization with Kustomize** is reconciled through declarative state loops managed by the control plane:
+In Kubernetes, **Declarative Customization with Kustomize** is reconciled through declarative state loops managed by the control plane and node daemons:
 
 ```mermaid
 flowchart LR
@@ -47,7 +47,37 @@ flowchart LR
     end
 ```
 
-When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
+### 1.1 Architectural Flow & Lifecycle Walkthrough
+
+1. **Base Configuration Parsing**: Kustomize reads `base/kustomization.yaml` and loads the declarative source manifests (`deployment.yaml`, `service.yaml`). The base represents DRY, reusable, environment-agnostic infrastructure definitions.
+2. **Overlay Target Selection**: The developer or CI pipeline targets a specific environment overlay directory (e.g. `kustomize build overlays/production`).
+3. **Strategic Merge & JSON 6902 Patch Evaluation**: Kustomize evaluates the overlay's `kustomization.yaml`:
+   - **Strategic Merge Patches**: Merges partial YAML snippets based on Kubernetes struct tags (e.g., updating `spec.replicas: 10` or modifying container memory limits while preserving all other base fields).
+   - **JSON 6902 Patches**: Applies precise RFC 6902 JSON mutation operations (`add`, `replace`, `remove`) targeting specific array indices or nested keys.
+4. **Cross-Cutting Transformer Execution**:
+   - `namePrefix` & `nameSuffix`: Prepends/appends environment identifiers (e.g., `prod-web-service`).
+   - `commonLabels` & `commonAnnotations`: Injects standardized telemetry, ownership, and Git commit metadata across all output resources and selectors.
+   - `namespace`: Overrides target namespaces across all resources.
+5. **ConfigMap & Secret Hash Generation**: For resources declared under `configMapGenerator` or `secretGenerator`, Kustomize appends a deterministic content-hash suffix to the resource name (e.g. `app-config-8f9h2k4m5b`). It automatically updates all `Pod.spec.volumes[*].configMap.name` references to match, triggering zero-downtime rolling updates whenever configuration changes.
+
+### 1.2 Serialization, Protocols & Communication Pathways
+
+- **Strategic Merge Patch (SMP) Algorithm**: Kubernetes-aware YAML patching engine that utilizes Go struct tags (`patchStrategy: merge`, `patchMergeKey: name`) to intelligently merge slices of objects (like container lists) by key instead of replacing the entire array.
+- **JSON 6902 Patch Protocol**: Standardized JSON patch specifications executed in-memory against YAML node trees.
+- **SHA-256 Content Hashing**: Cryptographic hash calculation executed on serialized ConfigMap/Secret key-value pairs to generate immutable 10-character resource suffixes.
+
+### 1.3 Deep-Dive Component Breakdown
+
+- **Kustomize Engine**: Pure declarative configuration engine built into `kubectl` (`kubectl apply -k .`) and available as a standalone CLI.
+- **Resource Accumulator**: In-memory tree structure tracking all loaded resources, overlays, components, and transformers.
+- **ConfigMapGenerator / SecretGenerator**: Built-in generators creating versioned, immutable configuration objects with automatic reference rewriting.
+- **Kustomize Transformers**: Pipeline plugins executing cross-cutting modifications (Labels, Annotations, Namespaces, NamePrefix, Images).
+
+### 1.4 Under-The-Hood Mechanics & Failure Modes
+
+- **Strategic Merge vs JSON Patch Collisions**: Custom Resource Definitions (CRDs) lack native Kubernetes Go struct merge tags; applying a Strategic Merge Patch to a CRD array replaces the entire array instead of merging items. CRD modifications must use explicit JSON 6902 patches.
+- **Stale ConfigMap Garbage Accumulation**: Generating hash-suffixed ConfigMaps on every commit creates new ConfigMap objects on the cluster. Unless automated pruning (via ArgoCD or `kubectl apply --prune`) is configured, obsolete ConfigMaps accumulate indefinitely in `etcd`.
+- **Selector Immutability Violations with `commonLabels`**: Changing `commonLabels` in an overlay modifies `spec.selector.matchLabels` on Deployments. Because Kubernetes Deployment selectors are immutable after creation, applying the modified overlay fails with `field is immutable` until the Deployment is deleted and recreated.
 
 ---
 

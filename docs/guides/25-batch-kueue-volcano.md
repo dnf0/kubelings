@@ -18,7 +18,7 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **AI Batch Scheduling & Queuing with Kueue and Volcano** is reconciled through declarative state loops managed by the control plane:
+In Kubernetes, **AI Batch Scheduling & Queuing with Kueue and Volcano** is reconciled through declarative state loops managed by the control plane and node daemons:
 
 ```mermaid
 flowchart TD
@@ -54,7 +54,39 @@ flowchart TD
     end
 ```
 
-When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
+### 1.1 Architectural Flow & Lifecycle Walkthrough
+
+1. **Batch Job Submission**: An ML engineer submits multi-pod batch workloads (e.g. PyTorch distributed jobs requiring 16 pods concurrently) referencing a `kueue.x-k8s.io/queue-name: ml-team-queue`.
+2. **Kueue Admission & Quota Evaluation**: The `kueue-controller-manager` intercepts the Job:
+   - Matches the job against the target `ClusterQueue` and its associated `ResourceFlavors` (e.g., `nvidia-a100-gpu`).
+   - Evaluates real-time quota usage across multi-tenant cohorts, calculating nominal quotas and borrowing limits from idle shared quotas.
+   - If quota is available, Kueue **admits** the workload, transitioning `Workload.status.conditions[Admitted] = True`. If quota is exhausted, the workload is queued in priority order without creating pending pods.
+3. **Volcano Gang Scheduler Activation**: The admitted workload creates a `PodGroup` resource managed by the `volcano-scheduler`:
+   - Declares `minMember: 16` (the minimum number of pods required for the job to function).
+4. **Gang All-or-Nothing Scheduling Pipeline**:
+   - Volcano evaluates cluster nodes in a single atomic scheduling transaction.
+   - If all 16 pods can be placed simultaneously across eligible GPU nodes, Volcano binds all 16 pods in unison.
+   - If only 12 nodes are available, Volcano places **zero** pods, preventing resource deadlock where two competing jobs hold partial allocations and neither can proceed.
+5. **Node Placement & Plugin Execution**: Volcano executes scheduling plugins (Dominant Resource Fairness `drf`, `binpack`, and `gang`), packing pods densely onto worker nodes to minimize node fragmentation.
+
+### 1.2 Serialization, Protocols & Communication Pathways
+
+- **Kueue Workload CRD API**: Workload specifications, resource flavors, and cohort quota reservations serialized as JSON/Protobuf across Kubernetes API endpoints.
+- **Volcano PodGroup Protocol**: Gang scheduling synchronization protocol tracking `minMember` admission barriers in-memory within the custom scheduler binary.
+- **Prometheus Metric Telemetry**: Real-time export of queue depths, waiting times, and quota borrowing metrics.
+
+### 1.3 Deep-Dive Component Breakdown
+
+- **Kueue Controller**: Job-level admission controller managing multi-tenant queues, cohort resource borrowing, and preemption policies.
+- **Volcano Custom Scheduler**: High-performance batch scheduler replacing `kube-scheduler` for gang scheduling, task topology awareness, and fair-share scheduling.
+- **ClusterQueue & LocalQueue**: Hierarchical queue abstractions separating cluster-wide administrative quota allocations from namespace-scoped developer queues.
+- **PodGroup CRD**: Logical grouping of co-dependent pods requiring all-or-nothing scheduling and coordinated failure handling.
+
+### 1.4 Under-The-Hood Mechanics & Failure Modes
+
+- **Deadlock from Non-Gang Schedulers**: Using standard `kube-scheduler` on multi-node distributed training jobs can lead to deadlocks where Job A claims 8 GPUs on Node 1 and Job B claims 8 GPUs on Node 2, leaving both jobs stuck in pending states indefinitely.
+- **Kueue Workload Unmanaged Job Leaks**: If a batch job is deleted manually without deleting its corresponding Kueue `Workload` object, quota reservations may remain locked in the `ClusterQueue`, blocking subsequent jobs from admission.
+- **Cohort Borrowing Preemption Storms**: When an idle cohort reclaims borrowed quota, aggressive preemption can abruptly terminate dozens of running batch jobs. Setting `reclaimWithinCohort: LowerPriority` ensures only lower-priority borrowed workloads are preempted.
 
 ---
 

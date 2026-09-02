@@ -20,7 +20,7 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Controllers & Replication** is reconciled through declarative state loops managed by the control plane:
+In Kubernetes, **Controllers & Replication** is reconciled through declarative state loops managed by the control plane and node daemons:
 
 ```mermaid
 flowchart TD
@@ -57,7 +57,33 @@ flowchart TD
     RS2 -->|Spawns| P3
 ```
 
-When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
+### 1.1 Architectural Flow & Lifecycle Walkthrough
+
+1. **Declarative State Declaration**: A platform operator submits a `Deployment` manifest declaring `spec.replicas: 3` and `spec.strategy.type: RollingUpdate`.
+2. **Informer Reflector List-Watch**: The `DeploymentController` inside `kube-controller-manager` runs a `SharedIndexInformer`. The informer's `Reflector` establishes an HTTP/2 chunked List-Watch connection to `kube-apiserver`, streaming delta changes into a thread-safe local `Indexer` FIFO queue.
+3. **Reconciliation Loop & WorkQueue**: The controller pops the Deployment key from the `RateLimitingWorkQueue`. It queries the local cache for matching ReplicaSets via label selectors (`matchLabels`).
+4. **RollingUpdate Rollout Math**: When `spec.template.spec` changes, the controller creates a new Revision ReplicaSet (`v2`). It calculates `maxSurge` (temporary extra pods allowed above desired count) and `maxUnavailable` (maximum pods allowed in non-ready state), progressively incrementing `spec.replicas` on `v2` while decrementing `v1`.
+5. **ReplicaSet Controller Action**: The `ReplicaSetController` observes the updated replica counts, compares desired vs actual live Pod counts, and executes batch HTTP POST requests to `kube-apiserver` to spawn or terminate individual `v1.Pod` objects.
+6. **Self-Healing & Drift Convergence**: If a node crashes or a worker process is terminated, the informer receives a `Delete` event, immediately re-enqueuing the Deployment key to recreate replacement Pods until the observed state equals the desired state.
+
+### 1.2 Serialization, Protocols & Communication Pathways
+
+- **HTTP/2 Chunked Streaming (Watch API)**: The API server streams resource change events (`ADDED`, `MODIFIED`, `DELETED`) encoded as JSON or binary Protobuf over long-lived HTTP/2 streams.
+- **Optimistic Concurrency Control (OCC)**: State updates use HTTP `PUT` with `metadata.resourceVersion`. If another controller modified the object in `etcd` concurrently, the API server rejects the write with `409 Conflict`, prompting the controller to re-fetch the latest state and retry.
+- **Protobuf Internal Wire Protocol**: Inter-component communication between `kube-controller-manager` and `kube-apiserver` utilizes Protobuf encoding to support high-throughput event processing across large clusters.
+
+### 1.3 Deep-Dive Component Breakdown
+
+- **kube-controller-manager**: Monolithic Go binary running a collection of distinct control loops (Deployment, ReplicaSet, StatefulSet, Job, Node) managed by a leader-election lock in `coordination.k8s.io/leases`.
+- **SharedIndexInformer & DeltaFIFO**: Caching and event distribution layer that reduces `kube-apiserver` query loads by maintaining an in-memory thread-safe copy of cluster resources indexed by namespace and labels.
+- **RateLimitingWorkQueue**: Go workqueue implementation providing exponential backoff, token-bucket rate limiting, and deduplication of concurrent reconciliation keys.
+- **ReplicaSet Reconciler**: Dedicated controller responsible exclusively for maintaining the exact number of active, ready Pods matching a given Pod template and selector.
+
+### 1.4 Under-The-Hood Mechanics & Failure Modes
+
+- **Cascading Rollout Stall (`ProgressDeadlineSeconds`)**: If new revision Pods fail startup or readiness checks, the rollout stalls. If the condition persists beyond `progressDeadlineSeconds` (default: 600s), the Deployment controller transitions `.status.conditions[Type=Progressing].status = "False"` with reason `ProgressDeadlineExceeded`.
+- **Label Selector Mutability Invariants**: `spec.selector` is immutable after creation. Attempting to modify `matchLabels` requires recreating the Deployment, as selector collisions can lead to orphaned ReplicaSets or split-brain ownership loops.
+- **Split-Brain Prevention via Leases**: Only the active leader instance of `kube-controller-manager` executes reconciliation routines. Non-leader instances maintain active informer caches and continuously renew heartbeat leases to take over within 15 seconds upon leader termination.
 
 ---
 

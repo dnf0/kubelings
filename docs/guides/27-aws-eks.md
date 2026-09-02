@@ -18,7 +18,7 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **AWS EKS & Cloud Architecture** is reconciled through declarative state loops managed by the control plane:
+In Kubernetes, **AWS EKS & Cloud Architecture** is reconciled through declarative state loops managed by the control plane and node daemons:
 
 ```mermaid
 flowchart TD
@@ -52,7 +52,42 @@ flowchart TD
     POD <-->|Authorized API Calls| S3[("Amazon S3 / DynamoDB")]
 ```
 
-When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
+### 1.1 Architectural Flow & Lifecycle Walkthrough
+
+1. **EKS OIDC Provider & IAM Trust Establishment**: An AWS administrator creates an IAM OpenID Connect (OIDC) identity provider for the EKS cluster. An IAM Role is provisioned with a Trust Policy granting `sts:AssumeRoleWithWebIdentity` restricted to a specific Kubernetes ServiceAccount (`system:serviceaccount:default:my-app-sa`).
+2. **Projected Token Volume Injection (IRSA / EKS Pod Identity)**:
+   - When a Pod referencing `my-app-sa` is submitted, the **EKS Pod Mutating Webhook** intercepts the Pod creation.
+   - Injects an ephemeral, cryptographically signed OIDC JWT token into `/var/run/secrets/eks.amazonaws.com/serviceaccount/token`.
+   - Injects environment variables: `AWS_ROLE_ARN` and `AWS_WEB_IDENTITY_TOKEN_FILE`.
+3. **AWS STS Token Exchange**:
+   - The application AWS SDK inside the container reads the projected JWT token file.
+   - Calls the AWS Security Token Service (STS) API: `sts:AssumeRoleWithWebIdentity`.
+   - AWS STS verifies the token signature against the EKS OIDC discovery endpoint (`https://oidc.eks.amazonaws.com/id/...`).
+   - STS issues temporary AWS credentials (AccessKeyId, SecretAccessKey, SessionToken) with 1-hour validity directly to the SDK in memory.
+4. **AWS Load Balancer Controller IP-Mode Ingress Routing**:
+   - The AWS Load Balancer Controller watches `Ingress` resources annotated with `alb.ingress.kubernetes.io/target-type: ip`.
+   - Directly configures AWS Application Load Balancer (ALB) Target Groups with individual Pod private IP addresses allocated by the **AWS VPC CNI**, completely bypassing NodePort hops.
+5. **Node Autoscaling via Karpenter**:
+   - When pending pods emerge, Karpenter queries EC2 Fleet APIs, calculates the most cost-effective instance types (Graviton, Spot, x86), launches the EC2 instances, and registers them directly with the EKS cluster in under 45 seconds.
+
+### 1.2 Serialization, Protocols & Communication Pathways
+
+- **AWS Signature Version 4 (SigV4) Protocol**: Application SDKs and controllers sign all HTTPS REST requests to AWS APIs using HMAC-SHA256 cryptographic signatures.
+- **OIDC Discovery JSON & JWKS Keys**: EKS exposes public JSON Web Key Sets (JWKS) over HTTPS enabling AWS STS to verify cluster-signed JWT tokens.
+- **AWS VPC CNI IPAM IPC**: Local IP Address Management daemon (`aws-k8s-cni`) uses Unix domain socket IPC to communicate with kubelet and assign ENI secondary IP addresses directly to Pod network namespaces.
+
+### 1.3 Deep-Dive Component Breakdown
+
+- **IAM Roles for Service Accounts (IRSA)**: Cryptographic identity federation mapping Kubernetes ServiceAccounts directly to AWS IAM Roles without static long-lived credentials.
+- **AWS Load Balancer Controller**: Out-of-tree controller managing AWS ALBs, NLBs, and Target Groups in response to Kubernetes Ingress and Service objects.
+- **AWS VPC CNI (`amazon-vpc-cni-k8s`)**: High-performance networking plugin allocating native AWS VPC IP addresses and Elastic Network Interfaces (ENIs) directly to Pods.
+- **Karpenter**: High-velocity node autoscaler communicating directly with AWS EC2 Fleet and Pricing APIs to provision optimal compute capacity.
+
+### 1.4 Under-The-Hood Mechanics & Failure Modes
+
+- **OIDC Audience Mismatch (`sts:AssumeRoleWithWebIdentity` Fails)**: If the IAM Role Trust Policy specifies `aud: sts.amazonaws.com` but the projected token uses a custom audience, STS rejects the token exchange with `AccessDenied: An error occurred (InvalidIdentityToken)`.
+- **VPC Subnet IP Address Exhaustion**: In high-density clusters, the AWS VPC CNI assigns secondary IP addresses from the node's subnet. If the VPC subnet CIDR block runs out of available IPs, new Pods fail to launch with `FailedCreatePodSandBox: no IP addresses available in subnet`.
+- **Target Group Registration Lag**: If Pods become ready before the AWS Load Balancer Controller finishes registering their IPs in the ALB Target Group, early traffic receives HTTP 502 Bad Gateway errors. Configure a `readinessGate` (`target-health.alb.ingress.kubernetes.io`) on the Pod to prevent traffic routing until target registration health checks pass.
 
 ---
 

@@ -18,7 +18,7 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Hardware Acceleration: NVIDIA MIG, Apple Silicon GPU & DRA** is reconciled through declarative state loops managed by the control plane:
+In Kubernetes, **Hardware Acceleration: NVIDIA MIG, Apple Silicon GPU & DRA** is reconciled through declarative state loops managed by the control plane and node daemons:
 
 ```mermaid
 flowchart TD
@@ -53,7 +53,40 @@ flowchart TD
     end
 ```
 
-When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
+### 1.1 Architectural Flow & Lifecycle Walkthrough
+
+1. **Workload Hardware Claim Specification**: An AI inference Pod declares a dynamic resource requirement via `spec.resourceClaims[*].resourceClaimTemplateName`, referencing a `ResourceClaimTemplate`.
+2. **CEL Hardware Device Filtering**: The `ResourceClaimTemplate` specifies structured device matching rules evaluated via **Common Expression Language (CEL)** (e.g., `device.memory >= 80Gi && device.mig == true`).
+3. **Dynamic Resource Allocation (DRA) Controller Binding**:
+   - The centralized DRA driver controller evaluates available hardware devices reported by node driver plugins.
+   - Matches the CEL constraints against candidate GPUs (e.g. NVIDIA H100 with NVLink).
+   - Allocates the specific physical device ID and generates a bound `ResourceClaim` object in the API server.
+4. **Node Preparation via CDI gRPC (`NodePrepareResources`)**:
+   - When the Pod is scheduled to the selected node, `kubelet` calls the node's NVIDIA DRA Driver Plugin via gRPC `NodePrepareResources`.
+   - The plugin provisions the hardware slice and writes a **Container Device Interface (CDI)** JSON/YAML specification to `/var/run/cdi/nvidia.yaml`.
+5. **Container Runtime CDI Injection**:
+   - The container runtime (`containerd` / `CRI-O`) reads the CDI specification.
+   - Injects the designated device nodes (`/dev/nvidia0`, `/dev/nvidiactl`), Linux IPC capabilities, and driver libraries directly into the container's OCI runtime specification without requiring privileged mode.
+6. **Direct Hardware Execution**: The containerized TensorRT / vLLM runtime executes directly against the physical GPU hardware via PCIe DMA and NVLink.
+
+### 1.2 Serialization, Protocols & Communication Pathways
+
+- **Container Device Interface (CDI v0.5.0+) Schema**: Standardized JSON/YAML device definition schema describing host device nodes, mount paths, environment variables, and Linux cgroup permissions.
+- **DRA Driver gRPC Protocol (`kubelet.v1alpha1.DRAPlugin`)**: High-speed gRPC interface between `kubelet` and out-of-tree hardware vendor plugins over local Unix domain sockets.
+- **Common Expression Language (CEL)**: In-process expression language compiling hardware selector queries with strict memory and execution bounds.
+
+### 1.3 Deep-Dive Component Breakdown
+
+- **Dynamic Resource Allocation (DRA) Controller**: Kubernetes resource scheduler subsystem replacing coarse integer device counting with fine-grained, stateful hardware parameter allocation.
+- **Container Device Interface (CDI)**: Standardized specification allowing third-party device vendors to configure container runtimes without vendor-specific runtime plugins.
+- **NVIDIA DRA Driver Plugin**: Node DaemonSet responsible for GPU discovery, MIG (Multi-Instance GPU) slicing, and CDI manifest generation.
+- **ResourceClaim & ResourceClaimTemplate**: Kubernetes declarative APIs defining dynamic hardware requests and tracking allocated physical device bindings.
+
+### 1.4 Under-The-Hood Mechanics & Failure Modes
+
+- **CDI File Permission / Injection Failures**: If the CDI specification file in `/var/run/cdi/` is corrupted or has incorrect filesystem permissions, the container runtime fails container creation with `CDI device injection failed`.
+- **MIG Partition Allocation Conflicts**: Requesting specific Multi-Instance GPU (MIG) slice profiles (e.g. `1g.10gb`) on a GPU already configured with conflicting slice geometries requires dynamic repartitioning, failing if active processes occupy other slices.
+- **Driver Version Mismatch between Host and Container**: Utilizing CUDA libraries in the container image that require a higher NVIDIA kernel driver version than the host node's installed driver causes initialization to fail with `CUDA driver version is insufficient for CUDA runtime version`.
 
 ---
 

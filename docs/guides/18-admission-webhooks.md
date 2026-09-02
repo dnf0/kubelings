@@ -18,7 +18,7 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Advanced Admission Webhooks** is reconciled through declarative state loops managed by the control plane:
+In Kubernetes, **Advanced Admission Webhooks** is reconciled through declarative state loops managed by the control plane and node daemons:
 
 ```mermaid
 flowchart TD
@@ -47,7 +47,40 @@ flowchart TD
     end
 ```
 
-When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
+### 1.1 Architectural Flow & Lifecycle Walkthrough
+
+1. **Client API Request**: A client sends an HTTP POST/PUT/DELETE request to `kube-apiserver`. The request is authenticated (AuthN) and authorized (AuthZ).
+2. **Phase 1: Mutating Admission Webhook Execution**:
+   - The API server queries `MutatingWebhookConfiguration` objects matching the resource rule selectors.
+   - Webhooks are executed in **sequential order** over HTTPS mTLS connections.
+   - Each webhook service processes the `AdmissionReview` request and returns a `JSONPatch` (RFC 6902) document.
+   - The API server applies the patch, modifying the in-memory object (e.g. injecting sidecar containers, adding default storage annotations).
+3. **Phase 2: Schema Validation & Immutability**: The mutated object is validated against the OpenAPI v3 schema. Any mutations that introduce invalid fields or violate schema constraints fail immediately.
+4. **Phase 3: Validating Admission Webhook Execution**:
+   - The API server queries `ValidatingWebhookConfiguration` objects.
+   - Webhooks are executed in **parallel** across all registered validating services to minimize latency.
+   - Each service evaluates business logic (e.g. verifying security context or checking resource quotas).
+   - If any validating webhook returns `allowed: false`, the entire API operation is aborted, and the failure message is returned to the client.
+5. **Persistence in etcd**: If all mutating and validating hooks pass, the API server executes the atomic write transaction to `etcd`.
+
+### 1.2 Serialization, Protocols & Communication Pathways
+
+- **AdmissionReview v1 JSON Envelope**: HTTPS POST payload containing `request.uid`, `request.object`, `request.oldObject`, `request.userInfo`, and `request.dryRun`.
+- **JSONPatch RFC 6902 Protocol**: Mutating webhooks return a base64-encoded array of JSONPatch operations (`add`, `remove`, `replace`) executed sequentially on the target object document.
+- **mTLS with CA Bundle Verification**: `kube-apiserver` verifies the webhook server's TLS certificate against the PEM-encoded `caBundle` specified in the webhook configuration.
+
+### 1.3 Deep-Dive Component Breakdown
+
+- **kube-apiserver Admission Controller Manager**: Internal pipeline orchestrating Mutating and Validating webhook phases with configurable timeouts and failure policies.
+- **Webhook Server Daemon**: Out-of-tree HTTPS microservice running inside or outside the cluster handling `AdmissionReview` JSON RPC requests.
+- **CABundle Trust Store**: Base64-encoded X.509 Certificate Authority string embedded directly into the webhook configuration to establish mutual TLS trust.
+- **Webhook Rule Selectors**: Object, namespace (`namespaceSelector`), and object label (`objectSelector`) filters determining which API operations trigger webhook invocations.
+
+### 1.4 Under-The-Hood Mechanics & Failure Modes
+
+- **Cluster Lockout via `failurePolicy: Fail`**: If a webhook server becomes unreachable (due to node crash, DNS failure, or certificate expiration) and `failurePolicy: Fail` is configured, all matching API requests fail with `Internal error: failed calling webhook`.
+- **Webhook Request Timeout Degradation**: Default webhook timeouts (10s) can cause client `kubectl` requests to hang and timeout if webhook pods experience high latency under load. Webhook timeouts should be tuned to $\le 3$ seconds.
+- **Infinite Mutation Cycles**: If two mutating webhooks make conflicting modifications to the same field, the API server reinvokes webhooks up to a maximum limit (default: 8 reinvocations) before aborting with `mutation recursion limit exceeded`.
 
 ---
 

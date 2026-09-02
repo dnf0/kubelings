@@ -18,7 +18,7 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Policy as Code (Kyverno & Gatekeeper)** is reconciled through declarative state loops managed by the control plane:
+In Kubernetes, **Policy as Code (Kyverno & Gatekeeper)** is reconciled through declarative state loops managed by the control plane and node daemons:
 
 ```mermaid
 flowchart TD
@@ -49,7 +49,38 @@ flowchart TD
     end
 ```
 
-When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
+### 1.1 Architectural Flow & Lifecycle Walkthrough
+
+1. **API Admission Interception**: A user submits a workload creation request (`kubectl create -f pod.yaml`). `kube-apiserver` authenticates and authorizes the request, then directs the JSON representation of the resource to the Admission Control pipeline.
+2. **Phase 1: Mutate Phase (Kyverno / OPA Gatekeeper)**:
+   - The API server sends an `AdmissionReview` POST request over HTTPS to the policy engine webhook service.
+   - The policy engine evaluates mutation rules (e.g., automatically injecting `securityContext.runAsNonRoot = true` or adding cost-center labels).
+   - The engine returns a `JSONPatch` (RFC 6902) array back to the API server, which applies the mutations to the in-memory object.
+3. **Phase 2: Generate Phase**: The policy engine generates dependent resources (e.g., creating default `NetworkPolicy` and `ResourceQuota` objects whenever a new `Namespace` is created).
+4. **Phase 3: Validate Phase**:
+   - The API server submits the mutated object to the Validating Admission Webhook.
+   - The policy engine evaluates declarative validation rules (written in Kyverno YAML, OPA Rego, or Kubernetes CEL).
+   - If the object violates a policy set to `validationFailureAction: Enforce` (e.g., requesting `privileged: true`), the policy engine returns `allowed: false` with a descriptive error message. The API server terminates the request with `403 Forbidden`.
+5. **Phase 4: Cryptographic Image Verification**: Kyverno/Gatekeeper verifies that container image digests are cryptographically signed using Sigstore Cosign keys or keyless Rekor transparency logs before permitting execution.
+
+### 1.2 Serialization, Protocols & Communication Pathways
+
+- **AdmissionReview JSON Wire Protocol (v1)**: `kube-apiserver` exchanges structured JSON payloads containing `request` metadata (UserInfo, Kind, Operation, Object, OldObject) and evaluates returned `response` objects (`allowed`, `status`, `patch`).
+- **JSONPatch RFC 6902 Serialization**: Mutation patches are serialized as base64-encoded JSON arrays containing discrete patch operations (`{"op": "add", "path": "/spec/securityContext/runAsNonRoot", "value": true}`).
+- **Common Expression Language (CEL)**: High-speed, non-Turing complete expression evaluation executed in-process inside `kube-apiserver` with sub-millisecond evaluation latency.
+
+### 1.3 Deep-Dive Component Breakdown
+
+- **ValidatingAdmissionPolicy**: Built-in Kubernetes native CEL-based admission engine executing in-process inside `kube-apiserver` without external webhook network hops.
+- **Kyverno / OPA Gatekeeper Webhook Servers**: High-availability pods running mTLS webhook servers that evaluate complex cluster-wide policies.
+- **Sigstore Cosign & Rekor**: Cryptographic signing framework and public transparency log verifying software supply chain provenance for container artifacts.
+- **Policy Mutation Engine**: JSON transformation pipeline applying sequential RFC 6902 patch sets to object representations before persistence.
+
+### 1.4 Under-The-Hood Mechanics & Failure Modes
+
+- **Webhook Deadlock on API Server Startup**: If policy engine webhook pods are down and `failurePolicy: Fail` is configured on a webhook targeting core resources, `kube-apiserver` rejects all Pod creations—including the policy engine's own pods—causing a fatal cluster deadlock. Webhooks must use `namespaceSelector` to exempt `kube-system` and the policy engine's namespace.
+- **CEL Evaluation Resource Exhaustion**: Highly recursive or deeply nested CEL expressions evaluated across high-frequency API calls can exceed the API server's per-request CEL budget (100,000 cost units), causing admission to fail with `CostLimitExceeded`.
+- **Drift between Audit and Enforce Modes**: Running policies in `Audit` mode flags violations in logs but allows non-compliant resources to be deployed. Transitioning directly to `Enforce` mode without remediation will block operational updates to existing non-compliant workloads.
 
 ---
 

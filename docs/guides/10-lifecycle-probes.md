@@ -18,7 +18,7 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Health Checking, Probes & Lifecycle** is reconciled through declarative state loops managed by the control plane:
+In Kubernetes, **Health Checking, Probes & Lifecycle** is reconciled through declarative state loops managed by the control plane and node daemons:
 
 ```mermaid
 flowchart TD
@@ -49,7 +49,37 @@ flowchart TD
     READINESS -->|Failure (Ready=False)| REMOVE_EP
 ```
 
-When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
+### 1.1 Architectural Flow & Lifecycle Walkthrough
+
+1. **Container Process Startup (PID 1)**: The container runtime launches the container process inside isolated namespaces.
+2. **Phase 1: Startup Probe Evaluation**:
+   - `kubelet` initiates the configured `startupProbe` (HTTP GET, TCP Socket, gRPC, or Exec).
+   - All `livenessProbe` and `readinessProbe` checks remain **disabled** while the startup probe executes.
+   - If the startup probe succeeds within its `failureThreshold * periodSeconds` budget, the container transitions to active operational monitoring. If the budget is exhausted without success, `kubelet` kills the container and initiates a restart.
+3. **Phase 2: Operational Monitoring (Liveness & Readiness Parallel Loops)**:
+   - **Liveness Probe**: `kubelet` periodically executes the liveness check (e.g., HTTP `/healthz`). If consecutive failures reach `failureThreshold`, `kubelet` terminates the container process with `SIGTERM` (followed by `SIGKILL` after `terminationGracePeriodSeconds`) and increments the restart counter.
+   - **Readiness Probe**: `kubelet` periodically executes the readiness check (e.g., HTTP `/ready`).
+     - **Success**: `kubelet` sets `.status.conditions[Type=Ready].status = "True"`. The `EndpointSlice` controller includes the Pod IP, enabling it to receive traffic from Kubernetes Services.
+     - **Failure**: `kubelet` sets `Ready = False`. The `EndpointSlice` controller immediately removes the Pod IP from active endpoint pools, diverting traffic away from the unready container without killing the process.
+
+### 1.2 Serialization, Protocols & Communication Pathways
+
+- **HTTP/1.1 & HTTP/2 Prober Client**: Kubelet's internal Go HTTP prober sends standard HTTP requests with configurable headers and timeouts directly to the container IP.
+- **gRPC Health Checking Protocol (v1)**: Kubelet invokes the standard `grpc.health.v1.Health/Check` RPC over HTTP/2, evaluating the returned `ServingStatus` enum (`SERVING`, `NOT_SERVING`).
+- **Linux `/bin/sh -c` Exec RPC**: For Exec probes, kubelet issues a `ExecSync` CRI gRPC call, evaluating the process exit code (`0` = Success, non-zero = Failure).
+
+### 1.3 Deep-Dive Component Breakdown
+
+- **Kubelet Prober Worker**: Dedicated background goroutine pool inside kubelet executing non-blocking probe checks per container according to `periodSeconds` and `timeoutSeconds`.
+- **EndpointSlice Controller**: Kubernetes controller that synchronizes Pod `Ready` status conditions into active load balancer and service routing tables.
+- **Container Lifecycle Handler (`postStart` / `preStop`)**: Execution hooks run asynchronously (`postStart`) or blocking before SIGTERM (`preStop`) to enable graceful connection draining.
+- **Linux Process Signal Manager**: Kubelet subsystem dispatching `SIGTERM` (15) and `SIGKILL` (9) to container PID 1.
+
+### 1.4 Under-The-Hood Mechanics & Failure Modes
+
+- **Cascading Failure Loop (Liveness on Overloaded Backends)**: Configuring a Liveness probe to check deep dependencies (like backend database connectivity) causes overloaded servers to fail liveness checks, prompting kubelet to kill and restart all instances simultaneously, amplifying the outage. Liveness probes must **only** verify shallow process health.
+- **Readiness Flapping under Heavy Load**: If `timeoutSeconds` is set too low (e.g., 1s) and the application experiences transient CPU starvation, readiness probes timeout, dropping the Pod from service endpoints and overloading the remaining healthy replicas.
+- **PID 1 Signal Swallowing**: If an application runs under a shell script without `exec` (e.g. `CMD ["sh", "-c", "node server.js"]`), the shell process becomes PID 1 and may swallow `SIGTERM`, preventing graceful connection shutdown until `terminationGracePeriodSeconds` expires and `SIGKILL` is issued.
 
 ---
 

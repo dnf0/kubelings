@@ -19,7 +19,7 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Services & Networking** is reconciled through declarative state loops managed by the control plane:
+In Kubernetes, **Services & Networking** is reconciled through declarative state loops managed by the control plane and node daemons:
 
 ```mermaid
 flowchart TD
@@ -48,7 +48,35 @@ flowchart TD
     VIP -->|DNAT Packet Load Balance| POD3
 ```
 
-When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
+### 1.1 Architectural Flow & Lifecycle Walkthrough
+
+1. **Service Registration & VIP Allocation**: An operator creates a `v1/Service` with `spec.type: ClusterIP` and selector `app: payment-api`. `kube-apiserver` assigns an immutable Virtual IP (VIP) from the preconfigured CIDR block (e.g., `10.96.0.0/12`).
+2. **EndpointSlice Controller Reconciliation**: The `EndpointSlice` controller inside `kube-controller-manager` queries the informer cache for all running Pods whose labels match `app: payment-api` and whose `status.conditions[Ready]` is `True`. It populates `discovery.k8s.io/v1 EndpointSlice` objects containing lists of direct Pod CNI IP addresses and ports.
+3. **CoreDNS A-Record Resolution**: When a client Pod executes an HTTP request to `http://payment-api.default.svc.cluster.local`, the local Linux resolver sends a DNS query over UDP 53 to CoreDNS. CoreDNS responds with the Service ClusterIP VIP (`10.96.0.10`).
+4. **Kernel Datapath Packet Interception (`kube-proxy`)**: The client container initiates a TCP SYN packet addressed to `10.96.0.10:80`. As the packet traverses the host kernel networking stack:
+   - **iptables Mode**: Netfilter traverses the `KUBE-SERVICES` chain to `KUBE-SVC-XXX`, applying random probabilistic matching (`-m statistic --mode random --probability 0.33`) to select an endpoint, executing Destination NAT (DNAT) to rewrite the destination IP to the real Pod IP (`10.244.2.40:8080`).
+   - **IPVS Mode**: The kernel IP Virtual Server (IPVS) module performs direct hash-table lookups (`ipset`) in $O(1)$ time complexity, routing the packet to the selected backend.
+   - **eBPF Mode (Cilium)**: eBPF programs attached to the cgroup socket egress (`sockops`) rewrite the destination IP and port in the socket data structure before packets are even emitted to the network stack.
+5. **Direct CNI Pod Delivery**: The rewritten IP packet traverses the overlay or direct routing CNI network (Calico, Cilium, AWS VPC CNI) directly to the target Pod's `veth` interface, where the application process processes the request and responds.
+
+### 1.2 Serialization, Protocols & Communication Pathways
+
+- **DNS RFC 1035 UDP/TCP Wire Protocol**: CoreDNS processes binary DNS requests over port 53, caching A, AAAA, and SRV record lookups in-memory.
+- **Netlink System Calls**: `kube-proxy` in IPVS mode uses Linux Netlink sockets (`AF_NETLINK`) to program kernel IPVS virtual servers and `ipset` collections directly without spawning shell processes.
+- **Protobuf API Streaming**: The EndpointSlice controller streams high-scale endpoint updates over Protobuf connections to avoid JSON serialization bottlenecks in clusters with tens of thousands of pods.
+
+### 1.3 Deep-Dive Component Breakdown
+
+- **CoreDNS**: High-performance, plugin-based DNS server running in `kube-system`, dynamically configured via Kubernetes API watches to serve cluster-internal service discovery.
+- **kube-proxy**: Node daemon responsible for reflecting Kubernetes Service definitions into Linux kernel Netfilter (`iptables`), IPVS, or user-space routing tables.
+- **EndpointSlice**: Scalable replacement for legacy `v1.Endpoints`, splitting large endpoint lists into chunks of up to 100 endpoints to minimize network traffic and API server serialization latency on large deployments.
+- **Linux Netfilter & Conntrack**: Kernel connection tracking subsystem that stores active bidirectional TCP/UDP flow state in `/proc/net/nf_conntrack`, enabling accurate reverse SNAT/DNAT on reply packets.
+
+### 1.4 Under-The-Hood Mechanics & Failure Modes
+
+- **Conntrack Table Saturation**: High connection churn without TCP connection reuse can exceed `nf_conntrack_max`, causing the kernel to drop new TCP SYN packets silently with `nf_conntrack: table full, dropping packet`.
+- **Stale Endpoints During Rolling Updates**: If a terminating Pod does not immediately unregister from the EndpointSlice before shutting down its HTTP server, incoming in-flight TCP requests receive `TCP RST` (Connection Refused) errors. Implementing a `preStop` hook (`sleep 5`) gives the EndpointSlice controller time to propagate removal across all nodes.
+- **CoreDNS 5-Second DNS Lookup Delays**: Linux `glibc` sends IPv4 (A) and IPv6 (AAAA) DNS queries concurrently over UDP. Netfilter conntrack race conditions can cause one query to be dropped, triggering a full 5-second glibc DNS retry timeout (mitigated by configuring `single-request-reopen` in `/etc/resolv.conf` or deploying NodeLocal DNSCache).
 
 ---
 

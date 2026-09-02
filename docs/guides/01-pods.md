@@ -20,7 +20,7 @@
 
 ## 1. Architectural Overview & Control Plane Mechanics
 
-In Kubernetes, **Kubernetes Core Workloads & Pods** is reconciled through declarative state loops managed by the control plane:
+In Kubernetes, **Kubernetes Core Workloads & Pods** is reconciled through declarative state loops managed by the control plane and node daemons:
 
 ```mermaid
 flowchart TD
@@ -53,7 +53,34 @@ flowchart TD
     SIDECAR <-->|Mount| VOL
 ```
 
-When resources in this chapter are submitted, the `kube-apiserver` validates the OpenAPI v3 schema, stores state in `etcd`, and triggers the responsible controllers or node daemons to reconcile actual cluster state.
+### 1.1 Architectural Flow & Lifecycle Walkthrough
+
+1. **Manifest Ingestion & OpenAPI Deserialization**: The user or CI client submits a YAML Pod manifest via `kubectl apply`. The `kube-apiserver` deserializes the YAML into native Go structs (`v1.Pod`), validates the fields against OpenAPI v3 schemas, and applies admission checks.
+2. **Persistence in etcd**: Upon passing validation, `kube-apiserver` encodes the Go struct into a compact **Protobuf binary payload** and executes an atomic MVCC transaction to persist the record at key `/registry/pods/{namespace}/{name}` in `etcd3`.
+3. **Scheduling Watch & Node Binding**: `kube-scheduler` maintains an HTTP/2 streaming watch on unassigned Pods (`spec.nodeName == ""`). It filters and scores candidate nodes, selecting the optimal worker node, and writes an asynchronous `Binding` subresource back to the API server.
+4. **Kubelet Sync Loop & PLEG**: The target worker node's `kubelet` detects the scheduled Pod via its `PodConfig` channel. The Pod Lifecycle Event Generator (PLEG) detects state divergence and initiates container reconciliation.
+5. **CRI gRPC Sandbox Creation**: `kubelet` connects to the Container Runtime Interface (CRI) engine (`containerd` or `CRI-O`) via a local Unix Domain Socket (`/run/containerd/containerd.sock`) over **gRPC**. It issues a `RunPodSandbox` gRPC request, prompting `containerd` to spawn the Linux **pause container** (`CLONE_NEWNET`, `CLONE_NEWUTS`, `CLONE_NEWIPC`).
+6. **Sequential Init Container Execution**: `kubelet` invokes `CreateContainer` and `StartContainer` over CRI gRPC for each init container in strict sequential order. Each init container must terminate with exit code 0 before subsequent containers are scheduled.
+7. **Main & Sidecar Container Startup**: `kubelet` initiates the application and sidecar containers concurrently within the shared network and IPC namespaces, attaching mounted storage volumes (`emptyDir`, `ConfigMap`, or persistent block mounts).
+
+### 1.2 Serialization, Protocols & Communication Pathways
+
+- **gRPC over Unix Domain Sockets (UDS)**: `kubelet` communicates with `containerd` via `/run/containerd/containerd.sock` using the `runtime.v1.RuntimeService` gRPC interface.
+- **Protobuf Serialization**: Data exchanged over CRI gRPC and stored within `etcd3` is serialized using Protocol Buffers (proto3) to eliminate JSON parsing overhead and minimize CPU/memory serialization latency.
+- **JSON/YAML Deserialization & Scheme Conversion**: `kubectl` transmits JSON payloads over HTTP/2 with TLS 1.3 to `kube-apiserver`. The API server uses `k8s.io/apimachinery` codec schemes to convert external versions (`v1`) into internal unstructured objects before validation.
+
+### 1.3 Deep-Dive Component Breakdown
+
+- **kube-apiserver**: Stateless HTTP REST gateway providing OpenAPI v3 schema validation, authentication (AuthN), authorization (AuthZ), admission mutation/validation, and `etcd` persistence.
+- **kubelet & PLEG**: Node management agent running as a systemd service. PLEG (Pod Lifecycle Event Generator) polls runtime relists and container events to maintain internal active pod caches.
+- **Pause Container**: A minimal C program (`pause.c`) that sleeps indefinitely (`pause()`), holding the Linux network (`CLONE_NEWNET`), IPC (`CLONE_NEWIPC`), and UTS namespaces open for all co-located containers in the Pod.
+- **Shared Volume Subsystem**: Linux VFS bind-mounts configured by kubelet's Volume Manager, enabling atomic inter-container data exchange via memory-backed `tmpfs` or host filesystem mounts.
+
+### 1.4 Under-The-Hood Mechanics & Failure Modes
+
+- **cgroups v2 Enforcement**: Resource limits translate directly to Linux control group v2 files: `spec.containers[*].resources.limits.cpu` sets `cpu.max` (quota and period in microseconds), while `limits.memory` sets `memory.max` (hard memory ceiling).
+- **OOM Killer & `oom_score_adj`**: The Linux kernel Out-Of-Memory (OOM) killer uses `/proc/[pid]/oom_score_adj`. Kubelet assigns `-997` to Guaranteed QoS Pods, while BestEffort Pods receive `1000`, making BestEffort workloads the first candidates for termination under memory exhaustion.
+- **Init Container Failure Modes**: If any init container exits with non-zero status and `restartPolicy: Always`, kubelet restarts the failed init container using exponential backoff (10s, 20s, up to 5 minutes), blocking application startup indefinitely.
 
 ---
 
