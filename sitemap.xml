@@ -25,6 +25,110 @@
          <lastmod>2026-09-02</lastmod>
     </url>
     <url>
+         <loc>https://dnf0.github.io/kubelings/guides/01-pods/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/02-controllers/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/03-config-secrets/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/04-storage/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/05-services-networking/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/06-ingress-gateway/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/07-scheduling/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/08-security-rbac/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/09-network-policies/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/10-lifecycle-probes/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/11-autoscaling/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/12-crds-and-operators/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/13-troubleshooting/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/14-gitops-argocd/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/15-service-mesh-cilium/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/16-policy-as-code/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/17-multitenancy-vcluster/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/18-admission-webhooks/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/19-helm-packaging/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/20-kustomize-overlays/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/21-gateway-api/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/22-crossplane-iac/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/23-ebpf-tetragon/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/24-kuberay-ml/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/25-batch-kueue-volcano/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/guides/26-hardware-acceleration-dra/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
          <loc>https://dnf0.github.io/kubelings/superpowers/plans/2026-08-26-kubelings-implementation/</loc>
          <lastmod>2026-09-02</lastmod>
     </url>
@@ -73,6 +177,10 @@
          <lastmod>2026-09-02</lastmod>
     </url>
     <url>
+         <loc>https://dnf0.github.io/kubelings/superpowers/plans/2026-09-02-pure-web-app-and-26-chapter-reference-guides/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
          <loc>https://dnf0.github.io/kubelings/superpowers/specs/2026-08-26-kubelings-design/</loc>
          <lastmod>2026-09-02</lastmod>
     </url>
@@ -102,6 +210,10 @@
     </url>
     <url>
          <loc>https://dnf0.github.io/kubelings/superpowers/specs/2026-09-02-full-browser-wasm-learning-platform-design/</loc>
+         <lastmod>2026-09-02</lastmod>
+    </url>
+    <url>
+         <loc>https://dnf0.github.io/kubelings/superpowers/specs/2026-09-02-pure-web-app-and-reference-guides-design/</loc>
          <lastmod>2026-09-02</lastmod>
     </url>
 </urlset>
