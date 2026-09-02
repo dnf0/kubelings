@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kubelings Playground — Interactive Kubernetes Learning Platform</title>
+  <meta name="description" content="100% client-side WebAssembly learning environment for Kubernetes. 26 chapters, 114 exercises in Python 3.12 and Pyodide." />
+  <link rel="icon" href="../assets/images/favicon.png" />
+  <link rel="stylesheet" href="../assets/playground/playground.css" />
+  <style>
+    /* Full standalone page reset */
+    * {
+      box-sizing: border-box;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: #0f172a;
+      color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    #standalone-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 48px;
+      padding: 0 16px;
+      background: #090d16;
+      border-bottom: 1px solid #1e293b;
+      color: #f8fafc;
+      z-index: 100;
+      position: relative;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      text-decoration: none;
+      color: #f8fafc;
+    }
+    .brand:hover {
+      opacity: 0.9;
+    }
+    .brand-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      background: rgba(14, 165, 233, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(14, 165, 233, 0.3);
+    }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #cbd5e1;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+    .nav-btn:hover {
+      color: #ffffff;
+      background: #334155;
+      border-color: #475569;
+    }
+    #standalone-playground-root {
+      width: 100vw;
+      height: calc(100vh - 48px);
+      display: flex;
+      flex-direction: column;
+    }
+    .kubelings-playground {
+      width: 100% !important;
+      height: 100% !important;
+      max-height: 100% !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    .playground-split-layout {
+      height: 100% !important;
+      max-height: 100% !important;
+      border-radius: 0 !important;
+    }
+    /* Light mode support */
+    html[data-theme="light"],
+    html[data-theme="light"] body {
+      background: #f8fafc;
+      color: #0f172a;
+    }
+    html[data-theme="light"] #standalone-header {
+      background: #ffffff;
+      border-bottom-color: #e2e8f0;
+      color: #0f172a;
+    }
+    html[data-theme="light"] .brand {
+      color: #0f172a;
+    }
+    html[data-theme="light"] .nav-btn {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+      color: #334155;
+    }
+    html[data-theme="light"] .nav-btn:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+  </style>
+</head>
+<body>
+  <header id="standalone-header">
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <a href="../" class="brand">
+        <span style="font-size: 18px;">☸️</span>
+        <span>Kubelings</span>
+        <span class="brand-badge">⚡ Interactive Playground</span>
+      </a>
+    </div>
+    <div class="nav-actions">
+      <a href="../" class="nav-btn">📖 Documentation</a>
+      <a href="../syllabus/" class="nav-btn">📚 Syllabus</a>
+      <a href="https://github.com/dnf0/kubelings" target="_blank" rel="noopener noreferrer" class="nav-btn">
+        <svg height="14" width="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+        GitHub
+      </a>
+      <button id="theme-toggle-btn" class="nav-btn" title="Toggle Dark/Light Mode">🌓 Theme</button>
+    </div>
+  </header>
+
+  <main id="standalone-playground-root">
+    <div id="kubelings-playground" class="kubelings-playground"></div>
+  </main>
+
+  <script src="../assets/playground/playground.js"></script>
+  <script>
+    // Standalone theme toggle handling
+    const themeBtn = document.getElementById("theme-toggle-btn");
+    if (themeBtn) {
+      // Restore theme preference
+      const savedTheme = localStorage.getItem("kubelings-theme") || (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", savedTheme);
+
+      themeBtn.addEventListener("click", () => {
+        const current = document.documentElement.getAttribute("data-theme");
+        const next = current === "dark" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", next);
+        localStorage.setItem("kubelings-theme", next);
+
+        if (window.monaco) {
+          window.monaco.editor.setTheme(next === "dark" ? "vs-dark" : "vs");
+        }
+      });
+    }
+  </script>
+</body>
+</html>

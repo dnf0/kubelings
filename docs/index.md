@@ -7,7 +7,7 @@
 
 Inspired by [rustlings](https://github.com/rust-lang/rustlings) and [ziglings](https://codeberg.org/ziglings/exercises), **Kubelings** guides engineers through self-paced micro-exercises directly in the terminal.
 
-> ⚡ **Try it now in your browser!** No installation required: [**Interactive WebAssembly Playground**](playground.md) ([⚡ Try in Browser](https://dnf0.github.io/kubelings/playground/)).
+> ⚡ **Try it now in your browser!** No installation required: [**Interactive WebAssembly Playground**](playground/index.html) ([⚡ Try in Browser](https://dnf0.github.io/kubelings/playground/)).
 
 <p align="center">
   <img src="assets/demo.svg" alt="Kubelings Terminal Tour & Watch TUI" width="840">
