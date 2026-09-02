@@ -59,9 +59,9 @@ def test_manifest_and_disk_files_consistency():
     disk_solutions = {str(p) for p in Path("solutions").glob("*/*.yaml")}
 
     # Check total counts
-    assert len(manifest_exercises) == 114
-    assert len(disk_exercises) == 114
-    assert len(disk_solutions) == 114
+    assert len(manifest_exercises) == 126
+    assert len(disk_exercises) == 126
+    assert len(disk_solutions) == 126
 
     # Check for missing or orphaned exercise files
     missing_exercises = manifest_exercises - disk_exercises
