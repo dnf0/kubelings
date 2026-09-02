@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "kubelings"
-version = "0.19.0"
+version = "0.19.1"
 description = "An interactive, client-side WebAssembly learning platform and reference guide for Kubernetes"
 readme = "README.md"
 requires-python = ">=3.10"
